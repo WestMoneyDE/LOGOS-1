@@ -1,0 +1,7 @@
+{
+  "output": "/home/runner/work/_temp/logos-external/returns/enf-return.zip",
+  "sha256": "ef5976e51488f581c2cfea31727584a4c4ad5873b6ac27cc779ff4149bfe501c",
+  "files": 5,
+  "missing_required": [],
+  "status": "COMPLETE_RETURN"
+}

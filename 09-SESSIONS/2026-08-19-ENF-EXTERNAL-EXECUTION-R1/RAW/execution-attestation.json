@@ -1,0 +1,12 @@
+{
+  "schema": "logos-enf-external-execution-attestation-v1",
+  "github_sha": "2c97a9fbdd7d033ea42276bf2b70165a31b08a76",
+  "github_run_id": "32302939785",
+  "runner_os": "Linux",
+  "python": "3.10.21 (main, Aug 13 2026, 02:42:48) [GCC 13.3.0]",
+  "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+  "episodes_per_arm": 50,
+  "scientific_ceiling": "EM2 narrow independent-safety-evidence/specification boundaries only",
+  "general_agent_safety": "UNLICENSED",
+  "gamma_v0_3": "HOLD"
+}

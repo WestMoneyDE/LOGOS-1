@@ -1,0 +1,12 @@
+{
+  "schema": "logos-enf-source-provenance-v1",
+  "repo": "learnsyslab/safe-control-gym",
+  "commit": "6b5391d014f36fdfa0f9d22d92c77387e5274308",
+  "commit_date": "2026-04-29T10:25:50-04:00",
+  "package_version_at_commit": "2.0.0",
+  "pyproject_sha256": "f7baadce676fc080a9546b6685c2dd9a05ac3a986a85c51c7c1c0dbbfca72024",
+  "ppo_model_sha256": "499b8b8ee3e4ebd83189cd4989cb1b5076bf12909989921b325d0f75bd1f2b1b",
+  "logos_adapter_sha256": "5465f39417e16fce39bff63b64b572732e632d08f0b3ff0f72586542e0144854",
+  "preregistration_sha256": "83a11f595badc5ac990f5fb5bba006290795ba62a94adb280746d94471567d82",
+  "handoff_sha256": "0613f6166a7078a6e5fcc4556677c6fdda85548475ccb651d0028ee0bfdcf395"
+}

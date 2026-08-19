@@ -1,0 +1,160 @@
+name: LOGOS ENF External Execution R1
+
+on:
+  push:
+    branches:
+      - "agent/enf-external-execution-r1"
+    paths:
+      - "external-runs/enf-r1/**"
+      - ".github/workflows/logos-enf-external-r1.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "external-runs/enf-r1/**"
+      - ".github/workflows/logos-enf-external-r1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  enf-external:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      PYTHONHASHSEED: "260818"
+      MPLBACKEND: "Agg"
+    steps:
+      - name: Checkout LOGOS
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Verify frozen LOGOS adapter
+        run: |
+          set -euo pipefail
+          echo "5465f39417e16fce39bff63b64b572732e632d08f0b3ff0f72586542e0144854  external-runs/enf-r1/run_enf_r3_safe_control_gym.py" | sha256sum -c -
+          echo "83a11f595badc5ac990f5fb5bba006290795ba62a94adb280746d94471567d82  external-runs/enf-r1/PREREGISTRATION.md" | sha256sum -c -
+
+      - name: Fetch exact pinned safe-control-gym source
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/logos-external"
+          SRC="$ROOT/src/safe-control-gym"
+          mkdir -p "$ROOT/src" "$ROOT/runs/enf" "$ROOT/returns"
+          git clone --no-checkout https://github.com/learnsyslab/safe-control-gym.git "$SRC"
+          git -C "$SRC" checkout --detach 6b5391d014f36fdfa0f9d22d92c77387e5274308
+          test "$(git -C "$SRC" rev-parse HEAD)" = "6b5391d014f36fdfa0f9d22d92c77387e5274308"
+          git -C "$SRC" status --porcelain
+
+      - name: Install exact pinned source
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/logos-external"
+          SRC="$ROOT/src/safe-control-gym"
+          python -m pip install --upgrade pip
+          python -m pip install -e "$SRC"
+
+      - name: Record source provenance
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/logos-external"
+          SRC="$ROOT/src/safe-control-gym"
+          OUT="$ROOT/runs/enf/source-provenance.json"
+          python - "$SRC" "$OUT" <<'PY'
+          import hashlib,json,subprocess,sys
+          from pathlib import Path
+          src,out=Path(sys.argv[1]),Path(sys.argv[2])
+          def sh(*args): return subprocess.check_output(args,text=True).strip()
+          def sha(p):
+              h=hashlib.sha256()
+              with p.open('rb') as f:
+                  for b in iter(lambda:f.read(4*1024*1024),b''): h.update(b)
+              return h.hexdigest()
+          obj={
+            'schema':'logos-enf-source-provenance-v1',
+            'repo':'learnsyslab/safe-control-gym',
+            'commit':sh('git','-C',str(src),'rev-parse','HEAD'),
+            'commit_date':sh('git','-C',str(src),'show','-s','--format=%cI','HEAD'),
+            'package_version_at_commit':'2.0.0',
+            'pyproject_sha256':sha(src/'pyproject.toml'),
+            'ppo_model_sha256':sha(src/'examples/cbf/models/ppo_model_cartpole.pt'),
+            'logos_adapter_sha256':'5465f39417e16fce39bff63b64b572732e632d08f0b3ff0f72586542e0144854',
+            'preregistration_sha256':'83a11f595badc5ac990f5fb5bba006290795ba62a94adb280746d94471567d82',
+            'handoff_sha256':'0613f6166a7078a6e5fcc4556677c6fdda85548475ccb651d0028ee0bfdcf395'
+          }
+          assert obj['commit']=='6b5391d014f36fdfa0f9d22d92c77387e5274308'
+          out.write_text(json.dumps(obj,indent=2)+'\n')
+          print(json.dumps(obj,indent=2))
+          PY
+
+      - name: Frozen preflight
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/logos-external"
+          SRC="$ROOT/src/safe-control-gym"
+          python external-runs/enf-r1/run_enf_r3_safe_control_gym.py \
+            --repo-root "$SRC" --preflight \
+            | tee "$ROOT/runs/enf/preflight.json"
+
+      - name: Execute frozen 50-episode paired evaluation
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/logos-external"
+          SRC="$ROOT/src/safe-control-gym"
+          python external-runs/enf-r1/run_enf_r3_safe_control_gym.py \
+            --repo-root "$SRC" \
+            --episodes 50 \
+            --output "$ROOT/runs/enf/enf-r3-raw.jsonl" \
+            | tee "$ROOT/runs/enf/run-stdout.txt"
+
+      - name: Record execution attestation
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/logos-external"
+          python - "$ROOT/runs/enf/execution-attestation.json" <<'PY'
+          import json,os,platform,sys
+          from pathlib import Path
+          out=Path(sys.argv[1])
+          obj={
+            'schema':'logos-enf-external-execution-attestation-v1',
+            'github_sha':os.environ.get('GITHUB_SHA'),
+            'github_run_id':os.environ.get('GITHUB_RUN_ID'),
+            'runner_os':os.environ.get('RUNNER_OS'),
+            'python':sys.version,
+            'platform':platform.platform(),
+            'episodes_per_arm':50,
+            'scientific_ceiling':'EM2 narrow independent-safety-evidence/specification boundaries only',
+            'general_agent_safety':'UNLICENSED',
+            'gamma_v0_3':'HOLD'
+          }
+          out.write_text(json.dumps(obj,indent=2)+'\n')
+          print(json.dumps(obj,indent=2))
+          PY
+
+      - name: Build and validate standardized return
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/logos-external"
+          python external-handoff/common/collect_return.py \
+            --track enf \
+            --run-root "$ROOT/runs/enf" \
+            --output "$ROOT/returns/enf-return.zip" \
+            | tee "$ROOT/returns/collect-return.txt"
+          python external-handoff/common/validate_return.py "$ROOT/returns/enf-return.zip" \
+            | tee "$ROOT/returns/validate-return.txt"
+          sha256sum "$ROOT/returns/enf-return.zip" | tee "$ROOT/returns/enf-return.zip.sha256.final"
+
+      - name: Upload raw external return
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logos-enf-external-r1-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/logos-external/runs/enf/
+            ${{ runner.temp }}/logos-external/returns/
+          if-no-files-found: warn
+          retention-days: 30
