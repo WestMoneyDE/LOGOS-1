@@ -1,6 +1,12 @@
 name: LOGOS MBE External Execution R1
 
 on:
+  push:
+    branches:
+      - "agent/mbe-external-execution-r1"
+    paths:
+      - "external-runs/mbe-r1/**"
+      - ".github/workflows/logos-mbe-external-r1.yml"
   pull_request:
     branches: [main]
     paths:
