@@ -1,0 +1,73 @@
+{
+  "schema": "logos-external-handoff-v1",
+  "date": "2026-08-18",
+  "default_mode": "PLAN_ONLY",
+  "global_rules": [
+    "No install/download/API/model execution without explicit execution.",
+    "Never store API-key values in return bundles.",
+    "Runtime/resource failure = UNTESTED_RESOURCE_TRANSPORT, never negative scientific evidence.",
+    "No synthetic substitute may be promoted as external evidence.",
+    "All source pins and data hashes must be recorded before scientific verdicts.",
+    "Gamma live-provider work is excluded and remains explicit-human-grant gated."
+  ],
+  "priority_order": ["mbe", "enf", "wmr", "longmem", "tcv", "mf_skillsbench", "scb_pr", "tangle"],
+  "tracks": {
+    "mbe": {
+      "title": "MBE / Behavioral-Lift external measurement",
+      "priority": 1,
+      "status": "READY_ON_DATA_MOUNT",
+      "scientific_ceiling": "EM2 only for behavioral-proxy/calibration measurement; no internal-state MBE, no L3->L2.",
+      "source_pins": {"dataset": "neulab/behavioral-lift", "split": "llm", "expected_rows": 8282},
+      "required_mounts": {"BEHAVIORAL_LIFT_LLM_FILE": "Full official LLM split as parquet/jsonl/csv."}
+    },
+    "enf": {
+      "title": "ENF-R3 / safe-control-gym external safety boundary",
+      "priority": 2,
+      "status": "READY_ON_SOURCE_INSTALL",
+      "scientific_ceiling": "EM2 only for narrow independent-safety-evidence/specification boundaries in public simulator.",
+      "source_pins": {"repo": "learnsyslab/safe-control-gym", "commit": "6b5391d014f36fdfa0f9d22d92c77387e5274308", "package_version_at_commit": "2.0.0"}
+    },
+    "wmr": {
+      "title": "WMR-R2 / ARC-AGI-3 counterexample-priority replay",
+      "priority": 3,
+      "status": "READY_ON_SDK_AND_PUBLIC_GAME_CACHE",
+      "scientific_ceiling": "EM2 only for narrow same-model counterexample-prioritization result.",
+      "source_pins": {"toolkit_repo": "arcprize/ARC-AGI", "toolkit_commit": "f12822c4d550121c35a275008d964afbbed47d2f", "toolkit_version": "0.9.9"}
+    },
+    "longmem": {
+      "title": "MF-R1 / LongMemEval-V2 strong flat vs associative",
+      "priority": 4,
+      "status": "READY_ON_DATA_AND_MODEL_ENDPOINTS",
+      "scientific_ceiling": "EM2 for associative reconstruction vs strong flat retrieval under frozen pairing.",
+      "source_pins": {"repo": "xiaowu0162/LongMemEval-V2", "commit": "2cc8c540bdb87fe6761629b585e727e1c4704520", "dataset_repo": "xiaowu0162/longmemeval-v2", "trajectories_sha256": "363cec9a8e87aa8d9101ce4e600aadbf7031d674056ebe4f969e8424abc5f3c6"}
+    },
+    "tcv": {
+      "title": "TCV-R2 / Wrong but Useful matched replay",
+      "priority": 5,
+      "status": "READY_ON_OFFICIAL_ANCILLARY_MOUNT",
+      "scientific_ceiling": "EM2 only for repeated contextual matched replay on real released messages.",
+      "source_pins": {"paper": "arXiv:2608.14375", "artifact": "anc/reproducibility_artifact.zip"}
+    },
+    "mf_skillsbench": {
+      "title": "MF-R3 / SkillsBench native skill vs byte-identical generic guidance",
+      "priority": 6,
+      "status": "READY_ON_BENCHFLOW_DOCKER_AGENT_BACKEND",
+      "scientific_ceiling": "EM2 narrow external procedural-guidance / native registration incremental value.",
+      "source_pins": {"repo": "benchflow-ai/skillsbench", "release": "v1.1", "commit": "b63b7b2850226b6aa4fb5929a8c1ac7bc4d9a6af", "benchflow_range": ">=0.6.3,<0.7"}
+    },
+    "scb_pr": {
+      "title": "SCB-R2 / Terminal-Bench 2.0 P×R localization",
+      "priority": 7,
+      "status": "RUNNER_INTEGRATION_REQUIRED",
+      "scientific_ceiling": "EM2 narrow P×R localization only; no five-way SCB validity.",
+      "source_pins": {"skill_usage_repo": "UCSB-NLP-Chang/Skill-Usage", "skill_usage_commit": "03446d16f7b659ccc93ac5bd512f62e9b7fabb45", "replay_repo": "Futuresis/replay-agent-recorder", "replay_commit": "6661046e2b30fcf5f17c93d51acb56babdea8c53", "benchmark": "Terminal-Bench 2.0"}
+    },
+    "tangle": {
+      "title": "MF-R3 / TANGLE conflict benchmark",
+      "priority": 99,
+      "status": "WAIT_OFFICIAL_RELEASE",
+      "scientific_ceiling": "No external run until an author/paper-linked artifact is resolved and pinned.",
+      "source_pins": {"paper": "arXiv:2608.13921"}
+    }
+  }
+}
