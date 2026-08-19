@@ -33,12 +33,6 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Install upstream system prerequisite
-        run: |
-          set -euo pipefail
-          sudo apt-get update
-          sudo apt-get install -y libgmp-dev
-
       - name: Verify frozen LOGOS adapter
         run: |
           set -euo pipefail
