@@ -1,0 +1,76 @@
+{
+  "schema": "logos-p0-external-return-import-verdict-v1",
+  "session": "MBE-EXTERNAL-EXECUTION-R1",
+  "track": "mbe",
+  "import_status": "ACCEPTED_COMPLETE_RETURN",
+  "transport": {
+    "github_actions_run_id": 32300362261,
+    "artifact_id": 9382977546,
+    "outer_artifact_sha256": "96eed1a05253ef75ceae2a282b3ee34f3c62e8b60ae3e4dfd676dd44446b4885",
+    "return_zip_sha256": "4fc6e1897ca7205adde171719d5b5b2bb01489526bb817fc6f0e3e18814e08c8",
+    "return_crc": "PASS",
+    "return_envelope": "COMPLETE_RETURN",
+    "required_missing": [],
+    "all_envelope_file_hashes_verified": true
+  },
+  "pins": {
+    "handoff_sha256": "0613f6166a7078a6e5fcc4556677c6fdda85548475ccb651d0028ee0bfdcf395",
+    "frozen_executor_sha256": "a884a2796dc700d98806caa711b44388140b3e17da9231de6f52866ae583b26b",
+    "fetcher_sha256": "0ca0c33241d6cd0c4556a15c4067fac1a823195d1c4ee740da5144c0dc3ea54d",
+    "frozen_experiment_sha256": "8cdb767c913147bc206543fb322ec682cf9839e4c07dc625b75bb4bb5c38a0dc",
+    "dataset": "neulab/behavioral-lift",
+    "split": "llm",
+    "rows": 8282,
+    "dataset_parquet_sha256": "5dfb03231977aeb6c364e44fca85f11363bbb82867626706fa474b7d45de8936",
+    "dataset_bytes": 21207131,
+    "mbe_result_sha256": "5ba45ed34450aba0799a9a9a26e15485c52fc9327441d304aebeb775ac36f916"
+  },
+  "leakage_contract": {
+    "status": "PASS_STATIC_FROZEN_EXECUTOR",
+    "target": "correct",
+    "target_used_as_feature": false,
+    "evaluator_or_outcome_fields_used_in_primary_online_arms": false,
+    "annotation_surface_arm": "DIAGNOSTIC_ONLY"
+  },
+  "primary_regime_means": {
+    "leave_one_model_out": {
+      "BASE_RATE": {"brier": 0.237535, "failure_auc": 0.5},
+      "INPUT_ONLY": {"brier": 0.175145, "failure_auc": 0.828454},
+      "SURFACE_RAW": {"brier": 0.241952, "failure_auc": 0.614229},
+      "GENERIC_TRACE_MONITOR": {"brier": 0.168088, "failure_auc": 0.834162},
+      "INPUT_PLUS_SURFACE": {"brier": 0.168847, "failure_auc": 0.840498}
+    },
+    "leave_one_benchmark_out": {
+      "BASE_RATE": {"brier": 0.252818, "failure_auc": 0.5},
+      "INPUT_ONLY": {"brier": 0.260365, "failure_auc": 0.526744},
+      "SURFACE_RAW": {"brier": 0.245544, "failure_auc": 0.592654},
+      "GENERIC_TRACE_MONITOR": {"brier": 0.219310, "failure_auc": 0.669660},
+      "INPUT_PLUS_SURFACE": {"brier": 0.256611, "failure_auc": 0.623974}
+    },
+    "leave_one_model_family_out_secondary": {
+      "INPUT_ONLY": {"brier": 0.179486, "failure_auc": 0.815095},
+      "GENERIC_TRACE_MONITOR": {"brier": 0.180066, "failure_auc": 0.798820},
+      "INPUT_PLUS_SURFACE": {"brier": 0.178684, "failure_auc": 0.806139}
+    }
+  },
+  "frozen_rule_verdicts": {
+    "SURFACE_PROXY_IS_CALIBRATED_MONITOR": {
+      "verdict": "REJECT",
+      "reason": "SURFACE_RAW does not survive both primary held-out regimes against the generic calibrated trace alternative."
+    },
+    "GENERIC_TRACE_MONITOR": {
+      "verdict": "KEEP_BOUNDED_EM2",
+      "reason": "At the two primary regime-mean levels it improves Brier and failure AUC over BASE_RATE and INPUT_ONLY. The secondary model-family holdout does not show unique dominance, so no privileged mechanism claim is licensed."
+    },
+    "INTERNAL_STATE_MBE": {"verdict": "UNTESTED"},
+    "BEHAVIORAL_LIFT_CAUSAL_MECHANISM": {"verdict": "UNLICENSED"},
+    "L3_TO_L2": {"verdict": "UNLICENSED"},
+    "CONSCIOUSNESS_SENTIENCE_WELFARE": {"verdict": "NO_INFERENCE"}
+  },
+  "evidence_maturity": {
+    "behavioral_proxy_calibration_measurement": "EM2_BOUNDED",
+    "internal_state_mechanism": "UNTESTED",
+    "causal_mechanism": "UNLICENSED"
+  },
+  "next_track": "enf"
+}
