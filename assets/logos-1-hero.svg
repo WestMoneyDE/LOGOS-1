@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="800" viewBox="0 0 1600 800" role="img" aria-labelledby="title desc">
+  <title id="title">LOGOS-1 — Governed Intelligence for Safe Autonomous Agents</title>
+  <desc id="desc">A futuristic hero banner for the LOGOS-1 repository showing memory, reasoning, evidence and control around a governed intelligence core.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#020816"/>
+      <stop offset="55%" stop-color="#06152e"/>
+      <stop offset="100%" stop-color="#040913"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0" x2="1">
+      <stop offset="0%" stop-color="#1de9ff"/>
+      <stop offset="50%" stop-color="#43b3ff"/>
+      <stop offset="100%" stop-color="#9a6bff"/>
+    </linearGradient>
+    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="1600" height="800" fill="url(#bg)"/>
+  <g opacity="0.18">
+    <path d="M20 70h180M20 730h220M1380 80h190M1320 730h250" stroke="#66dfff" stroke-width="2"/>
+    <path d="M35 88v80M35 632v90M1550 98v100M1550 610v110" stroke="#66dfff" stroke-width="2"/>
+  </g>
+  <g transform="translate(70,120)">
+    <text x="0" y="90" font-size="92" font-family="Arial, Helvetica, sans-serif" font-weight="700" fill="#f6fbff">LOGOS-1</text>
+    <rect x="0" y="122" width="520" height="3" rx="2" fill="url(#glow)"/>
+    <text x="0" y="180" font-size="34" font-family="Arial, Helvetica, sans-serif" fill="#f7fbff">Governed Intelligence for Safe Autonomous Agents</text>
+    <text x="0" y="235" font-size="18" letter-spacing="6" font-family="Arial, Helvetica, sans-serif" fill="#7fe7ff">MEMORY · REASONING · EVIDENCE · CONTROL</text>
+    <g transform="translate(0,340)">
+      <rect width="560" height="160" rx="22" fill="#081528" stroke="#27d6ff" stroke-opacity="0.45"/>
+      <g font-family="Arial, Helvetica, sans-serif" fill="#f6fbff">
+        <g transform="translate(35,45)"><circle cx="20" cy="20" r="18" fill="none" stroke="#18dfff"/><path d="M20 9v22M9 20h22" stroke="#18dfff" stroke-width="2"/><text x="0" y="64" font-size="15" fill="#18dfff" font-weight="700">VERIFIABLE</text><text x="0" y="88" font-size="13" fill="#cfefff">Checkable outputs &amp; audit trails</text></g>
+        <g transform="translate(170,45)"><path d="M20 4l15 6v12c0 13-10 22-15 25-5-3-15-12-15-25V10z" fill="none" stroke="#2bcfff" stroke-width="2"/><text x="0" y="64" font-size="15" fill="#2bcfff" font-weight="700">CONTROLLABLE</text><text x="0" y="88" font-size="13" fill="#cfefff">Bounded actions &amp; constraints</text></g>
+        <g transform="translate(325,45)"><ellipse cx="20" cy="20" rx="22" ry="12" fill="none" stroke="#39cfff" stroke-width="2"/><circle cx="20" cy="20" r="5" fill="#39cfff"/><text x="-6" y="64" font-size="15" fill="#39cfff" font-weight="700">TRANSPARENT</text><text x="-6" y="88" font-size="13" fill="#cfefff">Interpretable reasoning &amp; decisions</text></g>
+      </g>
+    </g>
+  </g>
+  <g transform="translate(980,390)">
+    <circle r="160" fill="none" stroke="#39cfff" stroke-opacity="0.26" stroke-width="2"/>
+    <circle r="126" fill="none" stroke="url(#glow)" stroke-width="6" filter="url(#softGlow)"/>
+    <circle r="90" fill="#0a2146" stroke="#60dfff" stroke-opacity="0.8" stroke-width="2"/>
+    <circle r="72" fill="none" stroke="#7e7cff" stroke-opacity="0.6" stroke-width="2"/>
+    <path d="M0,-72 62,-24 38,50 -38,50 -62,-24z" fill="none" stroke="#62dcff" stroke-width="2"/>
+    <path d="M0,-72 0,72 M62,-24 -62,-24 M38,50 -38,50 M62,-24 0,72 M-62,-24 0,72" stroke="#62dcff" stroke-opacity="0.7"/>
+    <text x="0" y="12" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="42" font-weight="700" fill="#f8fcff">LOGOS-1</text>
+    <path d="M0 160v88" stroke="url(#glow)" stroke-width="3"/>
+  </g>
+  <g stroke="#46d8ff" stroke-width="2" fill="#081528" fill-opacity="0.95" font-family="Arial, Helvetica, sans-serif">
+    <g transform="translate(660,250)"><rect width="210" height="96" rx="18"/><text x="28" y="36" fill="#f7fbff" font-size="24" font-weight="700">MEMORY</text><text x="28" y="64" fill="#cfefff" font-size="19">Long-term context &amp;</text><text x="28" y="86" fill="#cfefff" font-size="19">knowledge</text></g>
+    <g transform="translate(660,390)"><rect width="240" height="96" rx="18"/><text x="28" y="36" fill="#f7fbff" font-size="24" font-weight="700">WORLD MODELS</text><text x="28" y="64" fill="#cfefff" font-size="19">Understanding &amp;</text><text x="28" y="86" fill="#cfefff" font-size="19">simulation</text></g>
+    <g transform="translate(1140,250)"><rect width="220" height="96" rx="18"/><text x="28" y="36" fill="#f7fbff" font-size="24" font-weight="700">EVALUATION</text><text x="28" y="64" fill="#cfefff" font-size="19">Scoring, critique &amp;</text><text x="28" y="86" fill="#cfefff" font-size="19">uncertainty</text></g>
+    <g transform="translate(1140,390)"><rect width="220" height="96" rx="18"/><text x="28" y="36" fill="#f7fbff" font-size="24" font-weight="700">GOVERNANCE</text><text x="28" y="64" fill="#cfefff" font-size="19">Policies, rules &amp;</text><text x="28" y="86" fill="#cfefff" font-size="19">alignment</text></g>
+    <g transform="translate(880,90)"><rect width="220" height="96" rx="18"/><text x="28" y="36" fill="#f7fbff" font-size="24" font-weight="700">REASONING</text><text x="28" y="64" fill="#cfefff" font-size="19">Structured inference &amp;</text><text x="28" y="86" fill="#cfefff" font-size="19">deliberation</text></g>
+    <g transform="translate(1445,195)"><rect width="120" height="270" rx="20"/><text x="60" y="54" text-anchor="middle" fill="#f7fbff" font-size="20" font-weight="700">EXTERNAL</text><text x="60" y="82" text-anchor="middle" fill="#f7fbff" font-size="20" font-weight="700">EVIDENCE</text><text x="60" y="122" text-anchor="middle" fill="#cfefff" font-size="16">Data</text><text x="60" y="148" text-anchor="middle" fill="#cfefff" font-size="16">Sensors</text><text x="60" y="174" text-anchor="middle" fill="#cfefff" font-size="16">Documents</text></g>
+  </g>
+  <g stroke="url(#glow)" stroke-width="2" fill="none" opacity="0.85">
+    <path d="M870 298C915 298 915 320 950 330"/><path d="M900 438C930 438 930 430 950 425"/><path d="M1140 298C1080 298 1080 320 1010 330"/><path d="M1140 438C1080 438 1080 430 1010 425"/><path d="M990 186C990 220 990 250 990 265"/><path d="M1445 330C1385 330 1330 330 1360 330"/><path d="M1445 350C1350 350 1270 350 1170 350" opacity="0.55"/>
+  </g>
+  <g transform="translate(760,555)">
+    <ellipse cx="220" cy="70" rx="410" ry="94" fill="none" stroke="#28d7ff" stroke-opacity="0.35" stroke-width="2"/><ellipse cx="220" cy="70" rx="360" ry="70" fill="none" stroke="#28d7ff" stroke-opacity="0.55" stroke-width="2"/>
+    <rect x="105" y="100" width="230" height="74" rx="18" fill="#081528" stroke="#28d7ff"/><text x="220" y="132" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" fill="#63ddff">SAFETY BOUNDARY</text><text x="220" y="158" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#d8f6ff">Constraints · Guarantees · Fail-safes</text>
+  </g>
+</svg>
