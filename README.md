@@ -1,8 +1,6 @@
 # LOGOS-1
 
-<p align="center">
-  <img src="assets/logos-1-hero.png" alt="LOGOS-1 — Governed Intelligence for Safe Autonomous Agents: Memory, Reasoning, Evidence and Control" width="100%" />
-</p>
+![LOGOS-1 — Governed Intelligence for Safe Autonomous Agents: Memory, Reasoning, Evidence and Control](assets/logos-1-hero.svg)
 
 <p align="center">
   <strong>Governed Intelligence for Safe Autonomous Agents</strong><br/>
