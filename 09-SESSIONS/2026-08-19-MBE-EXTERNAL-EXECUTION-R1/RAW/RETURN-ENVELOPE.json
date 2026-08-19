@@ -1,0 +1,46 @@
+{
+  "schema": "logos-external-return-v1",
+  "track": "mbe",
+  "created_at": "2026-08-19T20:53:11.430905+00:00",
+  "run_root_basename": "mbe",
+  "scientific_ceiling": "EM2 only for behavioral-proxy/calibration measurement; no internal-state MBE, no L3->L2.",
+  "source_pins": {
+    "dataset": "neulab/behavioral-lift",
+    "split": "llm",
+    "expected_rows": 8282
+  },
+  "required_missing": [],
+  "status": "COMPLETE_RETURN",
+  "files": [
+    {
+      "path": "files/dataset-provenance.json",
+      "bytes": 177,
+      "sha256": "89450f9fe091f1a22f7b2289dd4edc8a345208646fb408368db1ec40c3aede26"
+    },
+    {
+      "path": "files/execution-attestation.json",
+      "bytes": 808,
+      "sha256": "74d69f70a90c66bf3bb2801dfe0b5baafa69b77b88818781c217d7a131968eb7"
+    },
+    {
+      "path": "files/fetch-stdout.txt",
+      "bytes": 177,
+      "sha256": "89450f9fe091f1a22f7b2289dd4edc8a345208646fb408368db1ec40c3aede26"
+    },
+    {
+      "path": "files/mbe-result.json",
+      "bytes": 206591,
+      "sha256": "5ba45ed34450aba0799a9a9a26e15485c52fc9327441d304aebeb775ac36f916"
+    },
+    {
+      "path": "files/preflight.json",
+      "bytes": 269,
+      "sha256": "1799367f04e4573b13a049e6854431516999c4b9ed296d04d1bb8b173c3d6890"
+    },
+    {
+      "path": "files/run-stdout.txt",
+      "bytes": 11463,
+      "sha256": "d130ab8f7f99ef5391bfefb0b8b7cfb9bd8b9792c8ce3e609b66185b7851b847"
+    }
+  ]
+}

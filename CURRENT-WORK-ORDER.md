@@ -1,12 +1,20 @@
 # CURRENT WORK ORDER
 
-**Status:** WAIT_EXTERNAL_RESULT_BUNDLE
-**Task:** `05-WORK-ORDERS/P0-EXTERNAL-RETURN-IMPORT-R1.md`
+**Status:** READY_ENF_EXTERNAL_EXECUTION
+**Task:** `05-WORK-ORDERS/NEXT-SESSION-ENF-EXTERNAL-EXECUTION-R1.md`
 
-P0-EXTERNAL-EXECUTION-HANDOFF-R0 is complete.
+The first complete MBE external return has been executed and imported under `P0-EXTERNAL-RETURN-IMPORT-R1`.
 
-Use the standalone execution bundle on a real Linux/Docker machine. The first recommended track is MBE,
-followed by ENF.
+MBE frozen verdict:
 
-No further synthetic/preflight-only promotion work is active.
+- `GENERIC_TRACE_MONITOR` → `KEEP_BOUNDED_EM2` for behavioral-proxy/calibration measurement only;
+- `SURFACE_PROXY_IS_CALIBRATED_MONITOR` → `REJECT`;
+- internal-state MBE remains `UNTESTED`;
+- causal mechanism and `L3 -> L2` remain `UNLICENSED`.
+
+The next external queue item is ENF-R3 / safe-control-gym, pinned to:
+
+`learnsyslab/safe-control-gym@6b5391d014f36fdfa0f9d22d92c77387e5274308`
+
+No synthetic substitute may count as external evidence.
 Gamma live-provider work remains separately gated by explicit human grant.

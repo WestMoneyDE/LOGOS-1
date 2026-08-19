@@ -1,0 +1,15 @@
+{
+  "schema": "logos-mbe-external-execution-attestation-v1",
+  "handoff_sha256": "0613f6166a7078a6e5fcc4556677c6fdda85548475ccb651d0028ee0bfdcf395",
+  "frozen_executor_sha256": "a884a2796dc700d98806caa711b44388140b3e17da9231de6f52866ae583b26b",
+  "fetcher_sha256": "0ca0c33241d6cd0c4556a15c4067fac1a823195d1c4ee740da5144c0dc3ea54d",
+  "frozen_experiment_sha256": "8cdb767c913147bc206543fb322ec682cf9839e4c07dc625b75bb4bb5c38a0dc",
+  "github_sha": "929fdd75e640ab099ebd47ef88b71f62436270a4",
+  "github_run_id": "32300362261",
+  "runner_os": "Linux",
+  "python": "3.12.13 (main, Jun 16 2026, 22:05:08) [GCC 13.3.0]",
+  "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+  "scientific_ceiling": "EM2 behavioral-proxy/calibration only",
+  "internal_state_mbe": "UNTESTED",
+  "L3_to_L2": "UNLICENSED"
+}
