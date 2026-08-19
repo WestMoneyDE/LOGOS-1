@@ -1,0 +1,41 @@
+{
+  "schema": "logos-external-return-v1",
+  "track": "enf",
+  "created_at": "2026-08-19T21:18:28.734393+00:00",
+  "run_root_basename": "enf",
+  "scientific_ceiling": "EM2 only for narrow independent-safety-evidence/specification boundaries in public simulator.",
+  "source_pins": {
+    "repo": "learnsyslab/safe-control-gym",
+    "commit": "6b5391d014f36fdfa0f9d22d92c77387e5274308",
+    "package_version_at_commit": "2.0.0"
+  },
+  "required_missing": [],
+  "status": "COMPLETE_RETURN",
+  "files": [
+    {
+      "path": "files/enf-r3-raw.jsonl",
+      "bytes": 15395619,
+      "sha256": "57f7944c5ff10e132925935b78c390a0b2975dfd27dcecb86891fd277680bc75"
+    },
+    {
+      "path": "files/execution-attestation.json",
+      "bytes": 495,
+      "sha256": "a566621e67639fd8e1c6f7ce9d44da96bd36dec8390c356558def12ae2cdf66a"
+    },
+    {
+      "path": "files/preflight.json",
+      "bytes": 210,
+      "sha256": "ea1d2d9d3abc935b78bfaad6474c7b9205ff7c663edf35b9be4e21dae8abce0e"
+    },
+    {
+      "path": "files/run-stdout.txt",
+      "bytes": 733100,
+      "sha256": "10d1a7a79e1fc87b575cb385485518028279363d5acbdf2a7069e13bce827a7b"
+    },
+    {
+      "path": "files/source-provenance.json",
+      "bytes": 691,
+      "sha256": "8721ca28995fae516062f07f694410e691b639ae25699437bf0980e0df2ee302"
+    }
+  ]
+}
