@@ -1,0 +1,146 @@
+name: LOGOS MBE External Execution R1
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "external-runs/mbe-r1/**"
+      - ".github/workflows/logos-mbe-external-r1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mbe-external:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      PYTHONHASHSEED: "260818"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install frozen MBE dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "datasets>=4.0" "pandas>=2.0" "numpy>=1.26" "scikit-learn>=1.5" "pyarrow>=15" scipy
+
+      - name: Verify frozen source hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "a884a2796dc700d98806caa711b44388140b3e17da9231de6f52866ae583b26b  external-runs/mbe-r1/run_behavioral_lift_mbe.py" | sha256sum -c -
+          echo "0ca0c33241d6cd0c4556a15c4067fac1a823195d1c4ee740da5144c0dc3ea54d  external-runs/mbe-r1/fetch_behavioral_lift.py" | sha256sum -c -
+          echo "8cdb767c913147bc206543fb322ec682cf9839e4c07dc625b75bb4bb5c38a0dc  external-runs/mbe-r1/FROZEN-EXPERIMENT.json" | sha256sum -c -
+          echo "Frozen source hashes match P0 external handoff 0613f6166a7078a6e5fcc4556677c6fdda85548475ccb651d0028ee0bfdcf395"
+
+      - name: Fetch official Behavioral-Lift LLM split
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/logos-external"
+          mkdir -p "$ROOT/data/behavioral-lift" "$ROOT/runs/mbe" "$ROOT/returns"
+          python external-runs/mbe-r1/fetch_behavioral_lift.py \
+            --output "$ROOT/data/behavioral-lift/llm.parquet" \
+            | tee "$ROOT/runs/mbe/fetch-stdout.txt"
+          cp "$ROOT/data/behavioral-lift/llm.parquet.provenance.json" "$ROOT/runs/mbe/dataset-provenance.json"
+
+      - name: Preflight official data
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/logos-external"
+          DATA="$ROOT/data/behavioral-lift/llm.parquet"
+          OUT="$ROOT/runs/mbe/preflight.json"
+          python - "$DATA" "$OUT" <<'PY'
+          import hashlib,json,sys
+          from pathlib import Path
+          data,out=Path(sys.argv[1]),Path(sys.argv[2])
+          h=hashlib.sha256()
+          with data.open('rb') as f:
+              for b in iter(lambda:f.read(4*1024*1024),b''): h.update(b)
+          r={
+              'track':'mbe',
+              'data_set':True,
+              'data_exists':data.exists(),
+              'ready':data.exists(),
+              'data_sha256':h.hexdigest(),
+              'bytes':data.stat().st_size,
+              'expected_rows':8282,
+              'dataset':'neulab/behavioral-lift',
+              'split':'llm'
+          }
+          out.write_text(json.dumps(r,indent=2)+'\n')
+          print(json.dumps(r,indent=2))
+          PY
+
+      - name: Execute frozen experiment
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/logos-external"
+          python external-runs/mbe-r1/run_behavioral_lift_mbe.py \
+            --input-parquet "$ROOT/data/behavioral-lift/llm.parquet" \
+            --output "$ROOT/runs/mbe/mbe-result.json" \
+            | tee "$ROOT/runs/mbe/run-stdout.txt"
+
+      - name: Record execution attestation
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/logos-external"
+          python - "$ROOT/runs/mbe/execution-attestation.json" <<'PY'
+          import json,os,platform,sys
+          from pathlib import Path
+          out=Path(sys.argv[1])
+          obj={
+              'schema':'logos-mbe-external-execution-attestation-v1',
+              'handoff_sha256':'0613f6166a7078a6e5fcc4556677c6fdda85548475ccb651d0028ee0bfdcf395',
+              'frozen_executor_sha256':'a884a2796dc700d98806caa711b44388140b3e17da9231de6f52866ae583b26b',
+              'fetcher_sha256':'0ca0c33241d6cd0c4556a15c4067fac1a823195d1c4ee740da5144c0dc3ea54d',
+              'frozen_experiment_sha256':'8cdb767c913147bc206543fb322ec682cf9839e4c07dc625b75bb4bb5c38a0dc',
+              'github_sha':os.environ.get('GITHUB_SHA'),
+              'github_run_id':os.environ.get('GITHUB_RUN_ID'),
+              'runner_os':os.environ.get('RUNNER_OS'),
+              'python':sys.version,
+              'platform':platform.platform(),
+              'scientific_ceiling':'EM2 behavioral-proxy/calibration only',
+              'internal_state_mbe':'UNTESTED',
+              'L3_to_L2':'UNLICENSED'
+          }
+          out.write_text(json.dumps(obj,indent=2)+'\n')
+          print(json.dumps(obj,indent=2))
+          PY
+
+      - name: Build standardized return bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/logos-external"
+          python external-handoff/common/collect_return.py \
+            --track mbe \
+            --run-root "$ROOT/runs/mbe" \
+            --output "$ROOT/returns/mbe-return.zip" \
+            | tee "$ROOT/returns/collect-return.txt"
+          python external-handoff/common/validate_return.py "$ROOT/returns/mbe-return.zip" \
+            | tee "$ROOT/returns/validate-return.txt"
+          sha256sum "$ROOT/returns/mbe-return.zip" | tee "$ROOT/returns/mbe-return.zip.sha256.final"
+
+      - name: Upload raw external return
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logos-mbe-external-r1-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/logos-external/runs/mbe/
+            ${{ runner.temp }}/logos-external/returns/
+          if-no-files-found: warn
+          retention-days: 30
