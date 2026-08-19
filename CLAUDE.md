@@ -1,10 +1,10 @@
 # CLAUDE.md — LOGOS-1
 
-Read `AGENTS.md` first. Treat `GAMMA.md`, `SAFETY.md` and `ETHICS.md` as non-negotiable constraints.
+Read `AGENTS.md` first. Treat `ATOMIC-RULES.md`, `GAMMA.md`, `SAFETY.md`, `ETHICS.md` and `SECURITY.md` as non-negotiable project constraints.
 
 For every scientific change:
 
-1. identify the hypothesis in `docs/11-hypothesis-register.md`;
+1. identify the hypothesis/claim in the current work order, relevant session evidence, or canonical hypothesis register when that artifact is present;
 2. state the predicted lesion/intervention result before implementation;
 3. change the smallest mechanism possible;
 4. add or update a deterministic test;
@@ -18,9 +18,9 @@ Prefer small causal mechanisms to architecture expansion. If a new subsystem dup
 
 ## DNA / design-lens / health research rules
 
-- Use `docs/20-two-class-design-lens.md`: Class S natural/source mechanisms and Class H human designs are separate evidence classes.
+- Keep natural/source mechanisms and human-engineered mechanisms as separate evidence classes when using the design lens.
 - Never treat a divine/higher-source interpretation as empirical evidence without a discriminating test.
-- Use reverse `Code → BDR → ADR → Γ` when explaining an existing mechanism.
+- Use reverse `Code → BDR → ADR → Γ` when explaining an existing mechanism where that framework is relevant.
 - Biological analogies must name their non-equivalences before implementation.
 - Atomic Health Theory is research taxonomy only; do not diagnose, prescribe or change medication.
 - Health claims must include evidence tier, dose/context uncertainty and a proxy-failure test.
