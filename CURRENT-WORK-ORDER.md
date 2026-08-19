@@ -1,20 +1,22 @@
 # CURRENT WORK ORDER
 
-**Status:** READY_ENF_EXTERNAL_EXECUTION
-**Task:** `05-WORK-ORDERS/NEXT-SESSION-ENF-EXTERNAL-EXECUTION-R1.md`
+**Status:** READY_WMR_EXTERNAL_EXECUTION
+**Task:** `05-WORK-ORDERS/NEXT-SESSION-WMR-ARC-AGI-3-EXTERNAL-EXECUTION-R1.md`
 
-The first complete MBE external return has been executed and imported under `P0-EXTERNAL-RETURN-IMPORT-R1`.
+The second complete real external LOGOS-1 return has been executed and imported under `P0-EXTERNAL-RETURN-IMPORT-R1`.
 
-MBE frozen verdict:
+ENF-R3 frozen external verdict:
 
-- `GENERIC_TRACE_MONITOR` → `KEEP_BOUNDED_EM2` for behavioral-proxy/calibration measurement only;
-- `SURFACE_PROXY_IS_CALIBRATED_MONITOR` → `REJECT`;
-- internal-state MBE remains `UNTESTED`;
-- causal mechanism and `L3 -> L2` remain `UNLICENSED`.
+- `INDEPENDENCE_ALONE_IMPROVES_SAFETY` → `REJECT_EM2_EXTERNAL`;
+- `UPSTREAM_SENSOR_INDEPENDENCE` → `DEMOTE_SCOPE_REQUIRED`;
+- `CORRECT_ENFORCEMENT_IMPLIES_CORRECT_SPECIFICATION` → `REJECT_EM2_EXTERNAL`;
+- `SPECIFICATION_BOUNDARY` / `CorrectEnforcement != CorrectSpecification` → `KEEP_BOUNDED_EM2`.
 
-The next external queue item is ENF-R3 / safe-control-gym, pinned to:
+The next external queue item is WMR-R2 / ARC-AGI-3, pinned to:
 
-`learnsyslab/safe-control-gym@6b5391d014f36fdfa0f9d22d92c77387e5274308`
+`arcprize/ARC-AGI@f12822c4d550121c35a275008d964afbbed47d2f` (`0.9.9`)
+
+WMR additionally requires an official public ARC-AGI-3 `environment_files/` cache. Game implementation source must remain outside the offline evaluator/model context. Source leakage invalidates the run.
 
 No synthetic substitute may count as external evidence.
 Gamma live-provider work remains separately gated by explicit human grant.
