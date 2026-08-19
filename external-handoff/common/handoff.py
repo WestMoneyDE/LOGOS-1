@@ -52,7 +52,8 @@ def track_preflight(track: str):
     return out
 
 def main():
-    ap = argparse.ArgumentParser(); sub = ap.add_subparsers(dest="cmd", required=True)
+    ap = argparse.ArgumentParser(description="Inspect the LOGOS external execution control plane. Track-specific executors live in the content-addressed standalone handoff artifact.")
+    sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("list"); sub.add_parser("host-preflight")
     p = sub.add_parser("plan"); p.add_argument("--track", choices=list(REGISTRY["tracks"]) + ["all"], required=True)
     q = sub.add_parser("preflight"); q.add_argument("--track", choices=list(REGISTRY["tracks"]) + ["all"], required=True)
@@ -70,9 +71,8 @@ def main():
             print(f"\n## {t}: {c['title']}")
             print(f"status: {c['status']}")
             print(f"scientific ceiling: {c['scientific_ceiling']}")
-            print(f"install: tracks/{t}/install.sh")
-            print(f"preflight: tracks/{t}/preflight.sh")
-            print(f"run: tracks/{t}/run.sh")
+            print(f"source pins: {json.dumps(c['source_pins'], sort_keys=True)}")
+            print("executor location: content-addressed standalone handoff artifact; see external-handoff/CONTROL-PLANE-NOTICE.md")
         return
     if args.cmd == "preflight": print(json.dumps({t: track_preflight(t) for t in tracks}, indent=2)); return
 

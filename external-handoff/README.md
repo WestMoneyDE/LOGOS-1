@@ -1,12 +1,26 @@
-# LOGOS-1 External Execution Handoff R0
+# LOGOS-1 External Execution Handoff R0 — GitHub control-plane export
 
-This handoff moves the source-pinned LOGOS external-validation tracks from sandbox preflight into a real Linux/Docker execution environment.
+This directory exposes the **control plane** of the source-pinned LOGOS external-validation handoff on GitHub:
+
+- track ordering and scientific ceilings;
+- exact source pins and runtime blockers;
+- host/track preflight logic;
+- result-return packaging and secret exclusion;
+- transport provenance.
+
+The complete standalone handoff — including all track-specific install/fetch/run scripts and frozen adapters — remains in the content-addressed transport artifact recorded in [`../SNAPSHOT-INDEX.md`](../SNAPSHOT-INDEX.md):
+
+`LOGOS-1-EXTERNAL-EXECUTION-HANDOFF-R0-2026-08-18.zip`
+
+SHA-256:
+
+`0613f6166a7078a6e5fcc4556677c6fdda85548475ccb651d0028ee0bfdcf395`
 
 ## Safety / scientific default
 
 Everything is **plan-only by default**.
 
-Track install/fetch/run actions must be explicitly executed. No API-key values are written into manifests or return bundles.
+No API-key values belong in repository files or return bundles.
 
 A failed dependency, download, model endpoint, runtime, or external service is:
 
@@ -27,21 +41,23 @@ and never a negative scientific result.
 
 See `TRACK-RANKING.md` and `TRACK-REGISTRY.json`.
 
-## First commands
+## GitHub-visible commands
 
 ```bash
-python common/handoff.py list
-python common/handoff.py host-preflight
-python common/handoff.py plan --track mbe
-python common/handoff.py preflight --track mbe
+python external-handoff/common/handoff.py list
+python external-handoff/common/handoff.py host-preflight
+python external-handoff/common/handoff.py plan --track mbe
+python external-handoff/common/handoff.py preflight --track mbe
 ```
+
+These commands inspect the registry and environment. They do **not** download or execute track workloads.
 
 ## Result return
 
-After a real run:
+The return packer is included because it is track-agnostic:
 
 ```bash
-python common/collect_return.py \
+python external-handoff/common/collect_return.py \
   --track <track> \
   --run-root /path/to/run-output \
   --output returns/<track>-return.zip
