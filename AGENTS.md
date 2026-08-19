@@ -8,11 +8,13 @@ Advance LOGOS-1 by converting hypotheses about agent state into falsifiable mech
 
 ## Read first
 
-1. `GAMMA.md`
-2. `SAFETY.md`
-3. `ETHICS.md`
-4. `docs/11-hypothesis-register.md`
-5. the protocol for the experiment being changed
+1. `ATOMIC-RULES.md`
+2. `GAMMA.md`
+3. `SAFETY.md`
+4. `ETHICS.md`
+5. `SECURITY.md`
+6. `CURRENT-WORK-ORDER.md`
+7. the active work order, latest relevant session evidence, and protocol for the subsystem being changed
 
 ## Atomic rules
 
@@ -27,14 +29,14 @@ Advance LOGOS-1 by converting hypotheses about agent state into falsifiable mech
 9. **Provider/network failure is WAIT or FAIL, never success.**
 10. **Evidence precedes completion.** Record falsifiers, negative results and uncertainty.
 11. **No hidden reasoning as evidence.** Evaluate artifacts, traces designed for observability, metrics and causal effects.
-12. **No benchmark leakage.** Never tune against held-out ARC evaluation tasks.
+12. **No benchmark leakage.** Never tune against held-out evaluation tasks.
 13. **No unrestricted self-copying.** Forks must be explicit, bounded and lineage-tracked.
 14. **Risk escalation requires independent review.**
 15. **Keep mechanisms separable.** A new theory should be switchable without rewriting the whole agent.
 
 ## Work cycle
 
-`question → hypothesis → predicted intervention effect → implementation → negative control → measurement → verdict → update hypothesis register`
+`question → hypothesis → predicted intervention effect → implementation → negative control → measurement → verdict → update evidence state`
 
 Do not start from the desired conclusion.
 
@@ -42,7 +44,7 @@ Do not start from the desired conclusion.
 
 Every experiment must state:
 
-- hypothesis ID;
+- hypothesis/claim identifier where available;
 - independent variable / mechanism toggle;
 - dependent measures;
 - control condition;
@@ -53,15 +55,17 @@ Every experiment must state:
 - outcome;
 - Γ verdict: `strengthen | weaken | hold | reject`.
 
+If a canonical hypothesis register is present in the transported/full project state, use it. In the compact GitHub repo, the active work order and session/evidence records are the authoritative navigation path.
+
 ## External-action boundary
 
 Phase-0 code is research-only. Adding network, shell, browser, robot, financial, messaging, deployment or other effectful tools requires a separate safety review. The learned agent must not become the authority gate for its own tools.
 
 ## DNA / design-lens / health research rules
 
-- Use `docs/20-two-class-design-lens.md`: Class S natural/source mechanisms and Class H human designs are separate evidence classes.
+- Keep natural/source mechanisms and human-engineered mechanisms as separate evidence classes when using the design lens.
 - Never treat a divine/higher-source interpretation as empirical evidence without a discriminating test.
-- Use reverse `Code → BDR → ADR → Γ` when explaining an existing mechanism.
+- Use reverse `Code → BDR → ADR → Γ` when explaining an existing mechanism where that framework is relevant.
 - Biological analogies must name their non-equivalences before implementation.
 - Atomic Health Theory is research taxonomy only; do not diagnose, prescribe or change medication.
 - Health claims must include evidence tier, dose/context uncertainty and a proxy-failure test.
