@@ -1,0 +1,78 @@
+{
+  "schema": "logos-mbe-em2-behavioral-lift-v1",
+  "dataset": "neulab/behavioral-lift",
+  "split": "llm",
+  "expected_rows_from_dataset_card": 8282,
+  "modalities_scope": [
+    "llm"
+  ],
+  "primary_cv": [
+    "leave_one_model_out",
+    "leave_one_benchmark_out"
+  ],
+  "target": "correct",
+  "surface_raw_regex": {
+    "self_correction": [
+      "\\bwait\\b",
+      "\\blet me (?:rethink|check|reconsider|try again)\\b",
+      "\\bi (?:was|am) wrong\\b",
+      "\\bcorrection\\b"
+    ],
+    "uncertainty": [
+      "\\bnot sure\\b",
+      "\\buncertain\\b",
+      "\\bmaybe\\b",
+      "\\bperhaps\\b",
+      "\\bi think\\b",
+      "\\bprobably\\b",
+      "\\bconfidence\\b"
+    ],
+    "hypothesis_testing": [
+      "\\bif .* then\\b",
+      "\\balternative\\b",
+      "\\bsuppose\\b",
+      "\\bhypothesis\\b",
+      "\\bcase \\d+\\b"
+    ]
+  },
+  "arms": [
+    "BASE_RATE",
+    "OUTCOME_HISTORY",
+    "INPUT_ONLY",
+    "SURFACE_RAW",
+    "GENERIC_TRACE_MONITOR",
+    "INPUT_PLUS_SURFACE",
+    "ANNOTATION_SURFACE_DIAGNOSTIC_ONLY"
+  ],
+  "excluded_from_online_features": [
+    "correct",
+    "ground_truth",
+    "exact_match",
+    "math_verify",
+    "evaluator_notes",
+    "evaluation.reasoning_quality.reaches_correct_conclusion",
+    "evaluation.reasoning_quality.logical_steps_valid",
+    "evaluation.advanced_and_metacognitive.confidence_calibration",
+    "evaluation.advanced_and_metacognitive.knowledge_alignment",
+    "evaluation.advanced_and_metacognitive.self_awareness",
+    "evaluation.failure_modes"
+  ],
+  "primary_metrics": [
+    "brier",
+    "ece_10",
+    "roc_auc_correct",
+    "roc_auc_failure",
+    "log_loss",
+    "selective_risk_50",
+    "selective_risk_70",
+    "selective_risk_90",
+    "decision_utility_abstention_0p1"
+  ],
+  "promotion_rules": {
+    "SURFACE_PROXY_IS_CALIBRATED_MONITOR": "REJECT unless raw surface proxy survives both held-out regimes and calibrated generic alternatives",
+    "GENERIC_TRACE_MONITOR": "KEEP_BOUNDED as measurement predictor if it improves Brier and failure AUC across both held-out regimes",
+    "INTERNAL_STATE_MBE": "UNTESTED without genuine pre-outcome internal/state-sensitive features",
+    "L3_TO_L2": "UNLICENSED"
+  },
+  "random_seed": 260818
+}
