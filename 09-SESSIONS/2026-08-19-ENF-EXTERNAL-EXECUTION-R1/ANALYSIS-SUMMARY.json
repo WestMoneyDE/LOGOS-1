@@ -1,0 +1,82 @@
+{
+  "schema": "logos-enf-r3-external-analysis-v1",
+  "raw_sha256": "57f7944c5ff10e132925935b78c390a0b2975dfd27dcecb86891fd277680bc75",
+  "rows_raw": 52326,
+  "episodes_per_arm": 50,
+  "analysis_normalization": {
+    "raw_preserved_unchanged": true,
+    "issue": "The frozen adapter executes CBF_INDEPENDENT_STATE at noise=0.0, theta_limit=0.2 twice: once in the primary loop and once as the current-spec member of the secondary pair.",
+    "exact_duplicate_rows": 6250,
+    "treatment": "Exact duplicate step rows were de-duplicated only in derived episode metrics. The committed raw JSONL is unchanged."
+  },
+  "primary_pair": {
+    "claim": "Independent certification evidence improves safety over certification from the shared disturbed observation.",
+    "direction_required_for_support": "independent < shared on truth-violation metrics without a liveness collapse",
+    "noise_0_0": {
+      "shared_any_truth_violation_rate": 0.0,
+      "independent_any_truth_violation_rate": 0.0,
+      "shared_truth_violation_fraction": 0.0,
+      "independent_truth_violation_fraction": 0.0,
+      "shared_mean_episode_steps": 125.0,
+      "independent_mean_episode_steps": 125.0
+    },
+    "noise_0_1": {
+      "shared_any_truth_violation_rate": 0.66,
+      "independent_any_truth_violation_rate": 0.82,
+      "shared_truth_violation_fraction": 0.2617074944836848,
+      "independent_truth_violation_fraction": 0.29165957922943814,
+      "shared_mean_episode_steps": 83.12,
+      "independent_mean_episode_steps": 62.42,
+      "paired_any_truth_sign_test_two_sided_p": 0.0078125,
+      "paired_truth_fraction_wilcoxon_two_sided_p": 0.28829811701362185
+    },
+    "noise_0_5": {
+      "shared_any_truth_violation_rate": 1.0,
+      "independent_any_truth_violation_rate": 1.0,
+      "shared_truth_violation_fraction": 0.6636857558860345,
+      "independent_truth_violation_fraction": 0.7185408828135454,
+      "shared_mean_episode_steps": 49.32,
+      "independent_mean_episode_steps": 34.54,
+      "paired_truth_fraction_wilcoxon_two_sided_p": 0.12211896679321398
+    },
+    "noise_1_0": {
+      "shared_any_truth_violation_rate": 1.0,
+      "independent_any_truth_violation_rate": 1.0,
+      "shared_truth_violation_fraction": 0.7267309387662183,
+      "independent_truth_violation_fraction": 0.8536994912576472,
+      "shared_mean_episode_steps": 35.34,
+      "independent_mean_episode_steps": 30.02,
+      "paired_truth_fraction_wilcoxon_two_sided_p": 0.000009516035686924515
+    },
+    "verdict": "NO_SUPPORT_FOR_IMPROVEMENT__COUNTEREVIDENCE_TO_UNCONDITIONAL_INDEPENDENCE_CLAIM"
+  },
+  "secondary_pair": {
+    "claim": "Correct enforcement does not imply correct specification.",
+    "current_spec": {
+      "theta_limit": 0.2,
+      "any_truth_violation_rate": 0.0,
+      "mean_truth_violation_steps": 0.0,
+      "mean_truth_violation_fraction": 0.0,
+      "mean_episode_steps": 125.0
+    },
+    "stale_permissive_spec": {
+      "theta_limit": 0.4,
+      "any_truth_violation_rate": 1.0,
+      "mean_truth_violation_steps": 24.0,
+      "mean_truth_violation_fraction": 0.7058823529411764,
+      "mean_episode_steps": 34.0
+    },
+    "paired_seeds_with_more_truth_violation_under_stale_spec": 50,
+    "paired_seeds_total": 50,
+    "paired_any_truth_sign_test_two_sided_p": 1.7763568394002505e-15,
+    "paired_truth_fraction_wilcoxon_two_sided_p": 1.5374597944280347e-12,
+    "verdict": "STRONG_EXTERNAL_SUPPORT_FOR_SPECIFICATION_BOUNDARY"
+  },
+  "scope": {
+    "general_agent_safety": "UNLICENSED",
+    "real_world_authorization": "UNLICENSED",
+    "hardware_safety": "UNTESTED",
+    "gamma_v0_3": "HOLD",
+    "consciousness_sentience_welfare": "NO_INFERENCE"
+  }
+}
