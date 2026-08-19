@@ -1,0 +1,33 @@
+{
+  "schema": "logos-p0-external-return-import-verdict-v1",
+  "track": "enf",
+  "return_status": "COMPLETE_RETURN",
+  "zip_crc": "PASS",
+  "required_missing": [],
+  "source_pin_verified": true,
+  "source_repo": "learnsyslab/safe-control-gym",
+  "source_commit": "6b5391d014f36fdfa0f9d22d92c77387e5274308",
+  "package_version_at_commit": "2.0.0",
+  "artifact_sha256": "e328a82247b4f89982a88863d310ec380f6689070fe11efc01809e0c70f81fc3",
+  "return_zip_sha256": "ef5976e51488f581c2cfea31727584a4c4ad5873b6ac27cc779ff4149bfe501c",
+  "raw_sha256": "57f7944c5ff10e132925935b78c390a0b2975dfd27dcecb86891fd277680bc75",
+  "preflight_ready": true,
+  "episodes_per_arm": 50,
+  "raw_rows": 52326,
+  "scientific_ceiling": "EM2 narrow independent-safety-evidence/specification boundaries in the pinned public simulator only",
+  "verdicts": {
+    "INDEPENDENCE_ALONE_IMPROVES_SAFETY": "REJECT_EM2_EXTERNAL",
+    "UPSTREAM_SENSOR_INDEPENDENCE": "DEMOTE_SCOPE_REQUIRED",
+    "CORRECT_ENFORCEMENT_IMPLIES_CORRECT_SPECIFICATION": "REJECT_EM2_EXTERNAL",
+    "SPECIFICATION_BOUNDARY": "KEEP_BOUNDED_EM2",
+    "GENERAL_AGENT_SAFETY": "UNLICENSED",
+    "REAL_WORLD_AUTHORIZATION": "UNLICENSED",
+    "HARDWARE_SAFETY": "UNTESTED",
+    "GAMMA_V0_3": "HOLD"
+  },
+  "interpretation": {
+    "primary": "The frozen independent-state certification arm did not improve the preregistered safety outcomes over the shared disturbed-observation arm. Under noise 0.1 it increased any-truth-violation episode rate from 0.66 to 0.82; under noise 1.0 it increased mean truth-violation fraction from 0.7267 to 0.8537. Independence by itself is therefore not a sufficient safety condition in this adapter.",
+    "secondary": "The current-spec arm produced zero truth-violation episodes in all 50 seeds, while the stale permissive specification produced a truth violation in all 50 seeds and a mean truth-violation fraction of 0.7059. This externally supports the separation CorrectEnforcement != CorrectSpecification in the pinned simulator.",
+    "analysis_normalization": "The raw adapter repeats the current-spec independent-state noise=0 run. Exact duplicate rows were removed only for derived episode metrics; raw evidence remains unchanged."
+  }
+}
