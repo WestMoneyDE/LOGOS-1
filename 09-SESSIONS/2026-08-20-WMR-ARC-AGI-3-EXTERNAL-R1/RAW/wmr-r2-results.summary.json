@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "canonical_game_ids": ["ar25","bp35","cd82","cn04","dc22","ft09","g50t","ka59","lf52","lp85","ls20","m0r0","r11l","re86","s5i5","sb26","sc25","sk48","sp80","su15","tn36","tr87","tu93","vc33","wa30"],
+    "catalog_sha256": "fe55d0b4f068067a9a7de2c4e9b038bd3f301f944a7929b136b6d6b2d1b9d3c3"
+  },
+  "parameter_counts": {
+    "RECENT_ONLY_GENERIC": 6496,
+    "UNIFORM_REPLAY_GENERIC": 6496,
+    "COUNTEREXAMPLE_PRIORITY_GENERIC": 6496
+  },
+  "confirmatory_fold": 0,
+  "summary": [
+    {"arm":"COUNTEREXAMPLE_PRIORITY_GENERIC","fold":0,"n":1280,"mean_cross_entropy":1.1190143699990585,"mean_pixel_accuracy":0.7892293930053711,"mean_changed_pixel_f1":0.08987785510420418,"mean_changed_pixel_accuracy":0.2599567961031035,"exact_frame_match_rate":0.0},
+    {"arm":"COUNTEREXAMPLE_PRIORITY_GENERIC","fold":1,"n":1920,"mean_cross_entropy":1.2615542307418461,"mean_pixel_accuracy":0.734045664469401,"mean_changed_pixel_f1":0.07765476731769616,"mean_changed_pixel_accuracy":0.4736457608061789,"exact_frame_match_rate":0.0},
+    {"arm":"COUNTEREXAMPLE_PRIORITY_GENERIC","fold":2,"n":1600,"mean_cross_entropy":1.2501634967327118,"mean_pixel_accuracy":0.6999729919433594,"mean_changed_pixel_f1":0.03481269724712445,"mean_changed_pixel_accuracy":0.38849917133613393,"exact_frame_match_rate":0.0},
+    {"arm":"COUNTEREXAMPLE_PRIORITY_GENERIC","fold":3,"n":1920,"mean_cross_entropy":1.2496644080616535,"mean_pixel_accuracy":0.7103233337402344,"mean_changed_pixel_f1":0.05526830698993512,"mean_changed_pixel_accuracy":0.32549157023109493,"exact_frame_match_rate":0.0},
+    {"arm":"COUNTEREXAMPLE_PRIORITY_GENERIC","fold":4,"n":1280,"mean_cross_entropy":1.2361679914873094,"mean_pixel_accuracy":0.7408685684204102,"mean_changed_pixel_f1":0.05828646083227858,"mean_changed_pixel_accuracy":0.44853112011181356,"exact_frame_match_rate":0.0},
+    {"arm":"PROGRAM_CATALOG_REPAIR_DIAGNOSTIC","fold":0,"n":1280,"mean_cross_entropy":null,"mean_pixel_accuracy":0.9851341247558594,"mean_changed_pixel_f1":0.0,"mean_changed_pixel_accuracy":0.053125,"exact_frame_match_rate":0.053125},
+    {"arm":"RECENT_ONLY_GENERIC","fold":0,"n":1280,"mean_cross_entropy":1.2212154432199895,"mean_pixel_accuracy":0.770391845703125,"mean_changed_pixel_f1":0.08878339305038135,"mean_changed_pixel_accuracy":0.25869201810172787,"exact_frame_match_rate":0.0},
+    {"arm":"RECENT_ONLY_GENERIC","fold":1,"n":1920,"mean_cross_entropy":1.3879809458740056,"mean_pixel_accuracy":0.7013351440429687,"mean_changed_pixel_f1":0.07319216668642166,"mean_changed_pixel_accuracy":0.46950655124036056,"exact_frame_match_rate":0.0},
+    {"arm":"RECENT_ONLY_GENERIC","fold":2,"n":1600,"mean_cross_entropy":1.3427267698571086,"mean_pixel_accuracy":0.67931884765625,"mean_changed_pixel_f1":0.030440470655963205,"mean_changed_pixel_accuracy":0.3879227394031679,"exact_frame_match_rate":0.0},
+    {"arm":"RECENT_ONLY_GENERIC","fold":3,"n":1920,"mean_cross_entropy":1.356065836083144,"mean_pixel_accuracy":0.6933624267578125,"mean_changed_pixel_f1":0.05183928642623889,"mean_changed_pixel_accuracy":0.3202558909167182,"exact_frame_match_rate":0.0},
+    {"arm":"RECENT_ONLY_GENERIC","fold":4,"n":1280,"mean_cross_entropy":1.3315366341732442,"mean_pixel_accuracy":0.7226860046386718,"mean_changed_pixel_f1":0.05472737132953829,"mean_changed_pixel_accuracy":0.44229584687097534,"exact_frame_match_rate":0.0},
+    {"arm":"UNIFORM_REPLAY_GENERIC","fold":0,"n":1280,"mean_cross_entropy":1.1175117920851334,"mean_pixel_accuracy":0.7897773742675781,"mean_changed_pixel_f1":0.08991163667386506,"mean_changed_pixel_accuracy":0.25750575833022815,"exact_frame_match_rate":0.0},
+    {"arm":"UNIFORM_REPLAY_GENERIC","fold":1,"n":1920,"mean_cross_entropy":1.2626051695396503,"mean_pixel_accuracy":0.7326147715250652,"mean_changed_pixel_f1":0.0774459002225889,"mean_changed_pixel_accuracy":0.4738368116225535,"exact_frame_match_rate":0.0},
+    {"arm":"UNIFORM_REPLAY_GENERIC","fold":2,"n":1600,"mean_cross_entropy":1.2511343706864864,"mean_pixel_accuracy":0.7016018676757813,"mean_changed_pixel_f1":0.03526171078780376,"mean_changed_pixel_accuracy":0.3883517241530353,"exact_frame_match_rate":0.0},
+    {"arm":"UNIFORM_REPLAY_GENERIC","fold":3,"n":1920,"mean_cross_entropy":1.2497712695039809,"mean_pixel_accuracy":0.7136131286621094,"mean_changed_pixel_f1":0.05428451305525114,"mean_changed_pixel_accuracy":0.32499669459143105,"exact_frame_match_rate":0.0},
+    {"arm":"UNIFORM_REPLAY_GENERIC","fold":4,"n":1280,"mean_cross_entropy":1.2409126739832572,"mean_pixel_accuracy":0.7401763916015625,"mean_changed_pixel_f1":0.05833398092820839,"mean_changed_pixel_accuracy":0.44939210956708814,"exact_frame_match_rate":0.0}
+  ],
+  "scientific_note": "Program catalog diagnostic is non-promoting; primary causal pair is uniform vs counterexample-priority generic replay."
+}
