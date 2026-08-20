@@ -1,0 +1,13 @@
+{
+  "schema": "logos-wmr-external-execution-attestation-v1",
+  "github_sha": "ec4a7de6bc2af0dc44237dd2560d1942f4828685",
+  "github_run_id": "32323733810",
+  "runner_os": "Linux",
+  "python": "3.12.14 (main, Aug 13 2026, 02:47:42) [GCC 13.3.0]",
+  "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+  "scientific_ceiling": "EM2 narrow same-model counterexample-prioritization on public interactive trajectories only",
+  "goal_inference": "UNLICENSED",
+  "agi_claim": "UNLICENSED",
+  "gamma_promotion": "UNLICENSED",
+  "consciousness_claim": "UNLICENSED"
+}
