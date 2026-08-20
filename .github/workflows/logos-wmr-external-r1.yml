@@ -1,17 +1,6 @@
 name: LOGOS WMR ARC-AGI-3 External Execution R1
 
 on:
-  push:
-    branches:
-      - "agent/wmr-arc-agi-3-external-r1"
-    paths:
-      - "external-runs/wmr-r1/**"
-      - ".github/workflows/logos-wmr-external-r1.yml"
-  pull_request:
-    branches: [main]
-    paths:
-      - "external-runs/wmr-r1/**"
-      - ".github/workflows/logos-wmr-external-r1.yml"
   workflow_dispatch:
 
 permissions:
