@@ -2,7 +2,9 @@
 
 **Date:** 2026-08-20  
 **Type:** external research review / prior-art reconciliation  
-**Scientific verdict delta:** comparison-baseline and falsification-method delta only; no automatic LOGOS mechanism promotion
+**Scientific verdict delta:** comparison-baseline and falsification-method delta only; no automatic LOGOS mechanism promotion  
+**Pull request:** `#5` — `research: add persistent-state prior-art delta and causal work order`  
+**Merge commit:** `073af4134314cbde5d82c190eac3c450efc16b51`
 
 ## Input
 
@@ -134,6 +136,14 @@ P7 remains unchanged.
 `CURRENT-WORK-ORDER.md` remains WMR / ARC-AGI-3. This session does not reorder the active external-validation queue.
 
 The new persistent-state causality work order is explicitly queued for later execution.
+
+## Validation
+
+- all reviewed technical claims were checked against primary arXiv records;
+- date mismatches were corrected rather than copied forward;
+- the branch diff contained only the prior-art delta, queued work order and this session report;
+- `CURRENT-WORK-ORDER.md` was not modified;
+- PR #5 was merged to `main` successfully.
 
 ## Next step
 
