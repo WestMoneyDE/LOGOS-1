@@ -7,6 +7,11 @@ on:
     paths:
       - "external-runs/wmr-r1/**"
       - ".github/workflows/logos-wmr-external-r1.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "external-runs/wmr-r1/**"
+      - ".github/workflows/logos-wmr-external-r1.yml"
   workflow_dispatch:
 
 permissions:
