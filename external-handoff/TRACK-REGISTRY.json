@@ -11,71 +11,41 @@
     "External scientific execution is one-shot by default; failed, cancelled, blocked or resource-incomplete runs are not automatically retried.",
     "Gamma live-provider work is excluded from this handoff and remains explicit-human-grant gated."
   ],
-  "priority_order": [
-    "mbe",
-    "enf",
-    "wmr",
-    "longmem",
-    "tcv",
-    "mf_skillsbench",
-    "scb_pr",
-    "tangle"
-  ],
+  "priority_order": ["mbe", "enf", "wmr", "longmem", "tcv", "mf_skillsbench", "scb_pr", "tangle"],
   "tracks": {
-    "mbe": {
-      "title": "MBE / Behavioral-Lift external measurement",
-      "priority": 1,
-      "status": "COMPLETE_IMPORTED"
-    },
-    "enf": {
-      "title": "ENF-R3 / safe-control-gym external safety boundary",
-      "priority": 2,
-      "status": "COMPLETE_IMPORTED"
-    },
-    "wmr": {
-      "title": "WMR-R2 / ARC-AGI-3 counterexample-priority replay",
-      "priority": 3,
-      "status": "COMPLETE_IMPORTED"
-    },
-    "longmem": {
-      "title": "MF-R1 / LongMemEval-V2 strong flat vs associative",
-      "priority": 4,
-      "status": "PARKED_UNTESTED_RESOURCE_TRANSPORT"
-    },
-    "tcv": {
-      "title": "TCV-R2 / Wrong but Useful matched replay",
-      "priority": 5,
-      "status": "PARKED_UNTESTED_RESOURCE_TRANSPORT"
-    },
-    "mf_skillsbench": {
-      "title": "MF-R3 / SkillsBench native skill vs byte-identical generic guidance",
-      "priority": 6,
-      "status": "PARKED_UNTESTED_RESOURCE_TRANSPORT"
-    },
-    "scb_pr": {
-      "title": "SCB-R2 / Terminal-Bench 2.0 P×R localization",
-      "priority": 7,
-      "status": "PARKED_UNTESTED_RESOURCE_TRANSPORT"
-    },
+    "mbe": {"title": "MBE / Behavioral-Lift external measurement", "priority": 1, "status": "COMPLETE_IMPORTED"},
+    "enf": {"title": "ENF-R3 / safe-control-gym external safety boundary", "priority": 2, "status": "COMPLETE_IMPORTED"},
+    "wmr": {"title": "WMR-R2 / ARC-AGI-3 counterexample-priority replay", "priority": 3, "status": "COMPLETE_IMPORTED"},
+    "longmem": {"title": "MF-R1 / LongMemEval-V2 strong flat vs associative", "priority": 4, "status": "PARKED_UNTESTED_RESOURCE_TRANSPORT"},
+    "tcv": {"title": "TCV-R2 / Wrong but Useful matched replay", "priority": 5, "status": "PARKED_UNTESTED_RESOURCE_TRANSPORT"},
+    "mf_skillsbench": {"title": "MF-R3 / SkillsBench native skill vs byte-identical generic guidance", "priority": 6, "status": "PARKED_UNTESTED_RESOURCE_TRANSPORT"},
+    "scb_pr": {"title": "SCB-R2 / Terminal-Bench 2.0 P×R localization", "priority": 7, "status": "PARKED_UNTESTED_RESOURCE_TRANSPORT"},
     "tangle": {
       "title": "MF-R3 / TANGLE irreducible memory-conflict benchmark",
       "priority": 99,
       "status": "WAIT_OFFICIAL_RELEASE",
-      "source_pins": {
-        "paper": "arXiv:2608.13921"
-      }
+      "source_pins": {"paper": "arXiv:2608.13921"}
     }
   },
   "external_queue_state": "BLOCKED_OR_COMPLETE",
   "current_nonexternal_research": {
-    "track": "PERSISTENT_STATE_RESOLVED_FAMILY_ADAPTER_IMPLEMENTATION_R3",
-    "status": "READY_PERSISTENT_STATE_ADAPTER_IMPLEMENTATION_R3",
+    "track": "PERSISTENT_STATE_DATASET_MATERIALIZATION_R4",
+    "status": "READY_PERSISTENT_STATE_DATASET_MATERIALIZATION_R4",
+    "scientific_model_execution": "PROHIBITED_IN_R4",
     "methodological_boundary": "RawCrossBackboneAccuracy != MemoryMechanismEffect",
     "controlled_evidence_ceiling": "EM1",
+    "r3_adapter_status": {
+      "token_context": "IMPLEMENTED_STATIC_PASS",
+      "external_retrieval": "IMPLEMENTED_STATIC_PASS",
+      "recurrent_mamba": "IMPLEMENTED_STATIC_PASS_REAL_MODEL_NOT_RUN",
+      "fast_weight_ttt": "SOURCE_ADAPTER_UNRESOLVED",
+      "static_tests": "13_PASS_0_FAIL"
+    },
     "frozen": {
       "token_context": {
         "model": "openai-community/gpt2",
-        "revision": "607a30d783dfa663caf39e06633721c8d4cfcd7e"
+        "revision": "607a30d783dfa663caf39e06633721c8d4cfcd7e",
+        "primary_truncation_tokens": 512
       },
       "recurrent": {
         "source_repo": "state-spaces/mamba",
@@ -90,28 +60,18 @@
         "jax_commit": "6f529b124c7fb5879b33c06926408b15add1d82f",
         "official_checkpoint": "Test-Time-Training/ttt-linear-125m-books-2k",
         "checkpoint_revision": "b1a5f81bed7b70be067867b6b47a6e7047c5093e",
-        "adapter_status": "UNRESOLVED_OFFICIAL_CHECKPOINT_TOKENIZER_BRIDGE"
+        "adapter_status": "SOURCE_ADAPTER_UNRESOLVED"
       },
       "controlled_substrate": {
         "repo": "NVIDIA/RULER",
         "commit": "c3f5e3b4f87f97e048793bb510a3a6b19a46bf3a",
-        "tasks": [
-          "niah_single_1",
-          "niah_multikey_1",
-          "niah_multiquery",
-          "vt"
-        ],
+        "tasks": ["niah_single_1", "niah_multikey_1", "niah_multiquery", "vt"],
         "max_seq_length": 1024,
         "samples_per_task_per_seed": 32,
-        "seeds": [
-          73000,
-          73001,
-          73002,
-          73003
-        ],
-        "generated_hashes": "PENDING"
+        "seeds": [73000, 73001, 73002, 73003],
+        "generated_hashes": "PENDING_R4_RESOURCE_MATERIALIZATION"
       }
     },
-    "next_work_order": "NEXT-SESSION-PERSISTENT-STATE-RESOLVED-FAMILY-ADAPTER-IMPLEMENTATION-R3"
+    "next_work_order": "NEXT-SESSION-PERSISTENT-STATE-DATASET-MATERIALIZATION-R4"
   }
 }

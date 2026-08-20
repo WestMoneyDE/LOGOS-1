@@ -1,0 +1,45 @@
+{
+  "schema": "logos-pstate-adapter-code-hashes-v1",
+  "files": {
+    "src/logos_pstate/__init__.py": {
+      "sha256": "b839acadc97cbcb8798043a3e701a8e5b447ce7562552974a81634e004b49bec",
+      "bytes": 976
+    },
+    "src/logos_pstate/mamba_state.py": {
+      "sha256": "fd6e2ed104af69fe324d27b9937c0b8d8db5135cdd15afc9c5572176f1e09da4",
+      "bytes": 7149
+    },
+    "src/logos_pstate/token_context.py": {
+      "sha256": "5e825b89b7a4c78acb8030246ef57015ca32d1a8bb3e8faf99efb53e61ad0c97",
+      "bytes": 1960
+    },
+    "src/logos_pstate/retrieval.py": {
+      "sha256": "866417dca7b0b51023a5fe70f6f7339a29fc34ec87502ff5803b01882eff69c1",
+      "bytes": 4583
+    },
+    "src/logos_pstate/ruler_freeze.py": {
+      "sha256": "44095bd43a0409ae347670a1284dde39d3c56ca0c73b495214e5095df2cf75d3",
+      "bytes": 2189
+    },
+    "tests/test_mamba_state.py": {
+      "sha256": "9ac9387a8b47028a5452259eedbe100f760d7152145b48e9b6d4f9f6a5d771c8",
+      "bytes": 3256
+    },
+    "tests/test_token_context.py": {
+      "sha256": "6593f13895708b8dee1e58fc5b79c9c27e9e64e19588386454559d283580bf7c",
+      "bytes": 604
+    },
+    "tests/test_retrieval.py": {
+      "sha256": "49052efdc06f7d37df3f8640151a4878bdcf7bab52308760793204b231c0fe2d",
+      "bytes": 1113
+    },
+    "tests/test_ruler_freeze.py": {
+      "sha256": "12a2f9b7980ec38f4e407fb6929958176f7277caa87066560f732e4a2c6553a3",
+      "bytes": 753
+    },
+    "pyproject.toml": {
+      "sha256": "16d851879c3aca6b6efbda19f69e5f877ce004f0b3dfae025cf891fb9d9d8e9c",
+      "bytes": 347
+    }
+  }
+}

@@ -14,7 +14,7 @@ This file is a **living implementation/research capability inventory**. A listed
 - one-shot/no-auto-retry external execution discipline;
 - bounded Γ live GitHub pilot from prior work, with Γ-v0.3 still `HOLD`.
 
-## Engineering-ready / specified
+## Engineering-ready / implemented
 
 - coding-agent operating contract via `AGENTS.md`;
 - Claude Code project instructions via `CLAUDE.md`;
@@ -23,18 +23,23 @@ This file is a **living implementation/research capability inventory**. A listed
 - derived procedural/skill lineage with revocation requirements under test;
 - persistent-state classes across token context, recurrent latent state, fast weights and external retrieval;
 - D/O/C state-validation ladder (`Decodable`, `Operational`, `Causal`);
-- state-swap, reset and corruption/recovery intervention requirements;
-- **within-family causal comparison rule** preventing raw cross-backbone accuracy from being mislabeled as a memory-mechanism effect;
+- within-family causal comparison rule preventing raw cross-backbone accuracy from being mislabeled as a memory-mechanism effect;
+- deterministic token-context intervention adapter;
+- deterministic BM25 external-retrieval adapter with source/prompt hashes;
+- complete Mamba continuation-state snapshot/restore/fresh-reset/swap/permutation/digest adapter;
+- explicit Mamba reset semantics: new/reinitialized cache rather than offset-only reset;
+- RULER JSONL file/per-row hash-freeze utility;
+- static regression suite for persistent-state adapter semantics;
 - coding-ready roadmap and per-push propagation protocol.
 
-## Current canonical research
+## Current canonical research/engineering gate
 
-- **Persistent-State Adapter Implementation R3:** implement and statically verify complete-state adapters before any benchmark model run.
-- Frozen token/retrieval baseline: `openai-community/gpt2@607a30d783dfa663caf39e06633721c8d4cfcd7e`.
-- Frozen recurrent source/model: `state-spaces/mamba@e9594ce1c732d97440f0332fdc43170a2294dbfa` + `state-spaces/mamba-130m-hf@1e76775f628fbf1350fbe4dbb3d971ba64af25a1`.
-- Frozen fast-weight source/checkpoint family: official TTT PyTorch/JAX repos plus `ttt-linear-125m-books-2k@b1a5f81...`; exact official executable checkpoint/tokenizer bridge remains unresolved.
-- Controlled RULER task/config/seed envelope frozen; generated-example hashes must be produced before model execution.
-- Mamba scientific reset requires a fresh/reinitialized complete cache; source `InferenceParams.reset()` alone is not assumed to erase all continuation state.
+- **Persistent-State Dataset Materialization R4:** exact tokenizer-byte and RULER-data freeze before any model benchmark run.
+- Frozen GPT-2 tokenizer/model revision: `openai-community/gpt2@607a30d783dfa663caf39e06633721c8d4cfcd7e`.
+- Frozen Mamba source/model: `state-spaces/mamba@e9594ce1c732d97440f0332fdc43170a2294dbfa` + `state-spaces/mamba-130m-hf@1e76775f628fbf1350fbe4dbb3d971ba64af25a1`.
+- Frozen RULER source and task/seed envelope; output JSONL hashes still require exact tokenizer materialization in a network-capable environment.
+- TTT official source/checkpoint family remains pinned but `TTT_R3 = SOURCE_ADAPTER_UNRESOLVED`; no community conversion is substituted.
+- No persistent-state model benchmark has been run yet.
 - RULER remains **EM1 ceiling only**.
 - BDH-CQ and MoNe remain architecture anchors; Mamba/TTT are family representatives, not reproductions.
 
@@ -48,13 +53,15 @@ This file is a **living implementation/research capability inventory**. A listed
 
 ## Queued research
 
-- realistic/non-synthetic confirmation of persistent-state causal interventions after controlled adapter validation;
+- controlled RULER model execution only after a complete byte-verified dataset freeze;
+- realistic/non-synthetic confirmation of persistent-state causal interventions after controlled validation;
 - memory-authority provenance and derived-skill revocation;
 - TANGLE conflict benchmark once an official release is pinned;
 - later Γ provider work only under explicit human grant.
 
 ## Explicitly not claimed
 
+- adapter/static-test success as memory-mechanism evidence;
 - a raw four-model leaderboard as causal evidence for memory mechanism identity;
 - Mamba as a BDH-CQ reproduction;
 - TTT as a MoNe reproduction;

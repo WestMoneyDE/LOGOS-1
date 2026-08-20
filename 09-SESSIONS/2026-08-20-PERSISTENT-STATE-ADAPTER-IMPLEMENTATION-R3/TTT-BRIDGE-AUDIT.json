@@ -1,0 +1,27 @@
+{
+  "schema": "logos-ttt-official-bridge-audit-v1",
+  "date": "2026-08-20",
+  "attempt_policy": "ONE_SHOT_NO_UNOFFICIAL_CONVERSION",
+  "verdict": "SOURCE_ADAPTER_UNRESOLVED",
+  "official_sources": {
+    "pytorch": "test-time-training/ttt-lm-pytorch@cd831db10c8c9a0f6340f02da5613316a8a92b67",
+    "jax": "test-time-training/ttt-lm-jax@6f529b124c7fb5879b33c06926408b15add1d82f",
+    "checkpoint": "Test-Time-Training/ttt-linear-125m-books-2k@b1a5f81bed7b70be067867b6b47a6e7047c5093e"
+  },
+  "verified_source_facts": [
+    "JAX StreamingCheckpointer.load_trainstate_checkpoint can load trainstate:: streaming checkpoints when the expected target/config and dependencies exist.",
+    "The official checkpoint repository contains streaming_train_state, metadata.pkl and dataset.pkl rather than a native Hugging Face PyTorch weight package.",
+    "The pinned PyTorch reference implementation exposes test-time state/update tensors but its README instantiates from config and points the tokenizer at meta-llama/Llama-2-7b-hf.",
+    "The JAX training/evaluation flags also default tokenizer_name to meta-llama/Llama-2-7b-hf."
+  ],
+  "unresolved": [
+    "byte-verified checkpoint metadata/model_config in the current connected environment",
+    "official learned-weight bridge from streaming JAX train state to pinned PyTorch runtime without transformation ambiguity",
+    "exact authorized tokenizer bytes for the checkpoint",
+    "real checkpoint-backed clone/restore/swap validation"
+  ],
+  "excluded": [
+    "RetentionLabs or other community PyTorch conversions as scientific substitutes for the frozen official checkpoint"
+  ],
+  "scientific_interpretation": "No negative evidence against TTT or fast-weight memory. This is an adapter/resource resolution result only."
+}

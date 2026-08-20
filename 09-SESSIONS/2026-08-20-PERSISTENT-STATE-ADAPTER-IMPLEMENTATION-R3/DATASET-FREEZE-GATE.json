@@ -1,0 +1,34 @@
+{
+  "schema": "logos-ruler-dataset-freeze-gate-v1",
+  "date": "2026-08-20",
+  "status": "NOT_MATERIALIZED_RESOURCE_TRANSPORT",
+  "scientific_model_execution": false,
+  "ruler": {
+    "repo": "NVIDIA/RULER",
+    "commit": "c3f5e3b4f87f97e048793bb510a3a6b19a46bf3a",
+    "synthetic_yaml_blob": "29cfa5f60b49a7fa53f8dccbbd4f0c7c9e7834fa",
+    "niah_generator_blob": "729eddc260ef5a9aa0473557cd249abca232764a",
+    "variable_tracking_generator_blob": "bc5dab381f38e810e5050340d8dae29ae1cfc82a",
+    "tokenizer_wrapper_blob": "5a2ddb504ce26da5b43c0f196629e152fca1460b",
+    "config_tasks_blob": "2948008000e0c1c95815029b87b9886a05b8f073"
+  },
+  "frozen_envelope": {
+    "tasks": ["niah_single_1", "niah_multikey_1", "niah_multiquery", "vt"],
+    "max_seq_length": 1024,
+    "num_samples_per_task_per_seed": 32,
+    "seeds": [73000, 73001, 73002, 73003],
+    "remove_newline_tab": false
+  },
+  "tokenizer_revisions": {
+    "gpt2": "openai-community/gpt2@607a30d783dfa663caf39e06633721c8d4cfcd7e",
+    "mamba": "state-spaces/mamba-130m-hf@1e76775f628fbf1350fbe4dbb3d971ba64af25a1",
+    "ttt": "UNRESOLVED / official path references gated meta-llama/Llama-2-7b-hf"
+  },
+  "current_environment": {
+    "transformers_package": "UNAVAILABLE",
+    "tokenizer_bytes": "NOT_CACHED",
+    "network_name_resolution": "UNAVAILABLE_FROM_CONTAINER",
+    "pip_install_attempt": "FAILED_NAME_RESOLUTION_NOT_RETRIED"
+  },
+  "decision": "Do not create surrogate tokenization or generated-example hashes. Advance dataset byte materialization to a dedicated non-model R4 transport session."
+}

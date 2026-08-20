@@ -1,0 +1,26 @@
+{
+  "schema": "logos-pstate-static-test-results-v1",
+  "date": "2026-08-20",
+  "command": "pytest -q",
+  "python": "3.13.5",
+  "scientific_model_execution": false,
+  "result": "PASS",
+  "tests_passed": 13,
+  "tests_failed": 0,
+  "coverage_intent": [
+    "Mamba capture/restore deep-copy identity",
+    "deterministic state digest",
+    "fresh cache allocation rather than reset-only reuse",
+    "complete snapshot swap",
+    "shape/dtype/value-multiset-preserving permutation control",
+    "authority-field exclusion by allowlist",
+    "token-context overflow refusal",
+    "frozen 512-token truncation",
+    "history substitution with identical query",
+    "deterministic BM25 ranking",
+    "matched distractor exclusion/count",
+    "retrieval provenance hashing",
+    "RULER JSONL file/row freeze hashing"
+  ],
+  "compileall": "PASS"
+}

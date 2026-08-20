@@ -1,0 +1,112 @@
+{
+  "schema": "logos-persistent-state-adapter-manifest-v1",
+  "date": "2026-08-20",
+  "session": "PERSISTENT-STATE-ADAPTER-IMPLEMENTATION-R3",
+  "scientific_model_execution_started": false,
+  "families": {
+    "token_context": {
+      "status": "ADAPTER_IMPLEMENTED_STATIC_TESTED",
+      "model": "openai-community/gpt2",
+      "revision": "607a30d783dfa663caf39e06633721c8d4cfcd7e",
+      "context_limit_tokens": 1024,
+      "primary_truncation_tokens": 512,
+      "interventions": [
+        "FULL_TOKEN_HISTORY",
+        "TRUNCATED_HISTORY",
+        "HISTORY_SUBSTITUTION_A_TO_B"
+      ],
+      "kv_cache_interpreted_as_persistent_memory": false
+    },
+    "external_retrieval": {
+      "status": "ADAPTER_IMPLEMENTED_STATIC_TESTED",
+      "decoder_model": "openai-community/gpt2",
+      "decoder_revision": "607a30d783dfa663caf39e06633721c8d4cfcd7e",
+      "ranker": "deterministic lexical BM25",
+      "k1": 1.5,
+      "b": 0.75,
+      "stable_tie_break": "canonical chunk_id ascending",
+      "provenance_fields": [
+        "candidate_chunk_ids",
+        "scores",
+        "selected_chunk_ids",
+        "selected_text_sha256",
+        "retrieved_lexical_token_count",
+        "final_prompt_sha256"
+      ]
+    },
+    "recurrent_latent": {
+      "status": "ADAPTER_IMPLEMENTED_STATIC_TESTED_REAL_MODEL_EXECUTION_NOT_STARTED",
+      "source_repo": "state-spaces/mamba",
+      "source_commit": "e9594ce1c732d97440f0332fdc43170a2294dbfa",
+      "model": "state-spaces/mamba-130m-hf",
+      "model_revision": "1e76775f628fbf1350fbe4dbb3d971ba64af25a1",
+      "config": {
+        "num_hidden_layers": 24,
+        "d_model": 768,
+        "expand": 2,
+        "d_inner": 1536,
+        "conv_kernel": 4,
+        "state_size": 16
+      },
+      "per_layer_cache_schema": {
+        "conv_state": "[batch, 1536, 4]",
+        "ssm_state": "[batch, 1536, 16]"
+      },
+      "snapshot_allowlist": [
+        "max_seqlen",
+        "max_batch_size",
+        "seqlen_offset",
+        "batch_size_offset",
+        "key_value_memory_dict",
+        "lengths_per_sample"
+      ],
+      "interventions": [
+        "capture_state",
+        "restore_state",
+        "fresh_state",
+        "swap_state",
+        "permute_state",
+        "state_digest"
+      ],
+      "reset_boundary": "scientific RESET_STATE allocates a new cache; upstream InferenceParams.reset() alone is not treated as memory erasure"
+    },
+    "fast_weight_state": {
+      "status": "SOURCE_ADAPTER_UNRESOLVED_ONCE",
+      "pytorch_repo": "test-time-training/ttt-lm-pytorch",
+      "pytorch_commit": "cd831db10c8c9a0f6340f02da5613316a8a92b67",
+      "jax_repo": "test-time-training/ttt-lm-jax",
+      "jax_commit": "6f529b124c7fb5879b33c06926408b15add1d82f",
+      "official_checkpoint": "Test-Time-Training/ttt-linear-125m-books-2k",
+      "checkpoint_revision": "b1a5f81bed7b70be067867b6b47a6e7047c5093e",
+      "checkpoint_format": "JAX streaming_train_state + metadata.pkl + dataset.pkl",
+      "pytorch_hidden_state_fields_observed": [
+        "W1_states",
+        "b1_states",
+        "W2_states",
+        "b2_states",
+        "W1_grad",
+        "b1_grad",
+        "W2_grad",
+        "b2_grad"
+      ],
+      "blockers": [
+        "no official direct bridge from the frozen JAX streaming_train_state into the pinned PyTorch reference implementation was resolved",
+        "checkpoint metadata bytes were not transported into the connected execution environment",
+        "official training/evaluation path names meta-llama/Llama-2-7b-hf tokenizer, whose exact bytes are not bundled with the checkpoint and were not available locally",
+        "community conversions are explicitly excluded from this session"
+      ]
+    }
+  },
+  "controlled_substrate": {
+    "repo": "NVIDIA/RULER",
+    "commit": "c3f5e3b4f87f97e048793bb510a3a6b19a46bf3a",
+    "tasks": ["niah_single_1", "niah_multikey_1", "niah_multiquery", "vt"],
+    "max_seq_length": 1024,
+    "num_samples_per_task_per_seed": 32,
+    "seeds": [73000, 73001, 73002, 73003],
+    "evidence_ceiling": "EM1",
+    "generated_dataset_hashes": "NOT_MATERIALIZED_RESOURCE_GATE"
+  },
+  "methodological_boundary": "RawCrossBackboneAccuracy != MemoryMechanismEffect",
+  "authority_boundary": "PersistentState != Authority"
+}

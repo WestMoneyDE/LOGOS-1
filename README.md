@@ -93,8 +93,8 @@ Synthetic-only mechanism promotion is frozen. External evidence or a stronger di
 
 ## Current research state
 
-**Canonical gate:** `READY_PERSISTENT_STATE_ADAPTER_IMPLEMENTATION_R3`  
-**Current work order:** [`NEXT-SESSION-PERSISTENT-STATE-RESOLVED-FAMILY-ADAPTER-IMPLEMENTATION-R3`](05-WORK-ORDERS/NEXT-SESSION-PERSISTENT-STATE-RESOLVED-FAMILY-ADAPTER-IMPLEMENTATION-R3.md)
+**Canonical gate:** `READY_PERSISTENT_STATE_DATASET_MATERIALIZATION_R4`  
+**Current work order:** [`NEXT-SESSION-PERSISTENT-STATE-DATASET-MATERIALIZATION-R4`](05-WORK-ORDERS/NEXT-SESSION-PERSISTENT-STATE-DATASET-MATERIALIZATION-R4.md)
 
 ### Completed external returns
 
@@ -112,7 +112,7 @@ Synthetic-only mechanism promotion is frozen. External evidence or a stronger di
 
 No blocked transport result is treated as negative scientific evidence, and blocked/failed external runs are not automatically retried.
 
-## Persistent-State Causality — adapter implementation
+## Persistent-State Causality — adapters implemented, dataset freeze next
 
 The conceptual memory/state classes remain:
 
@@ -126,9 +126,16 @@ vs
 EXTERNAL_RETRIEVAL
 ```
 
-R2 confirmed that a raw four-backbone leaderboard is not a valid memory-mechanism test. LOGOS therefore estimates causal value **within each architecture family** and only synthesizes normalized effect sizes/resource curves across families.
+R3 implemented deterministic intervention tooling for the resolved families **without running a model benchmark**:
 
-Frozen small-model anchors now include:
+- token context: full history, frozen 512-token truncation and A→B history substitution;
+- external retrieval: deterministic BM25 (`k1=1.5`, `b=0.75`) with stable chunk-ID ties and provenance hashes;
+- recurrent state: complete Mamba capture/restore/fresh-reset/swap/permutation/digest;
+- dataset integrity: RULER JSONL file and canonical per-row hashing.
+
+Static validation: **13/13 tests PASS** plus `compileall` PASS.
+
+Frozen anchors remain:
 
 ```text
 Token / retrieval decoder:
@@ -144,9 +151,18 @@ Fast-weight sources/checkpoint:
   Test-Time-Training/ttt-linear-125m-books-2k@b1a5f81bed7b70be067867b6b47a6e7047c5093e
 ```
 
-The TTT checkpoint is official, but the exact official checkpoint-to-executable adapter/tokenizer path is not yet frozen; no community conversion is substituted.
+The official TTT checkpoint remains `SOURCE_ADAPTER_UNRESOLVED` for the exact executable/tokenizer bridge; no community conversion is substituted.
 
-For every proposed state `S`:
+A source-level reset correction is now implemented for Mamba:
+
+```text
+InferenceParams.reset() != demonstrated memory erasure
+RESET_STATE = fresh/reinitialized complete cache
+```
+
+The next gate materializes exact GPT-2/Mamba tokenizer bytes and the frozen RULER JSONL set before any model outcome. The connected R3 container could not do this because tokenizer/runtime bytes were not cached and network name resolution was unavailable; no surrogate tokenizer was used.
+
+For every proposed state `S` the later scientific run still requires:
 
 ```text
 D(S) = Decodability
@@ -154,14 +170,11 @@ O(S) = Operational utility
 C(S) = Causal intervention effect
 ```
 
-Mamba state intervention uses the complete continuation cache, not only an offset. In particular, the scientific `RESET_STATE` must use a fresh/reinitialized cache rather than assuming `InferenceParams.reset()` clears all memory tensors.
-
-The controlled RULER stage is frozen to `niah_single_1`, `niah_multikey_1`, `niah_multiquery` and `vt`, with a 1024-token primary slice and fixed seeds. Because RULER examples are synthetic, its evidence ceiling remains **EM1**; a later public realistic/non-synthetic substrate is mandatory before EM2 promotion.
-
-Methodological boundary:
+RULER remains synthetic, so its evidence ceiling remains **EM1**. A realistic public non-synthetic confirmatory substrate is still mandatory before EM2 promotion.
 
 ```text
 RawCrossBackboneAccuracy != MemoryMechanismEffect
+AdapterPass != MechanismEvidence
 ```
 
 ## Memory-system engineering target
