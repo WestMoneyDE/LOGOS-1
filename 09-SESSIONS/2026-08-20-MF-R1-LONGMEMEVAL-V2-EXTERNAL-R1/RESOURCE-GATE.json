@@ -1,0 +1,25 @@
+{
+  "schema": "logos-mf-r1-resource-gate-v1",
+  "date": "2026-08-20",
+  "session": "MF-R1-LONGMEMEVAL-V2-EXTERNAL-R1",
+  "execution_policy": "ONE_SHOT_NO_AUTORETRY",
+  "classification": "UNTESTED_RESOURCE_TRANSPORT",
+  "scientific_verdict": "UNTESTED",
+  "frozen_upstream": "xiaowu0162/LongMemEval-V2@2cc8c540bdb87fe6761629b585e727e1c4704520",
+  "required_trajectory_sha256": "363cec9a8e87aa8d9101ce4e600aadbf7031d674056ebe4f969e8424abc5f3c6",
+  "required_reader_controller": "Qwen/Qwen3.5-9B",
+  "required_embedding": "Qwen/Qwen3-Embedding-8B",
+  "required_judge": "gpt-5.2",
+  "resource_gate": {
+    "reader_endpoint_available_to_execution_environment": false,
+    "controller_endpoint_available_to_execution_environment": false,
+    "embedding_endpoint_available_to_execution_environment": false,
+    "judge_api_access_available_to_execution_environment": false
+  },
+  "external_matrix_started": false,
+  "substitute_model_used": false,
+  "synthetic_dataset_used": false,
+  "automatic_retry_performed": false,
+  "claim_delta": "NONE",
+  "next_track": "TCV-R2-WRONG-BUT-USEFUL-EXTERNAL-PREFLIGHT-R1"
+}

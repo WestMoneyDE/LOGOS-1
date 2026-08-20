@@ -149,8 +149,8 @@ Synthetic-only mechanism promotion is currently frozen. External evidence is req
 
 ## Current research state
 
-**Canonical gate:** `READY_ON_DATA_AND_MODEL_ENDPOINTS`  
-**Current work order:** [`NEXT-SESSION-MF-R1-LONGMEMEVAL-V2-EXTERNAL-EXECUTION-R1`](05-WORK-ORDERS/NEXT-SESSION-MF-R1-LONGMEMEVAL-V2-EXTERNAL-EXECUTION-R1.md)
+**Canonical gate:** `READY_TCV_R2_EXTERNAL_ARTIFACT_PREFLIGHT`  
+**Current work order:** [`NEXT-SESSION-TCV-R2-WRONG-BUT-USEFUL-EXTERNAL-PREFLIGHT-R1`](05-WORK-ORDERS/NEXT-SESSION-TCV-R2-WRONG-BUT-USEFUL-EXTERNAL-PREFLIGHT-R1.md)
 
 Completed external returns:
 
@@ -158,13 +158,18 @@ Completed external returns:
 2. **ENF / safe-control-gym** — `CorrectEnforcement != CorrectSpecification → KEEP_BOUNDED_EM2`; unconditional independence-as-safety-improvement was externally rejected/demoted.
 3. **WMR / ARC-AGI-3** — replay improved the frozen generic world model relative to recent-only, but `COUNTEREXAMPLE_PRIORITY_INCREMENTAL_VALUE → MERGE/REJECT_EM2_EXTERNAL` because counterexample-priority did not establish a consistent distinct advantage over matched uniform replay.
 
+Parked external dependency:
+
+4. **Memory Fabric / LongMemEval-V2** — `UNTESTED_RESOURCE_TRANSPORT`; the exact frozen Qwen reader/controller, Qwen embedding endpoint and `gpt-5.2` judge resources were unavailable to this execution environment. No substitute was used and no automatic retry is permitted.
+
 Next in the external queue:
 
-4. **Memory Fabric / LongMemEval-V2** — frozen strong-flat vs associative reconstruction comparison; waiting on exact dataset/model/judge resources.
-5. **TCV / Wrong but Useful**.
+5. **TCV / Wrong but Useful** — official ancillary artifact and matched-replay preflight.
 6. **Procedural Memory / SkillsBench**.
 7. **SCB P×R / Terminal-Bench 2.0**.
 8. **TANGLE** — waiting for an official release.
+
+External scientific execution is now one-shot by default: fully prepare before the repository write, persist the first outcome, and do not automatically rerun failed/blocked GitHub or provider executions. See [`AGENTS.md`](AGENTS.md) and [`docs/engineering/PUSH-PROTOCOL.md`](docs/engineering/PUSH-PROTOCOL.md).
 
 See [`CURRENT-WORK-ORDER.md`](CURRENT-WORK-ORDER.md) and the durable session checkpoints under [`09-SESSIONS/`](09-SESSIONS/) for the evidence state.
 
@@ -200,7 +205,7 @@ LOGOS-1 is structured so coding agents can continue the project without relying 
 
 - [`AGENTS.md`](AGENTS.md) is the repository-wide operating contract for Codex and other coding agents.
 - [`CLAUDE.md`](CLAUDE.md) provides persistent project instructions for Claude Code.
-- [`05-WORK-ORDERS/ENGINEERING-MEMORY-SYSTEM-CODING-AGENTS-R1.md`](05-WORK-ORDERS/ENGINEERING-MEMORY-SYSTEM-CODING-AGENTS-R1.md) is a **parallel engineering work order** and does not replace the active scientific LongMemEval-V2 queue.
+- [`05-WORK-ORDERS/ENGINEERING-MEMORY-SYSTEM-CODING-AGENTS-R1.md`](05-WORK-ORDERS/ENGINEERING-MEMORY-SYSTEM-CODING-AGENTS-R1.md) is a **parallel engineering work order** and does not replace the active scientific TCV-R2 queue.
 
 Every substantive push should propagate its consequences into tests, docs, capability inventory, session state and evidence boundaries. See [`docs/engineering/PUSH-PROTOCOL.md`](docs/engineering/PUSH-PROTOCOL.md).
 
