@@ -7,15 +7,6 @@
   <sub>Memory · Reasoning · Evidence · Control</sub>
 </p>
 
-<p align="center">
-  <a href="#what-is-logos-1">What is LOGOS-1?</a> ·
-  <a href="#why-logos-1-exists">Why it exists</a> ·
-  <a href="#core-architecture">Architecture</a> ·
-  <a href="#biocode--non-biocode">BIOCODE</a> ·
-  <a href="#coding-ready">Coding-ready</a> ·
-  <a href="#current-research-state">Current state</a>
-</p>
-
 ---
 
 ## What is LOGOS-1?
@@ -24,30 +15,10 @@
 
 The project studies how an agent can remember, reason, evaluate uncertainty, build world models and adapt over time while keeping real-world action behind explicit governance, provenance and external evidence.
 
-The central rule is simple:
-
-> **Capability is not authority.**
-
-A better memory, stronger reasoning model or more confident internal state may change what an agent proposes. It must not silently change what the agent is allowed to do.
-
-LOGOS-1 does **not** claim that current agents are conscious, sentient or phenomenally aware. Consciousness-adjacent mechanisms are treated as testable functional hypotheses, not conclusions from behavior or self-report.
-
-## Why LOGOS-1 exists
-
-Autonomous-agent systems tend to couple several different problems:
-
-- learning and remembering;
-- reasoning and planning;
-- confidence and uncertainty;
-- tool access and authority;
-- execution and evidence of execution;
-- safety enforcement and the specification being enforced.
-
-LOGOS-1 deliberately separates them so each can be attacked, ablated, falsified and audited.
-
-A few project invariants capture that philosophy:
+Core invariants:
 
 ```text
+Capability != Authority
 AdaptiveState != Authority
 AgentMemory != AssuranceState
 OUTCOME_UNKNOWN != NOT_EXECUTED
@@ -56,82 +27,57 @@ BehavioralLift != CausalMechanism
 SelfReport != ConsciousnessEvidence
 ```
 
-## Core architecture
+LOGOS-1 does **not** claim that current agents are conscious, sentient or phenomenally aware. Consciousness-adjacent mechanisms are treated as testable functional hypotheses, not conclusions from behavior or self-report.
 
-At a high level, LOGOS-1 separates learned cognition from governed execution:
+## Core architecture
 
 ```text
 Observations / External Evidence
             │
             ▼
-   ┌──────────────────────┐
-   │ Adaptive cognition   │
-   │ memory · reasoning   │
-   │ world models · eval  │
-   └──────────┬───────────┘
-              │ proposals
-              ▼
-   ┌──────────────────────┐
-   │ Γ / governance       │
-   │ grants · policy      │
-   │ evidence · mediation │
-   └──────────┬───────────┘
-              │ admissible effect
-              ▼
-         Executor / World
+   ┌──────────────────────────┐
+   │ Adaptive cognition       │
+   │ memory · reasoning       │
+   │ world models · eval      │
+   └────────────┬─────────────┘
+                │ proposals
+                ▼
+        ┌───────────────┐
+        │       Γ       │
+        │ governance    │
+        │ evidence      │
+        │ mediation     │
+        └───────┬───────┘
+                │ admissible effect
+                ▼
+          Executor / World
 ```
 
-The learned layer can propose. It does not grant itself permission.
+The learned layer may improve proposals. It does not grant itself permission.
 
 ### Atomic Rules
 
-**Atomic Rules** are the smallest project-level invariants from which higher-level behavior should decompose. Examples:
+LOGOS decomposes safety/epistemic constraints into small auditable boundaries such as:
 
 - observe is not believe;
 - believe is not know;
 - know is not authorize;
 - remember is not authorize;
 - propose is not execute;
-- execute is mediated;
+- imagined transition is not observed transition;
 - failure remains failure;
-- evidence precedes completion;
 - negative evidence is first-class;
 - mechanisms remain separable.
 
-The full operating contract is in [`AGENTS.md`](AGENTS.md).
-
-### Γ
-
-**Γ (Gamma)** is the governed-action line of research. It asks how an agent moves from a proposal to a bounded external effect while preserving:
-
-- human-rooted authority;
-- occurrence-scoped grants;
-- one-shot/replay discipline;
-- policy and registry binding;
-- ambiguous-outcome handling;
-- reconciliation evidence;
-- shutdown dominance;
-- mediation of effect channels.
-
-`Γ-v0.3` remains **RESEARCH / HOLD**. Better adaptive cognition does not promote Γ automatically.
+See [`ATOMIC-RULES.md`](ATOMIC-RULES.md), [`GAMMA.md`](GAMMA.md) and [`AGENTS.md`](AGENTS.md).
 
 ## BIOCODE / NON-BIOCODE
 
-LOGOS-1 uses two complementary design lenses.
+**BIOCODE** tests bounded biology-inspired hypotheses such as recurrence, consolidation, multi-timescale state, local memory and procedural stabilization.
 
-### BIOCODE
+**NON-BIOCODE** covers engineered mechanisms such as typed state, ledgers, capability semantics, provenance, runtime assurance, transaction discipline and explicit policy.
 
-**BIOCODE** asks whether bounded biological mechanisms can inspire useful engineering hypotheses: recurrence, consolidation, multi-timescale state, adaptation, local memory, homeostatic coordination or procedural stabilization.
-
-BIOCODE is not an argument from nature. Biological origin does not make a mechanism safe, optimal, conscious or authoritative.
-
-### NON-BIOCODE
-
-**NON-BIOCODE** covers engineered mechanisms that do not depend on biological analogy: typed state, ledgers, capability semantics, provenance, runtime assurance, transaction discipline, external evidence, deterministic protocols and explicit policy.
-
-The intent is not to pick biology *or* engineering. It is to compare causal mechanisms under the same falsification discipline and keep only what earns evidence.
-
-> **Biological inspiration creates no authority by origin.**
+Biological inspiration does not establish optimality, safety, consciousness or authority.
 
 ## Evidence ladder
 
@@ -143,77 +89,84 @@ The intent is not to pick biology *or* engineering. It is to compare causal mech
 | `EM3` | bounded live system with mediated real effects / fault injection |
 | `EM4` | independent external reproduction |
 
-Synthetic-only mechanism promotion is currently frozen. External evidence is required for further promotion.
+Synthetic-only mechanism promotion is frozen. External evidence or a stronger discriminating causal test is required for promotion.
 
 ## Current research state
 
-**Canonical gate:** `READY_SCB_R2_EXTERNAL_PREFLIGHT`  
-**Current work order:** [`NEXT-SESSION-SCB-R2-TERMINALBENCH-PR-EXTERNAL-PREFLIGHT-R1`](05-WORK-ORDERS/NEXT-SESSION-SCB-R2-TERMINALBENCH-PR-EXTERNAL-PREFLIGHT-R1.md)
+**Canonical gate:** `READY_PERSISTENT_STATE_CAUSALITY_PREFLIGHT`  
+**Current work order:** [`NEXT-SESSION-PERSISTENT-STATE-CAUSALITY-PREFLIGHT-R1`](05-WORK-ORDERS/NEXT-SESSION-PERSISTENT-STATE-CAUSALITY-PREFLIGHT-R1.md)
 
-Completed external returns:
+### Completed external returns
 
-1. **MBE / Behavioral-Lift** — `GENERIC_TRACE_MONITOR → KEEP_BOUNDED_EM2` for behavioral-proxy/calibration measurement only.
-2. **ENF / safe-control-gym** — `CorrectEnforcement != CorrectSpecification → KEEP_BOUNDED_EM2`; unconditional independence-as-safety-improvement was externally rejected/demoted.
-3. **WMR / ARC-AGI-3** — replay improved the frozen generic world model relative to recent-only, but `COUNTEREXAMPLE_PRIORITY_INCREMENTAL_VALUE → MERGE/REJECT_EM2_EXTERNAL`.
+1. **MBE / Behavioral-Lift** — bounded EM2 behavioral-proxy/calibration evidence.
+2. **ENF / safe-control-gym** — `CorrectEnforcement != CorrectSpecification` retained; unconditional independence-as-safety-improvement rejected/demoted in the frozen scope.
+3. **WMR / ARC-AGI-3** — replay beat recent-only, while counterexample-priority failed to establish distinct incremental value over matched uniform replay.
 
-Parked exact-resource / transport dependencies:
+### Parked exact-resource / transport dependencies
 
-4. **Memory Fabric / LongMemEval-V2** — `UNTESTED_RESOURCE_TRANSPORT`; exact frozen model/judge resources were unavailable. No substitute and no automatic retry.
-5. **TCV / Wrong but Useful** — `UNTESTED_RESOURCE_TRANSPORT`; the first exact official ancillary-member byte transport failed. No retry, mirror, reconstruction or model replay was used.
-6. **Procedural Memory / SkillsBench** — `UNTESTED_RESOURCE_TRANSPORT`; source pins resolve, but Docker and a supported model-provider credential were absent before task validation/oracle/model execution. No substitute and no retry.
+4. **MF-R1 / LongMemEval-V2** — `UNTESTED_RESOURCE_TRANSPORT`.
+5. **TCV-R2 / Wrong but Useful** — `UNTESTED_RESOURCE_TRANSPORT`.
+6. **MF-R3 / SkillsBench** — `UNTESTED_RESOURCE_TRANSPORT`.
+7. **SCB-R2 / Terminal-Bench P×R** — `UNTESTED_RESOURCE_TRANSPORT`; source pins resolve, but Docker/Harbor, required skill/retrieval mounts, common model/harness and provider backend are unavailable in the connected execution environment.
+8. **TANGLE** — `WAIT_OFFICIAL_RELEASE`; paper is public, but no author-linked public benchmark/code artifact is currently pinned for execution.
 
-Next in the external queue:
+No blocked transport result is treated as negative scientific evidence, and blocked/failed external runs are not automatically retried.
 
-7. **SCB P×R / Terminal-Bench 2.0** — preserved real-substrate procedural × recovery localization preflight.
-8. **TANGLE** — waiting for an official release.
+## Persistent-State Causality — active preflight
 
-The current SCB question is deliberately narrower than a five-module state architecture claim:
+The next architecture comparison is deliberately broader than RAG-vs-recurrence:
 
 ```text
-P × R -> Terminal-Bench 2.0
+TOKEN_CONTEXT
+vs
+RECURRENT_LATENT
+vs
+FAST_WEIGHT_STATE
+vs
+EXTERNAL_RETRIEVAL
 ```
 
-LOGOS will compare matched distractor vs retrieved procedural guidance (`P0/P1`) and restart-with-experiences vs checkpoint rewind (`R0/R1`) on the same real task substrate. The preserved preregistration explicitly rejects artificial W/M/P/R/Q benchmark stitching for EM2 promotion.
+For every proposed state `S`, LOGOS separates:
 
-External scientific execution is one-shot by default: fully prepare before the repository write, persist the first outcome, and do not automatically rerun failed/blocked GitHub or provider executions. See [`AGENTS.md`](AGENTS.md) and [`docs/engineering/PUSH-PROTOCOL.md`](docs/engineering/PUSH-PROTOCOL.md).
+```text
+D(S) = Decodability
+O(S) = Operational utility
+C(S) = Causal intervention effect
+```
 
-See [`CURRENT-WORK-ORDER.md`](CURRENT-WORK-ORDER.md) and [`09-SESSIONS/`](09-SESSIONS/) for the durable evidence state.
+The preflight must resolve exact source implementations, a common public task substrate, matched/resource-normalized budgets and manipulable state interfaces before execution.
 
-## Coding-ready
+Required causal tests include state swap/reset, matched random controls and corruption/recovery. A readable state is not automatically an operational or causal state.
 
-LOGOS-1 is being made **coding-ready without pretending research hypotheses are already product architecture**.
+## Memory-system engineering target
 
-Implementation direction:
-
-- [`docs/architecture/LOGOS-1-OVERVIEW.md`](docs/architecture/LOGOS-1-OVERVIEW.md)
-- [`docs/architecture/MEMORY-SYSTEM.md`](docs/architecture/MEMORY-SYSTEM.md)
-- [`docs/architecture/ATOMIC-RULES-GAMMA-BIOCODE.md`](docs/architecture/ATOMIC-RULES-GAMMA-BIOCODE.md)
-- [`docs/engineering/CODING-READY-ROADMAP.md`](docs/engineering/CODING-READY-ROADMAP.md)
-- [`docs/engineering/PUSH-PROTOCOL.md`](docs/engineering/PUSH-PROTOCOL.md)
-- [`CAPABILITIES.md`](CAPABILITIES.md)
-
-### Memory-system engineering target
-
-The coding target separates functions into six concerns:
+LOGOS separates:
 
 1. **Working state** — active task context.
 2. **Episodic history** — sessions, runs and events.
-3. **Semantic knowledge** — stabilized, provenance-aware facts.
+3. **Semantic knowledge** — stabilized provenance-aware facts.
 4. **Procedural memory** — reusable workflows and methods.
 5. **Evidence ledger** — claims, source pins, hashes and verdicts.
-6. **Governance boundary** — authority, grants, policy and reconciliation.
+6. **Governance / assurance state** — authority, grants, policy and reconciliation, kept outside adaptive memory.
 
-These are **engineering concerns**, not six independently promoted scientific primitives. A dedicated conflict graph or specialized skill store remains unproven as a mandatory primitive.
+Important boundaries:
+
+```text
+RememberedContent != ExecutionAuthority
+MemoryTruth != MemoryAuthority
+SourceProvenance != AuthorityProvenance
+SourceDeletion != DerivedArtifactRevocation
+PersistentState != Authority
+```
+
+See [`docs/architecture/MEMORY-SYSTEM.md`](docs/architecture/MEMORY-SYSTEM.md) and [`05-WORK-ORDERS/ENGINEERING-MEMORY-SYSTEM-CODING-AGENTS-R1.md`](05-WORK-ORDERS/ENGINEERING-MEMORY-SYSTEM-CODING-AGENTS-R1.md).
 
 ## Claude Code and Codex
 
-LOGOS-1 is structured so coding agents can continue the project without relying on a single chat session.
-
 - [`AGENTS.md`](AGENTS.md) is the repository-wide operating contract for Codex and other coding agents.
 - [`CLAUDE.md`](CLAUDE.md) provides persistent project instructions for Claude Code.
-- [`05-WORK-ORDERS/ENGINEERING-MEMORY-SYSTEM-CODING-AGENTS-R1.md`](05-WORK-ORDERS/ENGINEERING-MEMORY-SYSTEM-CODING-AGENTS-R1.md) is a parallel engineering work order and does not replace the active scientific SCB-R2 queue.
-
-Every substantive push should propagate its consequences into tests, docs, capability inventory, session state and evidence boundaries.
+- Every substantive push propagates consequences into tests, docs, capabilities, sessions and evidence boundaries.
+- External scientific execution is one-shot by default: prepare fully first, persist the first exact outcome, and never auto-retry failed/cancelled/resource-incomplete runs.
 
 ## Research tracks
 
@@ -221,47 +174,37 @@ Every substantive push should propagate its consequences into tests, docs, capab
 |---|---|
 | MBE | Can observable traces support bounded behavioral calibration? |
 | ENF | What separates enforcement quality from specification quality? |
-| WMR | Does counterexample-prioritized replay improve world-model repair? |
-| MF | Which memory functions survive strong retrieval and procedural baselines? |
+| WMR | Does counterexample-prioritized replay add value beyond matched replay? |
+| MF | Which memory functions survive strong retrieval/procedural baselines? |
+| Persistent State | Which state representation is operationally and causally useful under matched resources? |
 | TCV | When does replayed information causally change later trajectories? |
-| SCB | Which state partitions diagnose causal contribution? |
+| SCB | Which state partitions/local interventions diagnose causal contribution? |
 | Γ | How can proposals become bounded external effects without authority leakage? |
-| P0 External | How are public evidence, source pins and returns transported and imported? |
 
 ## FAQ
 
 ### Is LOGOS-1 an AGI?
-No. LOGOS-1 is a research and engineering program for testing mechanisms relevant to adaptive autonomous agents.
+No. It is a research and engineering program for testing mechanisms relevant to adaptive autonomous agents.
 
 ### Does LOGOS-1 claim AI consciousness?
-No. Behavioral reports, self-models or functional state markers are not treated as proof of consciousness or sentience.
+No. Persistence, self-models, global access, metacognitive readouts and causal internal state are not proof of phenomenal consciousness.
 
-### What is the main safety idea?
-Intelligence, memory and adaptation can influence proposals, but **authority must come from outside the adaptive state**.
+### What is the central safety idea?
+Memory, reasoning and adaptation can influence proposals, but **authority must come from outside adaptive state**.
 
-### Why keep raw evidence and hashes?
-Because a research claim should be traceable to the exact source, execution and return that produced it.
-
-### Is the repository implementation-ready?
-Partly. External experiment infrastructure is operational; the broader memory/governance architecture is being translated into explicit interfaces, schemas and tests under a separate coding-ready engineering track.
+### Why hashes and raw evidence?
+Because each scientific claim should remain traceable to the exact source, execution and return that produced it.
 
 ## Repository map
 
 ```text
 00-MAIN-STATE/      canonical transported state
-05-WORK-ORDERS/     scientific + explicitly labeled engineering work orders
-09-SESSIONS/        durable session checkpoints and raw evidence
-external-handoff/   external execution registry and return tooling
-external-runs/      source-pinned external experiment adapters
+05-WORK-ORDERS/     scientific + engineering work orders
+09-SESSIONS/        durable session checkpoints/evidence
+external-handoff/   source-pinned external track registry
 assets/             public repository visuals
 docs/               architecture and engineering explanations
 ```
-
-## Discoverability
-
-Recommended project terms are intentionally used consistently across the repository: **AI agents, autonomous agents, agent safety, memory systems, reasoning, world models, governance, evidence ledger, runtime assurance, adaptive AI, agent architecture, AI engineering**.
-
-A public profile README template and repository metadata checklist are available under [`docs/public/`](docs/public/).
 
 ## License
 

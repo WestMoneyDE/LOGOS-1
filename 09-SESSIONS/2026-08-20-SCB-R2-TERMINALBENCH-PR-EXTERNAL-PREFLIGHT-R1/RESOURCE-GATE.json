@@ -1,0 +1,50 @@
+{
+  "schema": "logos-scb-r2-terminalbench-pr-resource-gate-v1",
+  "date": "2026-08-20",
+  "session": "SCB-R2-TERMINALBENCH-PR-EXTERNAL-PREFLIGHT-R1",
+  "execution_policy": "ONE_SHOT_NO_AUTORETRY",
+  "classification": "UNTESTED_RESOURCE_TRANSPORT",
+  "scientific_verdict": "UNTESTED",
+  "source_pins": {
+    "skill_usage_repo": "UCSB-NLP-Chang/Skill-Usage",
+    "skill_usage_commit": "03446d16f7b659ccc93ac5bd512f62e9b7fabb45",
+    "replay_repo": "Futuresis/replay-agent-recorder",
+    "replay_commit": "6661046e2b30fcf5f17c93d51acb56babdea8c53",
+    "benchmark": "Terminal-Bench 2.0",
+    "skill_pool": "Shiyu-Lab/Skill-Usage skills-34k",
+    "expected_skill_count": 34198
+  },
+  "source_preflight": {
+    "skill_usage_commit_resolved": true,
+    "replay_commit_resolved": true,
+    "skill_usage_readme_confirms_terminal_bench_2": true,
+    "skill_usage_readme_confirms_34198_skill_pool": true,
+    "skill_usage_readme_confirms_top5_retrieval": true,
+    "replay_release_exposes_checkpoint_sandbox_lineage": true
+  },
+  "runtime": {
+    "python": "3.13.5",
+    "uv_available": true,
+    "docker_available": false,
+    "podman_available": false,
+    "harbor_available": false,
+    "SCB_SKILL_POOL_ROOT_present": false,
+    "SCB_RETRIEVED_TB2_ROOT_present": false,
+    "SCB_COMMON_MODEL_present": false,
+    "SCB_COMMON_HARNESS_present": false,
+    "openai_api_key_present": false,
+    "anthropic_api_key_present": false,
+    "gemini_api_key_present": false,
+    "google_api_key_present": false
+  },
+  "scientific_execution_attempts": 0,
+  "terminal_bench_trials_started": false,
+  "retrieval_manifest_frozen": false,
+  "recovery_factorial_started": false,
+  "substitute_runtime_used": false,
+  "substitute_dataset_used": false,
+  "automatic_retry_performed": false,
+  "claim_delta": "NONE",
+  "tangle_release_check": "NO_AUTHOR_LINKED_PUBLIC_RELEASE_RESOLVED_IN_PREFLIGHT",
+  "next_track": "PERSISTENT-STATE-CAUSALITY-PREFLIGHT-R1"
+}

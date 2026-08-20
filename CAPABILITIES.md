@@ -1,42 +1,48 @@
 # LOGOS-1 Capability Map
 
-This file is a **living implementation/research capability inventory**. It must be updated when a substantive push changes what LOGOS-1 can actually do. A listed capability is not automatically a scientific claim.
+This file is a **living implementation/research capability inventory**. A listed capability is not automatically a scientific claim.
 
 ## Operational today
 
 - source-pinned external experiment handoff and preflight;
 - standardized external return packing and validation;
-- durable raw-evidence/session persistence in GitHub;
+- durable session/evidence persistence in GitHub;
 - MBE Behavioral-Lift external execution/import;
 - ENF safe-control-gym external execution/import;
 - WMR ARC-AGI-3 external execution/import;
-- explicit current-work-order queue;
+- explicit canonical work-order queue;
 - one-shot/no-auto-retry external execution discipline;
-- bounded Γ live GitHub pilot from prior work, with Γ-v0.3 still HOLD.
+- bounded Γ live GitHub pilot from prior work, with Γ-v0.3 still `HOLD`.
 
 ## Engineering-ready / specified
 
 - coding-agent operating contract via `AGENTS.md`;
-- Claude Code persistent project instructions via `CLAUDE.md`;
-- memory-system functional decomposition;
-- evidence-ledger and governance separation;
+- Claude Code project instructions via `CLAUDE.md`;
+- working / episodic / semantic / procedural / evidence / governance memory decomposition;
 - source provenance distinct from authority provenance;
-- derived procedural/skill lineage with revocation-propagation requirements under test;
+- derived procedural/skill lineage with revocation requirements under test;
 - candidate persistent-state comparison across token context, recurrent latent state, fast weights and external retrieval;
+- D/O/C state-validation ladder (`Decodable`, `Operational`, `Causal`);
+- state-swap, reset and corruption/recovery intervention requirements;
 - coding-ready roadmap and per-push propagation protocol.
 
-## Active external-evidence state
+## Current canonical research
 
-- **SCB-R2 / Terminal-Bench 2.0 P×R:** next canonical external preflight; preserved real-substrate factorial only, with Skill-Usage and Replay Agent Recorder source pins verified.
-- **MF-R3 / SkillsBench:** parked as `UNTESTED_RESOURCE_TRANSPORT`; source pins resolve, but Docker and a supported provider credential were absent before oracle/model execution. No substitute and no retry.
-- **TCV-R2 / Wrong but Useful:** parked as `UNTESTED_RESOURCE_TRANSPORT`; official ancillary listing was visible but the first exact official-member transport failed and was not retried.
-- **MF-R1 / LongMemEval-V2:** parked as `UNTESTED_RESOURCE_TRANSPORT`; exact frozen model/judge resources were unavailable; no substitute and no retry.
+- **Persistent-State Causality R1:** active preflight. Resolve exact source adapters, common public task substrate, resource equalization and manipulable state interfaces for `TOKEN_CONTEXT` vs `RECURRENT_LATENT` vs `FAST_WEIGHT_STATE` vs `EXTERNAL_RETRIEVAL`.
+
+## Parked external evidence dependencies
+
+- **MF-R1 / LongMemEval-V2:** `UNTESTED_RESOURCE_TRANSPORT` — exact reader/controller, embedding and judge resources unavailable.
+- **TCV-R2 / Wrong but Useful:** `UNTESTED_RESOURCE_TRANSPORT` — official ancillary byte transport unresolved under the one-shot session.
+- **MF-R3 / SkillsBench:** `UNTESTED_RESOURCE_TRANSPORT` — Docker and model-provider backend unavailable.
+- **SCB-R2 / Terminal-Bench P×R:** `UNTESTED_RESOURCE_TRANSPORT` — source pins resolved, but Docker/Harbor, skill/retrieval mounts, common model/harness and provider backend unavailable.
+- **TANGLE:** `WAIT_OFFICIAL_RELEASE` — paper is public; no author-linked public benchmark/code artifact has been resolved for external execution.
 
 ## Queued research
 
-- persistent-state causality (`TOKEN_CONTEXT` vs `RECURRENT_LATENT` vs `FAST_WEIGHT_STATE` vs `EXTERNAL_RETRIEVAL`);
 - memory-authority provenance and derived-skill revocation;
-- TANGLE once an official release is available.
+- TANGLE conflict benchmark once an official release is pinned;
+- later Γ provider work only under explicit human grant.
 
 ## Explicitly not claimed
 
