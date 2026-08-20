@@ -1,0 +1,251 @@
+name: LOGOS WMR ARC-AGI-3 External Execution R1
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  wmr-external:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      PYTHONHASHSEED: "260818"
+    steps:
+      - name: Checkout LOGOS
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify frozen LOGOS WMR files
+        run: |
+          set -euo pipefail
+          echo "2aab8cd3bc92765c626fc938545d1f5ab48f7d4091c4ec67ef0ae2f1aab6f2e9  external-runs/wmr-r1/FROZEN-EXPERIMENT.json" | sha256sum -c -
+          echo "cf0fbd050b5a57bcc654bd770df6259a8193f97fdee4c734185a0a2030e3fcd3  external-runs/wmr-r1/collect_arc_agi3_trajectories.py" | sha256sum -c -
+          echo "9a81c32b680e77c99913dd3e4f392d2b88aafa9c859dd8bac8d9da8b69b1065c  external-runs/wmr-r1/evaluate_wmr_models.py" | sha256sum -c -
+          echo "d534b4765a194e485212c9e8250c5d7f4c7e530210c83a8882b6154955cde173  external-runs/wmr-r1/validate_source_isolation.py" | sha256sum -c -
+
+      - name: Fetch exact pinned ARC-AGI toolkit
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/logos-wmr"
+          SRC="$ROOT/src/ARC-AGI"
+          mkdir -p "$ROOT/src" "$ROOT/environment_files" "$ROOT/run" "$ROOT/clean" "$ROOT/returns"
+          git clone --no-checkout https://github.com/arcprize/ARC-AGI.git "$SRC"
+          git -C "$SRC" checkout --detach f12822c4d550121c35a275008d964afbbed47d2f
+          test "$(git -C "$SRC" rev-parse HEAD)" = "f12822c4d550121c35a275008d964afbbed47d2f"
+          test -z "$(git -C "$SRC" status --porcelain)"
+
+      - name: Install exact toolkit and frozen evaluator dependencies
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/logos-wmr"
+          python -m pip install --upgrade pip
+          python -m pip install -e "$ROOT/src/ARC-AGI"
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch
+          python -m pip install numpy
+
+      - name: Validate offline evaluator source isolation
+        run: |
+          set -euo pipefail
+          python external-runs/wmr-r1/validate_source_isolation.py external-runs/wmr-r1/evaluate_wmr_models.py \
+            | tee "$RUNNER_TEMP/logos-wmr/run/source-isolation.txt"
+
+      - name: Acquire official public ARC-AGI-3 cache through toolkit
+        id: cache
+        env:
+          ARC_API_KEY: ${{ secrets.ARC_API_KEY }}
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/logos-wmr"
+          python - <<'PY'
+          import hashlib, json, os, traceback
+          from pathlib import Path
+          import arc_agi
+          from arc_agi import OperationMode
+
+          root=Path(os.environ['RUNNER_TEMP'])/'logos-wmr'
+          cache=root/'environment_files'
+          out=root/'run'/'cache-acquisition.json'
+          result={
+            'schema':'logos-wmr-cache-acquisition-v1',
+            'method':'official arc_agi toolkit NORMAL-mode fetch then OFFLINE rescan',
+            'toolkit_commit':'f12822c4d550121c35a275008d964afbbed47d2f',
+            'toolkit_version':'0.9.9',
+            'remote_catalog':[],
+            'attempts':[],
+            'offline_catalog':[],
+            'status':'UNTESTED_RESOURCE_TRANSPORT'
+          }
+          try:
+              arc=arc_agi.Arcade(operation_mode=OperationMode.NORMAL,environments_dir=str(cache))
+              envs=arc.get_environments()
+              ids=sorted({e.game_id for e in envs})
+              result['remote_catalog']=ids
+              for gid in ids:
+                  rec={'game_id':gid,'ok':False}
+                  try:
+                      env=arc.make(gid,seed=73000,save_recording=False)
+                      rec['ok']=env is not None
+                      if env is not None:
+                          try: env.reset()
+                          except Exception as e: rec['reset_error']=repr(e)
+                  except Exception as e:
+                      rec['error']=repr(e)
+                  result['attempts'].append(rec)
+              off=arc_agi.Arcade(operation_mode=OperationMode.OFFLINE,environments_dir=str(cache))
+              local=sorted({e.game_id for e in off.get_environments()})
+              result['offline_catalog']=local
+              result['status']='READY' if local else 'UNTESTED_RESOURCE_TRANSPORT'
+          except Exception as e:
+              result['error']=repr(e)
+              result['traceback']=traceback.format_exc()
+          files=[]
+          if cache.exists():
+              for p in sorted(cache.rglob('*')):
+                  if p.is_file():
+                      h=hashlib.sha256(p.read_bytes()).hexdigest()
+                      files.append({'relative_path':str(p.relative_to(cache)),'bytes':p.stat().st_size,'sha256':h})
+          result['cache_file_manifest']=files
+          result['cache_manifest_sha256']=hashlib.sha256(json.dumps(files,separators=(',',':'),sort_keys=True).encode()).hexdigest()
+          out.write_text(json.dumps(result,indent=2)+'\n')
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:
+              f.write('ready=' + ('true' if result['status']=='READY' else 'false') + '\n')
+          print(json.dumps({k:result[k] for k in ['status','remote_catalog','offline_catalog','cache_manifest_sha256']},indent=2))
+          PY
+
+      - name: Record pinned source provenance
+        if: steps.cache.outputs.ready == 'true'
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/logos-wmr"
+          python - <<'PY'
+          import hashlib,json,os,subprocess
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'logos-wmr'
+          cache=json.loads((root/'run'/'cache-acquisition.json').read_text())
+          def sh(*a): return subprocess.check_output(a,text=True).strip()
+          def sha(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+          obj={
+            'schema':'logos-wmr-source-provenance-v1',
+            'toolkit_repo':'arcprize/ARC-AGI',
+            'toolkit_commit':sh('git','-C',str(root/'src'/'ARC-AGI'),'rev-parse','HEAD'),
+            'toolkit_version':'0.9.9',
+            'frozen_experiment_sha256':sha('external-runs/wmr-r1/FROZEN-EXPERIMENT.json'),
+            'collector_sha256':sha('external-runs/wmr-r1/collect_arc_agi3_trajectories.py'),
+            'evaluator_sha256':sha('external-runs/wmr-r1/evaluate_wmr_models.py'),
+            'source_isolation_validator_sha256':sha('external-runs/wmr-r1/validate_source_isolation.py'),
+            'official_cache_manifest_sha256':cache['cache_manifest_sha256'],
+            'official_cache_game_ids':cache['offline_catalog'],
+            'github_run_id':os.environ.get('GITHUB_RUN_ID'),
+            'github_sha':os.environ.get('GITHUB_SHA')
+          }
+          assert obj['toolkit_commit']=='f12822c4d550121c35a275008d964afbbed47d2f'
+          (root/'run'/'source-provenance.json').write_text(json.dumps(obj,indent=2)+'\n')
+          print(json.dumps(obj,indent=2))
+          PY
+
+      - name: Collect frozen source-blind public trajectories
+        if: steps.cache.outputs.ready == 'true'
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/logos-wmr"
+          python external-runs/wmr-r1/collect_arc_agi3_trajectories.py \
+            --environment-dir "$ROOT/environment_files" \
+            --budget 80 \
+            --seeds 73000,73001,73002,73003 \
+            --output "$ROOT/run/arc3-trajectories.jsonl" \
+            | tee "$ROOT/run/collector-stdout.txt"
+
+      - name: Enforce clean evaluator workspace
+        if: steps.cache.outputs.ready == 'true'
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/logos-wmr"
+          cp "$ROOT/run/arc3-trajectories.jsonl" "$ROOT/clean/arc3-trajectories.jsonl"
+          cp external-runs/wmr-r1/evaluate_wmr_models.py "$ROOT/clean/evaluate_wmr_models.py"
+          cp external-runs/wmr-r1/validate_source_isolation.py "$ROOT/clean/validate_source_isolation.py"
+          python "$ROOT/clean/validate_source_isolation.py" "$ROOT/clean/evaluate_wmr_models.py"
+          test ! -e "$ROOT/clean/environment_files"
+
+      - name: Execute frozen offline WMR evaluation
+        if: steps.cache.outputs.ready == 'true'
+        env:
+          ENVIRONMENTS_DIR: ""
+          ARC_ENVIRONMENT_FILES: ""
+          ARC_API_KEY: ""
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/logos-wmr"
+          cd "$ROOT/clean"
+          python evaluate_wmr_models.py \
+            --input "$ROOT/clean/arc3-trajectories.jsonl" \
+            --output "$ROOT/run/wmr-r2-results.jsonl" \
+            --device cpu \
+            | tee "$ROOT/run/evaluator-stdout.txt"
+
+      - name: Record execution attestation
+        if: steps.cache.outputs.ready == 'true'
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/logos-wmr"
+          python - <<'PY'
+          import json,os,platform,sys
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'logos-wmr'
+          obj={
+            'schema':'logos-wmr-external-execution-attestation-v1',
+            'github_sha':os.environ.get('GITHUB_SHA'),
+            'github_run_id':os.environ.get('GITHUB_RUN_ID'),
+            'runner_os':os.environ.get('RUNNER_OS'),
+            'python':sys.version,
+            'platform':platform.platform(),
+            'scientific_ceiling':'EM2 narrow same-model counterexample-prioritization on public interactive trajectories only',
+            'goal_inference':'UNLICENSED',
+            'agi_claim':'UNLICENSED',
+            'gamma_promotion':'UNLICENSED',
+            'consciousness_claim':'UNLICENSED'
+          }
+          (root/'run'/'execution-attestation.json').write_text(json.dumps(obj,indent=2)+'\n')
+          PY
+
+      - name: Build and validate standardized WMR return
+        if: steps.cache.outputs.ready == 'true'
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/logos-wmr"
+          python external-handoff/common/collect_return.py \
+            --track wmr \
+            --run-root "$ROOT/run" \
+            --output "$ROOT/returns/wmr-return.zip" \
+            | tee "$ROOT/returns/collect-return.txt"
+          python external-handoff/common/validate_return.py "$ROOT/returns/wmr-return.zip" \
+            | tee "$ROOT/returns/validate-return.txt"
+          sha256sum "$ROOT/returns/wmr-return.zip" | tee "$ROOT/returns/wmr-return.zip.sha256.final"
+
+      - name: Classify transport-only blocker
+        if: steps.cache.outputs.ready != 'true'
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/logos-wmr"
+          cat > "$ROOT/run/TRANSPORT-VERDICT.txt" <<'EOF'
+          WMR-R2 status: UNTESTED_RESOURCE_TRANSPORT
+          The official public ARC-AGI-3 environment cache could not be materialized through the pinned official toolkit/API on this runner.
+          No synthetic substitute was used. No WMR scientific null or negative verdict is licensed by this transport result.
+          EOF
+          cat "$ROOT/run/TRANSPORT-VERDICT.txt"
+
+      - name: Upload WMR external run artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logos-wmr-external-r1-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/logos-wmr/run/
+            ${{ runner.temp }}/logos-wmr/returns/
+          if-no-files-found: warn
+          retention-days: 30

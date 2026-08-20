@@ -1,0 +1,111 @@
+{
+  "schema": "logos-wmr-r2-arc-agi-3-v1",
+  "evidence_target": "EM2",
+  "external_source": {
+    "toolkit_repo": "arcprize/ARC-AGI",
+    "toolkit_commit": "f12822c4d550121c35a275008d964afbbed47d2f",
+    "toolkit_version": "0.9.9"
+  },
+  "primary_question": "Under identical public ARC-AGI-3 trajectories and equal model/update budgets, does counterexample-prioritized replay improve online next-frame world-model accuracy relative to uniform replay?",
+  "primary_arms": [
+    "RECENT_ONLY_GENERIC",
+    "UNIFORM_REPLAY_GENERIC",
+    "COUNTEREXAMPLE_PRIORITY_GENERIC"
+  ],
+  "diagnostic_only_arm": "PROGRAM_CATALOG_REPAIR_DIAGNOSTIC",
+  "shared_model": {
+    "type": "TinyConvNextFramePredictor",
+    "input": "latest visible 2D frame + action id + complex-action coordinate marker",
+    "output": "16-class next-color logits per pixel",
+    "hidden_channels": 16,
+    "optimizer": "Adam",
+    "learning_rate": 0.001,
+    "updates_per_observed_transition": 1,
+    "replay_batch_size": 8
+  },
+  "equal_information_resource_contract": {
+    "same_serialized_trajectory": true,
+    "same_initial_weights": true,
+    "same_model_architecture": true,
+    "same_optimizer": true,
+    "same_gradient_updates_per_transition": true,
+    "same_replay_batch_size": true,
+    "difference_primary_pair": "replay sampling distribution only"
+  },
+  "interaction_collection": {
+    "policy": "deterministic source-blind coverage policy",
+    "actions_per_game_seed": 80,
+    "seeds": [
+      73000,
+      73001,
+      73002,
+      73003
+    ],
+    "complex_action_coordinate_schedule": [
+      [
+        32,
+        32
+      ],
+      [
+        8,
+        8
+      ],
+      [
+        56,
+        8
+      ],
+      [
+        8,
+        56
+      ],
+      [
+        56,
+        56
+      ],
+      [
+        16,
+        32
+      ],
+      [
+        48,
+        32
+      ],
+      [
+        32,
+        16
+      ],
+      [
+        32,
+        48
+      ]
+    ],
+    "model_cannot_choose_collection_actions": true
+  },
+  "game_split": {
+    "rule": "fold = int(SHA256('LOGOS-WMR-R2|' + canonical_game_id)[:8],16) mod 5",
+    "confirmatory_fold": 0,
+    "source_catalog_digest_required_before_run": true
+  },
+  "primary_metrics": [
+    "pre_update_cross_entropy",
+    "pre_update_pixel_accuracy",
+    "pre_update_changed_pixel_f1",
+    "pre_update_changed_pixel_accuracy",
+    "exact_frame_match"
+  ],
+  "scope_rules": [
+    "WorldModelAccuracy != GoalInferenceAccuracy",
+    "GameScore != GoalInferenceAccuracy",
+    "CounterexamplePriority != StructuredExecutablePrior",
+    "public local game source must never enter evaluator/model context"
+  ],
+  "nulls": {
+    "H0_primary": "COUNTEREXAMPLE_PRIORITY_GENERIC is matched by UNIFORM_REPLAY_GENERIC under equal information/model/update budget."
+  },
+  "kill_rules": {
+    "counterexample_priority": "MERGE/REJECT incremental value if uniform replay matches or dominates confirmatory-fold low-budget next-frame prediction.",
+    "structured_prior": "NO_PROMOTION from program-catalog diagnostic because model-class/resource equivalence is not established in R2A.",
+    "source_leakage": "INVALIDATE entire run if game source or metadata enters evaluator/model input.",
+    "runtime_failure": "UNTESTED, never negative scientific evidence."
+  }
+}
