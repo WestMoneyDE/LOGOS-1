@@ -1,0 +1,47 @@
+{
+  "schema": "logos-wmr-r2-import-verdict-v1",
+  "session": "WMR-ARC-AGI-3-EXTERNAL-EXECUTION-R1",
+  "workflow_run_id": 32323733810,
+  "return": {
+    "status": "COMPLETE_RETURN",
+    "crc": "PASS",
+    "sha256": "278f001874a5c2541d9ec3235e841aa87a759c3067c96b15c7253ae180d19e86",
+    "bytes": 2324494,
+    "required_missing": [],
+    "files": 9
+  },
+  "source": {
+    "toolkit_repo": "arcprize/ARC-AGI",
+    "toolkit_commit": "f12822c4d550121c35a275008d964afbbed47d2f",
+    "toolkit_version": "0.9.9",
+    "official_public_games": 25,
+    "catalog_sha256": "fe55d0b4f068067a9a7de2c4e9b038bd3f301f944a7929b136b6d6b2d1b9d3c3",
+    "cache_manifest_sha256": "1207103a40558d80c7f77f43e54cd9131fe76457af1bfabd8765e7b33952e71e",
+    "source_isolation": "PASS"
+  },
+  "data": {
+    "trajectory_transitions": 8000,
+    "result_rows": 32000,
+    "confirmatory_fold": 0,
+    "confirmatory_games": ["ar25", "bp35", "re86", "tu93"],
+    "confirmatory_game_seed_sequences": 16,
+    "parameter_count_each_neural_arm": 6496
+  },
+  "protocol_issue": {
+    "exact_low_budget_cutoff_preregistered": false,
+    "handling": "No post-hoc single cutoff selected. Reported all fixed descriptive checkpoints 5,10,20,40,80 and required consistency for promotion."
+  },
+  "scientific_verdict": {
+    "counterexample_priority": "COUNTEREXAMPLE_PRIORITY_INCREMENTAL_VALUE = MERGE/REJECT_EM2_EXTERNAL",
+    "positive_promotion": "NOT_JUSTIFIED",
+    "reason": "Counterexample-priority replay did not show a consistent confirmatory low-budget advantage over matched uniform replay. Differences were tiny and directionally mixed; exploratory paired sequence 95% intervals included zero at 10,20,40,80 for the primary metrics.",
+    "program_catalog": "DIAGNOSTIC_ONLY_NO_PROMOTION"
+  },
+  "boundaries": {
+    "world_model_equals_goal_inference": false,
+    "general_arc_solving": false,
+    "general_agi": false,
+    "gamma_v0_3": "HOLD",
+    "consciousness_claim": "UNLICENSED"
+  }
+}
