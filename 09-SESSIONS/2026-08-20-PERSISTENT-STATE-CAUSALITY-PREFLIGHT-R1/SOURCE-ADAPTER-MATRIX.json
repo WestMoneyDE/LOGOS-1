@@ -1,0 +1,72 @@
+{
+  "schema": "logos-persistent-state-source-adapter-preflight-v1",
+  "date": "2026-08-20",
+  "session": "PERSISTENT-STATE-CAUSALITY-PREFLIGHT-R1",
+  "classification": "PARTIAL_SOURCE_RESOLUTION_FOUR_WAY_NOT_EXECUTION_READY",
+  "scientific_execution_started": false,
+  "direct_four_way_raw_accuracy_comparison_licensed": false,
+  "reason": "Backbone/training confounds plus unresolved exact BDH-CQ and MoNe execution adapters prevent causal attribution of a single four-way winner.",
+  "anchors": {
+    "bdh_public": {
+      "repo": "pathwaycom/bdh",
+      "commit": "2b0d7a45b058d4309c84a10e0768d541fe18bdc2",
+      "license": "MIT",
+      "status": "SOURCE_RESOLVED_NOT_ELIGIBLE_AS_PERSISTENT_CROSS_QUERY_BDH_CQ_ARM",
+      "observation": "Public bdh.py forward processes the supplied sequence and exposes no persistent cross-query memory object/API."
+    },
+    "bdh_cq": {
+      "repo": "pathwaycom/arc-task-gen",
+      "commit": "20b2203064b09f60f7925a191d75c11d72277f35",
+      "status": "SOURCE_ADAPTER_UNRESOLVED",
+      "observation": "Repository exposes ARC-style task generation/evaluation material, not the BDH-CQ model implementation/weights/state API."
+    },
+    "mone": {
+      "paper": "arXiv:2608.17616",
+      "submitted": "2026-08-18",
+      "status": "SOURCE_ADAPTER_UNRESOLVED",
+      "observation": "Paper specifies reusable layer-wise fast-weight state W_S^(l), but no official code/repository link was resolved from the primary arXiv record in this preflight."
+    }
+  },
+  "operational_representatives": {
+    "recurrent_latent": {
+      "repo": "state-spaces/mamba",
+      "commit": "e9594ce1c732d97440f0332fdc43170a2294dbfa",
+      "status": "SOURCE_RESOLVED",
+      "state_interface": "allocate_inference_cache / inference_params",
+      "swap_reset_feasibility": "PLAUSIBLE_REQUIRES_ADAPTER_TEST"
+    },
+    "fast_weight_state": {
+      "repo": "test-time-training/ttt-lm-pytorch",
+      "commit": "cd831db10c8c9a0f6340f02da5613316a8a92b67",
+      "license": "MIT",
+      "status": "SOURCE_RESOLVED",
+      "state_interface": "TTTCache/cache_params with explicit W*_states and updates",
+      "swap_reset_feasibility": "HIGH_REQUIRES_ADAPTER_TEST"
+    },
+    "controlled_substrate": {
+      "repo": "NVIDIA/RULER",
+      "commit": "c3f5e3b4f87f97e048793bb510a3a6b19a46bf3a",
+      "license": "Apache-2.0",
+      "status": "SOURCE_RESOLVED",
+      "evidence_ceiling": "EM1_ONLY_FOR_LOGOS_PROMOTION",
+      "reason": "RULER generates synthetic examples; LOGOS synthetic-only mechanism promotion is frozen."
+    }
+  },
+  "design_decision": {
+    "raw_cross_backbone_winner_claim": "PROHIBITED",
+    "primary_strategy": "WITHIN_FAMILY_CAUSAL_EFFECTS_THEN_DESCRIPTIVE_CROSS_FAMILY_SYNTHESIS",
+    "required_confirmatory": "PUBLIC_REALISTIC_NON_SYNTHETIC_SUBSTRATE_BEFORE_EM2_PROMOTION",
+    "preserved_classes": [
+      "TOKEN_CONTEXT",
+      "RECURRENT_LATENT",
+      "FAST_WEIGHT_STATE",
+      "EXTERNAL_RETRIEVAL"
+    ],
+    "state_ladder": [
+      "D(S)",
+      "O(S)",
+      "C(S)"
+    ]
+  },
+  "next_work_order": "NEXT-SESSION-PERSISTENT-STATE-MATCHED-FAMILY-ADAPTER-FREEZE-R2"
+}

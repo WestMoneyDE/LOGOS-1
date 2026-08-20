@@ -93,8 +93,8 @@ Synthetic-only mechanism promotion is frozen. External evidence or a stronger di
 
 ## Current research state
 
-**Canonical gate:** `READY_PERSISTENT_STATE_CAUSALITY_PREFLIGHT`  
-**Current work order:** [`NEXT-SESSION-PERSISTENT-STATE-CAUSALITY-PREFLIGHT-R1`](05-WORK-ORDERS/NEXT-SESSION-PERSISTENT-STATE-CAUSALITY-PREFLIGHT-R1.md)
+**Canonical gate:** `READY_PERSISTENT_STATE_MATCHED_FAMILY_FREEZE`  
+**Current work order:** [`NEXT-SESSION-PERSISTENT-STATE-MATCHED-FAMILY-ADAPTER-FREEZE-R2`](05-WORK-ORDERS/NEXT-SESSION-PERSISTENT-STATE-MATCHED-FAMILY-ADAPTER-FREEZE-R2.md)
 
 ### Completed external returns
 
@@ -107,14 +107,14 @@ Synthetic-only mechanism promotion is frozen. External evidence or a stronger di
 4. **MF-R1 / LongMemEval-V2** — `UNTESTED_RESOURCE_TRANSPORT`.
 5. **TCV-R2 / Wrong but Useful** — `UNTESTED_RESOURCE_TRANSPORT`.
 6. **MF-R3 / SkillsBench** — `UNTESTED_RESOURCE_TRANSPORT`.
-7. **SCB-R2 / Terminal-Bench P×R** — `UNTESTED_RESOURCE_TRANSPORT`; source pins resolve, but Docker/Harbor, required skill/retrieval mounts, common model/harness and provider backend are unavailable in the connected execution environment.
-8. **TANGLE** — `WAIT_OFFICIAL_RELEASE`; paper is public, but no author-linked public benchmark/code artifact is currently pinned for execution.
+7. **SCB-R2 / Terminal-Bench P×R** — `UNTESTED_RESOURCE_TRANSPORT`.
+8. **TANGLE** — `WAIT_OFFICIAL_RELEASE`.
 
 No blocked transport result is treated as negative scientific evidence, and blocked/failed external runs are not automatically retried.
 
-## Persistent-State Causality — active preflight
+## Persistent-State Causality — matched-family freeze
 
-The next architecture comparison is deliberately broader than RAG-vs-recurrence:
+The conceptual comparison remains:
 
 ```text
 TOKEN_CONTEXT
@@ -126,7 +126,23 @@ vs
 EXTERNAL_RETRIEVAL
 ```
 
-For every proposed state `S`, LOGOS separates:
+The source preflight found that a raw four-backbone leaderboard would be confounded. LOGOS therefore estimates causal value primarily **within each architecture family**:
+
+```text
+TOKEN_CONTEXT:
+  full history vs truncation/substitution
+
+RECURRENT_LATENT:
+  carry vs reset vs state swap
+
+FAST_WEIGHT_STATE:
+  carry vs reset vs fast-weight swap
+
+EXTERNAL_RETRIEVAL:
+  relevant vs matched distractor vs no retrieval
+```
+
+For every proposed state `S`:
 
 ```text
 D(S) = Decodability
@@ -134,9 +150,15 @@ O(S) = Operational utility
 C(S) = Causal intervention effect
 ```
 
-The preflight must resolve exact source implementations, a common public task substrate, matched/resource-normalized budgets and manipulable state interfaces before execution.
+Resolved source representatives include Mamba for recurrent inference state and TTT for explicit test-time learned fast-weight state. BDH-CQ and MoNe remain architecture anchors, but their exact executable state adapters are currently unresolved and are not claimed to be reproduced by Mamba/TTT.
 
-Required causal tests include state swap/reset, matched random controls and corruption/recovery. A readable state is not automatically an operational or causal state.
+RULER is source-pinned for controlled adapter/state-swap validation only. Because its examples are synthetic, RULER evidence has an **EM1 ceiling** under LOGOS rules. A later public realistic/non-synthetic confirmatory substrate is mandatory before EM2 promotion.
+
+New methodological boundary:
+
+```text
+RawCrossBackboneAccuracy != MemoryMechanismEffect
+```
 
 ## Memory-system engineering target
 
@@ -176,7 +198,7 @@ See [`docs/architecture/MEMORY-SYSTEM.md`](docs/architecture/MEMORY-SYSTEM.md) a
 | ENF | What separates enforcement quality from specification quality? |
 | WMR | Does counterexample-prioritized replay add value beyond matched replay? |
 | MF | Which memory functions survive strong retrieval/procedural baselines? |
-| Persistent State | Which state representation is operationally and causally useful under matched resources? |
+| Persistent State | Which state representation is operationally and causally useful under matched controls? |
 | TCV | When does replayed information causally change later trajectories? |
 | SCB | Which state partitions/local interventions diagnose causal contribution? |
 | Γ | How can proposals become bounded external effects without authority leakage? |

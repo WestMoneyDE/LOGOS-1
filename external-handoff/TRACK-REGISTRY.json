@@ -11,45 +11,84 @@
     "External scientific execution is one-shot by default; failed, cancelled, blocked or resource-incomplete runs are not automatically retried.",
     "Gamma live-provider work is excluded from this handoff and remains explicit-human-grant gated."
   ],
-  "priority_order": ["mbe", "enf", "wmr", "longmem", "tcv", "mf_skillsbench", "scb_pr", "tangle"],
+  "priority_order": [
+    "mbe",
+    "enf",
+    "wmr",
+    "longmem",
+    "tcv",
+    "mf_skillsbench",
+    "scb_pr",
+    "tangle"
+  ],
   "tracks": {
-    "mbe": {"title":"MBE / Behavioral-Lift external measurement","priority":1,"status":"COMPLETE_IMPORTED"},
-    "enf": {"title":"ENF-R3 / safe-control-gym external safety boundary","priority":2,"status":"COMPLETE_IMPORTED"},
-    "wmr": {"title":"WMR-R2 / ARC-AGI-3 counterexample-priority replay","priority":3,"status":"COMPLETE_IMPORTED"},
+    "mbe": {
+      "title": "MBE / Behavioral-Lift external measurement",
+      "priority": 1,
+      "status": "COMPLETE_IMPORTED"
+    },
+    "enf": {
+      "title": "ENF-R3 / safe-control-gym external safety boundary",
+      "priority": 2,
+      "status": "COMPLETE_IMPORTED"
+    },
+    "wmr": {
+      "title": "WMR-R2 / ARC-AGI-3 counterexample-priority replay",
+      "priority": 3,
+      "status": "COMPLETE_IMPORTED"
+    },
     "longmem": {
-      "title":"MF-R1 / LongMemEval-V2 strong flat vs associative",
-      "priority":4,
-      "status":"PARKED_UNTESTED_RESOURCE_TRANSPORT",
-      "source_pins":{"repo":"xiaowu0162/LongMemEval-V2","commit":"2cc8c540bdb87fe6761629b585e727e1c4704520","reader":"Qwen/Qwen3.5-9B","embedding":"Qwen/Qwen3-Embedding-8B","judge":"gpt-5.2"}
+      "title": "MF-R1 / LongMemEval-V2 strong flat vs associative",
+      "priority": 4,
+      "status": "PARKED_UNTESTED_RESOURCE_TRANSPORT"
     },
     "tcv": {
-      "title":"TCV-R2 / Wrong but Useful matched replay",
-      "priority":5,
-      "status":"PARKED_UNTESTED_RESOURCE_TRANSPORT",
-      "source_pins":{"paper":"arXiv:2608.14375","artifact":"official author ancillary release"}
+      "title": "TCV-R2 / Wrong but Useful matched replay",
+      "priority": 5,
+      "status": "PARKED_UNTESTED_RESOURCE_TRANSPORT"
     },
     "mf_skillsbench": {
-      "title":"MF-R3 / SkillsBench native skill vs byte-identical generic guidance",
-      "priority":6,
-      "status":"PARKED_UNTESTED_RESOURCE_TRANSPORT",
-      "source_pins":{"repo":"benchflow-ai/skillsbench","commit":"b63b7b2850226b6aa4fb5929a8c1ac7bc4d9a6af","benchflow_release_commit":"99baefb602674bbd31139fd2f1a22c3ed45752f9"}
+      "title": "MF-R3 / SkillsBench native skill vs byte-identical generic guidance",
+      "priority": 6,
+      "status": "PARKED_UNTESTED_RESOURCE_TRANSPORT"
     },
     "scb_pr": {
-      "title":"SCB-R2 / Terminal-Bench 2.0 P×R localization",
-      "priority":7,
-      "status":"PARKED_UNTESTED_RESOURCE_TRANSPORT",
-      "source_pins":{"skill_usage_repo":"UCSB-NLP-Chang/Skill-Usage","skill_usage_commit":"03446d16f7b659ccc93ac5bd512f62e9b7fabb45","replay_repo":"Futuresis/replay-agent-recorder","replay_commit":"6661046e2b30fcf5f17c93d51acb56babdea8c53","benchmark":"Terminal-Bench 2.0","skill_pool":"Shiyu-Lab/Skill-Usage skills-34k","expected_skill_count":34198},
-      "missing_resources":["Docker/Harbor-compatible runtime","SCB_SKILL_POOL_ROOT","SCB_RETRIEVED_TB2_ROOT","SCB_COMMON_MODEL","SCB_COMMON_HARNESS","supported model-provider credential"]
+      "title": "SCB-R2 / Terminal-Bench 2.0 P\u00d7R localization",
+      "priority": 7,
+      "status": "PARKED_UNTESTED_RESOURCE_TRANSPORT"
     },
     "tangle": {
-      "title":"MF-R3 / TANGLE irreducible memory-conflict benchmark",
-      "priority":99,
-      "status":"WAIT_OFFICIAL_RELEASE",
-      "source_pins":{"paper":"arXiv:2608.13921","title":"When Personal Memory Has No Single Answer: Evaluating LLM Agents under Irreducible Conflict"},
-      "last_release_check":"2026-08-20",
-      "release_resolution":"NO_AUTHOR_LINKED_PUBLIC_BENCHMARK_OR_CODE_ARTIFACT_RESOLVED"
+      "title": "MF-R3 / TANGLE irreducible memory-conflict benchmark",
+      "priority": 99,
+      "status": "WAIT_OFFICIAL_RELEASE",
+      "source_pins": {
+        "paper": "arXiv:2608.13921"
+      }
     }
   },
-  "external_queue_state":"BLOCKED_OR_COMPLETE",
-  "next_nonexternal_research_track":"PERSISTENT_STATE_CAUSALITY_PREFLIGHT_R1"
+  "external_queue_state": "BLOCKED_OR_COMPLETE",
+  "current_nonexternal_research": {
+    "track": "PERSISTENT_STATE_MATCHED_FAMILY_ADAPTER_FREEZE_R2",
+    "status": "READY_PERSISTENT_STATE_MATCHED_FAMILY_FREEZE",
+    "source_representatives": {
+      "recurrent": {
+        "repo": "state-spaces/mamba",
+        "commit": "e9594ce1c732d97440f0332fdc43170a2294dbfa"
+      },
+      "fast_weight": {
+        "repo": "test-time-training/ttt-lm-pytorch",
+        "commit": "cd831db10c8c9a0f6340f02da5613316a8a92b67"
+      },
+      "controlled_substrate": {
+        "repo": "NVIDIA/RULER",
+        "commit": "c3f5e3b4f87f97e048793bb510a3a6b19a46bf3a",
+        "evidence_ceiling": "EM1"
+      }
+    },
+    "unresolved_architecture_anchors": [
+      "BDH-CQ exact state adapter",
+      "MoNe exact source implementation"
+    ],
+    "methodological_boundary": "RawCrossBackboneAccuracy != MemoryMechanismEffect"
+  }
 }

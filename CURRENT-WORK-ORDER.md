@@ -1,39 +1,56 @@
 # CURRENT WORK ORDER
 
-**Status:** READY_PERSISTENT_STATE_CAUSALITY_PREFLIGHT  
-**Task:** `05-WORK-ORDERS/NEXT-SESSION-PERSISTENT-STATE-CAUSALITY-PREFLIGHT-R1.md`
+**Status:** READY_PERSISTENT_STATE_MATCHED_FAMILY_FREEZE  
+**Task:** `05-WORK-ORDERS/NEXT-SESSION-PERSISTENT-STATE-MATCHED-FAMILY-ADAPTER-FREEZE-R2.md`
 
-SCB-R2 / Terminal-Bench 2.0 P×R was taken through its complete source/mount/runtime gate before any scientific execution.
+The Persistent-State Causality R1 source preflight is complete.
 
-Verified source pins:
+Resolved facts:
 
-- `UCSB-NLP-Chang/Skill-Usage@03446d16f7b659ccc93ac5bd512f62e9b7fabb45`;
-- `Futuresis/replay-agent-recorder@6661046e2b30fcf5f17c93d51acb56babdea8c53`;
-- Skill-Usage documents Terminal-Bench 2.0, a 34,198-skill public pool, and top-5 retrieval from that pool.
+- public `pathwaycom/bdh@2b0d7a45b058d4309c84a10e0768d541fe18bdc2` is an official BDH baseline, but its exposed public API is not the BDH-CQ persistent cross-query state interface required for the planned state-swap test;
+- `pathwaycom/arc-task-gen@20b2203064b09f60f7925a191d75c11d72277f35` exposes ARC task-generation/evaluation material, not a public BDH-CQ model/state adapter;
+- MoNe arXiv `2608.17616` specifies reusable layer-wise fast-weight state but no official code repository was resolved from the primary record in this preflight;
+- `state-spaces/mamba@e9594ce1c732d97440f0332fdc43170a2294dbfa` exposes inference-cache state suitable for recurrent-state adapter work;
+- `test-time-training/ttt-lm-pytorch@cd831db10c8c9a0f6340f02da5613316a8a92b67` exposes explicit test-time learned state through `cache_params`;
+- `NVIDIA/RULER@c3f5e3b4f87f97e048793bb510a3a6b19a46bf3a` is a usable controlled long-context substrate, but it generates synthetic examples and therefore cannot by itself support EM2 promotion under LOGOS rules.
 
-Resource gate:
-
-```text
-uv = AVAILABLE
-Docker = UNAVAILABLE
-Podman = UNAVAILABLE
-Harbor = UNAVAILABLE
-SCB_SKILL_POOL_ROOT = ABSENT
-SCB_RETRIEVED_TB2_ROOT = ABSENT
-SCB_COMMON_MODEL = ABSENT
-SCB_COMMON_HARNESS = ABSENT
-supported model-provider credential = UNAVAILABLE
-```
-
-Therefore:
+Primary design correction:
 
 ```text
-SCB_R2_PR = UNTESTED_RESOURCE_TRANSPORT
+RawCrossBackboneAccuracy != MemoryMechanismEffect
 ```
 
-No Terminal-Bench trial, recovery factorial, synthetic substitute or retry was started. This is not negative scientific evidence for P, R or SCB localization.
+The next session freezes matched **within-family** causal interventions first:
 
-External blocked/parked state now includes:
+```text
+TOKEN_CONTEXT:
+  full history vs truncation/substitution
+
+RECURRENT_LATENT:
+  carry vs reset vs state swap
+
+FAST_WEIGHT_STATE:
+  carry vs reset vs fast-weight swap
+
+EXTERNAL_RETRIEVAL:
+  relevant vs matched distractor vs no retrieval
+```
+
+The preserved D/O/C ladder remains:
+
+```text
+D(S) = Decodability
+O(S) = Operational utility
+C(S) = Causal intervention effect
+```
+
+Cross-family results may be synthesized through normalized within-family effect sizes and resource curves, not a raw four-model leaderboard.
+
+RULER-controlled results have maximum evidence level `EM1`. A later public realistic/non-synthetic confirmatory substrate is required before EM2 promotion.
+
+BDH-CQ and MoNe remain architecture anchors and are not claimed to be reproduced by Mamba or TTT.
+
+Parked external dependencies remain parked without retry:
 
 ```text
 MF_R1 = UNTESTED_RESOURCE_TRANSPORT
@@ -43,28 +60,4 @@ SCB_R2_PR = UNTESTED_RESOURCE_TRANSPORT
 TANGLE = WAIT_OFFICIAL_RELEASE
 ```
 
-With the external queue blocked, the next canonical research track activates the existing Persistent-State Causality program.
-
-Primary preflight comparison:
-
-```text
-TOKEN_CONTEXT
-vs
-RECURRENT_LATENT
-vs
-FAST_WEIGHT_STATE
-vs
-EXTERNAL_RETRIEVAL
-```
-
-The next session must resolve exact source implementations, a common public task substrate, matched/resource-normalized budgets, manipulable state interfaces, state-swap/negative controls and corruption/recovery before any run.
-
-Mandatory evidence ladder:
-
-```text
-D(S) = Decodability
-O(S) = Operational utility
-C(S) = Causal intervention effect
-```
-
-`Γ-v0.3` remains `HOLD`. Persistent state remains separate from execution authority and from phenomenal-consciousness inference.
+`Γ-v0.3` remains `HOLD`.
