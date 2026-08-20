@@ -1,0 +1,20 @@
+{
+  "schema": "logos-wmr-source-provenance-v1",
+  "toolkit_repo": "arcprize/ARC-AGI",
+  "toolkit_commit": "f12822c4d550121c35a275008d964afbbed47d2f",
+  "toolkit_version": "0.9.9",
+  "frozen_experiment_sha256": "2aab8cd3bc92765c626fc938545d1f5ab48f7d4091c4ec67ef0ae2f1aab6f2e9",
+  "collector_sha256": "cf0fbd050b5a57bcc654bd770df6259a8193f97fdee4c734185a0a2030e3fcd3",
+  "evaluator_sha256": "9a81c32b680e77c99913dd3e4f392d2b88aafa9c859dd8bac8d9da8b69b1065c",
+  "source_isolation_validator_sha256": "d534b4765a194e485212c9e8250c5d7f4c7e530210c83a8882b6154955cde173",
+  "official_cache_manifest_sha256": "1207103a40558d80c7f77f43e54cd9131fe76457af1bfabd8765e7b33952e71e",
+  "official_cache_game_ids": [
+    "ar25-0c556536", "bp35-0a0ad940", "cd82-fb555c5d", "cn04-2fe56bfb", "dc22-fdcac232",
+    "ft09-0d8bbf25", "g50t-5849a774", "ka59-38d34dbb", "lf52-271a04aa", "lp85-305b61c3",
+    "ls20-9607627b", "m0r0-492f87ba", "r11l-495a7899", "re86-8af5384d", "s5i5-18d95033",
+    "sb26-7fbdac44", "sc25-635fd71a", "sk48-d8078629", "sp80-589a99af", "su15-1944f8ab",
+    "tn36-ef4dde99", "tr87-cd924810", "tu93-0768757b", "vc33-5430563c", "wa30-ee6fef47"
+  ],
+  "github_run_id": "32323733810",
+  "github_sha": "ec4a7de6bc2af0dc44237dd2560d1942f4828685"
+}
