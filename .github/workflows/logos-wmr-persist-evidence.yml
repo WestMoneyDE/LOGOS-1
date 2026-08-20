@@ -1,0 +1,71 @@
+name: Persist WMR External Evidence R1
+
+on:
+  push:
+    branches:
+      - "agent/wmr-arc-agi-3-external-r1"
+    paths:
+      - ".github/workflows/logos-wmr-persist-evidence.yml"
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  persist:
+    if: startsWith(github.event.head_commit.message, 'ci: persist WMR external evidence')
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/wmr-arc-agi-3-external-r1
+
+      - name: Download completed WMR artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TMP="$RUNNER_TEMP/wmr-persist"
+          mkdir -p "$TMP/download"
+          gh run download 32323733810 \
+            --repo WestMoneyDE/LOGOS-1 \
+            --name logos-wmr-external-r1-32323733810 \
+            --dir "$TMP/download"
+          find "$TMP/download" -maxdepth 3 -type f -printf '%p %s bytes\n' | sort
+
+      - name: Persist compact raw evidence
+        run: |
+          set -euo pipefail
+          TMP="$RUNNER_TEMP/wmr-persist/download"
+          DEST="09-SESSIONS/2026-08-20-WMR-ARC-AGI-3-EXTERNAL-R1/RAW"
+          mkdir -p "$DEST"
+
+          RETURN_ZIP="$(find "$TMP" -type f -name 'wmr-return.zip' -print -quit)"
+          test -n "$RETURN_ZIP"
+          cp "$RETURN_ZIP" "$DEST/wmr-return.zip"
+
+          for name in source-provenance.json wmr-r2-results.summary.json cache-acquisition.json source-isolation.txt execution-attestation.json collector-stdout.txt evaluator-stdout.txt; do
+            SRC="$(find "$TMP" -type f -name "$name" -print -quit)"
+            if [ -n "$SRC" ]; then cp "$SRC" "$DEST/$name"; fi
+          done
+          V="$(find "$TMP" -type f -name 'validate-return.txt' -print -quit)"
+          if [ -n "$V" ]; then cp "$V" "$DEST/validate-return.txt"; fi
+
+          (
+            cd "$DEST"
+            sha256sum * | sort > SHA256SUMS.txt
+          )
+
+          EXPECTED="278f001874a5c2541d9ec3235e841aa87a759c3067c96b15c7253ae180d19e86"
+          ACTUAL="$(sha256sum "$DEST/wmr-return.zip" | awk '{print $1}')"
+          test "$ACTUAL" = "$EXPECTED"
+
+      - name: Commit evidence to session checkpoint
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add 09-SESSIONS/2026-08-20-WMR-ARC-AGI-3-EXTERNAL-R1/RAW
+          git commit -m "wmr: persist complete external return evidence"
+          git push origin HEAD:agent/wmr-arc-agi-3-external-r1
