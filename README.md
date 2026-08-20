@@ -149,24 +149,24 @@ Synthetic-only mechanism promotion is currently frozen. External evidence is req
 
 ## Current research state
 
-**Canonical gate:** `READY_WMR_EXTERNAL_EXECUTION`  
-**Current work order:** [`NEXT-SESSION-WMR-ARC-AGI-3-EXTERNAL-EXECUTION-R1`](05-WORK-ORDERS/NEXT-SESSION-WMR-ARC-AGI-3-EXTERNAL-EXECUTION-R1.md)
+**Canonical gate:** `READY_ON_DATA_AND_MODEL_ENDPOINTS`  
+**Current work order:** [`NEXT-SESSION-MF-R1-LONGMEMEVAL-V2-EXTERNAL-EXECUTION-R1`](05-WORK-ORDERS/NEXT-SESSION-MF-R1-LONGMEMEVAL-V2-EXTERNAL-EXECUTION-R1.md)
 
 Completed external returns:
 
 1. **MBE / Behavioral-Lift** — `GENERIC_TRACE_MONITOR → KEEP_BOUNDED_EM2` for behavioral-proxy/calibration measurement only.
 2. **ENF / safe-control-gym** — `CorrectEnforcement != CorrectSpecification → KEEP_BOUNDED_EM2`; unconditional independence-as-safety-improvement was externally rejected/demoted.
+3. **WMR / ARC-AGI-3** — replay improved the frozen generic world model relative to recent-only, but `COUNTEREXAMPLE_PRIORITY_INCREMENTAL_VALUE → MERGE/REJECT_EM2_EXTERNAL` because counterexample-priority did not establish a consistent distinct advantage over matched uniform replay.
 
 Next in the external queue:
 
-3. **WMR / ARC-AGI-3** — counterexample-priority replay under source-isolation and equal-resource constraints.
-4. **Memory Fabric / LongMemEval-V2**.
+4. **Memory Fabric / LongMemEval-V2** — frozen strong-flat vs associative reconstruction comparison; waiting on exact dataset/model/judge resources.
 5. **TCV / Wrong but Useful**.
 6. **Procedural Memory / SkillsBench**.
 7. **SCB P×R / Terminal-Bench 2.0**.
 8. **TANGLE** — waiting for an official release.
 
-See [`LOGOS-PROGRESS-2026-08-19.md`](LOGOS-PROGRESS-2026-08-19.md) and [`CURRENT-WORK-ORDER.md`](CURRENT-WORK-ORDER.md) for the evidence state.
+See [`CURRENT-WORK-ORDER.md`](CURRENT-WORK-ORDER.md) and the durable session checkpoints under [`09-SESSIONS/`](09-SESSIONS/) for the evidence state.
 
 ## Coding-ready
 
@@ -200,7 +200,7 @@ LOGOS-1 is structured so coding agents can continue the project without relying 
 
 - [`AGENTS.md`](AGENTS.md) is the repository-wide operating contract for Codex and other coding agents.
 - [`CLAUDE.md`](CLAUDE.md) provides persistent project instructions for Claude Code.
-- [`05-WORK-ORDERS/ENGINEERING-MEMORY-SYSTEM-CODING-AGENTS-R1.md`](05-WORK-ORDERS/ENGINEERING-MEMORY-SYSTEM-CODING-AGENTS-R1.md) is a **parallel engineering work order** and does not replace the active scientific WMR queue.
+- [`05-WORK-ORDERS/ENGINEERING-MEMORY-SYSTEM-CODING-AGENTS-R1.md`](05-WORK-ORDERS/ENGINEERING-MEMORY-SYSTEM-CODING-AGENTS-R1.md) is a **parallel engineering work order** and does not replace the active scientific LongMemEval-V2 queue.
 
 Every substantive push should propagate its consequences into tests, docs, capability inventory, session state and evidence boundaries. See [`docs/engineering/PUSH-PROTOCOL.md`](docs/engineering/PUSH-PROTOCOL.md).
 
