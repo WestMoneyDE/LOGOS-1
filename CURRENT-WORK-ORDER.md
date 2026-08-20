@@ -1,63 +1,61 @@
 # CURRENT WORK ORDER
 
-**Status:** READY_PERSISTENT_STATE_MATCHED_FAMILY_FREEZE  
-**Task:** `05-WORK-ORDERS/NEXT-SESSION-PERSISTENT-STATE-MATCHED-FAMILY-ADAPTER-FREEZE-R2.md`
+**Status:** READY_PERSISTENT_STATE_ADAPTER_IMPLEMENTATION_R3  
+**Task:** `05-WORK-ORDERS/NEXT-SESSION-PERSISTENT-STATE-RESOLVED-FAMILY-ADAPTER-IMPLEMENTATION-R3.md`
 
-The Persistent-State Causality R1 source preflight is complete.
+Persistent-State Matched-Family Adapter Freeze R2 is complete as a partial source/checkpoint freeze. No model benchmark execution was started.
 
-Resolved facts:
+Resolved/frozen:
 
-- public `pathwaycom/bdh@2b0d7a45b058d4309c84a10e0768d541fe18bdc2` is an official BDH baseline, but its exposed public API is not the BDH-CQ persistent cross-query state interface required for the planned state-swap test;
-- `pathwaycom/arc-task-gen@20b2203064b09f60f7925a191d75c11d72277f35` exposes ARC task-generation/evaluation material, not a public BDH-CQ model/state adapter;
-- MoNe arXiv `2608.17616` specifies reusable layer-wise fast-weight state but no official code repository was resolved from the primary record in this preflight;
-- `state-spaces/mamba@e9594ce1c732d97440f0332fdc43170a2294dbfa` exposes inference-cache state suitable for recurrent-state adapter work;
-- `test-time-training/ttt-lm-pytorch@cd831db10c8c9a0f6340f02da5613316a8a92b67` exposes explicit test-time learned state through `cache_params`;
-- `NVIDIA/RULER@c3f5e3b4f87f97e048793bb510a3a6b19a46bf3a` is a usable controlled long-context substrate, but it generates synthetic examples and therefore cannot by itself support EM2 promotion under LOGOS rules.
+```text
+TOKEN_CONTEXT / RETRIEVAL DECODER
+openai-community/gpt2@607a30d783dfa663caf39e06633721c8d4cfcd7e
 
-Primary design correction:
+RECURRENT STATE
+state-spaces/mamba@e9594ce1c732d97440f0332fdc43170a2294dbfa
+state-spaces/mamba-130m-hf@1e76775f628fbf1350fbe4dbb3d971ba64af25a1
+
+FAST-WEIGHT SOURCES/CHECKPOINT
+TTT PyTorch @ cd831db10c8c9a0f6340f02da5613316a8a92b67
+TTT JAX     @ 6f529b124c7fb5879b33c06926408b15add1d82f
+TTT 125M checkpoint @ b1a5f81bed7b70be067867b6b47a6e7047c5093e
+
+CONTROLLED SUBSTRATE
+NVIDIA/RULER@c3f5e3b4f87f97e048793bb510a3a6b19a46bf3a
+```
+
+R2 blocker:
+
+```text
+TTT_OFFICIAL_CHECKPOINT = RESOLVED
+TTT_PYTORCH_CHECKPOINT_BRIDGE = UNRESOLVED
+TTT_EXACT_TOKENIZER_BYTES = UNRESOLVED_GATED_RESOURCE
+```
+
+The official 125M TTT artifact is a JAX/streaming-train-state checkpoint; no community conversion is substituted. The next session must resolve or park that exact bridge once.
+
+Frozen controlled task envelope:
+
+```text
+tasks = [niah_single_1, niah_multikey_1, niah_multiquery, vt]
+max_seq_length = 1024
+num_samples_per_task_per_seed = 32
+seeds = [73000, 73001, 73002, 73003]
+```
+
+Generated-example hashes remain intentionally pending until exact family tokenizer resources are frozen. Model benchmark execution before the hash freeze is prohibited.
+
+The next session implements deterministic Mamba complete-state clone/reset/swap, GPT-2 token-history controls and deterministic matched retrieval; it resolves or explicitly parks the official TTT bridge; then it materializes/hash-freezes RULER datasets. It is still an adapter session, not a scientific mechanism verdict.
+
+Methodological boundaries remain:
 
 ```text
 RawCrossBackboneAccuracy != MemoryMechanismEffect
+RULER-controlled result <= EM1
+PersistentState != Authority
+CausalState != PhenomenalConsciousness
 ```
 
-The next session freezes matched **within-family** causal interventions first:
-
-```text
-TOKEN_CONTEXT:
-  full history vs truncation/substitution
-
-RECURRENT_LATENT:
-  carry vs reset vs state swap
-
-FAST_WEIGHT_STATE:
-  carry vs reset vs fast-weight swap
-
-EXTERNAL_RETRIEVAL:
-  relevant vs matched distractor vs no retrieval
-```
-
-The preserved D/O/C ladder remains:
-
-```text
-D(S) = Decodability
-O(S) = Operational utility
-C(S) = Causal intervention effect
-```
-
-Cross-family results may be synthesized through normalized within-family effect sizes and resource curves, not a raw four-model leaderboard.
-
-RULER-controlled results have maximum evidence level `EM1`. A later public realistic/non-synthetic confirmatory substrate is required before EM2 promotion.
-
-BDH-CQ and MoNe remain architecture anchors and are not claimed to be reproduced by Mamba or TTT.
-
-Parked external dependencies remain parked without retry:
-
-```text
-MF_R1 = UNTESTED_RESOURCE_TRANSPORT
-TCV_R2 = UNTESTED_RESOURCE_TRANSPORT
-MF_R3_SKILLSBENCH = UNTESTED_RESOURCE_TRANSPORT
-SCB_R2_PR = UNTESTED_RESOURCE_TRANSPORT
-TANGLE = WAIT_OFFICIAL_RELEASE
-```
+Repository maintenance included in the R2 checkpoint: `assets/logos-1-hero.svg` is replaced by the new Γ-centered architecture hero. The binary PNG transport failed checksum validation once and was not retried; the final vector asset is corruption-safe and Git-native.
 
 `Γ-v0.3` remains `HOLD`.

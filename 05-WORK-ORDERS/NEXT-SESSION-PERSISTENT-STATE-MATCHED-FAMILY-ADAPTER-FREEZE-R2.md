@@ -4,9 +4,11 @@
 **Authority:** A0  
 **Track:** persistent state / memory / causal state use  
 **Type:** exact artifact + intervention adapter freeze  
-**Status:** `READY_PERSISTENT_STATE_MATCHED_FAMILY_FREEZE`  
+**Status:** `COMPLETED_PARTIAL_FREEZE / SUPERSEDED_BY_R3`  
 **Execution policy:** `ONE_SHOT_NO_AUTORETRY` for any later run  
 **Scientific ceiling:** EM1 for RULER-controlled causal tests; no EM2 promotion without a later realistic public confirmatory substrate
+
+**R2 outcome:** GPT-2/Mamba/RULER source and intervention contracts were frozen; the official TTT 125M checkpoint was resolved but its official executable checkpoint/tokenizer bridge remains unresolved. Canonical continuation: `NEXT-SESSION-PERSISTENT-STATE-RESOLVED-FAMILY-ADAPTER-IMPLEMENTATION-R3`.
 
 ## Why this work order exists
 

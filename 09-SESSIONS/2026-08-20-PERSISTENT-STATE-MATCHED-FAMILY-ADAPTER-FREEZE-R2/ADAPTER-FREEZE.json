@@ -1,0 +1,73 @@
+{
+  "schema": "logos-persistent-state-matched-family-adapter-freeze-v1",
+  "date": "2026-08-20",
+  "session": "PERSISTENT-STATE-MATCHED-FAMILY-ADAPTER-FREEZE-R2",
+  "classification": "PARTIAL_ADAPTER_FREEZE_TTT_BRIDGE_AND_TOKENIZER_UNRESOLVED",
+  "scientific_execution_started": false,
+  "raw_cross_backbone_mechanism_ranking_licensed": false,
+  "token_context": {
+    "model": "openai-community/gpt2",
+    "revision": "607a30d783dfa663caf39e06633721c8d4cfcd7e",
+    "max_primary_context_tokens": 1024,
+    "interventions": ["FULL_TOKEN_HISTORY", "TRUNCATED_HISTORY", "HISTORY_A", "HISTORY_B"]
+  },
+  "external_retrieval": {
+    "decoder_model": "openai-community/gpt2",
+    "decoder_revision": "607a30d783dfa663caf39e06633721c8d4cfcd7e",
+    "ranker": "DETERMINISTIC_BM25_STYLE",
+    "k1": 1.5,
+    "b": 0.75,
+    "tie_break": "canonical_chunk_id_ascending",
+    "conditions": ["NO_RETRIEVAL", "RELEVANT_RETRIEVAL", "MATCHED_DISTRACTOR_RETRIEVAL"]
+  },
+  "recurrent_state": {
+    "source_repo": "state-spaces/mamba",
+    "source_commit": "e9594ce1c732d97440f0332fdc43170a2294dbfa",
+    "model": "state-spaces/mamba-130m-hf",
+    "model_revision": "1e76775f628fbf1350fbe4dbb3d971ba64af25a1",
+    "tokenizer_revision": "1e76775f628fbf1350fbe4dbb3d971ba64af25a1",
+    "state_object": "InferenceParams",
+    "state_fields": ["max_seqlen", "max_batch_size", "seqlen_offset", "batch_size_offset", "key_value_memory_dict", "lengths_per_sample"],
+    "reset_rule": "fresh_cache_allocation_or_explicit_complete_tensor_reinitialization",
+    "interventions": ["CARRY_STATE", "RESET_STATE_FRESH_CACHE", "SWAP_COMPLETE_STATE_A_TO_B", "RANDOM_OR_PERMUTED_COMPLETE_STATE"]
+  },
+  "fast_weight_state": {
+    "pytorch_repo": "test-time-training/ttt-lm-pytorch",
+    "pytorch_commit": "cd831db10c8c9a0f6340f02da5613316a8a92b67",
+    "jax_repo": "test-time-training/ttt-lm-jax",
+    "jax_commit": "6f529b124c7fb5879b33c06926408b15add1d82f",
+    "official_checkpoint": "Test-Time-Training/ttt-linear-125m-books-2k",
+    "checkpoint_revision": "b1a5f81bed7b70be067867b6b47a6e7047c5093e",
+    "checkpoint_format": "JAX_STREAMING_TRAIN_STATE",
+    "pytorch_checkpoint_bridge": "UNRESOLVED",
+    "tokenizer_reference": "meta-llama/Llama-2-7b-hf",
+    "tokenizer_resource": "UNRESOLVED_GATED_RESOURCE",
+    "source_state_object": "TTTCache",
+    "source_state_fields": ["seqlen_offset", "mini_batch_size", "ttt_params_dict", "conv_states_dic"],
+    "ttt_linear_minimum_learned_fields": ["W1_states", "b1_states", "W1_grad", "b1_grad"],
+    "complete_state_requires_checkpoint_config_resolution": true,
+    "execution_adapter_status": "NOT_YET_FROZEN"
+  },
+  "controlled_substrate": {
+    "repo": "NVIDIA/RULER",
+    "commit": "c3f5e3b4f87f97e048793bb510a3a6b19a46bf3a",
+    "evidence_ceiling": "EM1",
+    "tasks": ["niah_single_1", "niah_multikey_1", "niah_multiquery", "vt"],
+    "max_seq_length": 1024,
+    "num_samples_per_task_per_seed": 32,
+    "seeds": [73000, 73001, 73002, 73003],
+    "remove_newline_tab": false,
+    "generated_example_hashes": "PENDING_EXACT_FAMILY_TOKENIZER_FREEZE",
+    "model_execution_before_hash_freeze": "PROHIBITED"
+  },
+  "hero": {
+    "path": "assets/logos-1-hero.svg",
+    "format": "UTF8_VECTOR_SVG",
+    "width": 1774,
+    "height": 887,
+    "center": "Gamma governed action core",
+    "binary_raster_transport": "CHECKSUM_MISMATCH_ONCE_NOT_RETRIED",
+    "final_transport": "CORRUPTION_SAFE_TEXT_BLOB"
+  },
+  "next_work_order": "NEXT-SESSION-PERSISTENT-STATE-RESOLVED-FAMILY-ADAPTER-IMPLEMENTATION-R3"
+}

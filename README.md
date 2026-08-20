@@ -93,8 +93,8 @@ Synthetic-only mechanism promotion is frozen. External evidence or a stronger di
 
 ## Current research state
 
-**Canonical gate:** `READY_PERSISTENT_STATE_MATCHED_FAMILY_FREEZE`  
-**Current work order:** [`NEXT-SESSION-PERSISTENT-STATE-MATCHED-FAMILY-ADAPTER-FREEZE-R2`](05-WORK-ORDERS/NEXT-SESSION-PERSISTENT-STATE-MATCHED-FAMILY-ADAPTER-FREEZE-R2.md)
+**Canonical gate:** `READY_PERSISTENT_STATE_ADAPTER_IMPLEMENTATION_R3`  
+**Current work order:** [`NEXT-SESSION-PERSISTENT-STATE-RESOLVED-FAMILY-ADAPTER-IMPLEMENTATION-R3`](05-WORK-ORDERS/NEXT-SESSION-PERSISTENT-STATE-RESOLVED-FAMILY-ADAPTER-IMPLEMENTATION-R3.md)
 
 ### Completed external returns
 
@@ -112,9 +112,9 @@ Synthetic-only mechanism promotion is frozen. External evidence or a stronger di
 
 No blocked transport result is treated as negative scientific evidence, and blocked/failed external runs are not automatically retried.
 
-## Persistent-State Causality — matched-family freeze
+## Persistent-State Causality — adapter implementation
 
-The conceptual comparison remains:
+The conceptual memory/state classes remain:
 
 ```text
 TOKEN_CONTEXT
@@ -126,21 +126,25 @@ vs
 EXTERNAL_RETRIEVAL
 ```
 
-The source preflight found that a raw four-backbone leaderboard would be confounded. LOGOS therefore estimates causal value primarily **within each architecture family**:
+R2 confirmed that a raw four-backbone leaderboard is not a valid memory-mechanism test. LOGOS therefore estimates causal value **within each architecture family** and only synthesizes normalized effect sizes/resource curves across families.
+
+Frozen small-model anchors now include:
 
 ```text
-TOKEN_CONTEXT:
-  full history vs truncation/substitution
+Token / retrieval decoder:
+  openai-community/gpt2@607a30d783dfa663caf39e06633721c8d4cfcd7e
 
-RECURRENT_LATENT:
-  carry vs reset vs state swap
+Recurrent state:
+  state-spaces/mamba@e9594ce1c732d97440f0332fdc43170a2294dbfa
+  state-spaces/mamba-130m-hf@1e76775f628fbf1350fbe4dbb3d971ba64af25a1
 
-FAST_WEIGHT_STATE:
-  carry vs reset vs fast-weight swap
-
-EXTERNAL_RETRIEVAL:
-  relevant vs matched distractor vs no retrieval
+Fast-weight sources/checkpoint:
+  test-time-training/ttt-lm-pytorch@cd831db10c8c9a0f6340f02da5613316a8a92b67
+  test-time-training/ttt-lm-jax@6f529b124c7fb5879b33c06926408b15add1d82f
+  Test-Time-Training/ttt-linear-125m-books-2k@b1a5f81bed7b70be067867b6b47a6e7047c5093e
 ```
+
+The TTT checkpoint is official, but the exact official checkpoint-to-executable adapter/tokenizer path is not yet frozen; no community conversion is substituted.
 
 For every proposed state `S`:
 
@@ -150,11 +154,11 @@ O(S) = Operational utility
 C(S) = Causal intervention effect
 ```
 
-Resolved source representatives include Mamba for recurrent inference state and TTT for explicit test-time learned fast-weight state. BDH-CQ and MoNe remain architecture anchors, but their exact executable state adapters are currently unresolved and are not claimed to be reproduced by Mamba/TTT.
+Mamba state intervention uses the complete continuation cache, not only an offset. In particular, the scientific `RESET_STATE` must use a fresh/reinitialized cache rather than assuming `InferenceParams.reset()` clears all memory tensors.
 
-RULER is source-pinned for controlled adapter/state-swap validation only. Because its examples are synthetic, RULER evidence has an **EM1 ceiling** under LOGOS rules. A later public realistic/non-synthetic confirmatory substrate is mandatory before EM2 promotion.
+The controlled RULER stage is frozen to `niah_single_1`, `niah_multikey_1`, `niah_multiquery` and `vt`, with a 1024-token primary slice and fixed seeds. Because RULER examples are synthetic, its evidence ceiling remains **EM1**; a later public realistic/non-synthetic substrate is mandatory before EM2 promotion.
 
-New methodological boundary:
+Methodological boundary:
 
 ```text
 RawCrossBackboneAccuracy != MemoryMechanismEffect

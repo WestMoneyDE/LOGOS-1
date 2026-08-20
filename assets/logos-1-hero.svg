@@ -1,64 +1,46 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="800" viewBox="0 0 1600 800" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="1774" height="887" viewBox="0 0 1774 887" role="img" aria-labelledby="title desc">
   <title id="title">LOGOS-1 — Governed Intelligence for Safe Autonomous Agents</title>
-  <desc id="desc">A futuristic hero banner for the LOGOS-1 repository showing memory, reasoning, evidence and control around a governed intelligence core.</desc>
+  <desc id="desc">Futuristic architecture map with Gamma as the governed action core connecting memory, world models, reasoning, evaluation, governance, external evidence and execution.</desc>
   <defs>
-    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
-      <stop offset="0%" stop-color="#020816"/>
-      <stop offset="55%" stop-color="#06152e"/>
-      <stop offset="100%" stop-color="#040913"/>
-    </linearGradient>
-    <linearGradient id="glow" x1="0" x2="1">
-      <stop offset="0%" stop-color="#1de9ff"/>
-      <stop offset="50%" stop-color="#43b3ff"/>
-      <stop offset="100%" stop-color="#9a6bff"/>
-    </linearGradient>
-    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="8" result="blur"/>
-      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#020711"/><stop offset=".5" stop-color="#071329"/><stop offset="1" stop-color="#020711"/></linearGradient>
+    <linearGradient id="cyan" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#25e4ff"/><stop offset=".55" stop-color="#54a9ff"/><stop offset="1" stop-color="#8d70ff"/></linearGradient>
+    <radialGradient id="core" cx="50%" cy="45%" r="65%"><stop offset="0" stop-color="#183d75"/><stop offset=".6" stop-color="#0a2046"/><stop offset="1" stop-color="#071126"/></radialGradient>
+    <filter id="glow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="10" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <pattern id="grid" width="38" height="38" patternUnits="userSpaceOnUse"><path d="M38 0H0V38" fill="none" stroke="#55bfff" stroke-opacity=".055" stroke-width="1"/></pattern>
+    <style>
+      .t{font-family:Arial,Helvetica,sans-serif;fill:#f7fbff}.mut{fill:#a8c7e7}.cyan{fill:#64e8ff}.box{fill:#08182e;stroke:#42d9ff;stroke-opacity:.55;stroke-width:1.6}.box2{fill:#081529;stroke:#8d78ff;stroke-opacity:.55;stroke-width:1.6}.label{font-size:22px;font-weight:700;letter-spacing:.6px}.sub{font-size:15px;fill:#a9c9e7}.tiny{font-size:13px;fill:#8cb4d9}.flow{fill:none;stroke:url(#cyan);stroke-width:2.3;stroke-opacity:.82}.dash{fill:none;stroke:#51dfff;stroke-width:1.5;stroke-opacity:.32;stroke-dasharray:8 9}
+    </style>
   </defs>
-  <rect width="1600" height="800" fill="url(#bg)"/>
-  <g opacity="0.18">
-    <path d="M20 70h180M20 730h220M1380 80h190M1320 730h250" stroke="#66dfff" stroke-width="2"/>
-    <path d="M35 88v80M35 632v90M1550 98v100M1550 610v110" stroke="#66dfff" stroke-width="2"/>
+  <rect width="1774" height="887" fill="url(#bg)"/>
+  <rect width="1774" height="887" fill="url(#grid)"/>
+  <rect x="30" y="28" width="1714" height="831" rx="28" fill="none" stroke="#b6eaff" stroke-opacity=".12"/>
+  <g transform="translate(78 92)">
+    <text class="t" x="0" y="0" font-size="76" font-weight="800">LOGOS-1</text>
+    <rect x="2" y="24" width="474" height="3" rx="2" fill="url(#cyan)"/>
+    <text class="t" x="0" y="70" font-size="25" font-weight="600">Governed Intelligence for Safe Autonomous Agents</text>
+    <text class="cyan" x="0" y="106" font-size="15" font-weight="700" letter-spacing="5">MEMORY · REASONING · EVIDENCE · CONTROL</text>
   </g>
-  <g transform="translate(70,120)">
-    <text x="0" y="90" font-size="92" font-family="Arial, Helvetica, sans-serif" font-weight="700" fill="#f6fbff">LOGOS-1</text>
-    <rect x="0" y="122" width="520" height="3" rx="2" fill="url(#glow)"/>
-    <text x="0" y="180" font-size="34" font-family="Arial, Helvetica, sans-serif" fill="#f7fbff">Governed Intelligence for Safe Autonomous Agents</text>
-    <text x="0" y="235" font-size="18" letter-spacing="6" font-family="Arial, Helvetica, sans-serif" fill="#7fe7ff">MEMORY · REASONING · EVIDENCE · CONTROL</text>
-    <g transform="translate(0,340)">
-      <rect width="560" height="160" rx="22" fill="#081528" stroke="#27d6ff" stroke-opacity="0.45"/>
-      <g font-family="Arial, Helvetica, sans-serif" fill="#f6fbff">
-        <g transform="translate(35,45)"><circle cx="20" cy="20" r="18" fill="none" stroke="#18dfff"/><path d="M20 9v22M9 20h22" stroke="#18dfff" stroke-width="2"/><text x="0" y="64" font-size="15" fill="#18dfff" font-weight="700">VERIFIABLE</text><text x="0" y="88" font-size="13" fill="#cfefff">Checkable outputs &amp; audit trails</text></g>
-        <g transform="translate(170,45)"><path d="M20 4l15 6v12c0 13-10 22-15 25-5-3-15-12-15-25V10z" fill="none" stroke="#2bcfff" stroke-width="2"/><text x="0" y="64" font-size="15" fill="#2bcfff" font-weight="700">CONTROLLABLE</text><text x="0" y="88" font-size="13" fill="#cfefff">Bounded actions &amp; constraints</text></g>
-        <g transform="translate(325,45)"><ellipse cx="20" cy="20" rx="22" ry="12" fill="none" stroke="#39cfff" stroke-width="2"/><circle cx="20" cy="20" r="5" fill="#39cfff"/><text x="-6" y="64" font-size="15" fill="#39cfff" font-weight="700">TRANSPARENT</text><text x="-6" y="88" font-size="13" fill="#cfefff">Interpretable reasoning &amp; decisions</text></g>
-      </g>
-    </g>
+  <g transform="translate(785 94)">
+    <rect class="box" width="286" height="94" rx="18"/>
+    <text class="t label" x="143" y="38" text-anchor="middle">REASONING</text>
+    <text class="sub" x="143" y="66" text-anchor="middle">iterative latent computation</text>
   </g>
-  <g transform="translate(980,390)">
-    <circle r="160" fill="none" stroke="#39cfff" stroke-opacity="0.26" stroke-width="2"/>
-    <circle r="126" fill="none" stroke="url(#glow)" stroke-width="6" filter="url(#softGlow)"/>
-    <circle r="90" fill="#0a2146" stroke="#60dfff" stroke-opacity="0.8" stroke-width="2"/>
-    <circle r="72" fill="none" stroke="#7e7cff" stroke-opacity="0.6" stroke-width="2"/>
-    <path d="M0,-72 62,-24 38,50 -38,50 -62,-24z" fill="none" stroke="#62dcff" stroke-width="2"/>
-    <path d="M0,-72 0,72 M62,-24 -62,-24 M38,50 -38,50 M62,-24 0,72 M-62,-24 0,72" stroke="#62dcff" stroke-opacity="0.7"/>
-    <text x="0" y="12" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="42" font-weight="700" fill="#f8fcff">LOGOS-1</text>
-    <path d="M0 160v88" stroke="url(#glow)" stroke-width="3"/>
+  <g transform="translate(555 267)"><rect class="box" width="260" height="100" rx="18"/><text class="t label" x="24" y="38">MEMORY</text><text class="sub" x="24" y="65">episodic · semantic · procedural</text><text class="tiny" x="24" y="85">persistent state · provenance</text></g>
+  <g transform="translate(530 428)"><rect class="box" width="285" height="100" rx="18"/><text class="t label" x="24" y="38">WORLD MODELS</text><text class="sub" x="24" y="65">belief · simulation · uncertainty</text><text class="tiny" x="24" y="85">imagined != observed</text></g>
+  <g transform="translate(1045 267)"><rect class="box" width="270" height="100" rx="18"/><text class="t label" x="24" y="38">EVALUATION</text><text class="sub" x="24" y="65">scoring · critique · calibration</text><text class="tiny" x="24" y="85">D(S) · O(S) · C(S)</text></g>
+  <g transform="translate(1045 428)"><rect class="box2" width="270" height="100" rx="18"/><text class="t label" x="24" y="38">GOVERNANCE</text><text class="sub" x="24" y="65">policy · grants · reconciliation</text><text class="tiny" x="24" y="85">assurance state outside memory</text></g>
+  <g transform="translate(1410 254)">
+    <rect class="box" width="260" height="286" rx="22"/><text class="t" x="130" y="44" text-anchor="middle" font-size="20" font-weight="800">EXTERNAL EVIDENCE</text><line x1="34" y1="64" x2="226" y2="64" stroke="#43dfff" stroke-opacity=".35"/>
+    <text class="sub" x="42" y="105">observations</text><circle cx="208" cy="100" r="5" fill="#4ee6ff"/><text class="sub" x="42" y="145">sensors / APIs</text><circle cx="208" cy="140" r="5" fill="#4ee6ff"/><text class="sub" x="42" y="185">documents</text><circle cx="208" cy="180" r="5" fill="#4ee6ff"/><text class="sub" x="42" y="225">execution receipts</text><circle cx="208" cy="220" r="5" fill="#4ee6ff"/><text class="tiny" x="130" y="260" text-anchor="middle">evidence before mechanism promotion</text>
   </g>
-  <g stroke="#46d8ff" stroke-width="2" fill="#081528" fill-opacity="0.95" font-family="Arial, Helvetica, sans-serif">
-    <g transform="translate(660,250)"><rect width="210" height="96" rx="18"/><text x="28" y="36" fill="#f7fbff" font-size="24" font-weight="700">MEMORY</text><text x="28" y="64" fill="#cfefff" font-size="19">Long-term context &amp;</text><text x="28" y="86" fill="#cfefff" font-size="19">knowledge</text></g>
-    <g transform="translate(660,390)"><rect width="240" height="96" rx="18"/><text x="28" y="36" fill="#f7fbff" font-size="24" font-weight="700">WORLD MODELS</text><text x="28" y="64" fill="#cfefff" font-size="19">Understanding &amp;</text><text x="28" y="86" fill="#cfefff" font-size="19">simulation</text></g>
-    <g transform="translate(1140,250)"><rect width="220" height="96" rx="18"/><text x="28" y="36" fill="#f7fbff" font-size="24" font-weight="700">EVALUATION</text><text x="28" y="64" fill="#cfefff" font-size="19">Scoring, critique &amp;</text><text x="28" y="86" fill="#cfefff" font-size="19">uncertainty</text></g>
-    <g transform="translate(1140,390)"><rect width="220" height="96" rx="18"/><text x="28" y="36" fill="#f7fbff" font-size="24" font-weight="700">GOVERNANCE</text><text x="28" y="64" fill="#cfefff" font-size="19">Policies, rules &amp;</text><text x="28" y="86" fill="#cfefff" font-size="19">alignment</text></g>
-    <g transform="translate(880,90)"><rect width="220" height="96" rx="18"/><text x="28" y="36" fill="#f7fbff" font-size="24" font-weight="700">REASONING</text><text x="28" y="64" fill="#cfefff" font-size="19">Structured inference &amp;</text><text x="28" y="86" fill="#cfefff" font-size="19">deliberation</text></g>
-    <g transform="translate(1445,195)"><rect width="120" height="270" rx="20"/><text x="60" y="54" text-anchor="middle" fill="#f7fbff" font-size="20" font-weight="700">EXTERNAL</text><text x="60" y="82" text-anchor="middle" fill="#f7fbff" font-size="20" font-weight="700">EVIDENCE</text><text x="60" y="122" text-anchor="middle" fill="#cfefff" font-size="16">Data</text><text x="60" y="148" text-anchor="middle" fill="#cfefff" font-size="16">Sensors</text><text x="60" y="174" text-anchor="middle" fill="#cfefff" font-size="16">Documents</text></g>
+  <g transform="translate(922 390)">
+    <circle r="151" fill="none" stroke="#4bdfff" stroke-opacity=".13" stroke-width="18"/><circle r="131" fill="none" stroke="#4bdfff" stroke-opacity=".35" stroke-width="2"/><circle r="112" fill="url(#core)" stroke="url(#cyan)" stroke-width="4" filter="url(#glow)"/><circle r="82" fill="none" stroke="#8d78ff" stroke-opacity=".55" stroke-width="1.5"/>
+    <text class="t" x="0" y="22" text-anchor="middle" font-size="108" font-weight="700">Γ</text><text class="cyan" x="0" y="61" text-anchor="middle" font-size="15" font-weight="800" letter-spacing="2">GOVERNED ACTION CORE</text>
   </g>
-  <g stroke="url(#glow)" stroke-width="2" fill="none" opacity="0.85">
-    <path d="M870 298C915 298 915 320 950 330"/><path d="M900 438C930 438 930 430 950 425"/><path d="M1140 298C1080 298 1080 320 1010 330"/><path d="M1140 438C1080 438 1080 430 1010 425"/><path d="M990 186C990 220 990 250 990 265"/><path d="M1445 330C1385 330 1330 330 1360 330"/><path d="M1445 350C1350 350 1270 350 1170 350" opacity="0.55"/>
-  </g>
-  <g transform="translate(760,555)">
-    <ellipse cx="220" cy="70" rx="410" ry="94" fill="none" stroke="#28d7ff" stroke-opacity="0.35" stroke-width="2"/><ellipse cx="220" cy="70" rx="360" ry="70" fill="none" stroke="#28d7ff" stroke-opacity="0.55" stroke-width="2"/>
-    <rect x="105" y="100" width="230" height="74" rx="18" fill="#081528" stroke="#28d7ff"/><text x="220" y="132" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" fill="#63ddff">SAFETY BOUNDARY</text><text x="220" y="158" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#d8f6ff">Constraints · Guarantees · Fail-safes</text>
-  </g>
+  <path class="flow" d="M928 188V250C928 266 919 276 910 287"/><path class="flow" d="M815 316C845 316 863 322 882 337"/><path class="flow" d="M815 478C846 478 863 463 883 448"/><path class="flow" d="M1045 316C1014 316 997 322 978 337"/><path class="flow" d="M1045 478C1013 478 996 463 978 448"/><path class="flow" d="M1410 397H1329C1281 397 1239 396 1054 397"/><path class="dash" d="M1315 317H1382"/><path class="dash" d="M1315 478H1382"/>
+  <g transform="translate(768 570)"><rect x="0" y="0" width="308" height="52" rx="26" fill="#071b30" stroke="#4be4ff" stroke-width="1.5"/><text class="cyan" x="154" y="32" text-anchor="middle" font-size="15" font-weight="800" letter-spacing="1.6">ADMISSIBLE ACTIONS ONLY</text></g><path class="flow" d="M922 501V570"/>
+  <g transform="translate(738 670)"><rect class="box2" width="368" height="106" rx="24"/><text class="t" x="184" y="43" text-anchor="middle" font-size="25" font-weight="800">EXECUTION / WORLD</text><text class="sub" x="184" y="71" text-anchor="middle">mediated external effects · receipts · reconciliation</text></g><path class="flow" d="M922 622V670"/>
+  <path d="M470 608 C620 558, 1210 558, 1360 608 C1435 634, 1435 790, 1350 814 C1175 860, 670 860, 493 814 C408 791, 402 636, 470 608Z" fill="none" stroke="#4bdfff" stroke-opacity=".22" stroke-width="2"/><text class="cyan" x="470" y="650" font-size="14" font-weight="800" letter-spacing="2">SAFETY BOUNDARY</text>
+  <g transform="translate(75 666)"><rect width="430" height="114" rx="18" fill="#061426" stroke="#4bdfff" stroke-opacity=".25"/><text class="cyan" x="26" y="34" font-size="14" font-weight="800" letter-spacing="1.4">CORE INVARIANTS</text><text class="t" x="26" y="67" font-size="18" font-weight="700">Capability ≠ Authority</text><text class="t" x="26" y="94" font-size="18" font-weight="700">OUTCOME_UNKNOWN ≠ NOT_EXECUTED</text></g>
+  <g transform="translate(1268 704)"><rect x="0" y="0" width="120" height="42" rx="21" fill="#08182e" stroke="#4bdfff" stroke-opacity=".4"/><text class="cyan" x="60" y="27" text-anchor="middle" font-size="13" font-weight="700">VERIFY</text><rect x="132" y="0" width="120" height="42" rx="21" fill="#08182e" stroke="#4bdfff" stroke-opacity=".4"/><text class="cyan" x="192" y="27" text-anchor="middle" font-size="13" font-weight="700">AUDIT</text><rect x="264" y="0" width="140" height="42" rx="21" fill="#08182e" stroke="#4bdfff" stroke-opacity=".4"/><text class="cyan" x="334" y="27" text-anchor="middle" font-size="13" font-weight="700">TRANSPARENT</text></g>
 </svg>

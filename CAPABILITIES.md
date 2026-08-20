@@ -29,11 +29,14 @@ This file is a **living implementation/research capability inventory**. A listed
 
 ## Current canonical research
 
-- **Persistent-State Matched-Family R2:** freeze exact model/checkpoint/state adapters for within-family causal interventions.
-- Recurrent-state source representative: `state-spaces/mamba@e9594ce1c732d97440f0332fdc43170a2294dbfa`.
-- Fast-weight source representative: `test-time-training/ttt-lm-pytorch@cd831db10c8c9a0f6340f02da5613316a8a92b67`.
-- Controlled substrate candidate: `NVIDIA/RULER@c3f5e3b4f87f97e048793bb510a3a6b19a46bf3a`, **EM1 ceiling only** because it generates synthetic examples.
-- BDH-CQ and MoNe remain high-priority architecture anchors; exact executable state adapters are unresolved and are not silently replaced by Mamba/TTT.
+- **Persistent-State Adapter Implementation R3:** implement and statically verify complete-state adapters before any benchmark model run.
+- Frozen token/retrieval baseline: `openai-community/gpt2@607a30d783dfa663caf39e06633721c8d4cfcd7e`.
+- Frozen recurrent source/model: `state-spaces/mamba@e9594ce1c732d97440f0332fdc43170a2294dbfa` + `state-spaces/mamba-130m-hf@1e76775f628fbf1350fbe4dbb3d971ba64af25a1`.
+- Frozen fast-weight source/checkpoint family: official TTT PyTorch/JAX repos plus `ttt-linear-125m-books-2k@b1a5f81...`; exact official executable checkpoint/tokenizer bridge remains unresolved.
+- Controlled RULER task/config/seed envelope frozen; generated-example hashes must be produced before model execution.
+- Mamba scientific reset requires a fresh/reinitialized complete cache; source `InferenceParams.reset()` alone is not assumed to erase all continuation state.
+- RULER remains **EM1 ceiling only**.
+- BDH-CQ and MoNe remain architecture anchors; Mamba/TTT are family representatives, not reproductions.
 
 ## Parked external evidence dependencies
 
