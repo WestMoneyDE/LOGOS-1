@@ -33,6 +33,7 @@ Advance LOGOS-1 by converting hypotheses about agent state into falsifiable mech
 13. **No unrestricted self-copying.** Forks must be explicit, bounded and lineage-tracked.
 14. **Risk escalation requires independent review.**
 15. **Keep mechanisms separable.** A new theory should be switchable without rewriting the whole agent.
+16. **External execution is one-shot by default.** Fully prepare and validate before the repository write. Do not automatically rerun failed, cancelled, blocked or resource-incomplete GitHub workflows or external evaluations. Classify and persist the first outcome. A later rerun requires an explicit new work order/user instruction after the prerequisite or protocol has materially changed.
 
 ## Work cycle
 
@@ -60,6 +61,18 @@ If a canonical hypothesis register is present in the transported/full project st
 ## External-action boundary
 
 Phase-0 code is research-only. Adding network, shell, browser, robot, financial, messaging, deployment or other effectful tools requires a separate safety review. The learned agent must not become the authority gate for its own tools.
+
+## External-run discipline
+
+For source-pinned external evidence:
+
+1. finish the experiment contract, resource gate, hashes, negative controls and persistence path before the branch is updated;
+2. prefer **one coherent content push** rather than a sequence of corrective pushes;
+3. allow one scientific execution attempt for that frozen session;
+4. never use automatic retry/rerun to turn a transport failure into evidence;
+5. persist `UNTESTED_RESOURCE_TRANSPORT`, `FAIL`, `CANCELLED`, or other exact outcome without scientific promotion when prerequisites fail;
+6. a bot/state-persistence commit must not retrigger the scientific run;
+7. only a separately authorized later session with materially changed prerequisites may execute again.
 
 ## DNA / design-lens / health research rules
 
