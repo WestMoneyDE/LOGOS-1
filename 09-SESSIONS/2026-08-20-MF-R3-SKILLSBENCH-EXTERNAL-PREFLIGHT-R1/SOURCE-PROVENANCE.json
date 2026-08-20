@@ -1,0 +1,30 @@
+{
+  "schema": "logos-mf-r3-skillsbench-source-provenance-v1",
+  "date": "2026-08-20",
+  "skillsbench": {
+    "repository": "benchflow-ai/skillsbench",
+    "commit": "b63b7b2850226b6aa4fb5929a8c1ac7bc4d9a6af",
+    "project_line": "v1.1",
+    "verified_public_tree": true,
+    "default_tasks_path": "tasks/",
+    "sample_task": "tasks/3d-scan-calc",
+    "sample_task_observed_members": [
+      "task.md",
+      "environment/Dockerfile",
+      "environment/skills/",
+      "oracle/",
+      "verifier/"
+    ]
+  },
+  "benchflow": {
+    "repository": "benchflow-ai/benchflow",
+    "commit": "99baefb602674bbd31139fd2f1a22c3ed45752f9",
+    "version": "0.6.3",
+    "frozen_range": ">=0.6.3,<0.7"
+  },
+  "notes": [
+    "The pinned SkillsBench README requires oracle validation before agent runs.",
+    "The pinned source exposes task-local Docker environments and native skill directories.",
+    "No task outcome, oracle result, verifier result, or agent-model result was generated in this session because the required runtime gate failed before execution."
+  ]
+}

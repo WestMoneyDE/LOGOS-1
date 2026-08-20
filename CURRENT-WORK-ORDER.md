@@ -1,52 +1,61 @@
 # CURRENT WORK ORDER
 
-**Status:** READY_MF_R3_SKILLSBENCH_EXTERNAL_PREFLIGHT  
-**Task:** `05-WORK-ORDERS/NEXT-SESSION-MF-R3-SKILLSBENCH-EXTERNAL-PREFLIGHT-R1.md`
+**Status:** READY_SCB_R2_EXTERNAL_PREFLIGHT  
+**Task:** `05-WORK-ORDERS/NEXT-SESSION-SCB-R2-TERMINALBENCH-PR-EXTERNAL-PREFLIGHT-R1.md`
 
-TCV-R2 / `Wrong but Useful` was taken through its one-shot primary-source artifact transport gate.
+MF-R3 / SkillsBench was taken through its source/runtime gate before any model-backed execution.
 
 Verified:
 
-- arXiv `2608.14375v1` is the primary paper;
-- the arXiv release exposes an author-supplied ancillary directory under `anonymous_reproducibility/`;
-- the release listing includes `ARTIFACT_MANIFEST.json`, `SHA256SUMS`, environment/reproduction docs, configs, scripts, derived tables and a smoke fixture.
+- `benchflow-ai/skillsbench@b63b7b2850226b6aa4fb5929a8c1ac7bc4d9a6af` resolves;
+- `benchflow-ai/benchflow@99baefb602674bbd31139fd2f1a22c3ed45752f9` resolves as BenchFlow `0.6.3`;
+- default SkillsBench tasks are public at `tasks/`;
+- source inspection confirms task-local Docker environments, native `environment/skills/`, oracle and verifier structure.
 
-The first direct byte-transport attempt for the exact primary-source `ARTIFACT_MANIFEST.json` failed in the connected execution environment.
+Resource gate in the connected execution environment:
 
-Per the one-shot rule, no retry, mirror, reconstruction or model replay was performed.
+```text
+uv = AVAILABLE
+Docker = UNAVAILABLE
+supported model-provider credential = UNAVAILABLE
+```
+
+Therefore task validation/oracle and all model-backed arms were not started.
 
 Classification:
 
-`TCV_R2 = UNTESTED_RESOURCE_TRANSPORT`
-
-This is **not negative scientific evidence** for trajectory value.
-
-Previously parked exact-resource dependency:
-
-`MF_R1 = UNTESTED_RESOURCE_TRANSPORT`
-
-The next canonical external-evidence track is **MF-R3 / SkillsBench procedural memory**, pinned to:
-
-`benchflow-ai/skillsbench@b63b7b2850226b6aa4fb5929a8c1ac7bc4d9a6af`
-
-with BenchFlow reference:
-
-`benchflow-ai/benchflow@99baefb602674bbd31139fd2f1a22c3ed45752f9` (`0.6.3`).
-
-The next session must freeze a deterministic task manifest and compare:
-
 ```text
-NO_SKILL
-vs
-GENERIC_GUIDANCE_BYTE_IDENTICAL
-vs
-NATIVE_SKILL
+MF_R3_SKILLSBENCH = UNTESTED_RESOURCE_TRANSPORT
 ```
 
-under matched model, task, sandbox, skill bytes and budgets.
+This is **not negative scientific evidence** for procedural guidance or native skill registration. No substitute runtime/model/provider was used and no retry occurred.
 
-The scientific question is the **incremental value of native skill registration/discovery**, not whether procedural guidance can ever be useful.
+Previously parked exact-resource/transport dependencies remain:
 
-If required Docker/runtime/model-provider resources are unavailable, record `UNTESTED_RESOURCE_TRANSPORT` once and advance without automatic retry.
+```text
+MF_R1 = UNTESTED_RESOURCE_TRANSPORT
+TCV_R2 = UNTESTED_RESOURCE_TRANSPORT
+```
 
-Gamma live-provider work remains separately gated by explicit human grant. Γ-v0.3 remains `HOLD`.
+The next canonical external-evidence track is the already preregistered narrow **SCB-R2 P×R localization on Terminal-Bench 2.0**.
+
+Pinned sources:
+
+- `UCSB-NLP-Chang/Skill-Usage@03446d16f7b659ccc93ac5bd512f62e9b7fabb45`;
+- public 34,198-skill pool / Terminal-Bench-2 retrieval;
+- `Futuresis/replay-agent-recorder@6661046e2b30fcf5f17c93d51acb56babdea8c53`;
+- exact Terminal-Bench 2.0 task tree;
+- common model/harness + Docker/Harbor-compatible runtime.
+
+The preserved design tests only:
+
+```text
+P0/P1 = matched distractor vs retrieved procedural guidance
+R0/R1 = restart-with-experiences vs AgentRewind
+```
+
+No artificial five-way W/M/P/R/Q benchmark may be created for EM2 promotion.
+
+If the SCB source/runtime gate fails, record `UNTESTED_RESOURCE_TRANSPORT` once and advance without automatic retry.
+
+Γ live-provider work remains separately gated by explicit human grant. Γ-v0.3 remains `HOLD`.

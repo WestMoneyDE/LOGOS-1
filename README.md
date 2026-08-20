@@ -147,8 +147,8 @@ Synthetic-only mechanism promotion is currently frozen. External evidence is req
 
 ## Current research state
 
-**Canonical gate:** `READY_MF_R3_SKILLSBENCH_EXTERNAL_PREFLIGHT`  
-**Current work order:** [`NEXT-SESSION-MF-R3-SKILLSBENCH-EXTERNAL-PREFLIGHT-R1`](05-WORK-ORDERS/NEXT-SESSION-MF-R3-SKILLSBENCH-EXTERNAL-PREFLIGHT-R1.md)
+**Canonical gate:** `READY_SCB_R2_EXTERNAL_PREFLIGHT`  
+**Current work order:** [`NEXT-SESSION-SCB-R2-TERMINALBENCH-PR-EXTERNAL-PREFLIGHT-R1`](05-WORK-ORDERS/NEXT-SESSION-SCB-R2-TERMINALBENCH-PR-EXTERNAL-PREFLIGHT-R1.md)
 
 Completed external returns:
 
@@ -159,21 +159,21 @@ Completed external returns:
 Parked exact-resource / transport dependencies:
 
 4. **Memory Fabric / LongMemEval-V2** — `UNTESTED_RESOURCE_TRANSPORT`; exact frozen model/judge resources were unavailable. No substitute and no automatic retry.
-5. **TCV / Wrong but Useful** — `UNTESTED_RESOURCE_TRANSPORT`; the primary arXiv release exposes the author ancillary directory, but the first exact official-member byte transport failed in the connected environment. No retry, mirror, reconstruction or model replay was used.
+5. **TCV / Wrong but Useful** — `UNTESTED_RESOURCE_TRANSPORT`; the first exact official ancillary-member byte transport failed. No retry, mirror, reconstruction or model replay was used.
+6. **Procedural Memory / SkillsBench** — `UNTESTED_RESOURCE_TRANSPORT`; source pins resolve, but Docker and a supported model-provider credential were absent before task validation/oracle/model execution. No substitute and no retry.
 
 Next in the external queue:
 
-6. **Procedural Memory / SkillsBench** — source-pinned native skill vs byte-identical generic-guidance preflight.
-7. **SCB P×R / Terminal-Bench 2.0**.
+7. **SCB P×R / Terminal-Bench 2.0** — preserved real-substrate procedural × recovery localization preflight.
 8. **TANGLE** — waiting for an official release.
 
-The current SkillsBench question is deliberately narrow:
+The current SCB question is deliberately narrower than a five-module state architecture claim:
 
 ```text
-SkillContent != NativeSkillRegistration
+P × R -> Terminal-Bench 2.0
 ```
 
-LOGOS will compare `NO_SKILL`, `GENERIC_GUIDANCE_BYTE_IDENTICAL`, and `NATIVE_SKILL` under matched task, model, sandbox, payload bytes and resource budgets. A positive result can at most support bounded incremental value for native skill registration/discovery; it cannot establish a necessary specialized SkillStore primitive.
+LOGOS will compare matched distractor vs retrieved procedural guidance (`P0/P1`) and restart-with-experiences vs checkpoint rewind (`R0/R1`) on the same real task substrate. The preserved preregistration explicitly rejects artificial W/M/P/R/Q benchmark stitching for EM2 promotion.
 
 External scientific execution is one-shot by default: fully prepare before the repository write, persist the first outcome, and do not automatically rerun failed/blocked GitHub or provider executions. See [`AGENTS.md`](AGENTS.md) and [`docs/engineering/PUSH-PROTOCOL.md`](docs/engineering/PUSH-PROTOCOL.md).
 
@@ -211,7 +211,7 @@ LOGOS-1 is structured so coding agents can continue the project without relying 
 
 - [`AGENTS.md`](AGENTS.md) is the repository-wide operating contract for Codex and other coding agents.
 - [`CLAUDE.md`](CLAUDE.md) provides persistent project instructions for Claude Code.
-- [`05-WORK-ORDERS/ENGINEERING-MEMORY-SYSTEM-CODING-AGENTS-R1.md`](05-WORK-ORDERS/ENGINEERING-MEMORY-SYSTEM-CODING-AGENTS-R1.md) is a parallel engineering work order and does not replace the active scientific SkillsBench queue.
+- [`05-WORK-ORDERS/ENGINEERING-MEMORY-SYSTEM-CODING-AGENTS-R1.md`](05-WORK-ORDERS/ENGINEERING-MEMORY-SYSTEM-CODING-AGENTS-R1.md) is a parallel engineering work order and does not replace the active scientific SCB-R2 queue.
 
 Every substantive push should propagate its consequences into tests, docs, capability inventory, session state and evidence boundaries.
 

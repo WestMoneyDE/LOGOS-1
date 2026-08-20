@@ -27,15 +27,15 @@ This file is a **living implementation/research capability inventory**. It must 
 
 ## Active external-evidence state
 
-- **MF-R3 / SkillsBench:** next canonical external preflight; exact SkillsBench and BenchFlow source pins verified; experiment will isolate native skill registration/discovery from byte-identical generic guidance.
-- **TCV-R2 / Wrong but Useful:** parked as `UNTESTED_RESOURCE_TRANSPORT`; the official arXiv ancillary listing is visible, but the first direct official-member byte transport failed and was not retried.
-- **MF-R1 / LongMemEval-V2:** parked as `UNTESTED_RESOURCE_TRANSPORT`; exact frozen Qwen reader/controller, Qwen embedding endpoint and `gpt-5.2` judge resources were unavailable; no substitute and no automatic retry.
+- **SCB-R2 / Terminal-Bench 2.0 P×R:** next canonical external preflight; preserved real-substrate factorial only, with Skill-Usage and Replay Agent Recorder source pins verified.
+- **MF-R3 / SkillsBench:** parked as `UNTESTED_RESOURCE_TRANSPORT`; source pins resolve, but Docker and a supported provider credential were absent before oracle/model execution. No substitute and no retry.
+- **TCV-R2 / Wrong but Useful:** parked as `UNTESTED_RESOURCE_TRANSPORT`; official ancillary listing was visible but the first exact official-member transport failed and was not retried.
+- **MF-R1 / LongMemEval-V2:** parked as `UNTESTED_RESOURCE_TRANSPORT`; exact frozen model/judge resources were unavailable; no substitute and no retry.
 
 ## Queued research
 
 - persistent-state causality (`TOKEN_CONTEXT` vs `RECURRENT_LATENT` vs `FAST_WEIGHT_STATE` vs `EXTERNAL_RETRIEVAL`);
 - memory-authority provenance and derived-skill revocation;
-- SCB P×R Terminal-Bench localization;
 - TANGLE once an official release is available.
 
 ## Explicitly not claimed

@@ -1,0 +1,45 @@
+{
+  "schema": "logos-mf-r3-skillsbench-resource-gate-v1",
+  "date": "2026-08-20",
+  "session": "MF-R3-SKILLSBENCH-EXTERNAL-PREFLIGHT-R1",
+  "execution_policy": "ONE_SHOT_NO_AUTORETRY",
+  "classification": "UNTESTED_RESOURCE_TRANSPORT",
+  "scientific_verdict": "UNTESTED",
+  "source_pins": {
+    "skillsbench_repo": "benchflow-ai/skillsbench",
+    "skillsbench_commit": "b63b7b2850226b6aa4fb5929a8c1ac7bc4d9a6af",
+    "benchflow_repo": "benchflow-ai/benchflow",
+    "benchflow_commit": "99baefb602674bbd31139fd2f1a22c3ed45752f9",
+    "benchflow_version": "0.6.3",
+    "benchflow_range": ">=0.6.3,<0.7"
+  },
+  "source_preflight": {
+    "skillsbench_commit_resolved": true,
+    "benchflow_commit_resolved": true,
+    "default_tasks_directory_visible": true,
+    "sample_task_has_oracle": true,
+    "sample_task_has_verifier": true,
+    "sample_task_has_environment_dockerfile": true,
+    "sample_task_has_native_skills_directory": true
+  },
+  "runtime": {
+    "python": "3.13.5",
+    "uv_path": "/opt/pyvenv/bin/uv",
+    "uv_available": true,
+    "docker_available": false,
+    "docker_cli_path": null,
+    "openai_api_key_present": false,
+    "anthropic_api_key_present": false,
+    "gemini_api_key_present": false,
+    "google_api_key_present": false
+  },
+  "task_validation_started": false,
+  "oracle_started": false,
+  "model_backed_agent_run_started": false,
+  "task_manifest_frozen": false,
+  "substitute_runtime_used": false,
+  "substitute_provider_used": false,
+  "automatic_retry_performed": false,
+  "claim_delta": "NONE",
+  "next_track": "SCB-R2-TERMINALBENCH-PR-EXTERNAL-PREFLIGHT-R1"
+}
