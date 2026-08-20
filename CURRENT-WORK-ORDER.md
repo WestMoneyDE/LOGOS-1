@@ -1,22 +1,26 @@
 # CURRENT WORK ORDER
 
-**Status:** READY_WMR_EXTERNAL_EXECUTION
-**Task:** `05-WORK-ORDERS/NEXT-SESSION-WMR-ARC-AGI-3-EXTERNAL-EXECUTION-R1.md`
+**Status:** READY_ON_DATA_AND_MODEL_ENDPOINTS
+**Task:** `05-WORK-ORDERS/NEXT-SESSION-MF-R1-LONGMEMEVAL-V2-EXTERNAL-EXECUTION-R1.md`
 
-The second complete real external LOGOS-1 return has been executed and imported under `P0-EXTERNAL-RETURN-IMPORT-R1`.
+The third complete real external LOGOS-1 return has been executed and imported under the P0 external-return discipline.
 
-ENF-R3 frozen external verdict:
+WMR-R2 / ARC-AGI-3 frozen external verdict:
 
-- `INDEPENDENCE_ALONE_IMPROVES_SAFETY` → `REJECT_EM2_EXTERNAL`;
-- `UPSTREAM_SENSOR_INDEPENDENCE` → `DEMOTE_SCOPE_REQUIRED`;
-- `CORRECT_ENFORCEMENT_IMPLIES_CORRECT_SPECIFICATION` → `REJECT_EM2_EXTERNAL`;
-- `SPECIFICATION_BOUNDARY` / `CorrectEnforcement != CorrectSpecification` → `KEEP_BOUNDED_EM2`.
+- `COUNTEREXAMPLE_PRIORITY_INCREMENTAL_VALUE` → `MERGE/REJECT_EM2_EXTERNAL`;
+- replay itself improved the generic world model relative to `RECENT_ONLY_GENERIC` in the frozen setup;
+- counterexample-priority did not establish a consistent distinct advantage over matched uniform replay;
+- `PROGRAM_CATALOG_REPAIR_DIAGNOSTIC` remains diagnostic-only / no structured-prior promotion;
+- source isolation passed and the standardized return was `COMPLETE_RETURN` with CRC `PASS`.
 
-The next external queue item is WMR-R2 / ARC-AGI-3, pinned to:
+The next external queue item is **MF-R1 / LongMemEval-V2 strong flat vs associative**, pinned to:
 
-`arcprize/ARC-AGI@f12822c4d550121c35a275008d964afbbed47d2f` (`0.9.9`)
+`xiaowu0162/LongMemEval-V2@2cc8c540bdb87fe6761629b585e727e1c4704520`
 
-WMR additionally requires an official public ARC-AGI-3 `environment_files/` cache. Game implementation source must remain outside the offline evaluator/model context. Source leakage invalidates the run.
+Frozen core trajectory SHA-256:
 
-No synthetic substitute may count as external evidence.
-Gamma live-provider work remains separately gated by explicit human grant.
+`363cec9a8e87aa8d9101ce4e600aadbf7031d674056ebe4f969e8424abc5f3c6`
+
+The frozen primary run requires exact `Qwen/Qwen3.5-9B` reader/controller endpoints, `Qwen/Qwen3-Embedding-8B`, the official dataset, and `gpt-5.2` judge access. Missing resources remain `UNTESTED_RESOURCE_TRANSPORT`; no substitute model or synthetic dataset may count as EM2 evidence.
+
+Gamma live-provider work remains separately gated by explicit human grant. Γ-v0.3 remains `HOLD`.
