@@ -98,9 +98,9 @@ The learned layer can propose. It does not grant itself permission.
 - negative evidence is first-class;
 - mechanisms remain separable.
 
-The full operating contract is in [`AGENTS.md`](AGENTS.md) and the canonical project rule set remains in the project context lineage.
+The full operating contract is in [`AGENTS.md`](AGENTS.md).
 
-### /Gamma
+### Γ
 
 **Γ (Gamma)** is the governed-action line of research. It asks how an agent moves from a proposal to a bounded external effect while preserving:
 
@@ -135,8 +135,6 @@ The intent is not to pick biology *or* engineering. It is to compare causal mech
 
 ## Evidence ladder
 
-LOGOS-1 distinguishes evidence maturity instead of treating every successful toy test as equivalent:
-
 | Level | Meaning |
 |---|---|
 | `EM0` | formal / deterministic toy decomposition |
@@ -149,35 +147,43 @@ Synthetic-only mechanism promotion is currently frozen. External evidence is req
 
 ## Current research state
 
-**Canonical gate:** `READY_TCV_R2_EXTERNAL_ARTIFACT_PREFLIGHT`  
-**Current work order:** [`NEXT-SESSION-TCV-R2-WRONG-BUT-USEFUL-EXTERNAL-PREFLIGHT-R1`](05-WORK-ORDERS/NEXT-SESSION-TCV-R2-WRONG-BUT-USEFUL-EXTERNAL-PREFLIGHT-R1.md)
+**Canonical gate:** `READY_MF_R3_SKILLSBENCH_EXTERNAL_PREFLIGHT`  
+**Current work order:** [`NEXT-SESSION-MF-R3-SKILLSBENCH-EXTERNAL-PREFLIGHT-R1`](05-WORK-ORDERS/NEXT-SESSION-MF-R3-SKILLSBENCH-EXTERNAL-PREFLIGHT-R1.md)
 
 Completed external returns:
 
 1. **MBE / Behavioral-Lift** — `GENERIC_TRACE_MONITOR → KEEP_BOUNDED_EM2` for behavioral-proxy/calibration measurement only.
 2. **ENF / safe-control-gym** — `CorrectEnforcement != CorrectSpecification → KEEP_BOUNDED_EM2`; unconditional independence-as-safety-improvement was externally rejected/demoted.
-3. **WMR / ARC-AGI-3** — replay improved the frozen generic world model relative to recent-only, but `COUNTEREXAMPLE_PRIORITY_INCREMENTAL_VALUE → MERGE/REJECT_EM2_EXTERNAL` because counterexample-priority did not establish a consistent distinct advantage over matched uniform replay.
+3. **WMR / ARC-AGI-3** — replay improved the frozen generic world model relative to recent-only, but `COUNTEREXAMPLE_PRIORITY_INCREMENTAL_VALUE → MERGE/REJECT_EM2_EXTERNAL`.
 
-Parked external dependency:
+Parked exact-resource / transport dependencies:
 
-4. **Memory Fabric / LongMemEval-V2** — `UNTESTED_RESOURCE_TRANSPORT`; the exact frozen Qwen reader/controller, Qwen embedding endpoint and `gpt-5.2` judge resources were unavailable to this execution environment. No substitute was used and no automatic retry is permitted.
+4. **Memory Fabric / LongMemEval-V2** — `UNTESTED_RESOURCE_TRANSPORT`; exact frozen model/judge resources were unavailable. No substitute and no automatic retry.
+5. **TCV / Wrong but Useful** — `UNTESTED_RESOURCE_TRANSPORT`; the primary arXiv release exposes the author ancillary directory, but the first exact official-member byte transport failed in the connected environment. No retry, mirror, reconstruction or model replay was used.
 
 Next in the external queue:
 
-5. **TCV / Wrong but Useful** — official ancillary artifact and matched-replay preflight.
-6. **Procedural Memory / SkillsBench**.
+6. **Procedural Memory / SkillsBench** — source-pinned native skill vs byte-identical generic-guidance preflight.
 7. **SCB P×R / Terminal-Bench 2.0**.
 8. **TANGLE** — waiting for an official release.
 
-External scientific execution is now one-shot by default: fully prepare before the repository write, persist the first outcome, and do not automatically rerun failed/blocked GitHub or provider executions. See [`AGENTS.md`](AGENTS.md) and [`docs/engineering/PUSH-PROTOCOL.md`](docs/engineering/PUSH-PROTOCOL.md).
+The current SkillsBench question is deliberately narrow:
 
-See [`CURRENT-WORK-ORDER.md`](CURRENT-WORK-ORDER.md) and the durable session checkpoints under [`09-SESSIONS/`](09-SESSIONS/) for the evidence state.
+```text
+SkillContent != NativeSkillRegistration
+```
+
+LOGOS will compare `NO_SKILL`, `GENERIC_GUIDANCE_BYTE_IDENTICAL`, and `NATIVE_SKILL` under matched task, model, sandbox, payload bytes and resource budgets. A positive result can at most support bounded incremental value for native skill registration/discovery; it cannot establish a necessary specialized SkillStore primitive.
+
+External scientific execution is one-shot by default: fully prepare before the repository write, persist the first outcome, and do not automatically rerun failed/blocked GitHub or provider executions. See [`AGENTS.md`](AGENTS.md) and [`docs/engineering/PUSH-PROTOCOL.md`](docs/engineering/PUSH-PROTOCOL.md).
+
+See [`CURRENT-WORK-ORDER.md`](CURRENT-WORK-ORDER.md) and [`09-SESSIONS/`](09-SESSIONS/) for the durable evidence state.
 
 ## Coding-ready
 
-LOGOS-1 is now being made **coding-ready without pretending research hypotheses are already product architecture**.
+LOGOS-1 is being made **coding-ready without pretending research hypotheses are already product architecture**.
 
-The implementation direction is documented in:
+Implementation direction:
 
 - [`docs/architecture/LOGOS-1-OVERVIEW.md`](docs/architecture/LOGOS-1-OVERVIEW.md)
 - [`docs/architecture/MEMORY-SYSTEM.md`](docs/architecture/MEMORY-SYSTEM.md)
@@ -197,7 +203,7 @@ The coding target separates functions into six concerns:
 5. **Evidence ledger** — claims, source pins, hashes and verdicts.
 6. **Governance boundary** — authority, grants, policy and reconciliation.
 
-These are **engineering concerns**, not six newly promoted scientific primitives. In particular, previous LOGOS work did not justify a dedicated conflict graph or a specialized skill store as mandatory primitives.
+These are **engineering concerns**, not six independently promoted scientific primitives. A dedicated conflict graph or specialized skill store remains unproven as a mandatory primitive.
 
 ## Claude Code and Codex
 
@@ -205,9 +211,9 @@ LOGOS-1 is structured so coding agents can continue the project without relying 
 
 - [`AGENTS.md`](AGENTS.md) is the repository-wide operating contract for Codex and other coding agents.
 - [`CLAUDE.md`](CLAUDE.md) provides persistent project instructions for Claude Code.
-- [`05-WORK-ORDERS/ENGINEERING-MEMORY-SYSTEM-CODING-AGENTS-R1.md`](05-WORK-ORDERS/ENGINEERING-MEMORY-SYSTEM-CODING-AGENTS-R1.md) is a **parallel engineering work order** and does not replace the active scientific TCV-R2 queue.
+- [`05-WORK-ORDERS/ENGINEERING-MEMORY-SYSTEM-CODING-AGENTS-R1.md`](05-WORK-ORDERS/ENGINEERING-MEMORY-SYSTEM-CODING-AGENTS-R1.md) is a parallel engineering work order and does not replace the active scientific SkillsBench queue.
 
-Every substantive push should propagate its consequences into tests, docs, capability inventory, session state and evidence boundaries. See [`docs/engineering/PUSH-PROTOCOL.md`](docs/engineering/PUSH-PROTOCOL.md).
+Every substantive push should propagate its consequences into tests, docs, capability inventory, session state and evidence boundaries.
 
 ## Research tracks
 

@@ -1,0 +1,32 @@
+{
+  "schema": "logos-tcv-r2-artifact-transport-gate-v1",
+  "date": "2026-08-20",
+  "session": "TCV-R2-WRONG-BUT-USEFUL-EXTERNAL-PREFLIGHT-R1",
+  "execution_policy": "ONE_SHOT_NO_AUTORETRY",
+  "primary_source": {
+    "arxiv": "2608.14375",
+    "version": "v1",
+    "submitted": "2026-08-14",
+    "ancillary_listing_visible": true,
+    "ancillary_root_exposed": "anonymous_reproducibility/",
+    "target_member": "anonymous_reproducibility/ARTIFACT_MANIFEST.json"
+  },
+  "transport": {
+    "attempts": 1,
+    "byte_download_succeeded": false,
+    "automatic_retry_performed": false,
+    "alternate_mirror_used": false,
+    "reconstructed_artifact_used": false
+  },
+  "integrity_audit": {
+    "sha256_completed": false,
+    "crc_completed": false,
+    "complete_member_inventory_completed": false,
+    "schema_mapping_completed": false
+  },
+  "model_replay_started": false,
+  "classification": "UNTESTED_RESOURCE_TRANSPORT",
+  "scientific_verdict": "UNTESTED",
+  "claim_delta": "NONE",
+  "next_track": "MF-R3-SKILLSBENCH-EXTERNAL-PREFLIGHT-R1"
+}

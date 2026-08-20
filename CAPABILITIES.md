@@ -27,14 +27,14 @@ This file is a **living implementation/research capability inventory**. It must 
 
 ## Active external-evidence state
 
-- **TCV-R2 / Wrong but Useful:** next canonical external artifact preflight; primary paper verified and official ancillary path identified;
-- **MF-R1 / LongMemEval-V2:** parked as `UNTESTED_RESOURCE_TRANSPORT` because the exact frozen Qwen reader/controller, Qwen embedding endpoint and `gpt-5.2` judge resources were not available to this execution environment; no substitute and no automatic retry.
+- **MF-R3 / SkillsBench:** next canonical external preflight; exact SkillsBench and BenchFlow source pins verified; experiment will isolate native skill registration/discovery from byte-identical generic guidance.
+- **TCV-R2 / Wrong but Useful:** parked as `UNTESTED_RESOURCE_TRANSPORT`; the official arXiv ancillary listing is visible, but the first direct official-member byte transport failed and was not retried.
+- **MF-R1 / LongMemEval-V2:** parked as `UNTESTED_RESOURCE_TRANSPORT`; exact frozen Qwen reader/controller, Qwen embedding endpoint and `gpt-5.2` judge resources were unavailable; no substitute and no automatic retry.
 
 ## Queued research
 
 - persistent-state causality (`TOKEN_CONTEXT` vs `RECURRENT_LATENT` vs `FAST_WEIGHT_STATE` vs `EXTERNAL_RETRIEVAL`);
 - memory-authority provenance and derived-skill revocation;
-- SkillsBench procedural-memory comparison;
 - SCB P×R Terminal-Bench localization;
 - TANGLE once an official release is available.
 

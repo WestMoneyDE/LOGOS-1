@@ -1,29 +1,52 @@
 # CURRENT WORK ORDER
 
-**Status:** READY_TCV_R2_EXTERNAL_ARTIFACT_PREFLIGHT
-**Task:** `05-WORK-ORDERS/NEXT-SESSION-TCV-R2-WRONG-BUT-USEFUL-EXTERNAL-PREFLIGHT-R1.md`
+**Status:** READY_MF_R3_SKILLSBENCH_EXTERNAL_PREFLIGHT  
+**Task:** `05-WORK-ORDERS/NEXT-SESSION-MF-R3-SKILLSBENCH-EXTERNAL-PREFLIGHT-R1.md`
 
-MF-R1 / LongMemEval-V2 was taken through its frozen resource gate in the current execution environment. The exact required runtime resources were not available:
+TCV-R2 / `Wrong but Useful` was taken through its one-shot primary-source artifact transport gate.
 
-- `Qwen/Qwen3.5-9B` reader/controller endpoint;
-- `Qwen/Qwen3-Embedding-8B` embedding endpoint;
-- `gpt-5.2` judge access under the frozen evaluator contract.
+Verified:
+
+- arXiv `2608.14375v1` is the primary paper;
+- the arXiv release exposes an author-supplied ancillary directory under `anonymous_reproducibility/`;
+- the release listing includes `ARTIFACT_MANIFEST.json`, `SHA256SUMS`, environment/reproduction docs, configs, scripts, derived tables and a smoke fixture.
+
+The first direct byte-transport attempt for the exact primary-source `ARTIFACT_MANIFEST.json` failed in the connected execution environment.
+
+Per the one-shot rule, no retry, mirror, reconstruction or model replay was performed.
 
 Classification:
 
+`TCV_R2 = UNTESTED_RESOURCE_TRANSPORT`
+
+This is **not negative scientific evidence** for trajectory value.
+
+Previously parked exact-resource dependency:
+
 `MF_R1 = UNTESTED_RESOURCE_TRANSPORT`
 
-This is **not negative scientific evidence** for associative memory. No substitute model, lexical retriever, alternate judge or synthetic dataset was used. Per the one-shot execution rule, MF-R1 is parked and must not be automatically retried.
+The next canonical external-evidence track is **MF-R3 / SkillsBench procedural memory**, pinned to:
 
-The next runnable external-evidence track is TCV-R2 / `Wrong but Useful` (arXiv:2608.14375). The primary paper is verified and states that the verbatim prompt/protocol configuration is included in `anc/reproducibility_artifact.zip`.
+`benchflow-ai/skillsbench@b63b7b2850226b6aa4fb5929a8c1ac7bc4d9a6af`
 
-Next action:
+with BenchFlow reference:
 
-1. obtain the official ancillary artifact from the primary arXiv release/source;
-2. verify SHA-256, CRC and member inventory before interpreting it;
-3. map the release schema without guessing;
-4. preserve fixed cached-message pools and matched available/hidden replay;
-5. execute a real replay only if the exact official artifact and required open-model/evaluator resources are available;
-6. otherwise record `UNTESTED_RESOURCE_TRANSPORT` once and advance without retry.
+`benchflow-ai/benchflow@99baefb602674bbd31139fd2f1a22c3ed45752f9` (`0.6.3`).
+
+The next session must freeze a deterministic task manifest and compare:
+
+```text
+NO_SKILL
+vs
+GENERIC_GUIDANCE_BYTE_IDENTICAL
+vs
+NATIVE_SKILL
+```
+
+under matched model, task, sandbox, skill bytes and budgets.
+
+The scientific question is the **incremental value of native skill registration/discovery**, not whether procedural guidance can ever be useful.
+
+If required Docker/runtime/model-provider resources are unavailable, record `UNTESTED_RESOURCE_TRANSPORT` once and advance without automatic retry.
 
 Gamma live-provider work remains separately gated by explicit human grant. Γ-v0.3 remains `HOLD`.
