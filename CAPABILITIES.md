@@ -20,6 +20,7 @@ This file is a **living implementation/research capability inventory**. A listed
 - Claude Code project instructions via `CLAUDE.md`;
 - working / episodic / semantic / procedural / evidence / governance memory decomposition;
 - source provenance distinct from authority provenance;
+- immutable provenance-aware memory records with append-only local JSONL persistence and an authority firewall;
 - derived procedural/skill lineage with revocation requirements under test;
 - persistent-state classes across token context, recurrent latent state, fast weights and external retrieval;
 - D/O/C state-validation ladder (`Decodable`, `Operational`, `Causal`);

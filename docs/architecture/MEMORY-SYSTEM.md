@@ -99,6 +99,16 @@ A minimal implementation can use:
 - explicit evidence ledger;
 - separately owned assurance store.
 
+## Current minimal implementation
+
+`src/logos_memory` now provides immutable `MemoryRecord`, `ProvenanceRef`, and
+`AuthorityProvenance` types plus a local append-only JSONL `MemoryStore`.
+Records retain the supplied `ScopeContract` visibility and retention values as
+data. The store accepts only working, episodic, semantic, procedural, and
+evidence records; it rejects assurance kinds and authority-bearing admissible
+uses before writing. On recovery, only a malformed final line is quarantined;
+malformed earlier lines fail closed.
+
 ## Tests required before calling it implemented
 
 - provenance survives write → retrieve → consolidate;
