@@ -42,6 +42,22 @@ For recurring engineering knowledge, prefer concise repository documentation ove
 
 Use `docs/architecture/MEMORY-SYSTEM.md` as the coding target. Preserve provenance, uncertainty and conflicts. Do not collapse contradictory records merely to create a cleaner summary. Do not treat a retrieved or consolidated memory as authorization.
 
+Before memory retrieval, consolidation, file/tool dispatch or effect proposal,
+obtain a non-denied `ScopeDecision`; `DEFER` means WAIT and only `ALLOW` or
+`NARROW` satisfies the implemented local precondition. The current
+`ScopeDecision.evaluate()` checks exactly role, tool, memory kind, capability,
+target and path. Parameter bounds, budgets, time validity, occurrences,
+externality, reversibility, approval requirement, data/retention classes and
+source versions require a separate downstream dispatch/effect gate and are not
+evaluated by this package. Unsupported exact-request dimensions cause WAIT/DENY,
+never inferred success. Effect proposals still re-enter Γ and the separate
+assurance path.
+
+```text
+ScopeDecision != ExternalApproval
+ScopeDecision != DispatchAuthorization
+```
+
 ### Push completion
 
 Before finishing a substantive coding task, check `docs/engineering/PUSH-PROTOCOL.md`. Update `CAPABILITIES.md`, architecture docs and a session report when the change affects them.

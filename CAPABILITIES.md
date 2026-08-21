@@ -20,7 +20,9 @@ This file is a **living implementation/research capability inventory**. A listed
 - Claude Code project instructions via `CLAUDE.md`;
 - working / episodic / semantic / procedural / evidence / governance memory decomposition;
 - source provenance distinct from authority provenance;
-- derived procedural/skill lineage with revocation requirements under test;
+- immutable provenance-aware memory records with append-only local JSONL persistence and an authority firewall;
+- guarded three-gate consolidation with closed conservative epistemic transitions, full-source-version provenance digests, conflict retention, weakest-authority intersections, explicit procedural lineage, and transitive authority revocation;
+- deterministic scope-first BM25 memory retrieval and minimum-context expiring projections with stable digests, conflict/epistemic qualifiers, fail-closed decision-invariant/digest validation, and no assurance or authority grants;
 - persistent-state classes across token context, recurrent latent state, fast weights and external retrieval;
 - D/O/C state-validation ladder (`Decodable`, `Operational`, `Causal`);
 - within-family causal comparison rule preventing raw cross-backbone accuracy from being mislabeled as a memory-mechanism effect;
@@ -31,6 +33,32 @@ This file is a **living implementation/research capability inventory**. A listed
 - RULER JSONL file/per-row hash-freeze utility;
 - static regression suite for persistent-state adapter semantics;
 - coding-ready roadmap and per-push propagation protocol.
+
+### MemoryFactory / Scope Engine R1 evidence
+
+The following ratings are engineering implementation states, not scientific
+promotions:
+
+| Capability | Rating | Exact pytest evidence |
+|---|---|---|
+| Restrictive typed scope intersection plus role/tool/memory-kind/capability/target/path request evaluation | `IMPLEMENTED` | `tests/test_scope_engine.py` |
+| Authority-firewalled append-only JSONL memory store | `IMPLEMENTED` | `tests/test_memory_store.py` |
+| Guarded consolidation, scoped BM25 retrieval and projections | `IMPLEMENTED` | `tests/test_memory_factory.py` |
+| Deterministic recovery and coding-agent replay | `IMPLEMENTED` | `tests/test_memory_recovery.py` |
+
+The other effective-contract dimensions require a separate downstream
+dispatch/effect gate and are not claimed as exact-request checks in
+`logos_memory`; unsupported dimensions cause WAIT/DENY. There is no implemented
+dispatch authorization, assurance store or external approval capability in
+`logos_memory`.
+
+```text
+ImplementationPass != ScientificMechanismEvidence
+MemoryFactory != AuthoritySource
+ScopeDecision != ExternalApproval
+PersistentState != PhenomenalConsciousness
+ScopeDecision != DispatchAuthorization
+```
 
 ## Current canonical research/engineering gate
 

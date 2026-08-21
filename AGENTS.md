@@ -100,6 +100,22 @@ LOGOS-1 is also a coding-agent-operated repository. For implementation work:
 
 A memory subsystem may store, retrieve, rank, consolidate or summarize information. It must not mint grants, scopes, credentials, execution tokens or policy exceptions. Any retrieval result that affects an external action remains a proposal-side input and re-enters Γ.
 
+Before memory retrieval, consolidation, file/tool dispatch or effect proposal,
+obtain a non-denied `ScopeDecision`; `DEFER` means WAIT and only `ALLOW` or
+`NARROW` may satisfy the implemented local precondition. The current
+`ScopeDecision.evaluate()` checks exactly role, tool, memory kind, capability,
+target and path. Parameter bounds, budgets, time validity, occurrences,
+externality, reversibility, approval requirement, data/retention classes and
+source versions require a separate downstream dispatch/effect gate and are not
+evaluated by this package. If an exact request depends on an unsupported
+dimension, WAIT/DENY rather than infer success. Γ and the separately owned
+assurance interface remain mandatory.
+
+```text
+ScopeDecision != ExternalApproval
+ScopeDecision != DispatchAuthorization
+```
+
 ### Change propagation
 
 A coding change is incomplete when implementation, tests, architecture docs and capability inventory disagree. Prefer one coherent push over isolated code edits that leave the repository semantically stale.

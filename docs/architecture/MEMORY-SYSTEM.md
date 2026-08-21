@@ -1,6 +1,6 @@
-# LOGOS-1 Memory System — Coding-Ready Engineering Target
+# LOGOS-1 Memory System — R1 Implemented Engineering Surface
 
-**Status:** engineering target / not a declaration of six independently validated primitives.
+**Status:** implemented engineering substrate / not a declaration of independently validated scientific primitives.
 
 ## Objective
 
@@ -98,6 +98,94 @@ A minimal implementation can use:
 - optional vector/semantic index as a retrieval accelerator, not source of truth;
 - explicit evidence ledger;
 - separately owned assurance store.
+
+## Current minimal implementation
+
+`src/logos_memory` now provides immutable `MemoryRecord`, `ProvenanceRef`, and
+`AuthorityProvenance` types plus a local append-only JSONL `MemoryStore`.
+Records retain the supplied `ScopeContract` visibility and retention values as
+data. The store accepts only working, episodic, semantic, procedural, and
+evidence records; it rejects assurance kinds and authority-bearing admissible
+uses before writing. On recovery, only a malformed final line is quarantined;
+malformed earlier lines fail closed.
+
+`MemoryFactory` adds guarded semantic/procedural consolidation. Every proposal
+must pass local-source, global-evidence-coherence, and authority-preservation
+checks before append. Accepted outputs retain source lineage and unresolved
+conflicts, use the visibility/admissible-use intersection and weakest source
+authority class, and derive epistemic status conservatively. Authority
+revocation is an explicit append-only event that propagates transitively through
+`derived_from`; content deletion remains a separate tombstone operation.
+Epistemic states use a closed transition set: contradiction remains
+contradicted, unknown remains unknown, and explicit output states may not exceed
+the support of the conservatively derived state. Consolidation provenance binds
+the canonical full source-record snapshots in deterministic source-ID order, so
+a changed record version under the same ID produces a different digest while
+`derived_from` continues to carry the source IDs.
+
+Retrieval is scope-first: records outside the effective projection audiences
+are removed before BM25 document frequencies, average length, or scores are
+computed. The implementation uses fixed `k1=1.5`, `b=0.75`, stable ID ties and
+canonical SHA-256 query/context digests. `DENY` and `DEFER` decisions expose no
+candidate or retrieved content. Minimum-context projections accept only
+explicitly selected records visible to an allowed audience, bind purpose,
+audience, expiry, source/content digests and effective-scope digest, and retain
+epistemic/conflict qualifiers without including authority provenance.
+
+Every public retrieval/projection boundary first validates the supplied
+`ScopeDecision`. A nominally permissive decision must contain an effective
+contract whose canonical digest exactly matches the decision digest; otherwise
+the operation fails closed with an explicit reason and unresolved dimension.
+Request evaluation preserves an existing `DENY` or `DEFER` verdict even when an
+inconsistent caller supplies a non-null effective contract.
+
+### Exact public interfaces
+
+`src/logos_memory` exports `MemoryFactory`, `MemoryStore`, `MemoryRecord`,
+`ProvenanceRef`, `AuthorityProvenance`, `ScopeContract`, `ScopeRequest`,
+`ScopeDecision`, `ScopeViolation`, `ConsolidationProposal`,
+`ConsolidationVerdict`, `RetrievalRecord`, `RetrievalItem`, and
+`ProjectionRecord`. `MemoryFactory` exposes scoped `retrieve`, `project`,
+guarded `consolidate`, `derive_procedure`, and transitive
+`revoke_authority`. `MemoryStore` exposes append/fetch/all, supersession,
+conflict recording, and tombstoning over its JSONL log.
+
+The consolidation gates are, in execution order, local transition, global
+coherence, and authority preservation. A rejection appends nothing. Scoped
+retrieval admits only `ALLOW`/`NARROW` decisions and filters visibility before
+ranking. Projections require an allowed effective scope, explicit visible
+source IDs, an allowed audience, a purpose, and an expiry within the effective
+scope. `DENY`/`DEFER` retrieval returns no candidate or retrieved content.
+
+JSONL recovery preserves valid prefixes, quarantines and replaces only a
+malformed final line with an authority-free deterministic recovery episode,
+and fails closed on malformed or authority-bearing earlier records. Repeated
+identical corrupt tails receive distinct occurrence-indexed recovery records.
+
+### Assurance separation
+
+There is deliberately no assurance-store implementation in `logos_memory`.
+The separate assurance interface is the boundary: assurance kinds and
+authority-bearing uses are rejected by `MemoryStore`, assurance paths can be
+excluded by `ScopeContract`, projections omit authority provenance, and any
+effect influenced by memory must re-enter Γ and its separately owned approval
+and occurrence machinery.
+
+The current `ScopeDecision.evaluate()` checks exactly role, tool, memory kind,
+capability, target and path. Other effective-contract dimensions are not yet
+evaluated against exact requests by this package; parameter bounds, budgets,
+time validity, occurrences, externality, reversibility, approval requirement,
+data/retention classes and source versions remain constraints for a separate
+downstream dispatch/effect gate. Unsupported exact-request dimensions cause
+WAIT/DENY, never inferred success.
+
+```text
+ImplementationPass != ScientificMechanismEvidence
+MemoryFactory != AuthoritySource
+ScopeDecision != ExternalApproval
+ScopeDecision != DispatchAuthorization
+PersistentState != PhenomenalConsciousness
+```
 
 ## Tests required before calling it implemented
 
