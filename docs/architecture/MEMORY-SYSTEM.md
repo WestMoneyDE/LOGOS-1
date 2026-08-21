@@ -175,7 +175,8 @@ WAIT/DENY, never inferred success.
 ```text
 ImplementationPass != ScientificMechanismEvidence
 MemoryFactory != AuthoritySource
-ScopeDecision != DispatchAuthorization != ExternalApproval
+ScopeDecision != ExternalApproval
+ScopeDecision != DispatchAuthorization
 PersistentState != PhenomenalConsciousness
 ```
 

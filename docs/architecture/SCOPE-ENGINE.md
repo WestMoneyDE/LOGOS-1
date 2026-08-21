@@ -53,6 +53,7 @@ OS isolation, approval validity, or scientific evidence for a memory mechanism.
 ```text
 ImplementationPass != ScientificMechanismEvidence
 MemoryFactory != AuthoritySource
-ScopeDecision != DispatchAuthorization != ExternalApproval
+ScopeDecision != ExternalApproval
+ScopeDecision != DispatchAuthorization
 PersistentState != PhenomenalConsciousness
 ```

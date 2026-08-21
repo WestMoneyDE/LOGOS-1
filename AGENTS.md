@@ -108,9 +108,13 @@ target and path. Parameter bounds, budgets, time validity, occurrences,
 externality, reversibility, approval requirement, data/retention classes and
 source versions require a separate downstream dispatch/effect gate and are not
 evaluated by this package. If an exact request depends on an unsupported
-dimension, WAIT/DENY rather than infer success. `ScopeDecision !=
-DispatchAuthorization != ExternalApproval`; Γ and the separately owned
+dimension, WAIT/DENY rather than infer success. Γ and the separately owned
 assurance interface remain mandatory.
+
+```text
+ScopeDecision != ExternalApproval
+ScopeDecision != DispatchAuthorization
+```
 
 ### Change propagation
 

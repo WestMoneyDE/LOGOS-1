@@ -27,7 +27,11 @@ Implement the first coding-ready LOGOS memory substrate and repository operating
   consolidation, file/tool dispatch or effect proposal; `DEFER` means WAIT
 - current exact-request evaluation covers role, tool, memory kind, capability,
   target and path only; unsupported dimensions cause WAIT/DENY
-- `ScopeDecision != DispatchAuthorization != ExternalApproval`
+
+```text
+ScopeDecision != ExternalApproval
+ScopeDecision != DispatchAuthorization
+```
 
 ## Implementation sequence
 

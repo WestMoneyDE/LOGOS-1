@@ -50,9 +50,15 @@ The other effective-contract dimensions require a separate downstream
 dispatch/effect gate and are not claimed as exact-request checks in
 `logos_memory`; unsupported dimensions cause WAIT/DENY. There is no implemented
 dispatch authorization, assurance store or external approval capability in
-`logos_memory`. `MemoryFactory != AuthoritySource`; `ScopeDecision !=
-DispatchAuthorization != ExternalApproval`; `ImplementationPass !=
-ScientificMechanismEvidence`; `PersistentState != PhenomenalConsciousness`.
+`logos_memory`.
+
+```text
+ImplementationPass != ScientificMechanismEvidence
+MemoryFactory != AuthoritySource
+ScopeDecision != ExternalApproval
+PersistentState != PhenomenalConsciousness
+ScopeDecision != DispatchAuthorization
+```
 
 ## Current canonical research/engineering gate
 

@@ -50,9 +50,13 @@ target and path. Parameter bounds, budgets, time validity, occurrences,
 externality, reversibility, approval requirement, data/retention classes and
 source versions require a separate downstream dispatch/effect gate and are not
 evaluated by this package. Unsupported exact-request dimensions cause WAIT/DENY,
-never inferred success. `ScopeDecision != DispatchAuthorization !=
-ExternalApproval`; effect proposals still re-enter Γ and the separate assurance
-path.
+never inferred success. Effect proposals still re-enter Γ and the separate
+assurance path.
+
+```text
+ScopeDecision != ExternalApproval
+ScopeDecision != DispatchAuthorization
+```
 
 ### Push completion
 
