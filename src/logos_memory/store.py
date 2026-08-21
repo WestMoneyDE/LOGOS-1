@@ -44,10 +44,10 @@ def _encode(record: MemoryRecord) -> bytes:
     return (json.dumps(asdict(record), sort_keys=True, separators=(",", ":")) + "\n").encode("utf-8")
 
 
-def _recovery_record(corrupt_tail: bytes) -> MemoryRecord:
+def _recovery_record(corrupt_tail: bytes, occurrence_index: int) -> MemoryRecord:
     digest = sha256(corrupt_tail).hexdigest()
     return MemoryRecord(
-        id=f"memory-recovery-{digest}",
+        id=f"memory-recovery-{occurrence_index:08d}-{digest}",
         kind="episodic",
         created_at="1970-01-01T00:00:00+00:00",
         content=f"Quarantined malformed final memory-log segment sha256:{digest}.",
@@ -83,13 +83,18 @@ class MemoryStore:
                 if index != len(lines) - 1:
                     raise ValueError(f"memory log corruption at line {index + 1}") from error
                 self.quarantine_path.write_bytes(line)
-                recovery = _recovery_record(line)
+                occurrence_index = 1 + sum(
+                    item.source.ref == "memory.jsonl:corrupt-tail"
+                    for item in self._records.values()
+                )
+                recovery = _recovery_record(line, occurrence_index)
                 _validate_authority(recovery)
                 valid = b"".join(lines[:index])
                 temporary = self.path.with_suffix(".jsonl.tmp")
                 temporary.write_bytes(valid + _encode(recovery))
                 temporary.replace(self.path)
-                self._order.append(recovery.id)
+                if recovery.id not in self._records:
+                    self._order.append(recovery.id)
                 self._records[recovery.id] = recovery
                 break
             try:

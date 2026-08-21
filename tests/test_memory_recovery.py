@@ -56,7 +56,7 @@ def test_recovery_episode_is_deterministic_authority_none_memory(tmp_path: Path)
     recovery = recovered.all()[-1]
     digest = sha256(corrupt_tail).hexdigest()
 
-    assert recovery.id == f"memory-recovery-{digest}"
+    assert recovery.id == f"memory-recovery-00000001-{digest}"
     assert recovery.kind == "episodic"
     assert recovery.authority.authority_class == "none"
     assert recovery.authority.admissible_uses == ()
@@ -64,6 +64,48 @@ def test_recovery_episode_is_deterministic_authority_none_memory(tmp_path: Path)
 
     first_bytes = recovered.path.read_bytes()
     assert MemoryStore(tmp_path).path.read_bytes() == first_bytes
+
+
+def test_identical_corrupt_tails_create_distinct_stable_recovery_occurrences(tmp_path: Path):
+    store = MemoryStore(tmp_path)
+    store.append(record())
+    corrupt_tail = b'{"same":'
+
+    with store.path.open("ab") as handle:
+        handle.write(corrupt_tail)
+    first = MemoryStore(tmp_path)
+    with first.path.open("ab") as handle:
+        handle.write(corrupt_tail)
+    second = MemoryStore(tmp_path)
+
+    recovery_ids = tuple(item.id for item in second.all() if item.id.startswith("memory-recovery-"))
+    assert len(recovery_ids) == 2
+    assert len(set(recovery_ids)) == 2
+    reopened_ids = tuple(item.id for item in MemoryStore(tmp_path).all())
+    assert tuple(item.id for item in second.all()) == reopened_ids
+    serialized_ids = tuple(
+        payload["id"]
+        for payload in map(json.loads, second.path.read_text(encoding="utf-8").splitlines())
+        if payload["id"].startswith("memory-recovery-")
+    )
+    assert serialized_ids == recovery_ids
+
+    stable_ids = tuple(item.id for item in MemoryStore(tmp_path).all())
+    assert stable_ids == tuple(item.id for item in second.all())
+
+
+def test_different_corrupt_tails_create_distinct_recovery_occurrences(tmp_path: Path):
+    store = MemoryStore(tmp_path)
+    store.append(record())
+    with store.path.open("ab") as handle:
+        handle.write(b'{"first":')
+    first = MemoryStore(tmp_path)
+    with first.path.open("ab") as handle:
+        handle.write(b'{"second":')
+    second = MemoryStore(tmp_path)
+
+    recovery_ids = tuple(item.id for item in second.all() if item.id.startswith("memory-recovery-"))
+    assert len(recovery_ids) == len(set(recovery_ids)) == 2
 
 
 def test_corrupt_middle_line_raises_without_repair(tmp_path: Path):
