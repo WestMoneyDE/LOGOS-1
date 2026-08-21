@@ -19,18 +19,28 @@ set dimensions intersect, ceilings take minima, exclusions union, validity
 windows intersect, risk properties choose the more restrictive value, and
 missing, malformed, mismatched, or empty required dimensions fail closed.
 
-`ScopeDecision.evaluate(ScopeRequest)` checks role, tool, memory kind,
-capability, target, and a normalized repository-relative path against the
-effective contract. Included paths do not override exclusions. Invalid,
-absolute, traversal, backslash, ambiguous, or out-of-scope paths are denied.
+`ScopeDecision.evaluate(ScopeRequest)` currently checks exactly role, tool,
+memory kind, capability, target, and a normalized repository-relative path
+against the effective contract. Included paths do not override exclusions.
+Invalid, absolute, traversal, backslash, ambiguous, or out-of-scope paths are
+denied.
+
+The remaining effective-contract dimensions—parameter bounds, cost/token/time/
+attempt budgets, time validity, occurrences, externality, reversibility,
+approval requirement, data/retention classes, and source versions—are
+constraints for a separate downstream dispatch/effect gate. This package does
+not yet claim to evaluate them against an exact request. If an exact request
+depends on one of these unsupported dimensions, the outcome is WAIT/DENY,
+never inferred success.
 
 ## Required use
 
-Coding agents must obtain and evaluate a `ScopeDecision` before memory
-retrieval, consolidation, file/tool dispatch, or effect proposal. An
-`ALLOW`/`NARROW` decision is only a local scope precondition. It does not mint a
-grant, consume an approved occurrence, authorize an external effect, or bypass
-Γ. External effects still require the separate assurance path.
+Coding agents must obtain a non-denied `ScopeDecision` before memory retrieval,
+consolidation, file/tool dispatch, or effect proposal. `DEFER` means WAIT; only
+`ALLOW`/`NARROW` satisfies the implemented local precondition. It does not mint
+a grant, provide dispatch authorization, consume an approved occurrence,
+authorize an external effect, or bypass Γ. External effects still require the
+separate downstream dispatch/effect and assurance gates.
 
 ## Evidence and limits
 
@@ -43,6 +53,6 @@ OS isolation, approval validity, or scientific evidence for a memory mechanism.
 ```text
 ImplementationPass != ScientificMechanismEvidence
 MemoryFactory != AuthoritySource
-ScopeDecision != ExternalApproval
+ScopeDecision != DispatchAuthorization != ExternalApproval
 PersistentState != PhenomenalConsciousness
 ```

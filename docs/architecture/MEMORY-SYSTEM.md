@@ -164,10 +164,18 @@ excluded by `ScopeContract`, projections omit authority provenance, and any
 effect influenced by memory must re-enter Γ and its separately owned approval
 and occurrence machinery.
 
+The current `ScopeDecision.evaluate()` checks exactly role, tool, memory kind,
+capability, target and path. Other effective-contract dimensions are not yet
+evaluated against exact requests by this package; parameter bounds, budgets,
+time validity, occurrences, externality, reversibility, approval requirement,
+data/retention classes and source versions remain constraints for a separate
+downstream dispatch/effect gate. Unsupported exact-request dimensions cause
+WAIT/DENY, never inferred success.
+
 ```text
 ImplementationPass != ScientificMechanismEvidence
 MemoryFactory != AuthoritySource
-ScopeDecision != ExternalApproval
+ScopeDecision != DispatchAuthorization != ExternalApproval
 PersistentState != PhenomenalConsciousness
 ```
 

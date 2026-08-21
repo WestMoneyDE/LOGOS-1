@@ -58,9 +58,17 @@ isolation was implemented.
 ```text
 ImplementationPass != ScientificMechanismEvidence
 MemoryFactory != AuthoritySource
-ScopeDecision != ExternalApproval
+ScopeDecision != DispatchAuthorization != ExternalApproval
 PersistentState != PhenomenalConsciousness
 ```
+
+Implementation-boundary correction: `ScopeDecision.evaluate()` checks exactly
+role, tool, memory kind, capability, target and path. Parameter bounds, budgets,
+time validity, occurrences, externality, reversibility, approval requirement,
+data/retention classes and source versions require a separate downstream
+dispatch/effect gate and are not claimed as evaluated by `logos_memory`.
+Unsupported exact-request dimensions cause WAIT/DENY. Therefore the complete
+boundary is `ScopeDecision != DispatchAuthorization != ExternalApproval`.
 
 ## Blockers, queue and next action
 

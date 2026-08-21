@@ -23,9 +23,11 @@ Implement the first coding-ready LOGOS memory substrate and repository operating
 - `OUTCOME_UNKNOWN != NOT_EXECUTED`
 - memory retrieval/consolidation cannot mint grants/scopes/tokens
 - scientific promotion requires evidence, not implementation convenience
-- a coding agent obtains and evaluates a `ScopeDecision` before memory retrieval,
-  consolidation, file/tool dispatch or effect proposal
-- `ScopeDecision != ExternalApproval`
+- a coding agent obtains a non-denied `ScopeDecision` before memory retrieval,
+  consolidation, file/tool dispatch or effect proposal; `DEFER` means WAIT
+- current exact-request evaluation covers role, tool, memory kind, capability,
+  target and path only; unsupported dimensions cause WAIT/DENY
+- `ScopeDecision != DispatchAuthorization != ExternalApproval`
 
 ## Implementation sequence
 

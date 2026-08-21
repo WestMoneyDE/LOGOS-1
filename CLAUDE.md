@@ -42,10 +42,17 @@ For recurring engineering knowledge, prefer concise repository documentation ove
 
 Use `docs/architecture/MEMORY-SYSTEM.md` as the coding target. Preserve provenance, uncertainty and conflicts. Do not collapse contradictory records merely to create a cleaner summary. Do not treat a retrieved or consolidated memory as authorization.
 
-Obtain and evaluate a `ScopeDecision` for the exact request before memory
-retrieval, consolidation, file/tool dispatch or effect proposal. Treat an
-`ALLOW`/`NARROW` result as a local scope precondition, never as external
-approval; effect proposals still re-enter Γ and the separate assurance path.
+Before memory retrieval, consolidation, file/tool dispatch or effect proposal,
+obtain a non-denied `ScopeDecision`; `DEFER` means WAIT and only `ALLOW` or
+`NARROW` satisfies the implemented local precondition. The current
+`ScopeDecision.evaluate()` checks exactly role, tool, memory kind, capability,
+target and path. Parameter bounds, budgets, time validity, occurrences,
+externality, reversibility, approval requirement, data/retention classes and
+source versions require a separate downstream dispatch/effect gate and are not
+evaluated by this package. Unsupported exact-request dimensions cause WAIT/DENY,
+never inferred success. `ScopeDecision != DispatchAuthorization !=
+ExternalApproval`; effect proposals still re-enter Γ and the separate assurance
+path.
 
 ### Push completion
 

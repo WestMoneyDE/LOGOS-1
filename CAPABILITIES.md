@@ -41,15 +41,18 @@ promotions:
 
 | Capability | Rating | Exact pytest evidence |
 |---|---|---|
-| Restrictive typed scope intersection and request evaluation | `IMPLEMENTED` | `tests/test_scope_engine.py` |
+| Restrictive typed scope intersection plus role/tool/memory-kind/capability/target/path request evaluation | `IMPLEMENTED` | `tests/test_scope_engine.py` |
 | Authority-firewalled append-only JSONL memory store | `IMPLEMENTED` | `tests/test_memory_store.py` |
 | Guarded consolidation, scoped BM25 retrieval and projections | `IMPLEMENTED` | `tests/test_memory_factory.py` |
 | Deterministic recovery and coding-agent replay | `IMPLEMENTED` | `tests/test_memory_recovery.py` |
 
-There is no implemented assurance store or external approval capability in
+The other effective-contract dimensions require a separate downstream
+dispatch/effect gate and are not claimed as exact-request checks in
+`logos_memory`; unsupported dimensions cause WAIT/DENY. There is no implemented
+dispatch authorization, assurance store or external approval capability in
 `logos_memory`. `MemoryFactory != AuthoritySource`; `ScopeDecision !=
-ExternalApproval`; `ImplementationPass != ScientificMechanismEvidence`;
-`PersistentState != PhenomenalConsciousness`.
+DispatchAuthorization != ExternalApproval`; `ImplementationPass !=
+ScientificMechanismEvidence`; `PersistentState != PhenomenalConsciousness`.
 
 ## Current canonical research/engineering gate
 
