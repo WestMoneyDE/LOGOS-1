@@ -46,3 +46,16 @@ occurred. The active R4 work order was preserved.
 
 Review and integrate Task 3. Scope-first retrieval/projection remains separate
 follow-on work.
+
+## Review correction
+
+Post-implementation review identified two material gaps. The global-coherence
+gate now validates a closed epistemic-state set and enforces conservative
+transitions: `contradicted` cannot become a positive claim, `unknown` remains
+`unknown`, and explicit requested states cannot exceed derived support.
+Consolidation provenance now hashes canonical serialized full source records in
+source-ID order rather than hashing IDs alone. Therefore record content,
+provenance, authority, epistemic state, schema, lineage, conflict, visibility,
+retention, or revocation changes alter the digest even when the source ID stays
+the same. New RED/GREEN regressions cover both transition failures, invalid
+statuses, version sensitivity, and order determinism.

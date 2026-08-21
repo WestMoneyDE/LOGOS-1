@@ -5,6 +5,30 @@ from dataclasses import dataclass
 from .records import MemoryRecord
 
 
+EPISTEMIC_STATUSES = frozenset(
+    {"unknown", "hypothesis", "observed", "verified", "contradicted"}
+)
+
+ALLOWED_EPISTEMIC_TRANSITIONS = {
+    "unknown": frozenset({"unknown"}),
+    "hypothesis": frozenset({"unknown", "hypothesis"}),
+    "observed": frozenset({"unknown", "hypothesis", "observed"}),
+    "verified": frozenset({"unknown", "hypothesis", "observed", "verified"}),
+    "contradicted": frozenset({"contradicted"}),
+}
+
+
+def derive_epistemic_status(sources: tuple[MemoryRecord, ...]) -> str:
+    statuses = {source.epistemic_status for source in sources}
+    if "contradicted" in statuses:
+        return "contradicted"
+    if "unknown" in statuses:
+        return "unknown"
+    if statuses == {"verified"}:
+        return "verified"
+    return "hypothesis"
+
+
 @dataclass(frozen=True)
 class ConsolidationProposal:
     source_ids: tuple[str, ...]
@@ -38,9 +62,14 @@ def validate_local_transition(
 def validate_global_coherence(
     proposal: ConsolidationProposal, sources: tuple[MemoryRecord, ...]
 ) -> tuple[str, ...]:
-    if proposal.requested_status == "verified" and not all(
-        source.epistemic_status == "verified" for source in sources
+    source_statuses = {source.epistemic_status for source in sources}
+    if (
+        proposal.requested_status not in EPISTEMIC_STATUSES
+        or not source_statuses <= EPISTEMIC_STATUSES
     ):
+        return ("global evidence coherence",)
+    derived_status = derive_epistemic_status(sources)
+    if proposal.requested_status not in ALLOWED_EPISTEMIC_TRANSITIONS[derived_status]:
         return ("global evidence coherence",)
     return ()
 

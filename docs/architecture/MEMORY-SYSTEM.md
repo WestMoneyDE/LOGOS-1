@@ -116,6 +116,12 @@ conflicts, use the visibility/admissible-use intersection and weakest source
 authority class, and derive epistemic status conservatively. Authority
 revocation is an explicit append-only event that propagates transitively through
 `derived_from`; content deletion remains a separate tombstone operation.
+Epistemic states use a closed transition set: contradiction remains
+contradicted, unknown remains unknown, and explicit output states may not exceed
+the support of the conservatively derived state. Consolidation provenance binds
+the canonical full source-record snapshots in deterministic source-ID order, so
+a changed record version under the same ID produces a different digest while
+`derived_from` continues to carry the source IDs.
 
 ## Tests required before calling it implemented
 

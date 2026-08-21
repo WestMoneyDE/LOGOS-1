@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import replace
+from dataclasses import asdict, replace
 from datetime import datetime, timezone
 from hashlib import sha256
 import json
@@ -8,6 +8,7 @@ import json
 from .consolidation import (
     ConsolidationProposal,
     ConsolidationVerdict,
+    derive_epistemic_status,
     validate_authority_preservation,
     validate_global_coherence,
     validate_local_transition,
@@ -26,15 +27,6 @@ AUTHORITY_CLASS_ORDER = (
 
 def _intersection(values: tuple[tuple[str, ...], ...]) -> tuple[str, ...]:
     return tuple(sorted(set.intersection(*(set(value) for value in values))))
-
-
-def _derived_status(sources: tuple[MemoryRecord, ...]) -> str:
-    statuses = {source.epistemic_status for source in sources}
-    if "contradicted" in statuses:
-        return "contradicted"
-    if statuses == {"verified"}:
-        return "verified"
-    return "hypothesis"
 
 
 def _weakest_authority(sources: tuple[MemoryRecord, ...]) -> str:
@@ -63,7 +55,7 @@ class MemoryFactory:
         sources = tuple(
             source for source_id in source_ids if (source := self.store.fetch(source_id)) is not None
         )
-        derived_status = _derived_status(sources) if sources else "hypothesis"
+        derived_status = derive_epistemic_status(sources) if sources else "unknown"
         visibility = requested_visibility if requested_visibility is not None else (
             _intersection(tuple(source.visibility for source in sources)) if sources else ()
         )
@@ -77,7 +69,7 @@ class MemoryFactory:
             content=content,
             output_id=output_id,
             kind=kind,
-            requested_status=requested_status or derived_status,
+            requested_status=derived_status if requested_status is None else requested_status,
             requested_visibility=visibility,
             requested_uses=uses,
         )
@@ -93,14 +85,19 @@ class MemoryFactory:
         if reasons:
             return ConsolidationVerdict(False, tuple(dict.fromkeys(reasons)))
 
-        lineage_payload = json.dumps(source_ids, separators=(",", ":")).encode("utf-8")
+        canonical_sources = sorted(sources, key=lambda source: source.id)
+        lineage_payload = json.dumps(
+            [asdict(source) for source in canonical_sources],
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
         record = MemoryRecord(
             id=output_id,
             kind=kind,
             created_at=datetime.now(timezone.utc).isoformat(),
             content=content,
             source=ProvenanceRef(
-                ref="consolidation:" + ",".join(source_ids),
+                ref="consolidation:" + ",".join(source.id for source in canonical_sources),
                 source_kind="memory-consolidation",
                 content_digest="sha256:" + sha256(lineage_payload).hexdigest(),
             ),

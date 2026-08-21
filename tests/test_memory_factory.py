@@ -1,3 +1,4 @@
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -60,6 +61,33 @@ def test_consolidation_cannot_convert_unknown_to_verified(factory):
     assert "global evidence coherence" in result.reasons
 
 
+@pytest.mark.parametrize(
+    ("source_status", "requested_status"),
+    (("contradicted", "hypothesis"), ("unknown", "hypothesis")),
+)
+def test_consolidation_rejects_less_conservative_epistemic_transition(
+    factory, source_status, requested_status
+):
+    factory.store.append(record("epistemic", epistemic_status=source_status))
+
+    result = factory.consolidate(
+        ("epistemic",), "unsupported", output_id="bad-state", requested_status=requested_status
+    )
+
+    assert result.accepted is False
+    assert "global evidence coherence" in result.reasons
+    assert factory.store.fetch("bad-state") is None
+
+
+def test_consolidation_rejects_invalid_epistemic_status(factory):
+    result = factory.consolidate(
+        ("source",), "invalid", output_id="bad-state", requested_status="certain"
+    )
+
+    assert result.accepted is False
+    assert "global evidence coherence" in result.reasons
+
+
 def test_consolidation_cannot_widen_visibility_or_uses(factory):
     result = factory.consolidate(("private", "project"), "wide", output_id="bad", requested_visibility=("public",))
     assert result.accepted is False
@@ -115,3 +143,22 @@ def test_revocation_traverses_an_already_revoked_intermediate(factory):
     factory.revoke_authority("source", "source authority withdrawn")
 
     assert factory.store.fetch(descendant.id).revoked is True
+
+
+def test_consolidation_digest_changes_when_same_source_id_gets_new_version(factory):
+    first = factory.consolidate(("source",), "first", output_id="summary-1").record
+    factory.store.append(replace(factory.store.fetch("source"), content="changed source content"))
+
+    second = factory.consolidate(("source",), "second", output_id="summary-2").record
+
+    assert first.source.content_digest != second.source.content_digest
+    assert first.derived_from == second.derived_from == ("source",)
+
+
+def test_consolidation_digest_is_deterministic_across_source_order(factory):
+    forward = factory.consolidate(("a", "b"), "forward", output_id="forward").record
+    reverse = factory.consolidate(("b", "a"), "reverse", output_id="reverse").record
+
+    assert forward.source.content_digest == reverse.source.content_digest
+    assert forward.derived_from == ("a", "b")
+    assert reverse.derived_from == ("b", "a")
