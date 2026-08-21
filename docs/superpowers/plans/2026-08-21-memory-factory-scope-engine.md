@@ -861,7 +861,7 @@ git commit -m "docs: record memory factory and scope engine"
 **Files:**
 - Modify: `docs/superpowers/plans/2026-08-21-memory-factory-scope-engine.md` only to check completed boxes during execution.
 
-- [ ] **Step 1: Re-run fresh verification**
+- [x] **Step 1: Re-run fresh verification**
 
 ```powershell
 pytest -q
@@ -873,6 +873,6 @@ git status --short --branch
 
 Expected: zero failures, clean diff, expected commits only and clean working tree.
 
-- [ ] **Step 2: Prepare but do not execute the external push**
+- [x] **Step 2: Prepare but do not execute the external push**
 
 Record branch, commit list, test counts, active-work-order byte-preservation result and capability delta for the final coordinated one-shot multi-repository push gate.
