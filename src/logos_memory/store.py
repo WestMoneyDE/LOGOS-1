@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, replace
+from hashlib import sha256
 import json
 from pathlib import Path
 
@@ -39,6 +40,30 @@ def _decode(payload: dict) -> MemoryRecord:
     )
 
 
+def _encode(record: MemoryRecord) -> bytes:
+    return (json.dumps(asdict(record), sort_keys=True, separators=(",", ":")) + "\n").encode("utf-8")
+
+
+def _recovery_record(corrupt_tail: bytes) -> MemoryRecord:
+    digest = sha256(corrupt_tail).hexdigest()
+    return MemoryRecord(
+        id=f"memory-recovery-{digest}",
+        kind="episodic",
+        created_at="1970-01-01T00:00:00+00:00",
+        content=f"Quarantined malformed final memory-log segment sha256:{digest}.",
+        source=ProvenanceRef("memory.jsonl:corrupt-tail", "local-recovery", digest),
+        authority=AuthorityProvenance("none", ()),
+        epistemic_status="observed",
+        schema_version=1,
+        derived_from=(),
+        supersedes=None,
+        conflicts_with=(),
+        visibility=("project",),
+        retention="project",
+        revoked=False,
+    )
+
+
 class MemoryStore:
     def __init__(self, directory: Path):
         directory.mkdir(parents=True, exist_ok=True)
@@ -50,29 +75,35 @@ class MemoryStore:
         self._load()
 
     def _load(self) -> None:
-        lines = self.path.read_text(encoding="utf-8").splitlines(keepends=True)
+        lines = self.path.read_bytes().splitlines(keepends=True)
         for index, line in enumerate(lines):
             try:
-                record = _decode(json.loads(line))
-                _validate_authority(record)
-            except (json.JSONDecodeError, KeyError, TypeError, MemoryAuthorityError) as error:
+                record = _decode(json.loads(line.decode("utf-8")))
+            except (UnicodeDecodeError, json.JSONDecodeError, KeyError, TypeError) as error:
                 if index != len(lines) - 1:
                     raise ValueError(f"memory log corruption at line {index + 1}") from error
-                self.quarantine_path.write_text(line, encoding="utf-8")
-                valid = "".join(lines[:index])
+                self.quarantine_path.write_bytes(line)
+                recovery = _recovery_record(line)
+                _validate_authority(recovery)
+                valid = b"".join(lines[:index])
                 temporary = self.path.with_suffix(".jsonl.tmp")
-                temporary.write_text(valid, encoding="utf-8")
+                temporary.write_bytes(valid + _encode(recovery))
                 temporary.replace(self.path)
+                self._order.append(recovery.id)
+                self._records[recovery.id] = recovery
                 break
+            try:
+                _validate_authority(record)
+            except MemoryAuthorityError as error:
+                raise ValueError(f"memory log corruption at line {index + 1}") from error
             if record.id not in self._records:
                 self._order.append(record.id)
             self._records[record.id] = record
 
     def append(self, record: MemoryRecord) -> MemoryRecord:
         _validate_authority(record)
-        encoded = json.dumps(asdict(record), sort_keys=True, separators=(",", ":"))
-        with self.path.open("a", encoding="utf-8", newline="\n") as handle:
-            handle.write(encoded + "\n")
+        with self.path.open("ab") as handle:
+            handle.write(_encode(record))
         if record.id not in self._records:
             self._order.append(record.id)
         self._records[record.id] = record
