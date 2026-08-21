@@ -123,6 +123,15 @@ the canonical full source-record snapshots in deterministic source-ID order, so
 a changed record version under the same ID produces a different digest while
 `derived_from` continues to carry the source IDs.
 
+Retrieval is scope-first: records outside the effective projection audiences
+are removed before BM25 document frequencies, average length, or scores are
+computed. The implementation uses fixed `k1=1.5`, `b=0.75`, stable ID ties and
+canonical SHA-256 query/context digests. `DENY` and `DEFER` decisions expose no
+candidate or retrieved content. Minimum-context projections accept only
+explicitly selected records visible to an allowed audience, bind purpose,
+audience, expiry, source/content digests and effective-scope digest, and retain
+epistemic/conflict qualifiers without including authority provenance.
+
 ## Tests required before calling it implemented
 
 - provenance survives write → retrieve → consolidate;

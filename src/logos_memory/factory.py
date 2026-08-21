@@ -14,6 +14,8 @@ from .consolidation import (
     validate_local_transition,
 )
 from .records import AuthorityProvenance, MemoryRecord, ProvenanceRef
+from .retrieval import ProjectionRecord, canonical_digest, content_digest, retrieve_records
+from .scope import ScopeDecision, _parse_timestamp
 from .store import MemoryStore
 
 
@@ -40,6 +42,67 @@ def _weakest_authority(sources: tuple[MemoryRecord, ...]) -> str:
 class MemoryFactory:
     def __init__(self, store: MemoryStore):
         self.store = store
+
+    def retrieve(self, query: str, scope: ScopeDecision, limit: int = 10):
+        return retrieve_records(self.store.all(), query, scope, limit)
+
+    def project(
+        self,
+        ids: tuple[str, ...],
+        *,
+        purpose: str,
+        audience: str,
+        valid_until: str,
+        scope: ScopeDecision,
+    ) -> ProjectionRecord:
+        if scope.verdict not in {"ALLOW", "NARROW"} or scope.effective is None:
+            raise ValueError("projection requires an allowed effective scope")
+        if not purpose.strip():
+            raise ValueError("projection purpose is required")
+        if audience not in scope.effective.projection_audiences:
+            raise ValueError("projection audience exceeds effective scope")
+        expiry = _parse_timestamp(valid_until)
+        scope_start = _parse_timestamp(scope.effective.valid_from)
+        scope_end = _parse_timestamp(scope.effective.valid_until)
+        if expiry is None or scope_start is None or scope_end is None or not scope_start < expiry <= scope_end:
+            raise ValueError("projection expiry exceeds effective scope")
+        if not ids or len(ids) != len(set(ids)):
+            raise ValueError("projection source IDs must be non-empty and unique")
+
+        sources: list[MemoryRecord] = []
+        for source_id in ids:
+            source = self.store.fetch(source_id)
+            if source is None:
+                raise ValueError(f"projection source is missing: {source_id}")
+            if audience not in source.visibility:
+                raise ValueError(f"projection source exceeds audience scope: {source_id}")
+            sources.append(source)
+
+        source_digests = tuple(content_digest(source.content) for source in sources)
+        content = json.dumps(
+            [
+                {
+                    "conflicts_with": source.conflicts_with,
+                    "content": source.content,
+                    "content_digest": digest,
+                    "epistemic_status": source.epistemic_status,
+                    "id": source.id,
+                }
+                for source, digest in zip(sources, source_digests)
+            ],
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+        fields = {
+            "audience": audience,
+            "content": content,
+            "purpose": purpose,
+            "scope_digest": scope.digest,
+            "source_digests": source_digests,
+            "source_ids": ids,
+            "valid_until": valid_until,
+        }
+        return ProjectionRecord(**fields, digest=canonical_digest(fields))
 
     def consolidate(
         self,

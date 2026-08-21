@@ -1,9 +1,19 @@
 from dataclasses import replace
+from hashlib import sha256
 from pathlib import Path
 
 import pytest
 
-from logos_memory import AuthorityProvenance, MemoryFactory, MemoryRecord, MemoryStore, ProvenanceRef
+from logos_memory import (
+    AuthorityProvenance,
+    MemoryFactory,
+    MemoryRecord,
+    MemoryStore,
+    ProvenanceRef,
+    ScopeContract,
+    ScopeDecision,
+    intersect_contracts,
+)
 
 
 def record(record_id: str, **overrides) -> MemoryRecord:
@@ -41,10 +51,49 @@ def factory(tmp_path: Path) -> MemoryFactory:
         record("private", visibility=("private", "project")),
         record("project", visibility=("project",)),
         record("source"),
+        record(
+            "project-record",
+            content="supplier obligation is disputed",
+            epistemic_status="contradicted",
+            conflicts_with=("counter-record",),
+        ),
+        record("private-record", content="supplier confidential confidential", visibility=("private",)),
+        record("project-tie-a", content="supplier neutral"),
+        record("project-tie-b", content="supplier neutral"),
     )
     for item in inputs:
         store.append(item)
     return MemoryFactory(store)
+
+
+@pytest.fixture
+def project_scope() -> ScopeDecision:
+    contract = ScopeContract(
+        project="logos-1",
+        paths=("src/**", "tests/**"),
+        excluded_paths=(".state/assurance/**",),
+        roles=("builder",),
+        tools=("read",),
+        memory_kinds=("episodic", "semantic", "procedural"),
+        projection_audiences=("project",),
+        capabilities=("local-read",),
+        targets=("repository",),
+        parameter_bounds=(),
+        max_cost_usd=0.0,
+        max_tokens=10_000,
+        max_seconds=3_600,
+        max_attempts=1,
+        valid_from="2026-08-21T00:00:00+00:00",
+        valid_until="2026-08-23T00:00:00+00:00",
+        max_occurrences=1,
+        externality="internal",
+        reversibility="reversible",
+        approval_required=False,
+        data_classes=("project",),
+        retention_classes=("project",),
+        source_versions=("project-policy@1",),
+    )
+    return intersect_contracts([contract])
 
 
 def test_consolidation_preserves_conflict_and_weakest_authority(factory):
@@ -162,3 +211,88 @@ def test_consolidation_digest_is_deterministic_across_source_order(factory):
     assert forward.source.content_digest == reverse.source.content_digest
     assert forward.derived_from == ("a", "b")
     assert reverse.derived_from == ("b", "a")
+
+
+def test_retrieval_filters_visibility_before_ranking(factory, project_scope):
+    result = factory.retrieve("confidential", project_scope, limit=5)
+
+    assert result.items == ()
+    assert "private-record" in result.excluded_ids
+    assert "private-record" not in result.candidate_ids
+    assert len(result.context_digest) == 64
+
+
+def test_retrieval_is_deterministic_with_stable_id_ties(factory, project_scope):
+    first = factory.retrieve("neutral", project_scope, limit=5)
+    second = factory.retrieve("neutral", project_scope, limit=5)
+
+    assert [item.id for item in first.items[:2]] == ["project-tie-a", "project-tie-b"]
+    assert first == second
+
+
+@pytest.mark.parametrize("verdict", ["DENY", "DEFER"])
+def test_retrieval_returns_no_content_for_denied_or_deferred_scope(factory, project_scope, verdict):
+    scope = ScopeDecision(verdict, project_scope.effective, project_scope.digest, ("blocked",))
+
+    result = factory.retrieve("supplier", scope, limit=5)
+
+    assert result.candidate_ids == ()
+    assert result.items == ()
+    assert result.context_digest == sha256(b"[]").hexdigest()
+
+
+def test_projection_is_minimum_context_and_has_expiry(factory, project_scope):
+    projection = factory.project(
+        ids=("project-record",),
+        purpose="review",
+        audience="project",
+        valid_until="2026-08-22T00:00:00+00:00",
+        scope=project_scope,
+    )
+
+    assert projection.source_ids == ("project-record",)
+    assert projection.purpose == "review"
+    assert projection.audience == "project"
+    assert projection.valid_until == "2026-08-22T00:00:00+00:00"
+    assert projection.scope_digest == project_scope.digest
+    assert len(projection.source_digests) == 1
+    assert "private-record" not in projection.content
+    assert "contradicted" in projection.content
+    assert "counter-record" in projection.content
+    assert "authority" not in projection.content.lower()
+    assert len(projection.digest) == 64
+
+
+@pytest.mark.parametrize(
+    ("ids", "audience", "valid_until"),
+    [
+        (("private-record",), "project", "2026-08-22T00:00:00+00:00"),
+        (("project-record",), "private", "2026-08-22T00:00:00+00:00"),
+        (("project-record",), "project", "2026-08-24T00:00:00+00:00"),
+    ],
+)
+def test_projection_rejects_scope_or_expiry_widening(
+    factory, project_scope, ids, audience, valid_until
+):
+    with pytest.raises(ValueError):
+        factory.project(
+            ids=ids,
+            purpose="review",
+            audience=audience,
+            valid_until=valid_until,
+            scope=project_scope,
+        )
+
+
+@pytest.mark.parametrize("verdict", ["DENY", "DEFER"])
+def test_projection_rejects_denied_or_deferred_scope(factory, project_scope, verdict):
+    scope = ScopeDecision(verdict, project_scope.effective, project_scope.digest, ("blocked",))
+
+    with pytest.raises(ValueError):
+        factory.project(
+            ids=("project-record",),
+            purpose="review",
+            audience="project",
+            valid_until="2026-08-22T00:00:00+00:00",
+            scope=scope,
+        )
