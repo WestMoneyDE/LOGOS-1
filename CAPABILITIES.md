@@ -34,6 +34,23 @@ This file is a **living implementation/research capability inventory**. A listed
 - static regression suite for persistent-state adapter semantics;
 - coding-ready roadmap and per-push propagation protocol.
 
+### MemoryFactory / Scope Engine R1 evidence
+
+The following ratings are engineering implementation states, not scientific
+promotions:
+
+| Capability | Rating | Exact pytest evidence |
+|---|---|---|
+| Restrictive typed scope intersection and request evaluation | `IMPLEMENTED` | `tests/test_scope_engine.py` |
+| Authority-firewalled append-only JSONL memory store | `IMPLEMENTED` | `tests/test_memory_store.py` |
+| Guarded consolidation, scoped BM25 retrieval and projections | `IMPLEMENTED` | `tests/test_memory_factory.py` |
+| Deterministic recovery and coding-agent replay | `IMPLEMENTED` | `tests/test_memory_recovery.py` |
+
+There is no implemented assurance store or external approval capability in
+`logos_memory`. `MemoryFactory != AuthoritySource`; `ScopeDecision !=
+ExternalApproval`; `ImplementationPass != ScientificMechanismEvidence`;
+`PersistentState != PhenomenalConsciousness`.
+
 ## Current canonical research/engineering gate
 
 - **Persistent-State Dataset Materialization R4:** exact tokenizer-byte and RULER-data freeze before any model benchmark run.

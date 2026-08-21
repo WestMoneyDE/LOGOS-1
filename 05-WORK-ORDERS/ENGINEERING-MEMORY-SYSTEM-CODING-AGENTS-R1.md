@@ -1,6 +1,6 @@
 # ENGINEERING WORK ORDER — Memory System + Coding Agents R1
 
-**Status:** PARALLEL_ENGINEERING / DOES_NOT_REPLACE_CURRENT_SCIENTIFIC_WORK_ORDER  
+**Status:** IMPLEMENTED_R1 / DOES_NOT_REPLACE_CURRENT_SCIENTIFIC_WORK_ORDER
 **Authority:** A0  
 **Consumers:** Claude Code, Codex, human maintainers
 
@@ -23,6 +23,9 @@ Implement the first coding-ready LOGOS memory substrate and repository operating
 - `OUTCOME_UNKNOWN != NOT_EXECUTED`
 - memory retrieval/consolidation cannot mint grants/scopes/tokens
 - scientific promotion requires evidence, not implementation convenience
+- a coding agent obtains and evaluates a `ScopeDecision` before memory retrieval,
+  consolidation, file/tool dispatch or effect proposal
+- `ScopeDecision != ExternalApproval`
 
 ## Implementation sequence
 
@@ -70,3 +73,21 @@ Wire the developer workflow so a substantive push checks whether `CAPABILITIES.m
 - docs match implementation;
 - session report records what remains unproven;
 - no change to `CURRENT-WORK-ORDER.md` unless the scientific queue itself changes.
+
+## R1 result
+
+The schema, JSONL memory store/recovery, guarded consolidation, scope-first
+retrieval, minimum-context projection, scope engine, authority-firewall tests,
+and deterministic coding-agent recovery test are implemented. Exact evidence:
+
+- `tests/test_scope_engine.py`
+- `tests/test_memory_store.py`
+- `tests/test_memory_factory.py`
+- `tests/test_memory_recovery.py`
+
+No separate assurance store was implemented; memory rejects assurance records
+and remains proposal-side. Persistent-State Dataset Materialization R4 remains
+the canonical scientific gate and Γ-v0.3 remains `HOLD`.
+
+`ImplementationPass != ScientificMechanismEvidence`; `MemoryFactory !=
+AuthoritySource`; `PersistentState != PhenomenalConsciousness`.

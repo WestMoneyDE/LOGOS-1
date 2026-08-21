@@ -100,6 +100,11 @@ LOGOS-1 is also a coding-agent-operated repository. For implementation work:
 
 A memory subsystem may store, retrieve, rank, consolidate or summarize information. It must not mint grants, scopes, credentials, execution tokens or policy exceptions. Any retrieval result that affects an external action remains a proposal-side input and re-enters Γ.
 
+Before memory retrieval, consolidation, file/tool dispatch or effect proposal,
+obtain and evaluate a `ScopeDecision` for the exact request. `ALLOW` or `NARROW`
+is a local scope precondition only: `ScopeDecision != ExternalApproval`, and it
+never bypasses Γ or the separately owned assurance interface.
+
 ### Change propagation
 
 A coding change is incomplete when implementation, tests, architecture docs and capability inventory disagree. Prefer one coherent push over isolated code edits that leave the repository semantically stale.

@@ -1,6 +1,6 @@
-# LOGOS-1 Memory System — Coding-Ready Engineering Target
+# LOGOS-1 Memory System — R1 Implemented Engineering Surface
 
-**Status:** engineering target / not a declaration of six independently validated primitives.
+**Status:** implemented engineering substrate / not a declaration of independently validated scientific primitives.
 
 ## Objective
 
@@ -131,6 +131,45 @@ candidate or retrieved content. Minimum-context projections accept only
 explicitly selected records visible to an allowed audience, bind purpose,
 audience, expiry, source/content digests and effective-scope digest, and retain
 epistemic/conflict qualifiers without including authority provenance.
+
+### Exact public interfaces
+
+`src/logos_memory` exports `MemoryFactory`, `MemoryStore`, `MemoryRecord`,
+`ProvenanceRef`, `AuthorityProvenance`, `ScopeContract`, `ScopeRequest`,
+`ScopeDecision`, `ScopeViolation`, `ConsolidationProposal`,
+`ConsolidationVerdict`, `RetrievalRecord`, `RetrievalItem`, and
+`ProjectionRecord`. `MemoryFactory` exposes scoped `retrieve`, `project`,
+guarded `consolidate`, `derive_procedure`, and transitive
+`revoke_authority`. `MemoryStore` exposes append/fetch/all, supersession,
+conflict recording, and tombstoning over its JSONL log.
+
+The consolidation gates are, in execution order, local transition, global
+coherence, and authority preservation. A rejection appends nothing. Scoped
+retrieval admits only `ALLOW`/`NARROW` decisions and filters visibility before
+ranking. Projections require an allowed effective scope, explicit visible
+source IDs, an allowed audience, a purpose, and an expiry within the effective
+scope. `DENY`/`DEFER` retrieval returns no candidate or retrieved content.
+
+JSONL recovery preserves valid prefixes, quarantines and replaces only a
+malformed final line with an authority-free deterministic recovery episode,
+and fails closed on malformed or authority-bearing earlier records. Repeated
+identical corrupt tails receive distinct occurrence-indexed recovery records.
+
+### Assurance separation
+
+There is deliberately no assurance-store implementation in `logos_memory`.
+The separate assurance interface is the boundary: assurance kinds and
+authority-bearing uses are rejected by `MemoryStore`, assurance paths can be
+excluded by `ScopeContract`, projections omit authority provenance, and any
+effect influenced by memory must re-enter Γ and its separately owned approval
+and occurrence machinery.
+
+```text
+ImplementationPass != ScientificMechanismEvidence
+MemoryFactory != AuthoritySource
+ScopeDecision != ExternalApproval
+PersistentState != PhenomenalConsciousness
+```
 
 ## Tests required before calling it implemented
 

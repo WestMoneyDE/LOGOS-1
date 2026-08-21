@@ -42,6 +42,11 @@ For recurring engineering knowledge, prefer concise repository documentation ove
 
 Use `docs/architecture/MEMORY-SYSTEM.md` as the coding target. Preserve provenance, uncertainty and conflicts. Do not collapse contradictory records merely to create a cleaner summary. Do not treat a retrieved or consolidated memory as authorization.
 
+Obtain and evaluate a `ScopeDecision` for the exact request before memory
+retrieval, consolidation, file/tool dispatch or effect proposal. Treat an
+`ALLOW`/`NARROW` result as a local scope precondition, never as external
+approval; effect proposals still re-enter Γ and the separate assurance path.
+
 ### Push completion
 
 Before finishing a substantive coding task, check `docs/engineering/PUSH-PROTOCOL.md`. Update `CAPABILITIES.md`, architecture docs and a session report when the change affects them.
