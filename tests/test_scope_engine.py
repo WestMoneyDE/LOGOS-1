@@ -1,5 +1,7 @@
 from dataclasses import replace
 
+import pytest
+
 from logos_memory.scope import ScopeContract, ScopeRequest, intersect_contracts
 
 
@@ -70,3 +72,74 @@ def test_request_cannot_widen_effective_scope():
     )
     checked = decision.evaluate(request)
     assert checked.verdict == "DENY"
+
+
+def test_request_path_within_includes_is_allowed():
+    decision = intersect_contracts([contract()])
+    request = ScopeRequest(
+        role="builder", tool="edit", memory_kind="semantic",
+        capability="local-edit", target="repository", path="src/logos_memory/scope.py",
+    )
+    assert decision.evaluate(request).verdict == "ALLOW"
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "docs/readme.md",
+        ".state/assurance/grant.json",
+        "src/../tests/test_scope_engine.py",
+        "/workspace/src/scope.py",
+        "C:/workspace/src/scope.py",
+        "src\\logos_memory\\scope.py",
+    ],
+)
+def test_request_path_outside_or_ambiguous_is_denied(path):
+    decision = intersect_contracts([contract()])
+    request = ScopeRequest(
+        role="builder", tool="edit", memory_kind="semantic",
+        capability="local-edit", target="repository", path=path,
+    )
+    assert decision.evaluate(request).verdict == "DENY"
+
+
+def test_request_path_matching_exclusion_is_denied():
+    decision = intersect_contracts([contract(paths=("**",), excluded_paths=(".state/assurance/**",))])
+    request = ScopeRequest(
+        role="builder", tool="edit", memory_kind="semantic",
+        capability="local-edit", target="repository", path=".state/assurance/grant.json",
+    )
+    assert decision.evaluate(request).verdict == "DENY"
+
+
+def test_recursive_glob_prefix_collision_denies():
+    decision = intersect_contracts([
+        contract(paths=("src/**",)),
+        contract(paths=("src2/**",)),
+    ])
+    assert decision.verdict == "DENY"
+    assert "paths" in decision.unresolved_dimensions
+
+
+def test_missing_parameter_dimension_denies():
+    decision = intersect_contracts([
+        contract(),
+        contract(parameter_bounds=()),
+    ])
+    assert decision.verdict == "DENY"
+    assert "parameter_bounds" in decision.unresolved_dimensions
+
+
+def test_empty_validity_window_denies():
+    decision = intersect_contracts([
+        contract(valid_from="2026-08-23T00:00:00+00:00"),
+        contract(valid_until="2026-08-22T00:00:00+00:00"),
+    ])
+    assert decision.verdict == "DENY"
+    assert "validity" in decision.unresolved_dimensions
+
+
+def test_invalid_timestamp_denies():
+    decision = intersect_contracts([contract(valid_from="not-a-timestamp")])
+    assert decision.verdict == "DENY"
+    assert "validity" in decision.unresolved_dimensions

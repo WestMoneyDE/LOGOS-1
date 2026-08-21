@@ -90,3 +90,23 @@ Commit: the final implementation commit containing this report; the exact hash i
 - Removed only those three verified paths with exact path-scoped cleanup after the test regenerated caches; all three now report `[removed]`.
 - `git check-ignore -v --no-index` confirms `.superpowers/` covers the SDD report and `__pycache__/` covers representative cache files in both source packages and tests.
 - Task 1 staging now includes `.gitignore`, the three implementation/test files, and this report; no plan or scientific work-order content was changed.
+
+## Safety review regression follow-up
+
+Review findings were converted to RED tests before implementation:
+
+- Focused RED: `10 failed, 5 passed`; failures covered unrestricted/outside/excluded/traversal/absolute/ambiguous paths, recursive-glob prefix collision, missing parameter coverage, disjoint validity, and invalid timestamps.
+- Path controls now accept only clean relative POSIX paths, reject absolute/traversal/ambiguous forms, require an effective include match, and deny every excluded match. Matching is segment-aware and unsupported pattern ambiguity fails closed.
+- Parameter intersection now requires exactly one constraint for every parameter in every input contract; missing or duplicate dimensions deny with `parameter_bounds` unresolved.
+- Validity timestamps must be timezone-aware ISO timestamps; effective windows are compared in UTC and empty/disjoint windows deny with `validity` unresolved.
+
+GREEN and repository evidence:
+
+- `pytest tests/test_scope_engine.py -q`: `16 passed`.
+- `pytest -q`: `29 passed, 0 failed`.
+- `python -m compileall -q src`: pass.
+- `git diff --check`: pass.
+- `git diff --exit-code -- CURRENT-WORK-ORDER.md`: unchanged.
+- Exact generated cache directories were removed after validation and confirmed `[removed]`; the existing root `.gitignore` keeps future cache/report artifacts ignored.
+
+This remains a phase-0 engineering correction, not scientific or welfare evidence. Γ verdict: `hold`.
