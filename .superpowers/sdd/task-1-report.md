@@ -110,3 +110,27 @@ GREEN and repository evidence:
 - Exact generated cache directories were removed after validation and confirmed `[removed]`; the existing root `.gitignore` keeps future cache/report artifacts ignored.
 
 This remains a phase-0 engineering correction, not scientific or welfare evidence. Γ verdict: `hold`.
+
+## Input-validation follow-up
+
+Review findings were first exercised as RED tests:
+
+- Focused RED: `13 failed, 16 passed`.
+- The failures covered malformed include/exclude entries mixed with valid overlaps, non-finite and boolean parameter endpoints, reversed bounds, NaN/Infinity resource values, negative ceilings, zero attempts/occurrences, and the valid zero-cost boundary.
+
+GREEN implementation changes:
+
+- Every raw include and exclude pattern is validated before project/path intersection; invalid, unsupported, or ambiguous entries deny with `paths` or `excluded_paths` unresolved instead of being discarded.
+- Parameter bounds require finite non-boolean real endpoints, non-empty names, valid tuple shape, and `lower <= upper` before min/max.
+- Resource ceilings require finite non-boolean real values; cost/tokens/seconds permit zero, while attempts/occurrences require positive values.
+
+Fresh validation:
+
+- `pytest tests/test_scope_engine.py -q`: `30 passed`.
+- `pytest -q`: `43 passed, 0 failed`.
+- `python -m compileall -q src`: pass.
+- `git diff --check`: pass.
+- `git diff --exit-code -- CURRENT-WORK-ORDER.md`: unchanged.
+- Exact generated cache directories were removed after validation; root `.gitignore` remains authoritative for future cache/report artifacts.
+
+No authority, network, effectful tool, scientific, or welfare capability was added. Γ verdict: `hold`.

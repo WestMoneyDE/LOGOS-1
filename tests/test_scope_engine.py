@@ -1,4 +1,5 @@
 from dataclasses import replace
+import math
 
 import pytest
 
@@ -143,3 +144,60 @@ def test_invalid_timestamp_denies():
     decision = intersect_contracts([contract(valid_from="not-a-timestamp")])
     assert decision.verdict == "DENY"
     assert "validity" in decision.unresolved_dimensions
+
+
+def test_malformed_include_is_not_discarded_when_valid_pattern_overlaps():
+    decision = intersect_contracts([
+        contract(paths=("src/**", "bad[")),
+        contract(paths=("src/logos_memory/**",)),
+    ])
+    assert decision.verdict == "DENY"
+    assert "paths" in decision.unresolved_dimensions
+
+
+def test_malformed_exclude_is_not_discarded_when_valid_pattern_exists():
+    decision = intersect_contracts([
+        contract(excluded_paths=(".state/assurance/**", "bad[")),
+        contract(),
+    ])
+    assert decision.verdict == "DENY"
+    assert "excluded_paths" in decision.unresolved_dimensions
+
+
+@pytest.mark.parametrize(
+    "bounds",
+    [
+        (("changed_files", math.nan, 20.0),),
+        (("changed_files", 0.0, math.inf),),
+        (("changed_files", True, 20.0),),
+        (("changed_files", 10.0, 2.0),),
+    ],
+)
+def test_malformed_parameter_bounds_deny(bounds):
+    decision = intersect_contracts([contract(parameter_bounds=bounds)])
+    assert decision.verdict == "DENY"
+    assert "parameter_bounds" in decision.unresolved_dimensions
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("max_cost_usd", math.nan),
+        ("max_cost_usd", math.inf),
+        ("max_tokens", -1),
+        ("max_seconds", -1),
+        ("max_attempts", 0),
+        ("max_occurrences", 0),
+        ("max_tokens", True),
+    ],
+)
+def test_malformed_resource_ceiling_denies(field, value):
+    decision = intersect_contracts([contract(**{field: value})])
+    assert decision.verdict == "DENY"
+    assert field in decision.unresolved_dimensions
+
+
+def test_zero_cost_is_valid():
+    decision = intersect_contracts([contract(max_cost_usd=0.0)])
+    assert decision.verdict in {"ALLOW", "NARROW"}
+    assert decision.effective.max_cost_usd == 0.0

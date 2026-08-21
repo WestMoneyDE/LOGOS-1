@@ -5,6 +5,8 @@ from datetime import datetime, timezone
 from fnmatch import fnmatchcase
 from hashlib import sha256
 import json
+import math
+from numbers import Real
 from typing import Literal
 
 Verdict = Literal["ALLOW", "NARROW", "DEFER", "DENY"]
@@ -110,6 +112,70 @@ def _split_path(value: str, *, pattern: bool) -> tuple[str, ...] | None:
     return parts
 
 
+def _valid_scope_pattern(value: str) -> bool:
+    parts = _split_path(value, pattern=True)
+    if parts is None:
+        return False
+    for index, part in enumerate(parts):
+        if "**" in part and (part != "**" or index != len(parts) - 1):
+            return False
+    return True
+
+
+def _finite_real(value: object) -> bool:
+    if isinstance(value, bool) or not isinstance(value, Real):
+        return False
+    try:
+        return math.isfinite(value)
+    except (TypeError, ValueError, OverflowError):
+        return False
+
+
+def _invalid_input_dimensions(contracts: list[ScopeContract]) -> tuple[str, ...]:
+    invalid: list[str] = []
+    for field in ("paths", "excluded_paths"):
+        for contract in contracts:
+            patterns = getattr(contract, field)
+            if not isinstance(patterns, (tuple, list)) or any(
+                not _valid_scope_pattern(pattern) for pattern in patterns
+            ):
+                invalid.append(field)
+                break
+
+    for contract in contracts:
+        bounds = contract.parameter_bounds
+        if not isinstance(bounds, (tuple, list)):
+            invalid.append("parameter_bounds")
+            continue
+        for bound in bounds:
+            if (
+                not isinstance(bound, (tuple, list))
+                or len(bound) != 3
+                or not isinstance(bound[0], str)
+                or not bound[0]
+                or not _finite_real(bound[1])
+                or not _finite_real(bound[2])
+                or bound[1] > bound[2]
+            ):
+                invalid.append("parameter_bounds")
+                break
+
+    resource_rules = (
+        ("max_cost_usd", 0.0, False),
+        ("max_tokens", 0.0, False),
+        ("max_seconds", 0.0, False),
+        ("max_attempts", 0.0, True),
+        ("max_occurrences", 0.0, True),
+    )
+    for field, minimum, strict in resource_rules:
+        for contract in contracts:
+            value = getattr(contract, field)
+            if not _finite_real(value) or (value <= minimum if strict else value < minimum):
+                invalid.append(field)
+                break
+    return tuple(dict.fromkeys(invalid))
+
+
 def _pattern_segment_subset(narrower: str, broader: str) -> bool:
     if narrower == broader:
         return True
@@ -200,6 +266,11 @@ def _path_intersection(contracts: list[ScopeContract]) -> tuple[str, ...]:
 def intersect_contracts(contracts: list[ScopeContract]) -> ScopeDecision:
     if not contracts:
         return ScopeDecision("DEFER", None, scope_digest(None), ("no scope contracts",), ("all",))
+    invalid_dimensions = _invalid_input_dimensions(contracts)
+    if invalid_dimensions:
+        return ScopeDecision(
+            "DENY", None, scope_digest(None), ("invalid scope input",), invalid_dimensions,
+        )
     if len({c.project for c in contracts}) != 1:
         return ScopeDecision("DENY", None, scope_digest(None), ("project mismatch",), ("project",))
     set_fields = (
