@@ -95,3 +95,38 @@ git status --short --branch                    PASS — only the seven reviewed 
 ```
 
 Documentation commit subject: `docs: record memory factory and scope engine`.
+
+## Task-7 final-review delivery addendum
+
+Branch: `codex/memory-factory-scope-engine`.
+
+Verified content head: `148177aa92877dc0f0d50f2b3ba34adeec06471a`
+(`origin/main..148177aa92877dc0f0d50f2b3ba34adeec06471a`, merge base
+`d3686ffb6616b2696405a61be9f97b187abf4be5`). This content head adds
+fail-closed `ScopeDecision` invariant/digest validation and closes the direct
+Task-2 serialization, assurance-kind, forbidden-use, and repeated-ID replay
+coverage. The capability delta is explicit fail-closed validation at public
+retrieval/projection boundaries; no authority or external-action capability was
+added.
+
+Fresh pre-addendum verification over that content tree:
+
+```text
+pytest -q                                      PASS — 112 passed / 0 failed
+python -m compileall -q src                    PASS — exit 0
+ignored __pycache__ cleanup                    PASS — exact workspace cache paths removed
+git diff --check                              PASS — no errors
+git diff --check origin/main...HEAD            PASS — no errors
+CURRENT-WORK-ORDER.md byte check               PASS — Git blob 77eded600b13f5ac5019896191e8e2ebdd827886 unchanged from origin/main
+R4 work-order byte check                       PASS — Git blob 83b6093baba6e125115ac42bcc146aa8bdb5ea80 unchanged from origin/main
+prohibited effectful-import/action scan        PASS — no matches in changed implementation/tests/architecture/capability surface
+git status --short --branch                    PASS — clean after content commit
+```
+
+External actions and scientific/model execution: `NOT_EXECUTED`. No push,
+network action, workflow, benchmark, model-weight load, dataset materialization,
+or external evaluation occurred.
+
+This addendum commit contains evidence only. Its SHA is intentionally not
+self-referenced here; post-commit verification covers the final tree, avoiding
+an impossible tracked self-referential SHA claim.
