@@ -849,7 +849,7 @@ git status --short --branch
 
 Expected: tests and compile pass, diff check is clean, and only reviewed files are present before the documentation commit.
 
-- [ ] **Step 6: Commit propagation artifacts**
+- [x] **Step 6: Commit propagation artifacts**
 
 ```powershell
 git add -- docs/architecture/MEMORY-SYSTEM.md docs/architecture/SCOPE-ENGINE.md 05-WORK-ORDERS/ENGINEERING-MEMORY-SYSTEM-CODING-AGENTS-R1.md CAPABILITIES.md AGENTS.md CLAUDE.md 09-SESSIONS/2026-08-21-MEMORY-FACTORY-SCOPE-ENGINE-R1/SESSION-REPORT.md

@@ -25,6 +25,12 @@ against the effective contract. Included paths do not override exclusions.
 Invalid, absolute, traversal, backslash, ambiguous, or out-of-scope paths are
 denied.
 
+Before request evaluation or public retrieval/projection use, an `ALLOW` or
+`NARROW` decision must have a non-null effective contract and its digest must
+equal the canonical digest of that contract. Missing effective state or a
+digest mismatch becomes an explicit fail-closed `DENY`; evaluation never
+upgrades an existing `DENY` or `DEFER`, even if it carries effective state.
+
 The remaining effective-contract dimensions—parameter bounds, cost/token/time/
 attempt budgets, time validity, occurrences, externality, reversibility,
 approval requirement, data/retention classes, and source versions—are

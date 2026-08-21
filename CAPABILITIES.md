@@ -22,7 +22,7 @@ This file is a **living implementation/research capability inventory**. A listed
 - source provenance distinct from authority provenance;
 - immutable provenance-aware memory records with append-only local JSONL persistence and an authority firewall;
 - guarded three-gate consolidation with closed conservative epistemic transitions, full-source-version provenance digests, conflict retention, weakest-authority intersections, explicit procedural lineage, and transitive authority revocation;
-- deterministic scope-first BM25 memory retrieval and minimum-context expiring projections with stable digests, conflict/epistemic qualifiers, and no assurance or authority grants;
+- deterministic scope-first BM25 memory retrieval and minimum-context expiring projections with stable digests, conflict/epistemic qualifiers, fail-closed decision-invariant/digest validation, and no assurance or authority grants;
 - persistent-state classes across token context, recurrent latent state, fast weights and external retrieval;
 - D/O/C state-validation ladder (`Decodable`, `Operational`, `Causal`);
 - within-family causal comparison rule preventing raw cross-backbone accuracy from being mislabeled as a memory-mechanism effect;

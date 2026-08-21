@@ -132,6 +132,13 @@ explicitly selected records visible to an allowed audience, bind purpose,
 audience, expiry, source/content digests and effective-scope digest, and retain
 epistemic/conflict qualifiers without including authority provenance.
 
+Every public retrieval/projection boundary first validates the supplied
+`ScopeDecision`. A nominally permissive decision must contain an effective
+contract whose canonical digest exactly matches the decision digest; otherwise
+the operation fails closed with an explicit reason and unresolved dimension.
+Request evaluation preserves an existing `DENY` or `DEFER` verdict even when an
+inconsistent caller supplies a non-null effective contract.
+
 ### Exact public interfaces
 
 `src/logos_memory` exports `MemoryFactory`, `MemoryStore`, `MemoryRecord`,

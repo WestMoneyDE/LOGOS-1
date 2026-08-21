@@ -5,7 +5,7 @@ import json
 import pytest
 
 from logos_memory.records import AuthorityProvenance, MemoryRecord, ProvenanceRef
-from logos_memory.store import MemoryAuthorityError, MemoryStore
+from logos_memory.store import ASSURANCE_KINDS, FORBIDDEN_USES, MemoryAuthorityError, MemoryStore
 
 
 def record(kind="episodic", **overrides):
@@ -28,16 +28,40 @@ def test_memory_store_round_trips_provenance(tmp_path: Path):
     assert recovered.authority.admissible_uses == ("inform-proposal",)
 
 
-@pytest.mark.parametrize("kind", ["grant", "credential", "scope", "approval", "execution-token", "policy-exception", "assurance"])
+@pytest.mark.parametrize("kind", sorted(ASSURANCE_KINDS))
 def test_memory_cannot_mint_assurance(kind: str, tmp_path: Path):
     with pytest.raises(MemoryAuthorityError):
         MemoryStore(tmp_path).append(record(kind=kind))
 
 
-def test_memory_rejects_execution_use(tmp_path: Path):
-    rec = record(authority=AuthorityProvenance("user-authorization", ("execute-external-action",)))
+@pytest.mark.parametrize("forbidden_use", sorted(FORBIDDEN_USES))
+def test_memory_rejects_every_forbidden_authority_use(forbidden_use: str, tmp_path: Path):
+    rec = record(authority=AuthorityProvenance("user-authorization", (forbidden_use,)))
     with pytest.raises(MemoryAuthorityError):
         MemoryStore(tmp_path).append(rec)
+
+
+def test_memory_store_writes_exact_canonical_jsonl_bytes(tmp_path: Path):
+    item = record()
+    store = MemoryStore(tmp_path)
+
+    store.append(item)
+
+    expected = (json.dumps(asdict(item), sort_keys=True, separators=(",", ":")) + "\n").encode("utf-8")
+    assert store.path.read_bytes() == expected
+
+
+def test_replay_uses_latest_same_id_version_without_changing_first_seen_order(tmp_path: Path):
+    store = MemoryStore(tmp_path)
+    store.append(record(id="first", content="old"))
+    store.append(record(id="second", content="middle"))
+    store.append(record(id="first", content="latest"))
+
+    reopened = MemoryStore(tmp_path)
+
+    assert reopened.fetch("first").content == "latest"
+    assert tuple(item.id for item in reopened.all()) == ("first", "second")
+    assert tuple(item.content for item in reopened.all()) == ("latest", "middle")
 
 
 def test_memory_store_quarantines_only_a_corrupt_final_line(tmp_path: Path):

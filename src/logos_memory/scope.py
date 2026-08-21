@@ -64,9 +64,27 @@ class ScopeDecision:
     reasons: tuple[str, ...] = ()
     unresolved_dimensions: tuple[str, ...] = ()
 
-    def evaluate(self, request: ScopeRequest) -> ScopeDecision:
-        if self.effective is None:
+    def validate(self) -> ScopeDecision:
+        """Fail closed when a nominally permissive decision is internally inconsistent."""
+        if self.verdict not in {"ALLOW", "NARROW"}:
             return self
+        if self.effective is None:
+            return ScopeDecision(
+                "DENY", None, self.digest,
+                ("allowed scope has no effective contract",), ("effective",),
+            )
+        if self.digest != scope_digest(self.effective):
+            return ScopeDecision(
+                "DENY", self.effective, self.digest,
+                ("effective scope digest mismatch",), ("digest",),
+            )
+        return self
+
+    def evaluate(self, request: ScopeRequest) -> ScopeDecision:
+        validated = self.validate()
+        if validated.verdict not in {"ALLOW", "NARROW"}:
+            return validated
+        assert validated.effective is not None
         pairs = {
             "roles": request.role,
             "tools": request.tool,
@@ -74,14 +92,14 @@ class ScopeDecision:
             "capabilities": request.capability,
             "targets": request.target,
         }
-        violations = tuple(name for name, value in pairs.items() if value not in getattr(self.effective, name))
-        path_violation = _request_path_violation(request.path, self.effective)
+        violations = tuple(name for name, value in pairs.items() if value not in getattr(validated.effective, name))
+        path_violation = _request_path_violation(request.path, validated.effective)
         if path_violation:
             violations += ("paths",)
         if violations:
             reason = "request path exceeds effective scope" if path_violation else "request exceeds effective scope"
-            return ScopeDecision("DENY", self.effective, self.digest, (reason,), violations)
-        return ScopeDecision("ALLOW", self.effective, self.digest)
+            return ScopeDecision("DENY", validated.effective, validated.digest, (reason,), violations)
+        return ScopeDecision("ALLOW", validated.effective, validated.digest)
 
 
 def _canon(contract: ScopeContract | None) -> bytes:

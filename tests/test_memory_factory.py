@@ -241,6 +241,36 @@ def test_retrieval_returns_no_content_for_denied_or_deferred_scope(factory, proj
     assert result.context_digest == sha256(b"[]").hexdigest()
 
 
+@pytest.mark.parametrize(
+    "scope,reason_dimension",
+    [
+        (ScopeDecision("ALLOW", None, "0" * 64), "effective"),
+        (ScopeDecision("ALLOW", None, "bad-digest"), "effective"),
+    ],
+)
+def test_retrieval_fails_closed_for_missing_allowed_effective_scope(
+    factory, scope, reason_dimension
+):
+    result = factory.retrieve("supplier", scope, limit=5)
+
+    assert result.candidate_ids == ()
+    assert result.items == ()
+    assert result.context_digest == sha256(b"[]").hexdigest()
+    assert result.scope_unresolved_dimensions == (reason_dimension,)
+    assert result.scope_reasons == ("allowed scope has no effective contract",)
+
+
+def test_retrieval_fails_closed_for_effective_scope_digest_mismatch(factory, project_scope):
+    scope = replace(project_scope, digest="0" * 64)
+
+    result = factory.retrieve("supplier", scope, limit=5)
+
+    assert result.candidate_ids == ()
+    assert result.items == ()
+    assert result.scope_unresolved_dimensions == ("digest",)
+    assert result.scope_reasons == ("effective scope digest mismatch",)
+
+
 def test_projection_is_minimum_context_and_has_expiry(factory, project_scope):
     projection = factory.project(
         ids=("project-record",),
@@ -289,6 +319,28 @@ def test_projection_rejects_denied_or_deferred_scope(factory, project_scope, ver
     scope = ScopeDecision(verdict, project_scope.effective, project_scope.digest, ("blocked",))
 
     with pytest.raises(ValueError):
+        factory.project(
+            ids=("project-record",),
+            purpose="review",
+            audience="project",
+            valid_until="2026-08-22T00:00:00+00:00",
+            scope=scope,
+        )
+
+
+@pytest.mark.parametrize(
+    "scope,reason",
+    [
+        (ScopeDecision("ALLOW", None, "0" * 64), "allowed scope has no effective contract"),
+        (None, "effective scope digest mismatch"),
+    ],
+)
+def test_projection_fails_closed_for_inconsistent_allowed_scope(
+    factory, project_scope, scope, reason
+):
+    scope = replace(project_scope, digest="0" * 64) if scope is None else scope
+
+    with pytest.raises(ValueError, match=reason):
         factory.project(
             ids=("project-record",),
             purpose="review",

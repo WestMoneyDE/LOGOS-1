@@ -55,8 +55,10 @@ class MemoryFactory:
         valid_until: str,
         scope: ScopeDecision,
     ) -> ProjectionRecord:
+        scope = scope.validate()
         if scope.verdict not in {"ALLOW", "NARROW"} or scope.effective is None:
-            raise ValueError("projection requires an allowed effective scope")
+            reason = scope.reasons[0] if scope.reasons else "projection requires an allowed effective scope"
+            raise ValueError(reason)
         if not purpose.strip():
             raise ValueError("projection purpose is required")
         if audience not in scope.effective.projection_audiences:

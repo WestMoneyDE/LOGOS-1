@@ -3,7 +3,7 @@ import math
 
 import pytest
 
-from logos_memory.scope import ScopeContract, ScopeRequest, intersect_contracts
+from logos_memory.scope import ScopeContract, ScopeDecision, ScopeRequest, intersect_contracts
 
 
 def contract(**overrides):
@@ -82,6 +82,41 @@ def test_request_path_within_includes_is_allowed():
         capability="local-edit", target="repository", path="src/logos_memory/scope.py",
     )
     assert decision.evaluate(request).verdict == "ALLOW"
+
+
+@pytest.mark.parametrize("verdict", ["DENY", "DEFER"])
+def test_request_evaluation_never_upgrades_a_non_permissive_base_verdict(verdict):
+    allowed = intersect_contracts([contract()])
+    base = ScopeDecision(verdict, allowed.effective, allowed.digest, ("base blocked",), ("base",))
+    request = ScopeRequest(
+        role="builder", tool="edit", memory_kind="semantic",
+        capability="local-edit", target="repository", path="src/logos_memory/scope.py",
+    )
+
+    assert base.evaluate(request) == base
+
+
+@pytest.mark.parametrize(
+    "decision,dimension,reason",
+    [
+        (ScopeDecision("ALLOW", None, "0" * 64), "effective", "allowed scope has no effective contract"),
+        (ScopeDecision("NARROW", contract(), "0" * 64), "digest", "effective scope digest mismatch"),
+    ],
+)
+def test_request_evaluation_fails_closed_on_inconsistent_allowed_decision(
+    decision, dimension, reason
+):
+    request = ScopeRequest(
+        role="builder", tool="edit", memory_kind="semantic",
+        capability="local-edit", target="repository", path="src/logos_memory/scope.py",
+    )
+
+    checked = decision.evaluate(request)
+
+    assert checked.verdict == "DENY"
+    assert checked.effective is decision.effective
+    assert checked.reasons == (reason,)
+    assert checked.unresolved_dimensions == (dimension,)
 
 
 @pytest.mark.parametrize(

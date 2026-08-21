@@ -33,6 +33,8 @@ class RetrievalRecord:
     items: tuple[RetrievalItem, ...]
     scope_digest: str
     context_digest: str
+    scope_reasons: tuple[str, ...] = ()
+    scope_unresolved_dimensions: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -64,8 +66,12 @@ def retrieve_records(
     records: tuple[MemoryRecord, ...], query: str, scope: ScopeDecision, limit: int
 ) -> RetrievalRecord:
     query_hash = sha256(query.encode("utf-8")).hexdigest()
+    scope = scope.validate()
     if scope.verdict not in {"ALLOW", "NARROW"} or scope.effective is None:
-        return RetrievalRecord(query_hash, (), (), (), scope.digest, canonical_digest([]))
+        return RetrievalRecord(
+            query_hash, (), (), (), scope.digest, canonical_digest([]),
+            scope.reasons, scope.unresolved_dimensions,
+        )
     if type(limit) is not int or limit < 0:
         raise ValueError("limit must be a non-negative integer")
 
