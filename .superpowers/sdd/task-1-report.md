@@ -134,3 +134,27 @@ Fresh validation:
 - Exact generated cache directories were removed after validation; root `.gitignore` remains authoritative for future cache/report artifacts.
 
 No authority, network, effectful tool, scientific, or welfare capability was added. Γ verdict: `hold`.
+
+## Final schema-validation follow-up
+
+RED evidence:
+
+- Focused RED: `7 failed, 34 passed`.
+- Failures covered unknown externality/reversibility, non-bool approval coercion, fractional/string/bool integer ceilings, non-string project/source/role values, and the resulting pre-validation `TypeError` hazards from mixed collection elements.
+
+GREEN changes:
+
+- Authority fields are exact: `externality` is limited to `internal|external`, `reversibility` to the three declared values, and `approval_required` must be an actual `bool`.
+- `max_tokens`, `max_seconds`, `max_attempts`, and `max_occurrences` require actual non-bool `int` values with nonnegative or positive bounds as specified; `max_cost_usd` remains a finite non-bool real with zero allowed.
+- Every `ScopeContract` field now receives runtime validation before any intersection or aggregation. Tuple shape and string element types are checked for collections; malformed contracts deny with field-specific unresolved dimensions rather than reaching sorting/coercion paths.
+
+Fresh validation:
+
+- `pytest tests/test_scope_engine.py -q`: `41 passed`.
+- `pytest -q`: `54 passed, 0 failed`.
+- `python -m compileall -q src`: pass.
+- `git diff --check`: pass.
+- `git diff --exit-code -- CURRENT-WORK-ORDER.md`: unchanged.
+- Exact generated cache directories were removed after validation; the existing root `.gitignore` covers future caches and the SDD report.
+
+This remains phase-0 engineering evidence only; no authority, network, effectful tool, scientific, or welfare capability was added. Γ verdict: `hold`.

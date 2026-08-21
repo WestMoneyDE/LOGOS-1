@@ -132,24 +132,41 @@ def _finite_real(value: object) -> bool:
 
 
 def _invalid_input_dimensions(contracts: list[ScopeContract]) -> tuple[str, ...]:
+    if any(not isinstance(contract, ScopeContract) for contract in contracts):
+        return ("contracts",)
     invalid: list[str] = []
+
+    if any(not isinstance(contract.project, str) or not contract.project for contract in contracts):
+        invalid.append("project")
+
     for field in ("paths", "excluded_paths"):
         for contract in contracts:
             patterns = getattr(contract, field)
-            if not isinstance(patterns, (tuple, list)) or any(
+            if not isinstance(patterns, tuple) or any(
                 not _valid_scope_pattern(pattern) for pattern in patterns
             ):
                 invalid.append(field)
                 break
 
+    string_collection_fields = (
+        "roles", "tools", "memory_kinds", "projection_audiences", "capabilities",
+        "targets", "data_classes", "retention_classes", "source_versions",
+    )
+    for field in string_collection_fields:
+        for contract in contracts:
+            values = getattr(contract, field)
+            if not isinstance(values, tuple) or any(not isinstance(value, str) or not value for value in values):
+                invalid.append(field)
+                break
+
     for contract in contracts:
         bounds = contract.parameter_bounds
-        if not isinstance(bounds, (tuple, list)):
+        if not isinstance(bounds, tuple):
             invalid.append("parameter_bounds")
             continue
         for bound in bounds:
             if (
-                not isinstance(bound, (tuple, list))
+                not isinstance(bound, tuple)
                 or len(bound) != 3
                 or not isinstance(bound[0], str)
                 or not bound[0]
@@ -160,19 +177,45 @@ def _invalid_input_dimensions(contracts: list[ScopeContract]) -> tuple[str, ...]
                 invalid.append("parameter_bounds")
                 break
 
-    resource_rules = (
-        ("max_cost_usd", 0.0, False),
-        ("max_tokens", 0.0, False),
-        ("max_seconds", 0.0, False),
-        ("max_attempts", 0.0, True),
-        ("max_occurrences", 0.0, True),
+    integer_rules = (
+        ("max_tokens", 0, False),
+        ("max_seconds", 0, False),
+        ("max_attempts", 0, True),
+        ("max_occurrences", 0, True),
     )
-    for field, minimum, strict in resource_rules:
+    for field, minimum, strict in integer_rules:
         for contract in contracts:
             value = getattr(contract, field)
-            if not _finite_real(value) or (value <= minimum if strict else value < minimum):
+            if type(value) is not int or (value <= minimum if strict else value < minimum):
                 invalid.append(field)
                 break
+
+    for contract in contracts:
+        value = contract.max_cost_usd
+        if not _finite_real(value) or value < 0.0:
+            invalid.append("max_cost_usd")
+            break
+
+    enum_values = (
+        ("externality", {"internal", "external"}),
+        ("reversibility", {"reversible", "partially-reversible", "irreversible"}),
+    )
+    for field, allowed in enum_values:
+        for contract in contracts:
+            value = getattr(contract, field)
+            if type(value) is not str or value not in allowed:
+                invalid.append(field)
+                break
+    if any(type(contract.approval_required) is not bool for contract in contracts):
+        invalid.append("approval_required")
+    if any(
+        not isinstance(contract.valid_from, str)
+        or not contract.valid_from
+        or not isinstance(contract.valid_until, str)
+        or not contract.valid_until
+        for contract in contracts
+    ):
+        invalid.append("validity")
     return tuple(dict.fromkeys(invalid))
 
 

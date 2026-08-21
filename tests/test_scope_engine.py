@@ -201,3 +201,57 @@ def test_zero_cost_is_valid():
     decision = intersect_contracts([contract(max_cost_usd=0.0)])
     assert decision.verdict in {"ALLOW", "NARROW"}
     assert decision.effective.max_cost_usd == 0.0
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("externality", "unknown"),
+        ("reversibility", "unknown"),
+        ("approval_required", 1),
+    ],
+)
+def test_authority_enum_fields_do_not_coerce(field, value):
+    decision = intersect_contracts([contract(**{field: value})])
+    assert decision.verdict == "DENY"
+    assert field in decision.unresolved_dimensions
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("max_tokens", 1.5),
+        ("max_seconds", "3600"),
+        ("max_attempts", True),
+        ("max_occurrences", False),
+    ],
+)
+def test_integer_resource_fields_require_actual_integers(field, value):
+    decision = intersect_contracts([contract(**{field: value})])
+    assert decision.verdict == "DENY"
+    assert field in decision.unresolved_dimensions
+
+
+def test_integer_resource_boundaries_are_valid():
+    decision = intersect_contracts([
+        contract(max_tokens=0, max_seconds=0, max_attempts=1, max_occurrences=1),
+    ])
+    assert decision.verdict in {"ALLOW", "NARROW"}
+    assert decision.effective.max_tokens == 0
+    assert decision.effective.max_seconds == 0
+    assert decision.effective.max_attempts == 1
+    assert decision.effective.max_occurrences == 1
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("project", 1),
+        ("source_versions", ("project-policy@1", 2)),
+        ("roles", ("builder", 2)),
+    ],
+)
+def test_scope_contract_collection_and_string_types_are_validated(field, value):
+    decision = intersect_contracts([contract(**{field: value})])
+    assert decision.verdict == "DENY"
+    assert field in decision.unresolved_dimensions
