@@ -109,6 +109,14 @@ evidence records; it rejects assurance kinds and authority-bearing admissible
 uses before writing. On recovery, only a malformed final line is quarantined;
 malformed earlier lines fail closed.
 
+`MemoryFactory` adds guarded semantic/procedural consolidation. Every proposal
+must pass local-source, global-evidence-coherence, and authority-preservation
+checks before append. Accepted outputs retain source lineage and unresolved
+conflicts, use the visibility/admissible-use intersection and weakest source
+authority class, and derive epistemic status conservatively. Authority
+revocation is an explicit append-only event that propagates transitively through
+`derived_from`; content deletion remains a separate tombstone operation.
+
 ## Tests required before calling it implemented
 
 - provenance survives write → retrieve → consolidate;

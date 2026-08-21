@@ -21,7 +21,7 @@ This file is a **living implementation/research capability inventory**. A listed
 - working / episodic / semantic / procedural / evidence / governance memory decomposition;
 - source provenance distinct from authority provenance;
 - immutable provenance-aware memory records with append-only local JSONL persistence and an authority firewall;
-- derived procedural/skill lineage with revocation requirements under test;
+- guarded three-gate consolidation with conservative epistemic status, conflict retention, weakest-authority intersections, explicit procedural lineage, and transitive authority revocation;
 - persistent-state classes across token context, recurrent latent state, fast weights and external retrieval;
 - D/O/C state-validation ladder (`Decodable`, `Operational`, `Causal`);
 - within-family causal comparison rule preventing raw cross-backbone accuracy from being mislabeled as a memory-mechanism effect;
