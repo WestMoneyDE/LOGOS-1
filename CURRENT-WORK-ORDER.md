@@ -1,23 +1,47 @@
 # CURRENT WORK ORDER
 
-**Status:** `READY_GAMMA_KERNEL_AND_INVARIANT_VERIFIER_R1`
-**Task:** `05-WORK-ORDERS/NEXT-SESSION-GAMMA-KERNEL-AND-INVARIANT-VERIFIER-R1.md`
+**Status:** `READY_RESEARCH_INFRASTRUCTURE_R1`
+**Task:** `NEXT-SESSION-RESEARCH-INFRASTRUCTURE-R1` — **not yet written**; awaits explicit authorization
 
 ## Explicit queue transition
 
 ```text
 FROM  READY_PERSISTENT_STATE_DATASET_MATERIALIZATION_R4
-TO    COMPLETE_DATASET_FREEZE_R4          (closed, evidence recorded)
+TO    CLOSED_COMPLETE_DATASET_FREEZE            (evidence recorded, PR #10)
 THEN  READY_GAMMA_KERNEL_AND_INVARIANT_VERIFIER_R1
+TO    CLOSED_GAMMA_R1_IMPLEMENTED               (evidence recorded)
+THEN  READY_RESEARCH_INFRASTRUCTURE_R1
 ```
 
-The predecessor was closed, not replaced. Its closure record lives in
-`05-WORK-ORDERS/NEXT-SESSION-PERSISTENT-STATE-DATASET-MATERIALIZATION-R4.md`
-under **Closure record**, its evidence in
-`09-SESSIONS/2026-09-10-PERSISTENT-STATE-DATASET-MATERIALIZATION-R4/`, and its
-review in pull request #10.
+Each predecessor was closed with a Closure record in its own work-order file, not
+replaced.
+
+## Closed predecessor — Γ R1 result
+
+```text
+package                      src/logos_gamma/
+invariants                   15, each linked to its GAMMA.md clause
+invariant sources            1 (enforced by test)
+gamma tests                  107 (46 kernel / 24 trusted core / 37 verifier)
+full suite                   229 passed / 0 failed
+required adversarial set     10/10 PASS
+logos_memory imported        NO (AST-enforced)
+LLM / network / shell        NO (AST-enforced)
+scientific evidence          NONE
+```
+
+Γ is a standalone deterministic library because no execution runtime exists here
+and hosting the authority gate inside adaptive memory would contradict Γ-12.
+`MC = 1` is **untested, not satisfied**: there is no executor to mediate.
+Contract: `docs/architecture/GAMMA-KERNEL.md`.
+Evidence: `09-SESSIONS/2026-09-10-GAMMA-KERNEL-AND-INVARIANT-VERIFIER-R1/`.
 
 ## Closed predecessor — R4 result
+
+Closure record in
+`05-WORK-ORDERS/NEXT-SESSION-PERSISTENT-STATE-DATASET-MATERIALIZATION-R4.md`,
+evidence in `09-SESSIONS/2026-09-10-PERSISTENT-STATE-DATASET-MATERIALIZATION-R4/`,
+review in pull request #10.
 
 ```text
 attempts                     1 (ONE_SHOT_NO_AUTORETRY honoured)
@@ -62,39 +86,35 @@ under which matched-family rule, the equal-information / equal-budget contract
 between arms, and pre-registered nulls, kill rules and falsification criteria.
 `TTT_R3 = SOURCE_ADAPTER_UNRESOLVED` remains excluded.
 
-## Active task — Γ Kernel and Invariant Verifier R1
+## Next task — Research Infrastructure R1
 
-`GAMMA.md` specifies Γ-v0.2 completely but no executable Γ exists here. R1 builds a
-deterministic invariant validator:
+Scope, to be written into its own work order before implementation:
 
-```text
-validate(context, gamma_invariants) -> VALID | INVALID | UNCLEAR
-```
+- PostgreSQL canonical experiment persistence;
+- MLflow experiment tracking;
+- MinIO immutable artifact storage;
+- machine-readable experiment manifests;
+- hypothesis / null-hypothesis pre-registration;
+- claim / evidence registry;
+- negative-result registry;
+- instrument-first evaluator validation;
+- OpenTelemetry / Langfuse where justified;
+- sandbox architecture;
+- reproducibility metadata;
+- failure attribution.
 
-Determined architecture: a **standalone deterministic library** at
-`src/logos_gamma/`, importing nothing from `logos_memory`, because no execution
-runtime exists in this repository and hosting Γ inside the memory subsystem would
-contradict Γ-12 (`AssuranceState != AgentMemory`).
+Every new experiment manifest and major research claim is checked by the Γ Verifier
+where Γ invariants apply. The infrastructure **consumes** the invariant boundary in
+`src/logos_gamma/`; it never redefines it, and the two must not be merged into one
+implementation.
 
-Two deliverables from **one** invariant source (`logos_gamma.invariants`):
+Two constraints carried into that work order from this repository's own state:
 
-- **Γ Verifier** — validates research manifests, claims, work orders and
-  architecture artifacts against `GAMMA.md`;
-- **Γ Kernel** — deterministic runtime invariant validation with no LLM, no
-  network, no arbitrary shell and no hidden mutable state in the trusted core,
-  failing closed on consequential ambiguity.
-
-Γ may read state and authority evidence. Γ may write validation/audit evidence only
-through the canonical audit owner. Γ must never create authority.
-
-## Successor
-
-Research Infrastructure R1 (PostgreSQL canonical experiment persistence, MLflow
-tracking, MinIO artifact storage, machine-readable manifests, pre-registration,
-claim/evidence and negative-result registries, instrument-first evaluator
-validation, sandbox architecture, failure attribution) begins **only after** Γ R1
-is validated, and consumes the invariant boundary rather than redefining it. The
-two must not be merged into one implementation.
+1. moving canonical experiment truth out of the git-tracked, hash-verified,
+   PR-reviewable artifacts and into service-backed storage is a material change to
+   how evidence is reviewed, and must be recorded as an ADR;
+2. provisioning containers, databases and network services is exactly the class of
+   change `AGENTS.md` requires a separate safety review for.
 
 ## Boundaries
 

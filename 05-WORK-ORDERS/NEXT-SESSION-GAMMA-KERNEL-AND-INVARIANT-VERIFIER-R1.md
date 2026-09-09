@@ -4,7 +4,8 @@
 **Authority:** `A0`
 **Track:** governance / invariant boundary
 **Type:** deterministic invariant validation, no external effect
-**Status:** `READY_GAMMA_KERNEL_AND_INVARIANT_VERIFIER_R1`
+**Status:** `CLOSED_GAMMA_R1_IMPLEMENTED`
+**Closed:** 2026-09-10 by `09-SESSIONS/2026-09-10-GAMMA-KERNEL-AND-INVARIANT-VERIFIER-R1/`
 **Predecessor:** `NEXT-SESSION-PERSISTENT-STATE-DATASET-MATERIALIZATION-R4` (`CLOSED_COMPLETE_DATASET_FREEZE`)
 **Scientific/model execution:** `PROHIBITED_IN_THIS_WORK_ORDER`
 **RULER inference:** `NOT_AUTHORIZED`
@@ -163,3 +164,34 @@ DatasetMaterializationAuthorization != InferenceAuthorization
 Only after Γ R1 is validated may the separate Research Infrastructure R1 work
 order begin. It consumes this invariant boundary; it does not redefine it. The two
 must not be merged into one implementation.
+
+---
+
+## Closure record
+
+**Transition:** `READY_GAMMA_KERNEL_AND_INVARIANT_VERIFIER_R1` -> `CLOSED_GAMMA_R1_IMPLEMENTED`
+
+```text
+package                      src/logos_gamma/ (types, invariants, kernel, verifier, audit)
+invariants                   15, each linked to its GAMMA.md clause
+invariant sources            1 (enforced by test)
+gamma tests                  107 (46 kernel / 24 trusted core / 37 verifier)
+full suite                   229 passed / 0 failed
+compileall                   PASS
+required adversarial set     10/10 PASS
+property-based search        hypothesis, on the quantified invariants
+logos_memory imported        NO (AST-enforced)
+LLM / network / shell        NO (AST-enforced)
+mutable module state         NO (enforced)
+scientific evidence          NONE
+evidence-level promotion     NONE
+RULER inference              NOT RUN
+```
+
+Two implementation defects were found by the structural tests and fixed: a mutable
+module-level dict in `invariants.py`, and a substring-based import check that
+flagged an explanatory docstring instead of a real dependency.
+
+`MC = 1` is **untested, not satisfied**: no executor exists in this repository.
+
+`Γ-v0.3` remains `HOLD`.

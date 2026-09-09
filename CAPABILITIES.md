@@ -38,7 +38,36 @@ This file is a **living implementation/research capability inventory**. A listed
 - newline-normalization protection for hash-frozen artifacts via `.gitattributes`;
 - Phase-Zero repository reality map rating every audited concept as
   EXISTS / PARTIAL / SPECIFIED / HYPOTHETICAL / UNKNOWN;
-- coding-ready roadmap and per-push propagation protocol.
+- coding-ready roadmap and per-push propagation protocol;
+- deterministic Γ invariant validator (`src/logos_gamma/`) returning
+  `VALID | INVALID | UNCLEAR` from a single invariant registry, with a runtime
+  kernel over effect proposals and an artifact verifier for manifests, claims and
+  prose;
+- structurally enforced Γ trusted core: no LLM, network, shell, dynamic
+  execution, direct file I/O or mutable module state, verified by AST tests;
+- Γ audit-sink boundary with content-addressed audit records and no storage
+  ownership.
+
+### Γ Kernel / Verifier R1 evidence
+
+Engineering implementation states, not scientific promotions:
+
+| Capability | Rating | Exact pytest evidence |
+|---|---|---|
+| Deterministic Γ invariant validation over effect proposals (15 invariants, all clause-linked) | `IMPLEMENTED` | `tests/test_gamma_kernel.py` |
+| Γ trusted-core constraints enforced structurally | `IMPLEMENTED` | `tests/test_gamma_trusted_core.py` |
+| Γ artifact verifier for manifests, claims and prose | `IMPLEMENTED` | `tests/test_gamma_verifier.py` |
+
+Γ R1 deliberately does **not** implement the five-stage pipeline as separate
+stages, `REPAIR`/`FALLBACK` results, the safe-baseline registry, typed risk
+dimensions, mediation-completeness auditing, a canonical audit owner, or any grant
+issuance/consumption. `MC = 1` is untested rather than satisfied: no executor
+exists in this repository.
+
+```text
+ValidationResult != Permission
+GammaVerdict != Grant
+```
 
 ### MemoryFactory / Scope Engine R1 evidence
 
@@ -103,6 +132,8 @@ ScopeDecision != DispatchAuthorization
 
 - adapter/static-test success as memory-mechanism evidence;
 - dataset availability as mechanism evidence;
+- Γ implementation completeness against the full Γ-v0.2 specification;
+- mediation completeness (`MC = 1`) over any real executor;
 - a raw four-model leaderboard as causal evidence for memory mechanism identity;
 - Mamba as a BDH-CQ reproduction;
 - TTT as a MoNe reproduction;
