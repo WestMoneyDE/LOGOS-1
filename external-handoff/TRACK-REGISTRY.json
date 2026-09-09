@@ -68,9 +68,9 @@
   },
   "external_queue_state": "BLOCKED_OR_COMPLETE",
   "current_nonexternal_research": {
-    "track": "PERSISTENT_STATE_DATASET_MATERIALIZATION_R4",
-    "status": "COMPLETE_DATASET_FREEZE_R4",
-    "scientific_model_execution": "NOT_STARTED_REQUIRES_EXPLICIT_WORK_ORDER",
+    "track": "GAMMA_KERNEL_AND_INVARIANT_VERIFIER_R1",
+    "status": "READY_GAMMA_KERNEL_AND_INVARIANT_VERIFIER_R1",
+    "scientific_model_execution": "PROHIBITED_IN_GAMMA_R1",
     "methodological_boundary": "RawCrossBackboneAccuracy != MemoryMechanismEffect",
     "controlled_evidence_ceiling": "EM1",
     "r3_adapter_status": {
@@ -134,6 +134,15 @@
         "session": "09-SESSIONS/2026-09-10-PERSISTENT-STATE-DATASET-MATERIALIZATION-R4"
       }
     },
-    "next_work_order": "UNASSIGNED_REQUIRES_EXPLICIT_RULER_MODEL_EXECUTION_AUTHORIZATION"
+    "next_work_order": "NEXT-SESSION-GAMMA-KERNEL-AND-INVARIANT-VERIFIER-R1",
+    "previous_track": {
+      "track": "PERSISTENT_STATE_DATASET_MATERIALIZATION_R4",
+      "status": "CLOSED_COMPLETE_DATASET_FREEZE",
+      "closed": "2026-09-10",
+      "session": "09-SESSIONS/2026-09-10-PERSISTENT-STATE-DATASET-MATERIALIZATION-R4",
+      "pull_request": 10
+    },
+    "ruler_inference": "NOT_AUTHORIZED_REQUIRES_EXPLICIT_WORK_ORDER",
+    "successor_after_gamma_r1": "RESEARCH_INFRASTRUCTURE_R1"
   }
 }
