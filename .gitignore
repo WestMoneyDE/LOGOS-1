@@ -4,3 +4,9 @@ __pycache__/
 
 # Local research stack credentials. LOCAL DEVELOPMENT ONLY, never committed.
 .env
+
+# Project virtual environment
+.venv/
+
+# setuptools build metadata from an editable install
+*.egg-info/
