@@ -5,8 +5,16 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "logos-pstate-adapters"
 version = "0.1.0"
-description = "Deterministic persistent-state intervention adapters for LOGOS-1 research"
+description = "Deterministic persistent-state intervention adapters and the Gamma invariant kernel for LOGOS-1 research"
 requires-python = ">=3.11"
+
+[project.optional-dependencies]
+# Property-based falsification search for the Gamma invariants. Test-only:
+# the Gamma trusted core has no runtime dependencies at all.
+test = ["pytest>=8", "hypothesis>=6"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

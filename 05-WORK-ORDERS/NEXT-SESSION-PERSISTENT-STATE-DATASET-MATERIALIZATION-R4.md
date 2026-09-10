@@ -4,7 +4,8 @@
 **Authority:** `A0`  
 **Track:** persistent state / controlled causal substrate  
 **Type:** exact tokenizer/data materialization only  
-**Status:** `READY_PERSISTENT_STATE_DATASET_MATERIALIZATION_R4`  
+**Status:** `CLOSED_COMPLETE_DATASET_FREEZE`  
+**Closed:** 2026-09-10 by `09-SESSIONS/2026-09-10-PERSISTENT-STATE-DATASET-MATERIALIZATION-R4/`  
 **Execution policy:** `ONE_SHOT_NO_AUTORETRY`  
 **Scientific/model execution:** `PROHIBITED_IN_THIS_WORK_ORDER`
 
@@ -91,6 +92,46 @@ DatasetAvailability != MechanismEvidence
 RawCrossBackboneAccuracy != MemoryMechanismEffect
 PersistentState != Authority
 CausalState != PhenomenalConsciousness
+```
+
+`Γ-v0.3` remains `HOLD`.
+
+---
+
+## Closure record
+
+**Transition:** `READY_PERSISTENT_STATE_DATASET_MATERIALIZATION_R4` -> `CLOSED_COMPLETE_DATASET_FREEZE`
+
+```text
+attempts                     1 (ONE_SHOT_NO_AUTORETRY honoured)
+return classification        COMPLETE_DATASET_FREEZE
+RULER generator blobs        5/5 verified
+GPT-2 tokenizer artifacts    5 hashed
+Mamba tokenizer artifacts    3 hashed
+essay corpus                 218/218 fail-closed, content-hash pinned
+datasets                     32 JSONL / 1024 examples / 32 rows each
+determinism                  REPRODUCIBLE
+git round-trip               BYTE_STABLE 32/32
+tests                        122 passed / 0 failed
+model weights loaded         NO
+model inference performed    NO
+mechanism evidence produced  NO
+evidence-level promotion     NONE
+```
+
+Evidence: `09-SESSIONS/2026-09-10-PERSISTENT-STATE-DATASET-MATERIALIZATION-R4/`,
+pull request #10.
+
+An added freeze dimension was required: the essay haystack corpus is not shipped
+in the RULER checkout and is pinned by content hash
+`58e352531a80cef2d22c205dbebfbfd64a8afe55a32434de845f200718756c65`, not by an
+immutable upstream reference.
+
+**This closure authorizes no inference.** A RULER model-execution work order
+remains unwritten and must be separately and explicitly authorized.
+
+```text
+DatasetMaterializationAuthorization != InferenceAuthorization
 ```
 
 `Γ-v0.3` remains `HOLD`.

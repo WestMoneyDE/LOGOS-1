@@ -32,7 +32,42 @@ This file is a **living implementation/research capability inventory**. A listed
 - explicit Mamba reset semantics: new/reinitialized cache rather than offset-only reset;
 - RULER JSONL file/per-row hash-freeze utility;
 - static regression suite for persistent-state adapter semantics;
-- coding-ready roadmap and per-push propagation protocol.
+- byte-verified RULER dataset freeze across two tokenizer families with per-row
+  canonical hashes, fail-closed haystack-corpus materialization and a
+  content-hash pin for the non-shipped essay corpus;
+- newline-normalization protection for hash-frozen artifacts via `.gitattributes`;
+- Phase-Zero repository reality map rating every audited concept as
+  EXISTS / PARTIAL / SPECIFIED / HYPOTHETICAL / UNKNOWN;
+- coding-ready roadmap and per-push propagation protocol;
+- deterministic Γ invariant validator (`src/logos_gamma/`) returning
+  `VALID | INVALID | UNCLEAR` from a single invariant registry, with a runtime
+  kernel over effect proposals and an artifact verifier for manifests, claims and
+  prose;
+- structurally enforced Γ trusted core: no LLM, network, shell, dynamic
+  execution, direct file I/O or mutable module state, verified by AST tests;
+- Γ audit-sink boundary with content-addressed audit records and no storage
+  ownership.
+
+### Γ Kernel / Verifier R1 evidence
+
+Engineering implementation states, not scientific promotions:
+
+| Capability | Rating | Exact pytest evidence |
+|---|---|---|
+| Deterministic Γ invariant validation over effect proposals (15 invariants, all clause-linked) | `IMPLEMENTED` | `tests/test_gamma_kernel.py` |
+| Γ trusted-core constraints enforced structurally | `IMPLEMENTED` | `tests/test_gamma_trusted_core.py` |
+| Γ artifact verifier for manifests, claims and prose | `IMPLEMENTED` | `tests/test_gamma_verifier.py` |
+
+Γ R1 deliberately does **not** implement the five-stage pipeline as separate
+stages, `REPAIR`/`FALLBACK` results, the safe-baseline registry, typed risk
+dimensions, mediation-completeness auditing, a canonical audit owner, or any grant
+issuance/consumption. `MC = 1` is untested rather than satisfied: no executor
+exists in this repository.
+
+```text
+ValidationResult != Permission
+GammaVerdict != Grant
+```
 
 ### MemoryFactory / Scope Engine R1 evidence
 
@@ -62,12 +97,18 @@ ScopeDecision != DispatchAuthorization
 
 ## Current canonical research/engineering gate
 
-- **Persistent-State Dataset Materialization R4:** exact tokenizer-byte and RULER-data freeze before any model benchmark run.
+- **Persistent-State Dataset Materialization R4: COMPLETE.** The exact
+  tokenizer-byte and RULER-data freeze is done and byte-verified.
 - Frozen GPT-2 tokenizer/model revision: `openai-community/gpt2@607a30d783dfa663caf39e06633721c8d4cfcd7e`.
 - Frozen Mamba source/model: `state-spaces/mamba@e9594ce1c732d97440f0332fdc43170a2294dbfa` + `state-spaces/mamba-130m-hf@1e76775f628fbf1350fbe4dbb3d971ba64af25a1`.
-- Frozen RULER source and task/seed envelope; output JSONL hashes still require exact tokenizer materialization in a network-capable environment.
+- RULER source pinned at `c3f5e3b4f87f97e048793bb510a3a6b19a46bf3a`; all 5 generator blobs verified.
+- Generated substrate: 2 tokenizer families x 4 tasks x 4 seeds = 32 JSONL, 1024 examples, 32 rows/file, determinism `REPRODUCIBLE`, git round-trip `BYTE_STABLE`.
+- Added freeze dimension: the essay haystack corpus is pinned by content hash
+  `58e352531a80cef2d22c205dbebfbfd64a8afe55a32434de845f200718756c65` because it is
+  not shipped in the RULER checkout and upstream is a moving reference.
 - TTT official source/checkpoint family remains pinned but `TTT_R3 = SOURCE_ADAPTER_UNRESOLVED`; no community conversion is substituted.
-- No persistent-state model benchmark has been run yet.
+- **No persistent-state model benchmark has been run yet.** A RULER model-execution
+  work order must be explicitly authorized; the freeze alone does not authorize it.
 - RULER remains **EM1 ceiling only**.
 - BDH-CQ and MoNe remain architecture anchors; Mamba/TTT are family representatives, not reproductions.
 
@@ -90,6 +131,9 @@ ScopeDecision != DispatchAuthorization
 ## Explicitly not claimed
 
 - adapter/static-test success as memory-mechanism evidence;
+- dataset availability as mechanism evidence;
+- Γ implementation completeness against the full Γ-v0.2 specification;
+- mediation completeness (`MC = 1`) over any real executor;
 - a raw four-model leaderboard as causal evidence for memory mechanism identity;
 - Mamba as a BDH-CQ reproduction;
 - TTT as a MoNe reproduction;
