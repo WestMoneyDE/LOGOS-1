@@ -128,7 +128,9 @@ SHA-256, canonical per-row SHA-256 and a token-length summary in
 ## Determinism
 
 Three files spanning both tokenizer families and both haystack types were
-regenerated with identical `argv` and compared byte-for-byte:
+regenerated with identical `argv` on this platform and compared byte-for-byte.
+Cross-platform equivalence is a separate and weaker claim — see **Reproducibility
+boundary** below.
 
 ```text
 gpt2/seed73000/niah_single_1     MATCH
@@ -136,6 +138,68 @@ mamba/seed73002/niah_multiquery  MATCH
 gpt2/seed73003/vt                MATCH
 
 DETERMINISM = REPRODUCIBLE
+```
+
+## Reproducibility boundary — what the file hashes do and do not mean
+
+A reproducibility-record correction. It changes no dataset content, no generator
+input, no task envelope and no verdict.
+
+The canonical frozen JSONL files were generated under **Windows text-mode
+semantics** and therefore contain **CRLF** line endings. `.gitattributes`
+intentionally preserves these exact bytes via `text: unset` (`-text`).
+
+`file_sha256` identifies the **exact frozen byte representation** and is therefore
+platform-sensitive if the dataset is independently regenerated on another platform.
+A Linux regeneration may produce LF-delimited files with a different `file_sha256`
+despite semantically identical rows.
+
+`row_sha256` is newline-normalization-independent for the validated row content and
+remains the **canonical cross-platform semantic identity check**.
+
+```text
+file_sha256   exact byte representation      platform-sensitive on regeneration
+row_sha256    validated row content          canonical, newline-independent
+```
+
+**Interpretation rule.** A differing regenerated `file_sha256` alone must **not** be
+interpreted as changed substrate when all canonical row hashes and dataset-envelope
+invariants match.
+
+### Verified observation
+
+Reference file `gpt2/seed73000/niah_single_1/validation.jsonl`:
+
+```text
+canonical committed file_sha256 (CRLF)
+    02a6a7a8c3979889a3cba31251958fce211dc9e259d6395b534507ff7197f62c
+
+independently regenerated LF file_sha256
+    9a52b66d0309e4eabe34a3c43d3f3f580235765fb818c91c6036ab0f9d4241d3
+
+canonical row_sha256
+    identical across both representations (32 rows)
+```
+
+The counterfactual was **measured, not assumed**:
+`git -c core.autocrlf=true hash-object -w --path=counterfactual.txt` on the same
+file yields blob `9a52b66d…` (LF, 109537 bytes). That is why the `-text` rule is
+load-bearing for byte identity in the object store, and it corrects the mechanism
+described in Finding 3: without the rule the *worktree* file would still round-trip
+back to CRLF, but the **committed blob** — what GitHub serves and what any Linux
+checkout receives — would be the LF variant and would not match the recorded hash.
+
+### Status unchanged
+
+The committed frozen artifacts themselves remain byte-stable and fully verified:
+**0/32** committed-file hash deviations in a fresh checkout under
+`core.autocrlf = true`. No scientific inference, model inference, Γ verdict or
+dataset-freeze verdict changes.
+
+```text
+COMPLETE_DATASET_FREEZE   unchanged
+scientific_verdict        NONE
+gamma_verdict_change      NONE
 ```
 
 ## Return artifact

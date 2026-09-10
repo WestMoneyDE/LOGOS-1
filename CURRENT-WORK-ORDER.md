@@ -18,7 +18,7 @@ state-spaces/mamba-130m-hf@1e76775f                  3 tokenizer files hashed
 essay haystack corpus                                218/218, fail-closed
 2 families x 4 tasks x 4 seeds                       32 JSONL / 1024 examples
 row count per file                                   32
-determinism (3 files re-generated)                   REPRODUCIBLE
+determinism (3 files re-generated, same platform)    REPRODUCIBLE
 git round-trip                                       BYTE_STABLE (32/32)
 
 RULER_DATASET_FREEZE_R4 = COMPLETE_DATASET_FREEZE

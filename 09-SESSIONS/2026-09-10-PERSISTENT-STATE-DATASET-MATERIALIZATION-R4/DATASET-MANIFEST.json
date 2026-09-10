@@ -2705,6 +2705,28 @@
   ],
   "generator_invocation": "scripts/data/prepare.py builds a multi-line shell command with backslash continuations and runs it with shell=True, which is Linux-only. R4 rebuilt the identical argv in-process and invoked the generator scripts directly without a shell. Every argument, including the composed --template, is byte-identical to prepare.py's construction (model_template_type=base, Templates['base'] == '{task_template}').",
   "produced_files": 32,
+  "reproducibility_boundary": {
+    "canonical_comparison_key": "row_sha256",
+    "committed_artifact_status": "The committed frozen artifacts themselves remain byte-stable and fully verified: 0/32 committed-file hash deviations in a fresh checkout under core.autocrlf=true.",
+    "file_sha256_semantics": "file_sha256 identifies the exact frozen byte representation. It is therefore platform-sensitive if the dataset is independently regenerated on another platform.",
+    "generation_platform_semantics": "The canonical frozen JSONL files were generated under Windows text-mode semantics and therefore contain CRLF line endings.",
+    "gitattributes": ".gitattributes intentionally preserves these exact bytes via `text: unset` (-text) for *.jsonl, SHA256SUMS.txt and 09-SESSIONS/**/generated/**.",
+    "interpretation_rule": "A differing regenerated file_sha256 alone must NOT be interpreted as changed substrate when all canonical row hashes and dataset-envelope invariants match.",
+    "line_endings": "CRLF",
+    "linux_regeneration": "A Linux regeneration may produce LF-delimited files with a different file_sha256 despite semantically identical rows.",
+    "row_sha256_semantics": "row_sha256 is newline-normalization-independent for the validated row content and remains the canonical cross-platform semantic identity check.",
+    "scope": "reproducibility-record correction only; no dataset content, generator input, task envelope or verdict is changed",
+    "verdict_impact": "No scientific inference, model inference, Gamma verdict or dataset-freeze verdict changes.",
+    "verified_observation": {
+      "canonical_committed_file_sha256_crlf": "02a6a7a8c3979889a3cba31251958fce211dc9e259d6395b534507ff7197f62c",
+      "canonical_row_sha256": "identical across both representations",
+      "counterfactual_git_filter_blob_sha256_without_text_unset": "9a52b66d0309e4eabe34a3c43d3f3f580235765fb818c91c6036ab0f9d4241d3",
+      "counterfactual_note": "Measured, not assumed: `git -c core.autocrlf=true hash-object -w --path=counterfactual.txt` on the same file yields the LF blob above, which is why the -text rule is load-bearing for byte identity in the object store.",
+      "independently_regenerated_lf_file_sha256": "9a52b66d0309e4eabe34a3c43d3f3f580235765fb818c91c6036ab0f9d4241d3",
+      "reference_file": "gpt2/seed73000/niah_single_1/validation.jsonl",
+      "row_count_both_representations": 32
+    }
+  },
   "schema": "logos-r4-dataset-manifest-v1",
   "source": {
     "commit": "c3f5e3b4f87f97e048793bb510a3a6b19a46bf3a",

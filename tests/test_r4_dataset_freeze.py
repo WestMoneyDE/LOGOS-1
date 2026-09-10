@@ -3,8 +3,10 @@
 These tests exist because a byte freeze is only worth something if a later
 checkout can still reproduce the recorded hashes. The concrete failure mode
 guarded here is newline normalization: this repository is developed on a machine
-with `core.autocrlf = true`, and without the `.gitattributes` `-text` rules every
-recorded SHA-256 would silently become wrong on checkout.
+with `core.autocrlf = true`. The frozen files are Windows text-mode output and
+contain CRLF; without the `.gitattributes` `-text` rules git would store the
+LF-normalized variant, so the committed blob — what GitHub serves and what a Linux
+checkout receives — would not match the recorded hashes.
 
 The tests are offline, deterministic and load no model.
 """
@@ -151,3 +153,62 @@ def test_gitattributes_protects_frozen_artifacts():
     text = (REPO / ".gitattributes").read_text(encoding="utf-8")
     assert "*.jsonl -text" in text
     assert "SHA256SUMS.txt -text" in text
+
+
+# ---------------------------------------------------------------------------
+# Reproducibility boundary: file_sha256 is byte-exact, row_sha256 is canonical.
+# ---------------------------------------------------------------------------
+
+REFERENCE_FILE = "gpt2/seed73000/niah_single_1/validation.jsonl"
+CANONICAL_CRLF_SHA = "02a6a7a8c3979889a3cba31251958fce211dc9e259d6395b534507ff7197f62c"
+REGENERATED_LF_SHA = "9a52b66d0309e4eabe34a3c43d3f3f580235765fb818c91c6036ab0f9d4241d3"
+
+
+def _canonical_row_hashes(blob: bytes) -> list[str]:
+    return [
+        hashlib.sha256(
+            json.dumps(
+                json.loads(line), sort_keys=True, separators=(",", ":"), ensure_ascii=False
+            ).encode("utf-8")
+        ).hexdigest()
+        for line in blob.decode("utf-8").splitlines()
+        if line.strip()
+    ]
+
+
+def test_frozen_files_carry_the_recorded_crlf_representation():
+    """The freeze is of Windows text-mode output; that is content, not corruption."""
+    blob = (SESSION / "generated" / REFERENCE_FILE).read_bytes()
+    assert b"\r\n" in blob
+    assert hashlib.sha256(blob).hexdigest() == CANONICAL_CRLF_SHA
+
+
+def test_row_hashes_are_newline_normalization_independent(dataset_manifest):
+    """The load-bearing claim: row_sha256 survives an LF regeneration, file_sha256 does not."""
+    rec = next(f for f in dataset_manifest["files"] if f["path"] == REFERENCE_FILE)
+    crlf = (SESSION / "generated" / REFERENCE_FILE).read_bytes()
+    lf = crlf.replace(b"\r\n", b"\n")
+
+    assert hashlib.sha256(crlf).hexdigest() == CANONICAL_CRLF_SHA
+    assert hashlib.sha256(lf).hexdigest() == REGENERATED_LF_SHA
+    assert hashlib.sha256(crlf).hexdigest() != hashlib.sha256(lf).hexdigest()
+
+    assert _canonical_row_hashes(crlf) == _canonical_row_hashes(lf) == rec["row_sha256"]
+
+
+def test_manifest_records_the_reproducibility_boundary(dataset_manifest):
+    boundary = dataset_manifest["reproducibility_boundary"]
+    assert boundary["canonical_comparison_key"] == "row_sha256"
+    assert boundary["line_endings"] == "CRLF"
+    observed = boundary["verified_observation"]
+    assert observed["canonical_committed_file_sha256_crlf"] == CANONICAL_CRLF_SHA
+    assert observed["independently_regenerated_lf_file_sha256"] == REGENERATED_LF_SHA
+    assert observed["reference_file"] == REFERENCE_FILE
+    # The correction must not have moved any verdict.
+    assert "No scientific inference" in boundary["verdict_impact"]
+
+
+def test_the_boundary_correction_changed_no_verdict(envelope):
+    assert envelope["classification"] == "COMPLETE_DATASET_FREEZE"
+    assert envelope["scientific_verdict"] == "NONE"
+    assert envelope["gamma_verdict_change"] == "NONE"
