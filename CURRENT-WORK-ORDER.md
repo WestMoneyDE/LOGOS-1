@@ -1,76 +1,62 @@
 # CURRENT WORK ORDER
 
-**Status:** `READY_PERSISTENT_STATE_DATASET_MATERIALIZATION_R4`  
-**Task:** `05-WORK-ORDERS/NEXT-SESSION-PERSISTENT-STATE-DATASET-MATERIALIZATION-R4.md`
+**Status:** `COMPLETE_DATASET_FREEZE_R4`
+**Last completed:** `09-SESSIONS/2026-09-10-PERSISTENT-STATE-DATASET-MATERIALIZATION-R4/`
+**Next task:** requires an explicitly authorized new work order (see "Next gate")
 
-Persistent-State Adapter Implementation R3 is complete as an engineering/static-validation session. No GPT-2, Mamba, TTT or RULER benchmark model execution was started.
+Persistent-State Dataset Materialization R4 is complete. The R3 blocker
+`RULER_DATASET_FREEZE_R3 = NOT_MATERIALIZED_RESOURCE_TRANSPORT` is resolved.
+No GPT-2, Mamba or TTT model weights were loaded and no answer-producing model
+was executed.
 
-## R3 result
-
-Implemented and statically tested:
+## R4 result
 
 ```text
-TOKEN_CONTEXT
-  full history / 512-token truncation / A→B substitution
+RULER@c3f5e3b4f87f97e048793bb510a3a6b19a46bf3a       PINS VERIFIED (5/5 blobs)
+openai-community/gpt2@607a30d7                       5 tokenizer files hashed
+state-spaces/mamba-130m-hf@1e76775f                  3 tokenizer files hashed
+essay haystack corpus                                218/218, fail-closed
+2 families x 4 tasks x 4 seeds                       32 JSONL / 1024 examples
+row count per file                                   32
+determinism (3 files re-generated, same platform)    REPRODUCIBLE
+git round-trip                                       BYTE_STABLE (32/32)
 
-EXTERNAL_RETRIEVAL
-  deterministic BM25 k1=1.5, b=0.75
-  stable chunk-id ties + retrieval/prompt hashes
-
-RECURRENT_LATENT representative
-  Mamba complete state capture / restore / fresh / swap / permute / digest
-
-RULER freeze utility
-  file SHA-256 + canonical per-row SHA-256 manifests
+RULER_DATASET_FREEZE_R4 = COMPLETE_DATASET_FREEZE
 ```
 
-Validation:
+## Freeze dimension added in R4
+
+`PaulGrahamEssays.json` is not shipped in the RULER checkout. It is built from
+218 live URLs through a moving `raw/main` ref plus version-dependent HTML-to-text
+conversion, and the official downloader is fail-open. R4 materialized it
+fail-closed and pinned it by content hash:
 
 ```text
-pytest: 13 passed / 0 failed
-compileall: PASS
-scientific model execution: NOT_STARTED
+haystack_corpus_sha256 = 58e352531a80cef2d22c205dbebfbfd64a8afe55a32434de845f200718756c65
 ```
 
-Mamba reset boundary:
+`niah_multikey_1` and `niah_multiquery` inherit this boundary.
+`niah_single_1` and `vt` use the noise haystack and do not.
+
+A future session that cannot reproduce this hash must treat the two essay tasks
+as a **changed substrate**, not as comparable data.
+
+## Next gate
+
+The byte-verified freeze is the precondition the work order named for a later
+RULER model-execution work order. That execution is **not** authorized by this
+completion alone and requires an explicit new work order covering:
+
+- which persistent-state families are compared and under which matched-family rule;
+- the equal-information / equal-budget contract between arms;
+- pre-registered nulls, kill rules and falsification criteria;
+- `TTT_R3 = SOURCE_ADAPTER_UNRESOLVED` remains excluded until a separate work
+  order resolves its official adapter/tokenizer bridge.
+
+## Boundaries
 
 ```text
-InferenceParams.reset() != demonstrated memory erasure
-RESET_STATE = fresh/reinitialized complete cache
-```
-
-TTT official bridge:
-
-```text
-TTT_R3 = SOURCE_ADAPTER_UNRESOLVED
-```
-
-The official JAX checkpoint format is resolved, but an exact official checkpoint→pinned-PyTorch bridge plus exact authorized tokenizer bytes was not available. No community conversion was substituted and no retry was performed.
-
-RULER output datasets were not faked. The current container lacks cached tokenizer bytes / `transformers`, and network name resolution is unavailable:
-
-```text
-RULER_DATASET_FREEZE_R3 = NOT_MATERIALIZED_RESOURCE_TRANSPORT
-```
-
-This is not negative evidence for any memory family.
-
-## R4 objective
-
-Materialize and hash the exact GPT-2 and Mamba tokenizer-dependent RULER datasets in a network-capable environment **without loading any model weights**.
-
-Frozen envelope:
-
-```text
-tasks = niah_single_1, niah_multikey_1, niah_multiquery, vt
-max_seq_length = 1024
-samples/task/seed = 32
-seeds = 73000..73003
-```
-
-Only a byte-verified `COMPLETE_DATASET_FREEZE` may authorize a later RULER model-execution work order.
-
-```text
+DatasetAvailability != MechanismEvidence
 RawCrossBackboneAccuracy != MemoryMechanismEffect
 RULER-controlled evidence <= EM1
 PersistentState != Authority

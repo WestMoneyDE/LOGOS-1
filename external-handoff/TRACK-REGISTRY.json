@@ -11,27 +11,66 @@
     "External scientific execution is one-shot by default; failed, cancelled, blocked or resource-incomplete runs are not automatically retried.",
     "Gamma live-provider work is excluded from this handoff and remains explicit-human-grant gated."
   ],
-  "priority_order": ["mbe", "enf", "wmr", "longmem", "tcv", "mf_skillsbench", "scb_pr", "tangle"],
+  "priority_order": [
+    "mbe",
+    "enf",
+    "wmr",
+    "longmem",
+    "tcv",
+    "mf_skillsbench",
+    "scb_pr",
+    "tangle"
+  ],
   "tracks": {
-    "mbe": {"title": "MBE / Behavioral-Lift external measurement", "priority": 1, "status": "COMPLETE_IMPORTED"},
-    "enf": {"title": "ENF-R3 / safe-control-gym external safety boundary", "priority": 2, "status": "COMPLETE_IMPORTED"},
-    "wmr": {"title": "WMR-R2 / ARC-AGI-3 counterexample-priority replay", "priority": 3, "status": "COMPLETE_IMPORTED"},
-    "longmem": {"title": "MF-R1 / LongMemEval-V2 strong flat vs associative", "priority": 4, "status": "PARKED_UNTESTED_RESOURCE_TRANSPORT"},
-    "tcv": {"title": "TCV-R2 / Wrong but Useful matched replay", "priority": 5, "status": "PARKED_UNTESTED_RESOURCE_TRANSPORT"},
-    "mf_skillsbench": {"title": "MF-R3 / SkillsBench native skill vs byte-identical generic guidance", "priority": 6, "status": "PARKED_UNTESTED_RESOURCE_TRANSPORT"},
-    "scb_pr": {"title": "SCB-R2 / Terminal-Bench 2.0 P×R localization", "priority": 7, "status": "PARKED_UNTESTED_RESOURCE_TRANSPORT"},
+    "mbe": {
+      "title": "MBE / Behavioral-Lift external measurement",
+      "priority": 1,
+      "status": "COMPLETE_IMPORTED"
+    },
+    "enf": {
+      "title": "ENF-R3 / safe-control-gym external safety boundary",
+      "priority": 2,
+      "status": "COMPLETE_IMPORTED"
+    },
+    "wmr": {
+      "title": "WMR-R2 / ARC-AGI-3 counterexample-priority replay",
+      "priority": 3,
+      "status": "COMPLETE_IMPORTED"
+    },
+    "longmem": {
+      "title": "MF-R1 / LongMemEval-V2 strong flat vs associative",
+      "priority": 4,
+      "status": "PARKED_UNTESTED_RESOURCE_TRANSPORT"
+    },
+    "tcv": {
+      "title": "TCV-R2 / Wrong but Useful matched replay",
+      "priority": 5,
+      "status": "PARKED_UNTESTED_RESOURCE_TRANSPORT"
+    },
+    "mf_skillsbench": {
+      "title": "MF-R3 / SkillsBench native skill vs byte-identical generic guidance",
+      "priority": 6,
+      "status": "PARKED_UNTESTED_RESOURCE_TRANSPORT"
+    },
+    "scb_pr": {
+      "title": "SCB-R2 / Terminal-Bench 2.0 P×R localization",
+      "priority": 7,
+      "status": "PARKED_UNTESTED_RESOURCE_TRANSPORT"
+    },
     "tangle": {
       "title": "MF-R3 / TANGLE irreducible memory-conflict benchmark",
       "priority": 99,
       "status": "WAIT_OFFICIAL_RELEASE",
-      "source_pins": {"paper": "arXiv:2608.13921"}
+      "source_pins": {
+        "paper": "arXiv:2608.13921"
+      }
     }
   },
   "external_queue_state": "BLOCKED_OR_COMPLETE",
   "current_nonexternal_research": {
     "track": "PERSISTENT_STATE_DATASET_MATERIALIZATION_R4",
-    "status": "READY_PERSISTENT_STATE_DATASET_MATERIALIZATION_R4",
-    "scientific_model_execution": "PROHIBITED_IN_R4",
+    "status": "COMPLETE_DATASET_FREEZE_R4",
+    "scientific_model_execution": "NOT_STARTED_REQUIRES_EXPLICIT_WORK_ORDER",
     "methodological_boundary": "RawCrossBackboneAccuracy != MemoryMechanismEffect",
     "controlled_evidence_ceiling": "EM1",
     "r3_adapter_status": {
@@ -65,13 +104,36 @@
       "controlled_substrate": {
         "repo": "NVIDIA/RULER",
         "commit": "c3f5e3b4f87f97e048793bb510a3a6b19a46bf3a",
-        "tasks": ["niah_single_1", "niah_multikey_1", "niah_multiquery", "vt"],
+        "tasks": [
+          "niah_single_1",
+          "niah_multikey_1",
+          "niah_multiquery",
+          "vt"
+        ],
         "max_seq_length": 1024,
         "samples_per_task_per_seed": 32,
-        "seeds": [73000, 73001, 73002, 73003],
-        "generated_hashes": "PENDING_R4_RESOURCE_MATERIALIZATION"
+        "seeds": [
+          73000,
+          73001,
+          73002,
+          73003
+        ],
+        "generated_hashes": "COMPLETE_DATASET_FREEZE",
+        "generated_files": 32,
+        "total_examples": 1024,
+        "rows_per_file": 32,
+        "tokenizer_families": [
+          "gpt2",
+          "mamba"
+        ],
+        "generator_blobs_verified": true,
+        "determinism": "REPRODUCIBLE",
+        "git_roundtrip": "BYTE_STABLE",
+        "haystack_corpus_sha256": "58e352531a80cef2d22c205dbebfbfd64a8afe55a32434de845f200718756c65",
+        "haystack_corpus_pin_type": "CONTENT_HASH_NOT_UPSTREAM_IMMUTABLE_REF",
+        "session": "09-SESSIONS/2026-09-10-PERSISTENT-STATE-DATASET-MATERIALIZATION-R4"
       }
     },
-    "next_work_order": "NEXT-SESSION-PERSISTENT-STATE-DATASET-MATERIALIZATION-R4"
+    "next_work_order": "UNASSIGNED_REQUIRES_EXPLICIT_RULER_MODEL_EXECUTION_AUTHORIZATION"
   }
 }

@@ -1,0 +1,26 @@
+{
+  "answer_producing_model_executed": false,
+  "attempts": 1,
+  "boundaries": [
+    "DatasetAvailability != MechanismEvidence",
+    "RawCrossBackboneAccuracy != MemoryMechanismEffect",
+    "PersistentState != Authority",
+    "CausalState != PhenomenalConsciousness"
+  ],
+  "classification": "COMPLETE_DATASET_FREEZE",
+  "determinism": "REPRODUCIBLE",
+  "execution_policy": "ONE_SHOT_NO_AUTORETRY",
+  "files_expected": 32,
+  "files_produced": 32,
+  "gamma_verdict_change": "NONE",
+  "generator_pins_verified": true,
+  "haystack_corpus_sha256": "58e352531a80cef2d22c205dbebfbfd64a8afe55a32434de845f200718756c65",
+  "model_weights_loaded": false,
+  "residual_limitation": "The essay haystack corpus is pinned by content hash recorded in this session, not by an immutable upstream reference. niah_multikey_1 and niah_multiquery inherit that boundary; niah_single_1 and vt do not.",
+  "rows_per_file": 32,
+  "ruler_commit": "c3f5e3b4f87f97e048793bb510a3a6b19a46bf3a",
+  "schema": "logos-r4-return-envelope-v1",
+  "scientific_verdict": "NONE",
+  "total_examples": 1024,
+  "work_order": "NEXT-SESSION-PERSISTENT-STATE-DATASET-MATERIALIZATION-R4"
+}
