@@ -165,6 +165,87 @@ MIGRATIONS: tuple[Migration, ...] = (
             "CREATE INDEX IF NOT EXISTS artifacts_run_idx ON artifact_references(run_id)",
         ),
     ),
+    Migration(
+        version=2,
+        name="self_falsification_repairs",
+        statements=(
+            # INFRA-SF-DEFECT-1. Migration 1 constrained the verdict value set but
+            # not transitions, so a direct UPDATE could launder INVALID_MEASUREMENT
+            # into FALSIFIED. A measurement failure is not a hypothesis outcome and
+            # must never become one by edit.
+            """
+            CREATE OR REPLACE FUNCTION logos_guard_verdict_transition()
+            RETURNS TRIGGER AS $$
+            BEGIN
+                IF OLD.scientific_verdict IS NOT NULL
+                   AND NEW.scientific_verdict IS DISTINCT FROM OLD.scientific_verdict THEN
+                    RAISE EXCEPTION
+                        'verdict_is_immutable: % cannot become %; record a new run',
+                        OLD.scientific_verdict, NEW.scientific_verdict;
+                END IF;
+                RETURN NEW;
+            END;
+            $$ LANGUAGE plpgsql
+            """,
+            "DROP TRIGGER IF EXISTS logos_verdict_immutable ON runs",
+            """
+            CREATE TRIGGER logos_verdict_immutable
+            BEFORE UPDATE ON runs
+            FOR EACH ROW EXECUTE FUNCTION logos_guard_verdict_transition()
+            """,
+            # INFRA-SF-DEFECT-3. A content-addressed payload that can be edited in
+            # place is not content-addressed. The row must be append-only.
+            """
+            CREATE OR REPLACE FUNCTION logos_guard_preregistration_immutable()
+            RETURNS TRIGGER AS $$
+            BEGIN
+                RAISE EXCEPTION
+                    'preregistration_is_immutable: % is content-addressed; amend a new revision',
+                    OLD.preregistration_hash;
+            END;
+            $$ LANGUAGE plpgsql
+            """,
+            "DROP TRIGGER IF EXISTS logos_preregistration_immutable ON preregistrations",
+            """
+            CREATE TRIGGER logos_preregistration_immutable
+            BEFORE UPDATE OR DELETE ON preregistrations
+            FOR EACH ROW EXECUTE FUNCTION logos_guard_preregistration_immutable()
+            """,
+            # Negative results are research artifacts. A repair may supersede one;
+            # nothing may erase it.
+            "DROP TRIGGER IF EXISTS logos_negative_result_no_delete ON negative_results",
+            """
+            CREATE OR REPLACE FUNCTION logos_guard_negative_result()
+            RETURNS TRIGGER AS $$
+            BEGIN
+                RAISE EXCEPTION
+                    'negative_result_is_durable: % cannot be deleted; supersede it instead',
+                    OLD.negative_id;
+            END;
+            $$ LANGUAGE plpgsql
+            """,
+            """
+            CREATE TRIGGER logos_negative_result_no_delete
+            BEFORE DELETE ON negative_results
+            FOR EACH ROW EXECUTE FUNCTION logos_guard_negative_result()
+            """,
+        ),
+    ),
+    Migration(
+        version=3,
+        name="artifact_attribution_repair",
+        statements=(
+            # INFRA-SF-DEFECT-4. artifact_id is content-addressed, so two runs
+            # producing identical bytes share an id. With artifact_id as the sole
+            # primary key the second run's reference was silently dropped and the
+            # artifact stayed attributed to the first run. Attribution is per run.
+            "ALTER TABLE artifact_references DROP CONSTRAINT IF EXISTS artifact_references_pkey",
+            """
+            ALTER TABLE artifact_references
+            ADD CONSTRAINT artifact_references_pkey PRIMARY KEY (artifact_id, run_id)
+            """,
+        ),
+    ),
 )
 
 

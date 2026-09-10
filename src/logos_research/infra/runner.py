@@ -175,16 +175,49 @@ class ResearchRun:
 
 
 def resolve_from_experiment_id(
-    stack: ResearchStack, experiment_id: str
+    stack: ResearchStack, experiment_id: str, *, verify_artifacts: bool = True
 ) -> dict[str, object]:
     """The acceptance question: from one canonical id, find everything.
 
     Returns the correlation view a researcher would otherwise assemble by hand
     across several dashboards.
+
+    INFRA-SF-DEFECT-2: this function used to list artifact ids without checking
+    the bytes behind them, so a substituted artifact reconstructed as a complete,
+    intact evidence chain. Integrity is now verified during reconstruction and
+    reported per run in `artifact_integrity`, with `integrity_ok` on the view.
+    Pass `verify_artifacts=False` only for a deliberately cheap listing.
     """
     runs = stack.repository.runs_for_experiment(experiment_id)
-    return {
+
+    def integrity(record) -> dict[str, str]:
+        if not verify_artifacts:
+            return {a: "NOT_VERIFIED" for a in record.external.artifact_ids}
+        result: dict[str, str] = {}
+        for artifact_id in record.external.artifact_ids:
+            ref = None
+            lookup = getattr(stack.repository, "artifact_reference", None)
+            if lookup is not None:
+                try:
+                    ref = lookup(record.run_id, artifact_id)
+                except Exception:
+                    ref = None
+            if ref is None:
+                fallback = getattr(stack.artifacts, "reference", None)
+                if fallback is not None:
+                    ref = fallback(artifact_id)
+            if ref is None:
+                result[artifact_id] = "REFERENCE_MISSING"
+            else:
+                result[artifact_id] = "OK" if stack.artifacts.verify(ref) else "CORRUPT"
+        return result
+
+    checked = {r.run_id: integrity(r) for r in runs}
+    view = {
         "experiment_id": experiment_id,
+        "integrity_ok": all(
+            state == "OK" for states in checked.values() for state in states.values()
+        ),
         "runs": [
             {
                 "run_id": r.run_id,
@@ -198,7 +231,9 @@ def resolve_from_experiment_id(
                 "dvc_dataset_revs": list(r.external.dvc_dataset_revs),
                 "artifact_ids": list(r.external.artifact_ids),
                 "degraded_sinks": [d.sink for d in r.degraded_sinks],
+                "artifact_integrity": checked[r.run_id],
             }
             for r in runs
         ],
     }
+    return view

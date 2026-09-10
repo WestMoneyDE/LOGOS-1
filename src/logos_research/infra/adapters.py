@@ -238,6 +238,10 @@ class InMemoryResearchRepository:
             if r.identity.experiment_id == experiment_id
         )
 
+    def artifact_reference(self, run_id: str, artifact_id: str) -> ArtifactRef | None:
+        """Not tracked here; the caller falls back to the artifact store."""
+        return None
+
 
 @dataclass
 class UnavailableRepository:
@@ -334,6 +338,9 @@ class LocalArtifactStore:
     def verify(self, ref: ArtifactRef) -> bool:
         payload = self._objects.get(ref.artifact_id)
         return payload is not None and sha256(payload).hexdigest() == ref.content_sha256
+
+    def reference(self, artifact_id: str) -> ArtifactRef | None:
+        return self._refs.get(artifact_id)
 
 
 @dataclass

@@ -196,10 +196,25 @@ class PostgresResearchRepository:
             cur.execute(
                 "INSERT INTO artifact_references (artifact_id, run_id, experiment_id, "
                 "content_sha256, size_bytes, media_type, storage_location) "
-                "VALUES (%s,%s,%s,%s,%s,%s,%s) ON CONFLICT (artifact_id) DO NOTHING",
+                "VALUES (%s,%s,%s,%s,%s,%s,%s) ON CONFLICT (artifact_id, run_id) DO NOTHING",
                 (ref.artifact_id, ref.run_id, ref.experiment_id, ref.content_sha256,
                  ref.size_bytes, ref.media_type, ref.storage_location))
         conn.commit()
+
+    def artifact_reference(self, run_id: str, artifact_id: str) -> ArtifactRef | None:
+        """Rehydrate a stored reference so its bytes can be verified."""
+        conn = self._require()
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT artifact_id, run_id, experiment_id, content_sha256, size_bytes, "
+                "media_type, storage_location FROM artifact_references "
+                "WHERE run_id=%s AND artifact_id=%s", (run_id, artifact_id))
+            row = cur.fetchone()
+        if row is None:
+            return None
+        return ArtifactRef(artifact_id=row[0], run_id=row[1], experiment_id=row[2],
+                           content_sha256=row[3], size_bytes=row[4], media_type=row[5],
+                           storage_location=row[6])
 
     def record_dataset(self, revision: DatasetRevision, run_id: str | None = None) -> None:
         conn = self._require()

@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import uuid
 from datetime import datetime, timezone
 from typing import Any
 
@@ -84,7 +85,10 @@ def run(git_sha: str = "") -> dict[str, Any]:
         llm_traces=backends["llm_traces"],
     )
 
-    run_id = f"{EXPERIMENT_ID}-run-1"
+    # A fixed run id made the smoke run single-use: a second invocation collided
+    # on runs_pkey. Each invocation is a new run of the same experiment, and the
+    # canonical experiment identity is what stays stable.
+    run_id = f"{EXPERIMENT_ID}-run-{uuid.uuid4().hex[:8]}"
     session = ResearchRun(stack, identity, run_id, clock=_now())
     session.start()
 
