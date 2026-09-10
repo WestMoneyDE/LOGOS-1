@@ -51,7 +51,7 @@ openai-community/gpt2        5 tokenizer artifacts hashed
 state-spaces/mamba-130m-hf   3 tokenizer artifacts hashed
 essay corpus                 218/218 fail-closed, content-hash pinned
 datasets                     32 JSONL / 1024 examples / 32 rows each
-determinism                  REPRODUCIBLE
+determinism (same platform)  REPRODUCIBLE
 git round-trip               BYTE_STABLE 32/32
 tests                        122 passed / 0 failed
 model weights loaded         NO
@@ -59,6 +59,13 @@ model inference performed    NO
 mechanism evidence produced  NO
 evidence-level promotion     NONE
 ```
+
+`file_sha256` identifies the exact frozen byte representation (CRLF, Windows
+text-mode generation, preserved by `.gitattributes` `-text`) and is
+platform-sensitive under independent regeneration. `row_sha256` is
+newline-normalization-independent and is the canonical cross-platform semantic
+identity check. A differing regenerated `file_sha256` alone is not changed
+substrate when the row hashes and envelope invariants match.
 
 Added freeze dimension, because the essay haystack is not shipped in the RULER
 checkout and upstream is a moving reference:
