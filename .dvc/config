@@ -1,0 +1,5 @@
+[core]
+    remote = logos-minio
+['remote "logos-minio"']
+    url = s3://logos-dvc
+    endpointurl = http://127.0.0.1:59000

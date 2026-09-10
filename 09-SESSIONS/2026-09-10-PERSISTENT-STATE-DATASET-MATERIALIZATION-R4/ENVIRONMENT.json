@@ -1,0 +1,29 @@
+{
+  "gpu_used": false,
+  "machine": "AMD64",
+  "network_available": true,
+  "nltk_data": [
+    "punkt",
+    "punkt_tab"
+  ],
+  "packages": {
+    "PyYAML": "6.0.3",
+    "beautifulsoup4": "4.15.0",
+    "html2text": "2025.4.15",
+    "huggingface-hub": "0.36.2",
+    "nltk": "3.10.3",
+    "numpy": "2.2.6",
+    "tenacity": "9.1.4",
+    "tokenizers": "0.22.2",
+    "torch": "2.6.0+cu124",
+    "tqdm": "4.70.0",
+    "transformers": "4.57.6",
+    "wonderwords": "3.0.1"
+  },
+  "platform": "Windows-11-10.0.26100-SP0",
+  "processor": "AMD64 Family 25 Model 33 Stepping 2, AuthenticAMD",
+  "python": "3.12.8 (tags/v3.12.8:2dc476b, Dec  3 2024, 19:30:04) [MSC v.1942 64 bit (AMD64)]",
+  "python_version": "3.12.8",
+  "pythonhashseed_used_for_generation": "0",
+  "schema": "logos-r4-environment-v1"
+}
