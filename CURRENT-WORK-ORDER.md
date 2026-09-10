@@ -1,7 +1,7 @@
 # CURRENT WORK ORDER
 
-**Status:** `READY_RESEARCH_INFRASTRUCTURE_R1`
-**Task:** `NEXT-SESSION-RESEARCH-INFRASTRUCTURE-R1` — **not yet written**; awaits explicit authorization
+**Status:** `READY_RESEARCH_DELTA_EXECUTION`
+**Task:** highest-ranked `READY` delta in `docs/research/RESEARCH-DELTA-REGISTRY.json`
 
 ## Explicit queue transition
 
@@ -11,6 +11,8 @@ TO    CLOSED_COMPLETE_DATASET_FREEZE            (evidence recorded, PR #10)
 THEN  READY_GAMMA_KERNEL_AND_INVARIANT_VERIFIER_R1
 TO    CLOSED_GAMMA_R1_IMPLEMENTED               (evidence recorded)
 THEN  READY_RESEARCH_INFRASTRUCTURE_R1
+TO    CLOSED_INFRASTRUCTURE_R1_IMPLEMENTED      (evidence recorded)
+THEN  READY_RESEARCH_DELTA_EXECUTION
 ```
 
 Each predecessor was closed with a Closure record in its own work-order file, not

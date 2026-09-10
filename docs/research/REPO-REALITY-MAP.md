@@ -241,3 +241,25 @@ new authority concept     -> duplicates GAMMA.md (specification owner)
 RepoForensics != Evidence
 AbsenceInCompactRepo != AbsenceInProject
 ```
+
+---
+
+## Addendum — 2026-09-10
+
+The Phase-Zero audit above describes commit `b0f2b20` and is left unedited. Two
+later sessions closed some of the gaps it identified. Re-rated:
+
+| Gap (section 4) | Was | Now | Owner |
+|---|---|---|---|
+| 1. no cross-experiment manifest schema | missing | `EXISTS` | `logos_research.manifest` |
+| 2. no `INVALID_MEASUREMENT` outcome | missing | `EXISTS` | `logos_research.manifest.Outcome` |
+| 3. no instrument characterization | missing | `EXISTS` | `logos_research.instrument` |
+| 4. no claim-to-evidence graph | missing | `PARTIAL` | `logos_research.claims`; README not yet derived from it |
+| 5. no declared sandbox profile | missing | `PARTIAL` | `logos_research.sandbox`; L0 only |
+| 6. no quality-gate CI | missing | still missing | — |
+| 7. no dependency lock | missing | still missing | — |
+| 8. no property-based invariant tests | missing | `EXISTS` | `hypothesis`, across Γ and research tests |
+| 9. no typed state taxonomy | missing | still missing | — |
+| 10. no Γ implementation | missing | `PARTIAL` | `logos_gamma`; 10 of 15 canonical clauses |
+
+Gaps 6, 7 and 9 remain open and are not claimed as covered.

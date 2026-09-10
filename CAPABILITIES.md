@@ -46,7 +46,20 @@ This file is a **living implementation/research capability inventory**. A listed
 - structurally enforced Γ trusted core: no LLM, network, shell, dynamic
   execution, direct file I/O or mutable module state, verified by AST tests;
 - Γ audit-sink boundary with content-addressed audit records and no storage
-  ownership.
+  ownership;
+- research core (`src/logos_research/`): one manifest dialect with immutable,
+  content-addressed pre-registration and post-hoc rewrite detection;
+- five-valued outcome vocabulary separating `INVALID_MEASUREMENT` from
+  `FALSIFIED`;
+- instrument-first admissibility: an evaluator is characterized before its
+  verdict is interpreted, and an LLM judge may not be sole ground truth for a
+  major claim;
+- claim registry, negative-result registry and failure attribution with
+  infrastructure failures structurally barred from driving durable learning;
+- sandbox policy with L0 enforced and L1/L2 `REVIEW_REQUIRED`, typed egress
+  categories and a fail-closed default;
+- canonical research-delta registry ranking 44 candidate experiments;
+- Γ invariant inventory mapping all 15 canonical clauses to implementation status.
 
 ### Γ Kernel / Verifier R1 evidence
 
@@ -134,6 +147,9 @@ ScopeDecision != DispatchAuthorization
 - dataset availability as mechanism evidence;
 - Γ implementation completeness against the full Γ-v0.2 specification;
 - mediation completeness (`MC = 1`) over any real executor;
+- sandbox L1/L2 as available capability: both are `REVIEW_REQUIRED` and
+  implement nothing;
+- coverage of Γ-7, Γ-9 and Γ-14, which are canonical but unimplemented;
 - a raw four-model leaderboard as causal evidence for memory mechanism identity;
 - Mamba as a BDH-CQ reproduction;
 - TTT as a MoNe reproduction;
