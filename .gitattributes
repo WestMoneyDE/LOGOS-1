@@ -1,0 +1,6 @@
+# Hash-frozen research artifacts must never be newline-normalized.
+# core.autocrlf=true would otherwise rewrite LF to CRLF on checkout and
+# invalidate every SHA-256 recorded in the R4 dataset freeze manifests.
+*.jsonl -text
+SHA256SUMS.txt -text
+09-SESSIONS/**/generated/** -text
