@@ -1,3 +1,6 @@
 .superpowers/
 __pycache__/
 *.py[cod]
+
+# Local research stack credentials. LOCAL DEVELOPMENT ONLY, never committed.
+.env

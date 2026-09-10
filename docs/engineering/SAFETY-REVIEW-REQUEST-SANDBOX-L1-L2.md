@@ -1,6 +1,6 @@
 # Safety Review Request — Sandbox L1 / L2
 
-**Status:** `REVIEW_REQUIRED` — open request, no approval attached
+**Status:** `L1 REVIEW_GRANTED` / `L2 REVIEW_REQUIRED` — see Decision record
 **Raised by:** `NEXT-SESSION-RESEARCH-FALSIFICATION-INFRASTRUCTURE-R1`
 **Governing rule:** `AGENTS.md`, External-action boundary
 **Decision owner:** human reviewer. Not Γ, not this document, not the agent.
@@ -118,13 +118,25 @@ Until a human reviewer records a decision here, L1 and L2 remain
 
 ## Decision record
 
-_Empty by design. To be completed by the reviewer._
+```text
+decision:            L1 GRANTED, L2 NOT GRANTED
+reviewer:            repository owner / founder (WestMoneyDE)
+date:                2026-09-10
+granted verbatim:    "die sandboxen auch installieren damit wir die instanzen
+                      isoliert laufen lassen koennen"
+L1 container isolation:   GRANTED
+                          non-root, read-only root fs, ephemeral workspace,
+                          CPU/RAM/PID limits, timeout, dropped capabilities,
+                          no-new-privileges, seccomp, no network by default
+L2 controlled egress:     NOT GRANTED
+                          The grant names container isolation for running
+                          instances. It does not mention experimental agent
+                          network egress, and that is a separate capability.
+                          L2 stays REVIEW_REQUIRED and network_allowed stays
+                          False until explicitly granted.
+```
 
 ```text
-decision:
-reviewer:
-date:
-scope granted:
-expiry:
-conditions:
+InfrastructureHasNetwork != AgentHasNetwork
+ServiceReachability      != ExperimentAuthority
 ```
