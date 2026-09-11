@@ -14,7 +14,7 @@
     "FunctionalArchitecture != PhenomenalExperience",
     "Registered != Prioritized for this cycle"
   ],
-  "count": 44,
+  "count": 45,
   "deltas": [
     {
       "id": "BINDING-STATE-PRESERVATION",
@@ -588,6 +588,20 @@
       "measurement_quality": 2,
       "priority_score": 0.38,
       "rank": 44
+    },
+    {
+      "id": "PRECONDITION-REPRESENTATION-GAP",
+      "track": "authority",
+      "status": "REGISTERED",
+      "note": "ScopeContract has no field for Y-before-X. BINDING-STATE-PRESERVATION-R1 introduced experiment-scoped preconditions; promotion to a canonical type is a separate governance decision.",
+      "falsification_power": 3,
+      "expected_information_gain": 3,
+      "dependency_readiness": 4,
+      "implementation_cost": 2,
+      "compute_cost": 1,
+      "measurement_quality": 4,
+      "priority_score": 0,
+      "rank": 45
     }
   ]
 }
