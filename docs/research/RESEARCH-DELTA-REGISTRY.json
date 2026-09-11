@@ -19,7 +19,7 @@
     {
       "id": "BINDING-STATE-PRESERVATION",
       "track": "authority",
-      "status": "READY",
+      "status": "EXECUTED_R1_FALSIFIED",
       "falsification_power": 5,
       "expected_information_gain": 5,
       "dependency_readiness": 5,
@@ -27,7 +27,8 @@
       "compute_cost": 1,
       "measurement_quality": 5,
       "priority_score": 15.0,
-      "rank": 1
+      "rank": 1,
+      "session": "09-SESSIONS/2026-09-11-BINDING-STATE-PRESERVATION-R1"
     },
     {
       "id": "NO-HISTORY-PROMOTION",

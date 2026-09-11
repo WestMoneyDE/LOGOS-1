@@ -134,6 +134,7 @@ them explicitly rather than absorbing them by accident.
 | `P-ARTIFACT-IDENTITY` | distinguish exact-byte, semantic-content, environment and provenance identity for research artifacts | generalizes the R4 CRLF/LF finding; an evidence-hygiene rule, not an authority rule |
 | `P-INSTRUMENT-FIRST` | characterize an evaluator before using it to test a claim | a measurement discipline; Γ-0 implies you may not assert what you cannot measure, but does not name instruments |
 | `P-INVALID-MEASUREMENT` | `INVALID_MEASUREMENT` as an outcome distinct from falsification | follows the spirit of Γ-0; not stated in `GAMMA.md` |
+| `P-BINDING-PRESERVATION` | a representation transformation not authorized to change normative force must not alter binding modality, scope, preconditions, approval requirement or validity | `NO_CANONICAL_GAMMA_BINDING_INVARIANT`. Raised by `BINDING-STATE-PRESERVATION-R1`, which found two mechanisms (omission under lenient reading, dimensional collapse in rendering) that violate it on a summary fixture. Γ-1 covers authority, not binding. **Not promoted.** |
 
 ## 7. Referenced but absent artifacts
 
