@@ -24,6 +24,13 @@ def tmp() -> Path:
     return Path(tempfile.mkdtemp(prefix="repair-tests-"))
 
 
+# R2 refined the fail-closed taxonomy: INCOMPLETE was split into
+# MISSING_REQUIRED_FIELD / INVALID_TYPE / INVALID_VALUE / DIGEST_MISMATCH.
+# Operational behaviour (DEFER, not trusted) is unchanged; only the label is.
+FAIL_CLOSED = {"INCOMPLETE", "MISSING_REQUIRED_FIELD", "INVALID_TYPE",
+               "INVALID_VALUE", "DIGEST_MISMATCH", "UNKNOWN_VERSION", "LEGACY_UNTYPED"}
+
+
 def by_id(cid: str) -> bs.Fixture:
     return next(f for f in bs.fixtures() if f.constraint.constraint_id == cid)
 
@@ -126,7 +133,7 @@ def _action():
      "UNKNOWN_VERSION"),
     (json.dumps({"schema": br.ENVELOPE_SCHEMA, "prose": "typed block missing"}), "INCOMPLETE"),
     (json.dumps({"schema": br.ENVELOPE_SCHEMA, "typed": {"garbage": 1}, "prose": "x"}),
-     "INCOMPLETE"),
+     "MISSING_REQUIRED_FIELD"),
 ])
 def test_unreadable_binding_defers_and_never_allows(content, kind):
     violating, permitted, window = _action()
@@ -153,7 +160,7 @@ def test_tampered_typed_block_is_rejected_by_its_digest():
     doc["typed"]["preconditions"] = []          # weaken typed state in place
     content = json.dumps(doc)
     decoded = br.decode_envelope(content)
-    assert decoded.kind == "INCOMPLETE"
+    assert decoded.kind == "DIGEST_MISMATCH"
     assert "digest" in decoded.reason
     assert br.evaluate_from_content(content, fx.violating, fx.window)[0] == "DEFER"
 
