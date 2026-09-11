@@ -56,7 +56,143 @@ from . import binding_state as bs
 ENVELOPE_SCHEMA = "logos.binding-envelope/1"
 KNOWN_SCHEMAS = frozenset({ENVELOPE_SCHEMA})
 
-SourceKind = Literal["TYPED_SOURCE", "LEGACY_UNTYPED", "INCOMPLETE", "UNKNOWN_VERSION"]
+SourceKind = Literal[
+    "TYPED_SOURCE", "LEGACY_UNTYPED", "INCOMPLETE", "UNKNOWN_VERSION",
+    # R2: the actual cause is preserved instead of being collapsed into INCOMPLETE.
+    "MISSING_REQUIRED_FIELD", "INVALID_TYPE", "INVALID_VALUE", "DIGEST_MISMATCH",
+]
+
+
+# --------------------------------------------------------------------------
+# R2 - strict typed-block validation at the read boundary
+#
+# Validation-R1 (VCE-1..3) showed that "the constructor did not raise" was
+# being treated as "the typed payload is valid". It is not:
+#
+#     Constructible != Valid        Missing != Default
+#     Deserializable != Complete    Malformed != Coercible
+#
+# BindingConstraint keeps its constructor defaults for in-process ergonomics.
+# The storage/wire boundary is this validator, which applies NO defaults,
+# performs NO coercion, and names exactly why it refused.
+# --------------------------------------------------------------------------
+
+#: Every BindingConstraint field is required on the wire - including the four
+#: that have constructor defaults. authority_origin defaulting to "human" was
+#: VCE-1; binding defaulting to True was VCE-2.
+REQUIRED_TYPED_FIELDS = frozenset({
+    "constraint_id", "constraint_class", "contract", "binding", "preconditions",
+    "authority_origin", "authorized_normative_change",
+})
+
+CONSTRAINT_CLASSES = frozenset({
+    "PROHIBITION", "REQUIREMENT", "CONDITIONAL", "APPROVAL_REQUIRED",
+    "SCOPE_RESTRICTION", "FRESHNESS",
+})
+
+#: Canonical authority origins, mirroring logos_gamma.types. Only "human" bears
+#: authority; the rest exist so a stored origin can be stated honestly.
+AUTHORITY_ORIGINS = frozenset({
+    "human", "memory", "model", "tool", "summary", "derived", "retrieval",
+    "self-report", "unknown",
+})
+
+_CONTRACT_STR_TUPLES = (
+    "paths", "excluded_paths", "roles", "tools", "memory_kinds", "projection_audiences",
+    "capabilities", "targets", "data_classes", "retention_classes", "source_versions",
+)
+_CONTRACT_FIELDS = frozenset(_CONTRACT_STR_TUPLES) | {
+    "project", "parameter_bounds", "max_cost_usd", "max_tokens", "max_seconds",
+    "max_attempts", "valid_from", "valid_until", "max_occurrences", "externality",
+    "reversibility", "approval_required",
+}
+
+
+class TypedBlockInvalid(ValueError):
+    def __init__(self, kind: SourceKind, reason: str) -> None:
+        super().__init__(reason)
+        self.kind = kind
+        self.reason = reason
+
+
+def _require_bool(d: dict, key: str, where: str) -> None:
+    if type(d[key]) is not bool:  # exact: no truthiness, no 0/1/"False"
+        raise TypedBlockInvalid(
+            "INVALID_TYPE", f"{where}.{key} must be bool, got {type(d[key]).__name__}")
+
+
+def _require_str(d: dict, key: str, where: str) -> None:
+    if type(d[key]) is not str:
+        raise TypedBlockInvalid(
+            "INVALID_TYPE", f"{where}.{key} must be str, got {type(d[key]).__name__}")
+
+
+def _require_str_list(d: dict, key: str, where: str) -> None:
+    v = d[key]
+    if type(v) is not list or any(type(x) is not str for x in v):
+        raise TypedBlockInvalid("INVALID_TYPE", f"{where}.{key} must be a list of str")
+
+
+def _is_number(v: object) -> bool:
+    return type(v) in (int, float)
+
+
+def validate_typed_block(raw: object) -> None:
+    """Refuse anything that is not exactly a complete, well-typed constraint.
+
+    Raises TypedBlockInvalid with the precise cause. Applies no defaults.
+    """
+    if type(raw) is not dict:
+        raise TypedBlockInvalid("INVALID_TYPE", "typed block must be an object")
+    missing = REQUIRED_TYPED_FIELDS - raw.keys()
+    if missing:
+        raise TypedBlockInvalid(
+            "MISSING_REQUIRED_FIELD",
+            f"typed block missing {sorted(missing)}; no default is applied")
+    unknown = raw.keys() - REQUIRED_TYPED_FIELDS
+    if unknown:
+        raise TypedBlockInvalid("INVALID_VALUE", f"typed block has unknown fields {sorted(unknown)}")
+
+    _require_str(raw, "constraint_id", "typed")
+    _require_str(raw, "constraint_class", "typed")
+    if raw["constraint_class"] not in CONSTRAINT_CLASSES:
+        raise TypedBlockInvalid("INVALID_VALUE", f"unknown constraint_class {raw['constraint_class']!r}")
+    _require_bool(raw, "binding", "typed")
+    _require_bool(raw, "authorized_normative_change", "typed")
+    _require_str_list(raw, "preconditions", "typed")
+    _require_str(raw, "authority_origin", "typed")
+    if raw["authority_origin"] not in AUTHORITY_ORIGINS:
+        raise TypedBlockInvalid("INVALID_VALUE", f"unknown authority_origin {raw['authority_origin']!r}")
+
+    contract = raw["contract"]
+    if type(contract) is not dict:
+        raise TypedBlockInvalid("INVALID_TYPE", "typed.contract must be an object")
+    c_missing = _CONTRACT_FIELDS - contract.keys()
+    if c_missing:
+        raise TypedBlockInvalid("MISSING_REQUIRED_FIELD", f"contract missing {sorted(c_missing)}")
+    c_unknown = contract.keys() - _CONTRACT_FIELDS
+    if c_unknown:
+        raise TypedBlockInvalid("INVALID_VALUE", f"contract has unknown fields {sorted(c_unknown)}")
+    for key in _CONTRACT_STR_TUPLES:
+        _require_str_list(contract, key, "contract")
+    for key in ("project", "valid_from", "valid_until", "externality", "reversibility"):
+        _require_str(contract, key, "contract")
+    _require_bool(contract, "approval_required", "contract")
+    for key in ("max_tokens", "max_seconds", "max_attempts", "max_occurrences"):
+        if type(contract[key]) is not int:
+            raise TypedBlockInvalid("INVALID_TYPE", f"contract.{key} must be int")
+    if not _is_number(contract["max_cost_usd"]):
+        raise TypedBlockInvalid("INVALID_TYPE", "contract.max_cost_usd must be a number")
+    if contract["externality"] not in ("internal", "external"):
+        raise TypedBlockInvalid("INVALID_VALUE", f"unknown externality {contract['externality']!r}")
+    if contract["reversibility"] not in ("reversible", "partially-reversible", "irreversible"):
+        raise TypedBlockInvalid("INVALID_VALUE", f"unknown reversibility {contract['reversibility']!r}")
+    pb = contract["parameter_bounds"]
+    if type(pb) is not list or any(
+        type(b) is not list or len(b) != 3 or type(b[0]) is not str
+        or not _is_number(b[1]) or not _is_number(b[2]) for b in pb
+    ):
+        raise TypedBlockInvalid("INVALID_TYPE", "contract.parameter_bounds must be [[str, number, number], ...]")
 
 
 # --------------------------------------------------------------------------
@@ -88,6 +224,12 @@ class Decoded:
 
 
 def _typed_from_dict(d: dict) -> bs.BindingConstraint:
+    """PRIVATE construction helper. NOT a trusted reader.
+
+    Applies constructor defaults and no validation. The only trusted path is
+    `decode_envelope`, which calls `validate_typed_block` first. Kept so that
+    tests can compute the digest an attacker would compute.
+    """
     return bs._from_json(json.dumps(d))
 
 
@@ -103,17 +245,18 @@ def decode_envelope(content: str) -> Decoded:
     if doc["schema"] not in KNOWN_SCHEMAS:
         return Decoded("UNKNOWN_VERSION", None, str(doc.get("prose", "")),
                        reason=f"unknown envelope schema {doc['schema']!r}")
-    typed_doc = doc.get("typed")
-    if not isinstance(typed_doc, dict):
+    if "typed" not in doc:
         return Decoded("INCOMPLETE", None, str(doc.get("prose", "")),
                        reason="envelope present but typed block missing")
+    # R2: strict schema validation FIRST. A valid digest cannot rescue an invalid
+    # schema, and the constructor is never asked to fill a gap.
     try:
-        typed = _typed_from_dict(typed_doc)
-    except Exception as exc:  # malformed typed block is INCOMPLETE, never permissive
-        return Decoded("INCOMPLETE", None, str(doc.get("prose", "")),
-                       reason=f"typed block malformed: {type(exc).__name__}")
+        validate_typed_block(doc["typed"])
+    except TypedBlockInvalid as exc:
+        return Decoded(exc.kind, None, str(doc.get("prose", "")), reason=exc.reason)
+    typed = _typed_from_dict(doc["typed"])
     if doc.get("typed_digest") != typed.digest():
-        return Decoded("INCOMPLETE", None, str(doc.get("prose", "")),
+        return Decoded("DIGEST_MISMATCH", None, str(doc.get("prose", "")),
                        reason="typed block does not match its recorded digest")
     prose = str(doc.get("prose", ""))
     return Decoded("TYPED_SOURCE", typed, prose, divergence=_divergence(typed, prose))
