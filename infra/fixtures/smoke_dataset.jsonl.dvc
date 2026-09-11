@@ -1,0 +1,5 @@
+outs:
+- md5: f78a48251348835f9ba7e881d366cd61
+  size: 51
+  hash: md5
+  path: smoke_dataset.jsonl
