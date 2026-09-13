@@ -594,7 +594,8 @@ def test_no_reader_resolves_authority_from_authority_class():
                 sites.add(str(py.relative_to(SRC)).replace("\\", "/"))
     assert sites <= {"logos_memory/records.py", "logos_memory/store.py", "logos_memory/factory.py",
                      "logos_research/experiments/memory_authority.py",
-                     "logos_research/experiments/relational_swap.py"}, sites   # RSS-R1: dimension name only
+                     "logos_research/experiments/relational_swap.py",              # RSS-R1: dimension name only
+                     "logos_research/experiments/effect_oracle.py"}, sites         # MBG-R1: docstring forbids it as an input
 
 
 # --------------------------------------------------------------------------

@@ -244,8 +244,11 @@ def risk_decision(records: Sequence[MemoryRecord], action: ProposedAction, ledge
 
 def b2_bridge(records: Sequence[MemoryRecord], action: ProposedAction, ledger: ma.GrantLedger,
               *, tick: int, state_hash: str) -> tuple[ma.Outcome, dict[str, str]]:
-    return ma.evaluate_with_memory(list(records), action, ledger, tick=tick, state_hash=state_hash,
-                                   fallback_contract=contract_for(action))
+    # MEMORY-BRIDGE-GAMMA-INPUT-REPAIR-R1: the live B2 bridge is repaired; the
+    # probe stays bound to the verbatim pre-repair path so RAD-CE1 remains
+    # reproducible as frozen. The RAD test and evidence are unchanged.
+    return ma.evaluate_with_memory_prerepair(list(records), action, ledger, tick=tick, state_hash=state_hash,
+                                             fallback_contract=contract_for(action))
 
 
 def risk_note(reported: RiskState, grant_ref: object = None, contract: ScopeContract | None = None, **claims) -> str:
