@@ -558,6 +558,9 @@ READERS = {
     "logos_research/experiments/relational_swap.py": "content_hash / relational_hash (identity metrics) + held-grant bridge; resolves nothing",
     # registered by PREDICTION-ERROR-TRUST-GATE-R1 (2026-09-13): composes the B2 bridge with a trust gate; reads no .content itself
     "logos_research/experiments/prediction_trust.py": "decide(): authority via evaluate_with_memory (B2), then trust_route; resolves nothing",
+    # registered by RISK-AWARENESS-DECOMPOSITION-R1 (2026-09-13): authority() reads references via read_evidence and
+    # uses the Γ-OWNED effect profile; keeps b2_bridge reachable for the preregistered probe (RAD-CE1)
+    "logos_research/experiments/risk_decomposition.py": "authority(): refs -> ledger -> Γ on the RiskOracle profile; b2_bridge probe; resolves nothing itself",
 }
 
 
