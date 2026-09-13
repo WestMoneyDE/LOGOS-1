@@ -556,6 +556,8 @@ READERS = {
     "logos_research/experiments/binding_state_run.py": "Retention.authority — R1 metric, not memory",
     # registered by RELATIONAL-STATE-SWAP-R1 (2026-09-13): reads .content only to hash it
     "logos_research/experiments/relational_swap.py": "content_hash / relational_hash (identity metrics) + held-grant bridge; resolves nothing",
+    # registered by PREDICTION-ERROR-TRUST-GATE-R1 (2026-09-13): composes the B2 bridge with a trust gate; reads no .content itself
+    "logos_research/experiments/prediction_trust.py": "decide(): authority via evaluate_with_memory (B2), then trust_route; resolves nothing",
 }
 
 
