@@ -554,6 +554,8 @@ READERS = {
     "logos_gamma/invariants.py": "ctx.authority = AuthorityEvidence from the CALLER, never a MemoryRecord (Γ-12)",
     "logos_research/claims.py": "FailureAttribution.source — not memory",
     "logos_research/experiments/binding_state_run.py": "Retention.authority — R1 metric, not memory",
+    # registered by RELATIONAL-STATE-SWAP-R1 (2026-09-13): reads .content only to hash it
+    "logos_research/experiments/relational_swap.py": "content_hash / relational_hash (identity metrics) + held-grant bridge; resolves nothing",
 }
 
 
@@ -586,7 +588,8 @@ def test_no_reader_resolves_authority_from_authority_class():
             if "authority_class" in line and "def " not in line:
                 sites.add(str(py.relative_to(SRC)).replace("\\", "/"))
     assert sites <= {"logos_memory/records.py", "logos_memory/store.py", "logos_memory/factory.py",
-                     "logos_research/experiments/memory_authority.py"}, sites
+                     "logos_research/experiments/memory_authority.py",
+                     "logos_research/experiments/relational_swap.py"}, sites   # RSS-R1: dimension name only
 
 
 # --------------------------------------------------------------------------
