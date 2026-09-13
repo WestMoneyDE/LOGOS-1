@@ -37,6 +37,9 @@ from logos_memory.records import AuthorityProvenance, MemoryRecord, ProvenanceRe
 from logos_memory.scope import ScopeContract, ScopeDecision, ScopeRequest, scope_digest
 from logos_memory.store import MemoryStore
 from logos_research.experiments.binding_state import ProposedAction, _base_contract
+from logos_research.experiments.effect_oracle import (
+    CANONICAL_EFFECTS, EffectClass, EffectOracle, canonical_effect, effect_of_contract,
+)
 
 NOTE_SCHEMA = "logos.authority-note/1"
 Outcome = Literal["ALLOW", "DENY", "DEFER"]
@@ -53,12 +56,46 @@ def proposal_digest(action: ProposedAction) -> str:
 
 def proposal_for(action: ProposedAction, contract: ScopeContract,
                  provenance: tuple[gamma.ProvenanceClaim, ...] = ()) -> gamma.EffectProposal:
+    """Build a Γ proposal from a contract the CALLER holds canonically (the
+    grant's own contract, or an oracle-derived one).
+
+    Never pass a memory-claimed contract here: its externality / reversibility
+    would become Γ-owned classification. That was RAD-CE1. The bridge uses
+    `canonical_proposal` instead.
+    """
+    return canonical_proposal(action, effect_of_contract(contract.externality, contract.reversibility,
+                                                         contract.approval_required), provenance)
+
+
+def canonical_proposal(action: ProposedAction, effect: EffectClass,
+                       provenance: tuple[gamma.ProvenanceClaim, ...] = (),
+                       declared: tuple[str | None, str | None] = (None, None)) -> gamma.EffectProposal:
+    """MEMORY-BRIDGE-GAMMA-INPUT-REPAIR-R1: the ONLY constructor the bridge uses.
+
+    Canonical fields come from `effect` (the canonical effect oracle). What
+    memory claims goes into Γ's untrusted `declared_*` fields, where Γ-4 lets
+    it tighten and never weaken.
+
+        CanonicalExternality != DeclaredExternality
+        CanonicalReversibility != DeclaredReversibility
+    """
+    d_ext, d_rev = declared
     return gamma.EffectProposal(
         action=action.action, target=action.target,
-        effect_kind="deployment" if contract.externality == "external" else "write-internal",
-        externality=contract.externality, reversibility=contract.reversibility,
+        effect_kind="deployment" if effect.externality == "external" else "write-internal",
+        externality=effect.externality, reversibility=effect.reversibility,
         proposal_digest=proposal_digest(action), provenance=provenance,
+        declared_externality=d_ext, declared_reversibility=d_rev,  # type: ignore[arg-type]
     )
+
+
+def declared_effect(contract: ScopeContract | None) -> tuple[str | None, str | None]:
+    """What a memory-claimed scope SAYS the effect is. A claim, nothing more."""
+    if contract is None:
+        return None, None
+    ext = contract.externality if contract.externality in ("internal", "external") else None
+    rev = contract.reversibility if contract.reversibility in ("reversible", "partially-reversible", "irreversible") else None
+    return ext, rev
 
 
 class GrantLedger:
@@ -198,18 +235,32 @@ def proposer_claim(action: ProposedAction) -> gamma.ProvenanceClaim:
 
 def _decide(action: ProposedAction, contract: ScopeContract, authority: gamma.AuthorityEvidence | None,
             claims: tuple[gamma.ProvenanceClaim, ...], *, tick: int, state_hash: str,
-            own_provenance: bool = True) -> tuple[Outcome, dict[str, str]]:
+            own_provenance: bool = True, effect: EffectClass | None = None,
+            declared: tuple[str | None, str | None] = (None, None)) -> tuple[Outcome, dict[str, str]]:
+    """`contract` is used for scope evaluation and the binding digest ONLY.
+    Γ-owned classification comes from `effect`. When `effect` is None the
+    caller holds `contract` canonically (evaluate_canonical / evaluate_held) and
+    the effect is derived from it; the bridge always passes an oracle effect."""
     if own_provenance:
         claims = (proposer_claim(action),) + tuple(claims)
-    trace: dict[str, str] = {}
+    if effect is None:
+        effect = effect_of_contract(contract.externality, contract.reversibility, contract.approval_required)
+    trace: dict[str, str] = {"effect": f"{effect.externality}/{effect.reversibility}/approval={effect.approval_required}",
+                             "declared": f"{declared[0]}/{declared[1]}"}
     decision = ScopeDecision("ALLOW", contract, scope_digest(contract)).evaluate(
         ScopeRequest(role=action.role, tool=action.tool, memory_kind="semantic",
                      capability=action.capability, target=action.target, path=action.path))
     trace["scope"] = decision.verdict
     if decision.verdict != "ALLOW":
         return "DENY", trace
+    # canonical approval requirement: Γ has no approval field, so the bridge
+    # enforces it — an approval-sensitive effect needs a human-rooted grant.
+    if effect.approval_required and (authority is None or not authority.is_human_rooted()):
+        trace["gamma"] = "not-evaluated"; trace["gamma_failures"] = "APPROVAL-REQUIRED"
+        trace["grant"] = authority.grant_id if authority else "none"
+        return "DENY", trace
     verdict = gamma.validate(gamma.ValidationContext(
-        proposal=proposal_for(action, contract, claims), tick=tick, state_hash=state_hash,
+        proposal=canonical_proposal(action, effect, claims, declared), tick=tick, state_hash=state_hash,
         scope_digest=scope_digest(contract), authority=authority))
     trace["gamma"] = verdict.result
     trace["gamma_failures"] = ",".join(f.invariant_id for f in verdict.failures) or "none"
@@ -232,9 +283,47 @@ def evaluate_canonical(action: ProposedAction, ledger: GrantLedger, grant_id: st
 def evaluate_with_memory(records: Sequence[MemoryRecord], action: ProposedAction, ledger: GrantLedger,
                          *, tick: int, state_hash: str,
                          fallback_contract: ScopeContract | None = None,
-                         own_provenance: bool = True) -> tuple[Outcome, dict[str, str]]:
-    """Bridge B2. Memory supplies references and a claimed scope; the ledger
-    supplies authority; Γ binds the two. Nothing in memory is trusted as such."""
+                         own_provenance: bool = True,
+                         effect_oracle: EffectOracle = canonical_effect) -> tuple[Outcome, dict[str, str]]:
+    """Bridge B2 — repaired (MEMORY-BRIDGE-GAMMA-INPUT-REPAIR-R1).
+
+    Memory supplies references and a CLAIMED scope; the ledger supplies
+    authority; the canonical effect oracle supplies what the action IS. The
+    claimed scope participates in scope evaluation and the binding digest only.
+    Its externality / reversibility reach Γ solely as declared_* claims. If the
+    oracle has no classification for the action, the bridge DEFERs — it never
+    borrows the classification from memory.
+    """
+    ev = read_evidence(records)
+    resolved = [(ref, g) for ref in ev.refs if (g := ledger.resolve(ref)) is not None]
+    authority = resolved[0][1] if resolved else None
+    contract = ev.contract or fallback_contract
+    trace = {"memory_refs": ",".join(ev.refs) or "none",
+             "resolved": ",".join(r for r, _ in resolved) or "none",
+             "ignored": ",".join(ev.ignored) or "none",
+             "memory_records": str(len(records))}
+    effect = effect_oracle(action.action, action.target)
+    if effect is None:
+        trace["effect"] = "none"; trace["scope"] = "not-evaluated"
+        return "DEFER", trace                                   # fail closed; memory is not a fallback
+    if contract is None:
+        trace["scope"] = "none"
+        return "DEFER", trace
+    outcome, t = _decide(action, contract, authority, ev.claims, tick=tick, state_hash=state_hash,
+                         own_provenance=own_provenance, effect=effect, declared=declared_effect(ev.contract))
+    trace.update(t)
+    return outcome, trace
+
+
+def evaluate_with_memory_prerepair(records: Sequence[MemoryRecord], action: ProposedAction, ledger: GrantLedger,
+                                   *, tick: int, state_hash: str,
+                                   fallback_contract: ScopeContract | None = None,
+                                   own_provenance: bool = True) -> tuple[Outcome, dict[str, str]]:
+    """HISTORICAL — the pre-repair B2 bridge, verbatim in behaviour. Kept ONLY so
+    RAD-CE1 remains reproducible (RISK-AWARENESS-DECOMPOSITION-R1). It maps the
+    memory-claimed contract's externality / reversibility into Γ's canonical
+    fields. Do not use it for anything else.
+    """
     ev = read_evidence(records)
     resolved = [(ref, g) for ref in ev.refs if (g := ledger.resolve(ref)) is not None]
     authority = resolved[0][1] if resolved else None
@@ -246,10 +335,28 @@ def evaluate_with_memory(records: Sequence[MemoryRecord], action: ProposedAction
     if contract is None:
         trace["scope"] = "none"
         return "DEFER", trace
-    outcome, t = _decide(action, contract, authority, ev.claims, tick=tick, state_hash=state_hash,
-                         own_provenance=own_provenance)
-    trace.update(t)
-    return outcome, trace
+    claims = ((proposer_claim(action),) if own_provenance else ()) + tuple(ev.claims)
+    decision = ScopeDecision("ALLOW", contract, scope_digest(contract)).evaluate(
+        ScopeRequest(role=action.role, tool=action.tool, memory_kind="semantic",
+                     capability=action.capability, target=action.target, path=action.path))
+    trace["scope"] = decision.verdict
+    if decision.verdict != "ALLOW":
+        return "DENY", trace
+    verdict = gamma.validate(gamma.ValidationContext(          # DEFECT: canonical fields from the claimed contract
+        proposal=gamma.EffectProposal(
+            action=action.action, target=action.target,
+            effect_kind="deployment" if contract.externality == "external" else "write-internal",
+            externality=contract.externality, reversibility=contract.reversibility,
+            proposal_digest=proposal_digest(action), provenance=claims),
+        tick=tick, state_hash=state_hash, scope_digest=scope_digest(contract), authority=authority))
+    trace["gamma"] = verdict.result
+    trace["gamma_failures"] = ",".join(f.invariant_id for f in verdict.failures) or "none"
+    trace["grant"] = authority.grant_id if authority else "none"
+    if verdict.result == "INVALID":
+        return "DENY", trace
+    if verdict.result == "UNCLEAR":
+        return "DEFER", trace
+    return "ALLOW", trace
 
 
 # --------------------------------------------------------------------------
