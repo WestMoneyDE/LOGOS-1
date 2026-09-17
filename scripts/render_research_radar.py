@@ -16,7 +16,9 @@ SRC = ROOT / "docs/research/RESEARCH-RADAR.json"
 OUT = {"registry": ROOT / "docs/research/RESEARCH-RADAR-DELTA-REGISTRY.md",
        "map": ROOT / "docs/research/LOGOS1-POST-DETERMINISTIC-RESEARCH-MAP.md",
        "strength": ROOT / "docs/research/RESEARCH-EVIDENCE-STRENGTH.md",
-       "queue": ROOT / "docs/research/POST-INFERENCE-EXPERIMENT-QUEUE.md"}
+       "queue": ROOT / "docs/research/POST-INFERENCE-EXPERIMENT-QUEUE.md",
+       "metrics": ROOT / "docs/research/LOGOS-METRIC-CONSTRUCT-REGISTRY.md"}
+METRICS_SRC = ROOT / "docs/research/LOGOS-METRIC-CONSTRUCT-REGISTRY.json"
 HEAD = "<!-- rendered from docs/research/RESEARCH-RADAR.json by scripts/render_research_radar.py; do not edit by hand -->\n"
 
 
@@ -80,9 +82,29 @@ def render_queue(d: dict) -> str:
     return "".join(out)
 
 
+def render_metrics(doc: dict) -> str:
+    lines = ["<!-- rendered from docs/research/LOGOS-METRIC-CONSTRUCT-REGISTRY.json by scripts/render_research_radar.py; do not edit by hand -->", "# LOGOS Metric ↔ Construct Registry", "",
+             "`ReliableMetric != ValidMetric` (RI-P4). " + doc["evidence_rule"], "",
+             "| id | metric | claimed construct | level | ground-truth proxy | status | scope | allowed claim | forbidden claim |", "|---|---|---|---|---|---|---|---|---|"]
+    for x in doc["metrics"]:
+        lines.append(f"| `{x['metric_id']}` | {x['metric_name']} | {x['claimed_construct']} | {x['measurement_level']} | {x['ground_truth_proxy']} | `{x['status']}` | {x['scope']} | {x['allowed_claim']} | {x['forbidden_claim']} |")
+    lines += ["", "## Evidence detail", ""]
+    for x in doc["metrics"]:
+        lines.append(f"### {x['metric_id']} {x['metric_name']}")
+        lines.append("")
+        lines.append(f"- proxy limitations: {x['proxy_limitations']}")
+        lines.append(f"- reliability evidence: {x['reliability_evidence']}")
+        lines.append(f"- construct validity evidence: {x['construct_validity_evidence']}")
+        lines.append(f"- causal discrimination evidence: {x['causal_discrimination_evidence']}")
+        lines.append(f"- known confounders: {', '.join(x['known_confounders'])}")
+        lines.append("")
+    return chr(10).join(lines) + chr(10)
+
+
 def main(check: bool = False) -> int:
     d = json.loads(SRC.read_text(encoding="utf-8"))
-    rendered = {"registry": render_registry(d), "map": render_map(d), "strength": render_strength(d), "queue": render_queue(d)}
+    rendered = {"registry": render_registry(d), "map": render_map(d), "strength": render_strength(d), "queue": render_queue(d),
+                "metrics": render_metrics(json.loads(METRICS_SRC.read_text(encoding="utf-8")))}
     changed = 0
     for k, text in rendered.items():
         p = OUT[k]
