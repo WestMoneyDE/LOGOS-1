@@ -50,7 +50,7 @@ def proposer_claim(action: str, target: str) -> gamma.ProvenanceClaim:
     return gamma.ProvenanceClaim("proposal://" + d[:16], "model", d)
 
 
-def canonical_proposal(action: str, target: str, effect, provenance, declared) -> gamma.EffectProposal:
+def build_proposal(action: str, target: str, effect, provenance, declared) -> gamma.EffectProposal:
     """Canonical fields from the owner's effect; the memory claim only as declared_*."""
     return gamma.EffectProposal(action=action, target=target,
                                 effect_kind="deployment" if effect.externality == "external" else "write-internal",
@@ -169,7 +169,7 @@ def decide_action(principal: PrincipalContext, action: str, target: str, memory_
 
     # 7. Γ — canonical evaluator
     claims = (proposer_claim(action, target),) + tuple(evidence.claims)
-    verdict = gamma.validate(gamma.ValidationContext(proposal=canonical_proposal(action, target, effect, claims, declared), tick=x.tick,
+    verdict = gamma.validate(gamma.ValidationContext(proposal=build_proposal(action, target, effect, claims, declared), tick=x.tick,
                                                      state_hash=state, scope_digest=digest, authority=authority))
     trace["gamma"] = verdict.result; trace["gamma_failures"] = ",".join(f.invariant_id for f in verdict.failures) or "none"
     if verdict.result == "INVALID":

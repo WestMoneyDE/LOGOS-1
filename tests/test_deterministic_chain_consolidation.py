@@ -164,9 +164,11 @@ def test_DC_C2_verdicts_match_closure_records_and_registry():
     entries = reg.get("deltas") or reg.get("entries") or []
     voi = next(x for x in entries if x.get("id") == "VALUE-OF-INFORMATION-GATE")
     assert voi["status"] == "EXECUTED_R1_SUPPORTED"
-    log = subprocess.run(["git", "log", "--format=%h", "-20"], capture_output=True, text=True, cwd=ROOT).stdout.split()
+    # CANONICAL-AUTHORITY-PRODUCTION-BRIDGE-R1 (CAPB-F1): the check was depth-limited (`git log -20`) and would fail once the
+    # chain grew past twenty commits; strengthened to full ancestry — every predecessor commit must be an ancestor of HEAD.
+    log = subprocess.run(["git", "rev-list", "--abbrev-commit", "--abbrev=7", "HEAD"], capture_output=True, text=True, cwd=ROOT).stdout.split()
     for e in PKG["experiments"].values():
-        assert e["commit"] in log, e
+        assert any(h.startswith(e["commit"]) for h in log), e
 
 
 def test_DC_P9_P10_gamma_and_p7_unchanged():

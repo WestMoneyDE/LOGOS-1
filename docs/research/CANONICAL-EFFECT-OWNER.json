@@ -386,6 +386,18 @@
       "src/logos_research/experiments/binding_repair.py": {
         "class": "HISTORICAL_ONLY",
         "note": "binding repair harness; calls B1 inside experiments"
+      },
+      "src/logos_runtime/bridge.py": {
+        "class": "PRODUCTION_BRIDGE",
+        "note": "CAPB-R1 C2: decide_action — canonical fields only from logos_effects, memory only as declared_*; authority only from logos_authority"
+      },
+      "src/logos_runtime/types.py": {
+        "class": "PRODUCTION_BRIDGE",
+        "note": "CAPB-R1 C2: typed inputs/decision; DeclaredEvidence.declared_effect is evidence"
+      },
+      "src/logos_memory/reader.py": {
+        "class": "NON_CONSEQUENTIAL",
+        "note": "CAPB-R1 C4: production memory reader; declared effect / claimed scope are evidence, never canonical"
       }
     },
     "unclassified": 0

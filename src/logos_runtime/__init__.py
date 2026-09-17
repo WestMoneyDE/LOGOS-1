@@ -9,7 +9,7 @@ refuses the reverse direction.
 """
 from __future__ import annotations
 
-from .bridge import canonical_proposal, decide_action, proposal_digest, proposer_claim
+from .bridge import build_proposal, decide_action, proposal_digest, proposer_claim
 from .types import (
     APPROVAL_STATES,
     BRIDGE_API_VERSION,
@@ -27,5 +27,5 @@ from .types import (
 )
 
 __all__ = ["APPROVAL_STATES", "BRIDGE_API_VERSION", "FAILURE_CODES", "OUTCOMES", "AuditEmitter", "AuditUnavailable", "BridgeDecision", "DeclaredEvidence",
-           "ExecutionContext", "MemoryReader", "MemoryReadOutcome", "PrincipalContext", "TenantContext", "canonical_proposal", "decide_action",
+           "ExecutionContext", "MemoryReader", "MemoryReadOutcome", "PrincipalContext", "TenantContext", "build_proposal", "decide_action",
            "proposal_digest", "proposer_claim"]

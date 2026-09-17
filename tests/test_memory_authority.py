@@ -564,6 +564,9 @@ READERS = {
     # registered by VALUE-OF-INFORMATION-GATE-R1 (2026-09-17): records_for() reads claimed scope targets to route info actions;
     # authority via the validated bridge; the epistemic branch reads no authority field
     "logos_research/experiments/value_of_information.py": "records_for(): claimed-scope routing only; authority_of() -> validated bridge; resolves nothing",
+    # registered by CANONICAL-AUTHORITY-PRODUCTION-BRIDGE-R1 (2026-09-17, C4): the PRODUCTION reader; content -> strict note parse ->
+    # refs / claimed scope / declared effect / provenance labels (copied as metadata); NEVER resolves authority (the resolver does, by reference)
+    "logos_memory/reader.py": "production memory reader: evidence only (refs, claimed scope, declared effect, provenance); resolves nothing",
 }
 
 
@@ -598,7 +601,8 @@ def test_no_reader_resolves_authority_from_authority_class():
     assert sites <= {"logos_memory/records.py", "logos_memory/store.py", "logos_memory/factory.py",
                      "logos_research/experiments/memory_authority.py",
                      "logos_research/experiments/relational_swap.py",              # RSS-R1: dimension name only
-                     "logos_research/experiments/effect_oracle.py"}, sites         # MBG-R1: docstring forbids it as an input
+                     "logos_research/experiments/effect_oracle.py",                # MBG-R1: docstring forbids it as an input
+                     "logos_memory/reader.py"}, sites                              # C4: copied into provenance metadata only; never consulted
 
 
 # --------------------------------------------------------------------------
