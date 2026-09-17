@@ -633,6 +633,21 @@
       "priority_score": 0.0,
       "rank": 0,
       "note": "governance decision (founder: Option A) + deterministic owner validation, not an experiment; priority_score/rank not computed"
+    },
+    {
+      "id": "CANONICAL-AUTHORITY-PRODUCTION-BRIDGE",
+      "track": "governance",
+      "status": "EXECUTED_R1_PRODUCTION_BRIDGE_VALIDATED",
+      "record": "09-SESSIONS/2026-09-17-CANONICAL-AUTHORITY-PRODUCTION-BRIDGE-R1/SESSION-REPORT.md",
+      "falsification_power": 4,
+      "expected_information_gain": 4,
+      "dependency_readiness": 5,
+      "implementation_cost": 4,
+      "compute_cost": 1,
+      "measurement_quality": 4,
+      "priority_score": 0.0,
+      "rank": 0,
+      "note": "master production-readiness order (C1 authority resolver, C2 bridge v1, C3 audit sink, C4 memory reader, end-to-end); not an experiment; priority_score/rank not computed"
     }
   ]
 }
