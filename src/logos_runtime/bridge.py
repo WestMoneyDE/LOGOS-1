@@ -124,7 +124,7 @@ def decide_action(principal: PrincipalContext, action: str, target: str, memory_
     if contract is None:
         trace["scope"] = "none"
         return finish("DEFER", "NO_SCOPE_CONTRACT")
-    digest = scope_digest(contract)
+    digest = scope_digest(contract); trace["scope_digest"] = digest
 
     # 4. canonical authority — explicit references only
     actx = AuthorityContext(x.tick, x.run_id, tenant_context.tenant_id)
@@ -188,7 +188,7 @@ def _audited(d: BridgeDecision, x: ExecutionContext, tenant: TenantContext, prin
              "effect_definition_id": d.canonical_effect_ref.get("definition_id"), "effect_version": d.canonical_effect_ref.get("version"),
              "effect_hash": d.canonical_effect_ref.get("definition_hash"), "grant_id": d.authority_ref.get("grant_id"),
              "grant_version": d.authority_ref.get("grant_version"), "grant_origin": d.authority_ref.get("grant_origin"),
-             "scope_digest": None, "state_hash": state, "revocation_status": d.authority_ref.get("revocation_state"),
+             "scope_digest": d.trace.get("scope_digest"), "state_hash": state, "revocation_status": d.authority_ref.get("revocation_state"),
              "binding_result": d.binding_result, "approval_state": d.approval_state, "gamma_outcome": d.trace.get("gamma", "not-evaluated"),
              "bridge_outcome": d.outcome, "failure_codes": list(d.failure_codes), "owner_resolution_status": d.canonical_effect_ref.get("status"),
              "authority_resolution_status": d.authority_ref.get("status"), "api_version": d.api_version, "decision_trace_id": d.decision_trace_id}
