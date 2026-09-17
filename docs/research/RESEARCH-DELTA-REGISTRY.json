@@ -648,6 +648,36 @@
       "priority_score": 0.0,
       "rank": 0,
       "note": "master production-readiness order (C1 authority resolver, C2 bridge v1, C3 audit sink, C4 memory reader, end-to-end); not an experiment; priority_score/rank not computed"
+    },
+    {
+      "id": "REAL-MODEL-MEASUREMENT-READINESS",
+      "track": "research-infra",
+      "status": "SUBSUMED_BY:LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1",
+      "record": "09-SESSIONS/2026-09-17-LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1/SESSION-REPORT.md",
+      "falsification_power": 2,
+      "expected_information_gain": 3,
+      "dependency_readiness": 5,
+      "implementation_cost": 2,
+      "compute_cost": 1,
+      "measurement_quality": 4,
+      "priority_score": 0.0,
+      "rank": 0,
+      "note": "executed as Phase 1 of the radar master order (MEASUREMENT_READINESS_VALIDATED); not a separate next order"
+    },
+    {
+      "id": "LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY",
+      "track": "research",
+      "status": "EXECUTED_R1_PRE_INFERENCE_SAFETY_READINESS_VALIDATED",
+      "record": "09-SESSIONS/2026-09-17-LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1/SESSION-REPORT.md",
+      "falsification_power": 4,
+      "expected_information_gain": 4,
+      "dependency_readiness": 5,
+      "implementation_cost": 4,
+      "compute_cost": 1,
+      "measurement_quality": 4,
+      "priority_score": 0.0,
+      "rank": 0,
+      "note": "master order: radar integration (RD-01..14, RI-P1..P19 PROPOSED), measurement readiness, construct-validity gate, causal taint (SUPPORTED), reconsolidation governance (SUPPORTED), trajectory compromise (SUPPORTED), schemas PROPOSED; model_calls = provider_calls = 0"
     }
   ]
 }

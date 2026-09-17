@@ -12,6 +12,14 @@
   ],
   "rule": "no file created or changed by this order is PRODUCTION; production packages (logos_gamma, logos_effects, logos_authority, logos_runtime, logos_audit, logos_memory) are untouched",
   "sites": {
+    "05-WORK-ORDERS/NEXT-SESSION-LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "governance / research record / renderer"
+    },
+    "09-SESSIONS/2026-09-17-LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1/SESSION-REPORT.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "governance / research record / renderer"
+    },
     "docs/architecture/LOGOS-MEMORY-TAXONOMY-PROPOSED.md": {
       "class": "POST_INFERENCE_SPEC",
       "note": "PROPOSED schema documentation"
@@ -45,6 +53,14 @@
       "note": "governance / research record / renderer"
     },
     "docs/research/PRODUCTION-BRIDGE-SOURCE-CLASSIFICATION.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "governance / research record / renderer"
+    },
+    "docs/research/REAL-MODEL-READINESS-CHECKLIST.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "governance / research record / renderer"
+    },
+    "docs/research/RESEARCH-DELTA-REGISTRY.json": {
       "class": "GOVERNANCE_ONLY",
       "note": "governance / research record / renderer"
     },
