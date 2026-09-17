@@ -6,8 +6,8 @@
 |---|---|---|---|
 | 1 | Deterministic invariants documented (`GI-P0`…`GI-P7`, all `PROPOSED`) | done — `GAMMA-INVARIANT-INVENTORY.md` §8 | consolidation |
 | 2 | Every HIGH/CRITICAL production-path risk dispositioned | done — `RESIDUAL-RISK-REGISTRY.md`; none production-reachable; MBGV-F1/F3 guarded | consolidation |
-| 3 | Canonical effect ownership decision recorded | done (2026-09-17) — founder chose **Option A** (static registry); `ADR-CANONICAL-EFFECT-OWNERSHIP-DECISION.md` `APPROVED`; owner `src/logos_effects` implemented and validated (`CANONICAL-EFFECT-OWNERSHIP-DECISION-R1`); `EFFECT-ORACLE-SCOPE` = `REFERENCE_TEST_ORACLE` (`PROPOSED`, founder ratification pending) | governance |
-| 4 | Production bridge status decided | decided (2026-09-17) — `PRODUCTION_BRIDGE_READY_WITH_CONDITIONS` (`PROPOSED`, founder ratification pending); conditions C1 production grant resolver · C2 bridge relocation/API freeze · C3 audit sink · C4 production memory reader — **the bridge is not production-adopted until the conditions are met** | governance |
+| 3 | Canonical effect ownership decision recorded | done (2026-09-17) — founder chose **Option A** (static registry); `ADR-CANONICAL-EFFECT-OWNERSHIP-DECISION.md` `APPROVED`; owner `src/logos_effects` implemented and validated (`CANONICAL-EFFECT-OWNERSHIP-DECISION-R1`); `EFFECT-ORACLE-SCOPE` = `REFERENCE_TEST_ORACLE` (`APPROVED`, founder-ratified 2026-09-17) | governance |
+| 4 | Production bridge status decided | decided (2026-09-17) — `PRODUCTION_BRIDGE_READY_WITH_CONDITIONS` (`APPROVED`, founder-ratified 2026-09-17); conditions C1 production grant resolver · C2 bridge relocation/API freeze · C3 audit sink · C4 production memory reader — **the bridge is not production-adopted until the conditions are met** | governance |
 | 5 | B1 guarded | done — `NON_PRODUCTION_FROZEN_RISK_GUARDED` (package import guard + architecture test) | consolidation |
 | 6 | Inference governance explicitly lifted | **open** — not lifted | founder / governance |
 | 7 | Model / provider approved | **open** | governance |

@@ -418,16 +418,18 @@
     {
       "id": "EFFECT-ORACLE-SCOPE",
       "value": "REFERENCE_TEST_ORACLE",
-      "state": "PROPOSED",
+      "state": "APPROVED",
       "by": "executor (evidence-based; founder stated no preference)",
       "on": "2026-09-17",
       "rationale": "the fixture is the differential-parity source for the production owner and the frozen input of RAD/MBG/MBGV/VOI evidence; it is not production code and is not deleted",
-      "ratification": "founder"
+      "ratified_by": "founder",
+      "ratified_on": "2026-09-17",
+      "ratified_in": "CANONICAL-AUTHORITY-PRODUCTION-BRIDGE-R1"
     },
     {
       "id": "PRODUCTION-BRIDGE-READINESS",
       "value": "PRODUCTION_BRIDGE_READY_WITH_CONDITIONS",
-      "state": "PROPOSED",
+      "state": "APPROVED",
       "by": "executor (evidence-based; founder stated no preference)",
       "on": "2026-09-17",
       "conditions": [
@@ -436,7 +438,9 @@
         "C3 audit sink integration: owner audit is an in-memory list + optional sink; no production sink wired",
         "C4 production memory reader: VF-2/VF-3 domain validation and duplicate-key rejection before a production reader"
       ],
-      "ratification": "founder"
+      "ratified_by": "founder",
+      "ratified_on": "2026-09-17",
+      "ratified_in": "CANONICAL-AUTHORITY-PRODUCTION-BRIDGE-R1"
     },
     {
       "id": "INFERENCE-PROHIBITION",
