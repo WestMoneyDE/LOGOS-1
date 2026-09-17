@@ -771,7 +771,7 @@ def _no_approval_gate(mp):
 def _route_through_proposal_for(mp):
     real = ma._decide
     def dec(action, contract, authority, claims, **kw):
-        kw["effect"] = None                                     # _decide then derives the effect from the (claimed) contract
+        kw["effect"] = None; kw["canonical_contract"] = True   # _decide derives the effect from the (claimed) contract; the mutant must LIE about canonicity (MBGV-F1 guard)
         return real(action, contract, authority, claims, **kw)
     mp.setattr(ma, "_decide", dec)
 

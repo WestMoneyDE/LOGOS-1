@@ -86,7 +86,7 @@ def evaluate_held(records: Sequence[MemoryRecord], action: ProposedAction, ledge
     authority = ledger.resolve(held_grant_id) if held_grant_id else None
     contract = contract or ma.canonical_contract()
     out, trace = ma._decide(action, contract, authority, ev.claims, tick=tick, state_hash=state_hash,
-                            own_provenance=own_provenance)
+                            own_provenance=own_provenance, canonical_contract=True)   # caller-held contract (MBGV-F1 guard)
     trace["memory_records"] = str(len(records))
     trace["memory_refs_ignored"] = ",".join(ev.refs) or "none"
     return out, trace

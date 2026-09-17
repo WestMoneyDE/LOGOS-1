@@ -603,6 +603,21 @@
       "measurement_quality": 4,
       "priority_score": 0,
       "rank": 45
+    },
+    {
+      "id": "DETERMINISTIC-CHAIN-CONSOLIDATION",
+      "track": "governance",
+      "status": "EXECUTED_R1_CONSOLIDATED",
+      "record": "09-SESSIONS/2026-09-17-DETERMINISTIC-CHAIN-CONSOLIDATION-R1/SESSION-REPORT.md",
+      "falsification_power": 3,
+      "expected_information_gain": 4,
+      "dependency_readiness": 5,
+      "implementation_cost": 2,
+      "compute_cost": 1,
+      "measurement_quality": 4,
+      "priority_score": 0.0,
+      "rank": 0,
+      "note": "consolidation pass, not an experiment; priority_score/rank not computed"
     }
   ]
 }

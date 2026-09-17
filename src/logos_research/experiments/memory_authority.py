@@ -236,14 +236,21 @@ def proposer_claim(action: ProposedAction) -> gamma.ProvenanceClaim:
 def _decide(action: ProposedAction, contract: ScopeContract, authority: gamma.AuthorityEvidence | None,
             claims: tuple[gamma.ProvenanceClaim, ...], *, tick: int, state_hash: str,
             own_provenance: bool = True, effect: EffectClass | None = None,
-            declared: tuple[str | None, str | None] = (None, None)) -> tuple[Outcome, dict[str, str]]:
+            declared: tuple[str | None, str | None] = (None, None),
+            canonical_contract: bool = False) -> tuple[Outcome, dict[str, str]]:
     """`contract` is used for scope evaluation and the binding digest ONLY.
-    Γ-owned classification comes from `effect`. When `effect` is None the
-    caller holds `contract` canonically (evaluate_canonical / evaluate_held) and
-    the effect is derived from it; the bridge always passes an oracle effect."""
+    Γ-owned classification comes from `effect`. The bridge always passes an
+    oracle effect. A caller that holds `contract` canonically (the grant's own
+    contract: evaluate_canonical / evaluate_held) may omit `effect` but must say
+    so with `canonical_contract=True` — MBGV-F1 guard (DETERMINISTIC-CHAIN-
+    CONSOLIDATION-R1): a memory-claimed contract can never slip in as canonical
+    by omission."""
     if own_provenance:
         claims = (proposer_claim(action),) + tuple(claims)
     if effect is None:
+        if not canonical_contract:
+            raise TypeError("_decide: `effect` missing; pass the canonical effect, or state canonical_contract=True "
+                            "only when the caller holds the grant's own contract (never a memory-claimed one)")
         effect = effect_of_contract(contract.externality, contract.reversibility, contract.approval_required)
     trace: dict[str, str] = {"effect": f"{effect.externality}/{effect.reversibility}/approval={effect.approval_required}",
                              "declared": f"{declared[0]}/{declared[1]}"}
@@ -277,7 +284,8 @@ def evaluate_canonical(action: ProposedAction, ledger: GrantLedger, grant_id: st
                        own_provenance: bool = True) -> tuple[Outcome, dict[str, str]]:
     """Oracle: no memory. The caller names the grant it holds (or none)."""
     authority = ledger.resolve(grant_id) if grant_id else None
-    return _decide(action, contract, authority, (), tick=tick, state_hash=state_hash, own_provenance=own_provenance)
+    return _decide(action, contract, authority, (), tick=tick, state_hash=state_hash, own_provenance=own_provenance,
+                   canonical_contract=True)
 
 
 def evaluate_with_memory(records: Sequence[MemoryRecord], action: ProposedAction, ledger: GrantLedger,
