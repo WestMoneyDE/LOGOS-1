@@ -174,7 +174,7 @@ Source rule: sources are the founder-provided research-radar deltas of 2026-09-1
 - **required experiment:** RECONSOLIDATION-PATH-DEPENDENCE-R1 (Phase 4, deterministic)
 - **dependency:** memory graph with content/graph versions, retrieval history, MemoryWriteGate
 - **status:** `READY_FOR_DETERMINISTIC_TEST` · **handling in this order:** highest-priority memory governance phase now (Phase 4)
-## Proposed research invariants (all `PROPOSED`, none `PROVEN`)
+## Proposed research invariants (all `PROPOSED`; none is proven)
 | id | statement | from | deterministic test in this order |
 |---|---|---|---|
 | `RI-P1` | StepCalibration != TrajectoryCalibration | RD-02 | Phase 6 schema; Phase 2 metric separation |

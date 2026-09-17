@@ -37,7 +37,7 @@ def render_registry(d: dict) -> str:
                    f"- **dependency:** {rd['dependency']}\n- **status:** `{rd['status']}` · **handling in this order:** {rd['handling']}\n")
         if rd.get("signal"):
             out.append(f"- **signal as reported:** {rd['signal']}\n")
-    out.append("## Proposed research invariants (all `PROPOSED`, none `PROVEN`)\n")
+    out.append("## Proposed research invariants (all `PROPOSED`; none is proven)\n")
     out.append("| id | statement | from | deterministic test in this order |\n|---|---|---|---|\n")
     for ri in d["research_invariants"]:
         out.append(f"| `{ri['id']}` | {ri['statement']} | {', '.join(ri['from'])} | {ri['tested_by']} |\n")
