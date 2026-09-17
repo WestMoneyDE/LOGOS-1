@@ -20,6 +20,10 @@
       "class": "POST_INFERENCE_SPEC",
       "note": "PROPOSED schema documentation"
     },
+    "docs/research/CANONICAL-EFFECT-OWNER.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "governance / research record / renderer"
+    },
     "docs/research/LOGOS-METRIC-CONSTRUCT-REGISTRY.json": {
       "class": "GOVERNANCE_ONLY",
       "note": "metric/construct registry (evidence licensing)"
@@ -37,6 +41,10 @@
       "note": "queue of blocked experiments"
     },
     "docs/research/PRE-INFERENCE-SOURCE-CLASSIFICATION.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "governance / research record / renderer"
+    },
+    "docs/research/PRODUCTION-BRIDGE-SOURCE-CLASSIFICATION.json": {
       "class": "GOVERNANCE_ONLY",
       "note": "governance / research record / renderer"
     },
@@ -105,6 +113,10 @@
       "note": "test suite"
     },
     "tests/test_measurement_readiness.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "test suite"
+    },
+    "tests/test_memory_authority.py": {
       "class": "EXPERIMENTAL_DETERMINISTIC",
       "note": "test suite"
     },
