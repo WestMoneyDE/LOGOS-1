@@ -50,7 +50,7 @@
     },
     "docs/research/PRE-INFERENCE-SOURCE-CLASSIFICATION.json": {
       "class": "GOVERNANCE_ONLY",
-      "note": "governance / research record / renderer"
+      "note": "this classification (extended by registration)"
     },
     "docs/research/PRODUCTION-BRIDGE-SOURCE-CLASSIFICATION.json": {
       "class": "GOVERNANCE_ONLY",
@@ -58,11 +58,11 @@
     },
     "docs/research/REAL-MODEL-READINESS-CHECKLIST.md": {
       "class": "GOVERNANCE_ONLY",
-      "note": "governance / research record / renderer"
+      "note": "INFERENCE-GOVERNANCE-LIFT-R1: governance record / registry / checklist / report"
     },
     "docs/research/RESEARCH-DELTA-REGISTRY.json": {
       "class": "GOVERNANCE_ONLY",
-      "note": "governance / research record / renderer"
+      "note": "INFERENCE-GOVERNANCE-LIFT-R1: governance record / registry / checklist / report"
     },
     "docs/research/RESEARCH-EVIDENCE-STRENGTH.md": {
       "class": "GOVERNANCE_ONLY",
@@ -147,6 +147,26 @@
     "tests/test_trajectory_compromise_audit.py": {
       "class": "EXPERIMENTAL_DETERMINISTIC",
       "note": "test suite"
+    },
+    "05-WORK-ORDERS/COGNITIVE-PROVENANCE-ABLATION-R1.md": {
+      "class": "POST_INFERENCE_SPEC",
+      "note": "INFERENCE-GOVERNANCE-LIFT-R1: generated first real-model order; not executed"
+    },
+    "docs/adr/ADR-INFERENCE-GOVERNANCE-LIFT-R1.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "INFERENCE-GOVERNANCE-LIFT-R1: governance record / registry / checklist / report"
+    },
+    "docs/research/INFERENCE-GOVERNANCE.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "INFERENCE-GOVERNANCE-LIFT-R1: governance record / registry / checklist / report"
+    },
+    "src/logos_research/governance.py": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "INFERENCE-GOVERNANCE-LIFT-R1: two-key activation gates and order/prereg binding validators; no provider adapter; no call"
+    },
+    "tests/test_inference_governance.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "INFERENCE-GOVERNANCE-LIFT-R1: governance tests, mutants, zero-inference proof"
     }
   },
   "unclassified": 0
