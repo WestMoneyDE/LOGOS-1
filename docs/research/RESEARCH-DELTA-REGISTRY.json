@@ -618,6 +618,21 @@
       "priority_score": 0.0,
       "rank": 0,
       "note": "consolidation pass, not an experiment; priority_score/rank not computed"
+    },
+    {
+      "id": "CANONICAL-EFFECT-OWNERSHIP-DECISION",
+      "track": "governance",
+      "status": "EXECUTED_R1_OWNER_IMPLEMENTED_AND_VALIDATED",
+      "record": "09-SESSIONS/2026-09-17-CANONICAL-EFFECT-OWNERSHIP-DECISION-R1/SESSION-REPORT.md",
+      "falsification_power": 3,
+      "expected_information_gain": 4,
+      "dependency_readiness": 5,
+      "implementation_cost": 3,
+      "compute_cost": 1,
+      "measurement_quality": 4,
+      "priority_score": 0.0,
+      "rank": 0,
+      "note": "governance decision (founder: Option A) + deterministic owner validation, not an experiment; priority_score/rank not computed"
     }
   ]
 }

@@ -9,6 +9,9 @@ keeps a frozen historical defect class (Γ effect fields taken from a memory-car
 typed contract; NON_PRODUCTION_FROZEN_RISK_GUARDED). The guard below refuses to be
 imported by a production package. Experiment modules and tests import freely; the
 historical reproducers stay reachable there.
+
+CANONICAL-EFFECT-OWNERSHIP-DECISION-R1: `logos_effects` (the production canonical
+effect owner) is a production package and is listed below.
 """
 from __future__ import annotations
 
@@ -16,7 +19,7 @@ import inspect as _inspect
 
 #: Packages that must never import experiments. `logos_research` itself is
 #: production-ish research infrastructure; only its `experiments` subtree is exempt.
-PRODUCTION_PACKAGES: tuple[str, ...] = ("logos_gamma", "logos_memory", "logos_pstate", "logos_research.infra",
+PRODUCTION_PACKAGES: tuple[str, ...] = ("logos_gamma", "logos_memory", "logos_pstate", "logos_effects", "logos_research.infra",
                                         "logos_research.claims", "logos_research.manifest", "logos_research.sandbox")
 
 B1_STATUS = "NON_PRODUCTION_FROZEN_RISK_GUARDED"
