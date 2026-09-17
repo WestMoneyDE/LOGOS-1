@@ -386,6 +386,18 @@
       "src/logos_research/experiments/binding_repair.py": {
         "class": "HISTORICAL_ONLY",
         "note": "binding repair harness; calls B1 inside experiments"
+      },
+      "src/logos_runtime/bridge.py": {
+        "class": "PRODUCTION_BRIDGE",
+        "note": "CAPB-R1 C2: decide_action — canonical fields only from logos_effects, memory only as declared_*; authority only from logos_authority"
+      },
+      "src/logos_runtime/types.py": {
+        "class": "PRODUCTION_BRIDGE",
+        "note": "CAPB-R1 C2: typed inputs/decision; DeclaredEvidence.declared_effect is evidence"
+      },
+      "src/logos_memory/reader.py": {
+        "class": "NON_CONSEQUENTIAL",
+        "note": "CAPB-R1 C4: production memory reader; declared effect / claimed scope are evidence, never canonical"
       }
     },
     "unclassified": 0
@@ -418,16 +430,18 @@
     {
       "id": "EFFECT-ORACLE-SCOPE",
       "value": "REFERENCE_TEST_ORACLE",
-      "state": "PROPOSED",
+      "state": "APPROVED",
       "by": "executor (evidence-based; founder stated no preference)",
       "on": "2026-09-17",
       "rationale": "the fixture is the differential-parity source for the production owner and the frozen input of RAD/MBG/MBGV/VOI evidence; it is not production code and is not deleted",
-      "ratification": "founder"
+      "ratified_by": "founder",
+      "ratified_on": "2026-09-17",
+      "ratified_in": "CANONICAL-AUTHORITY-PRODUCTION-BRIDGE-R1"
     },
     {
       "id": "PRODUCTION-BRIDGE-READINESS",
       "value": "PRODUCTION_BRIDGE_READY_WITH_CONDITIONS",
-      "state": "PROPOSED",
+      "state": "APPROVED",
       "by": "executor (evidence-based; founder stated no preference)",
       "on": "2026-09-17",
       "conditions": [
@@ -436,17 +450,40 @@
         "C3 audit sink integration: owner audit is an in-memory list + optional sink; no production sink wired",
         "C4 production memory reader: VF-2/VF-3 domain validation and duplicate-key rejection before a production reader"
       ],
-      "ratification": "founder"
+      "ratified_by": "founder",
+      "ratified_on": "2026-09-17",
+      "ratified_in": "CANONICAL-AUTHORITY-PRODUCTION-BRIDGE-R1"
     },
     {
       "id": "INFERENCE-PROHIBITION",
       "value": "BLOCKED",
       "state": "DEFERRED",
       "note": "not lifted by this order"
+    },
+    {
+      "id": "PRODUCTION-BRIDGE-READINESS-R1",
+      "value": "PRODUCTION_BRIDGE_READY_WITH_CONDITIONS",
+      "state": "APPROVED",
+      "by": "founder",
+      "on": "2026-09-17",
+      "ratified_in": "CANONICAL-AUTHORITY-PRODUCTION-BRIDGE-R1",
+      "closed_conditions": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "mandatory_conditions": [
+        "R1 deployment trust boundaries / topology",
+        "R2 grant lifecycle governance",
+        "R3 authenticated tenant provisioning"
+      ],
+      "verbatim": "I ratify PRODUCTION_BRIDGE_READY_WITH_CONDITIONS. C1–C4 are technically validated and the deterministic production bridge is complete at the software-architecture level. R1–R3 remain mandatory operational and governance conditions because deployment trust boundaries, grant lifecycle governance, and authenticated tenant provisioning are required before the bridge can be treated as production-ready without conditions.",
+      "record": "docs/adr/ADR-CANONICAL-AUTHORITY-PRODUCTION-BRIDGE.md"
     }
   ],
   "effect_oracle_scope": "REFERENCE_TEST_ORACLE",
-  "production_bridge_readiness": "PRODUCTION_BRIDGE_READY_WITH_CONDITIONS",
+  "production_bridge_readiness": "PRODUCTION_BRIDGE_READY_WITH_CONDITIONS (APPROVED 2026-09-17; C1-C4 closed; R1-R3 mandatory)",
   "dcc_f1": {
     "disposition": "governance note; historical file untouched; no independent replacement added here (MAP inventory test already enforces the classification)"
   }

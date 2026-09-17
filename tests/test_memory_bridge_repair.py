@@ -292,6 +292,8 @@ BRIDGES = {
     ("logos_research/experiments/memory_authority.py", "evaluate_with_memory_prerepair"): "HISTORICAL (RAD-CE1 reproduction only; not for use)",
     ("logos_research/experiments/binding_state.py", "evaluate_action"): "EXPERIMENTAL (R1, immutable): same defect class — Γ fields from the memory-carried typed contract (MBG-F1)",
     ("logos_research/experiments/no_history_promotion.py", "_unauthorized_proposal"): "NON_CONSEQUENTIAL (fixed literal proposal; no memory input)",
+    # registered by CANONICAL-AUTHORITY-PRODUCTION-BRIDGE-R1 (2026-09-17, C2): the PRODUCTION relocation of canonical_proposal
+    ("logos_runtime/bridge.py", "build_proposal"): "PRODUCTION_CANONICAL_BRIDGE (logos_effects owner; claims -> declared_*)",
 }
 
 

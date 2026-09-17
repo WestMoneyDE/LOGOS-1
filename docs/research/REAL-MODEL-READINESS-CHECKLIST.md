@@ -2,12 +2,12 @@
 
 **State:** inference remains **blocked** (governance decision `INFERENCE-PROHIBITION` = `DEFERRED`). This checklist says what must be true before any real-model LOGOS-1 experiment (real summarizer, real memory consolidation, pstate/RULER recall-capacity work, live LLM calls) may start. Created by `DETERMINISTIC-CHAIN-CONSOLIDATION-R1`; it starts nothing.
 
-| # | Requirement | Status (2026-09-17, updated by CANONICAL-EFFECT-OWNERSHIP-DECISION-R1) | Owner |
+| # | Requirement | Status (2026-09-17, updated by CANONICAL-AUTHORITY-PRODUCTION-BRIDGE-R1) | Owner |
 |---|---|---|---|
 | 1 | Deterministic invariants documented (`GI-P0`…`GI-P7`, all `PROPOSED`) | done — `GAMMA-INVARIANT-INVENTORY.md` §8 | consolidation |
 | 2 | Every HIGH/CRITICAL production-path risk dispositioned | done — `RESIDUAL-RISK-REGISTRY.md`; none production-reachable; MBGV-F1/F3 guarded | consolidation |
-| 3 | Canonical effect ownership decision recorded | done (2026-09-17) — founder chose **Option A** (static registry); `ADR-CANONICAL-EFFECT-OWNERSHIP-DECISION.md` `APPROVED`; owner `src/logos_effects` implemented and validated (`CANONICAL-EFFECT-OWNERSHIP-DECISION-R1`); `EFFECT-ORACLE-SCOPE` = `REFERENCE_TEST_ORACLE` (`PROPOSED`, founder ratification pending) | governance |
-| 4 | Production bridge status decided | decided (2026-09-17) — `PRODUCTION_BRIDGE_READY_WITH_CONDITIONS` (`PROPOSED`, founder ratification pending); conditions C1 production grant resolver · C2 bridge relocation/API freeze · C3 audit sink · C4 production memory reader — **the bridge is not production-adopted until the conditions are met** | governance |
+| 3 | Canonical effect ownership decision recorded | done (2026-09-17) — founder chose **Option A** (static registry); `ADR-CANONICAL-EFFECT-OWNERSHIP-DECISION.md` `APPROVED`; owner `src/logos_effects` implemented and validated (`CANONICAL-EFFECT-OWNERSHIP-DECISION-R1`); `EFFECT-ORACLE-SCOPE` = `REFERENCE_TEST_ORACLE` (`APPROVED`, founder-ratified 2026-09-17) | governance |
+| 4 | Production bridge status decided | **validated (2026-09-17)** — `CANONICAL-AUTHORITY-PRODUCTION-BRIDGE-R1` = `PRODUCTION_BRIDGE_VALIDATED_R1`: C1 authority resolver, C2 bridge v1 (`logos_runtime.decide_action`, API v1), C3 audit sink, C4 memory reader all `VALIDATED`; readiness re-recorded `PRODUCTION_BRIDGE_READY_WITH_CONDITIONS` (`APPROVED`, founder-ratified 2026-09-17) with **mandatory** operational/governance conditions R1 deployment topology · R2 grant issuance governance · R3 tenant provisioning/authentication | governance |
 | 5 | B1 guarded | done — `NON_PRODUCTION_FROZEN_RISK_GUARDED` (package import guard + architecture test) | consolidation |
 | 6 | Inference governance explicitly lifted | **open** — not lifted | founder / governance |
 | 7 | Model / provider approved | **open** | governance |
@@ -19,4 +19,4 @@
 | 13 | Artifact retention (MinIO artifacts, Postgres verdicts, DVC identity) | done — Queue-2 repaired infrastructure | research infra |
 | 14 | Prompt / model / version capture in the preregistration payload | **open** — schema extension needed before first run | research infra |
 
-Open items 6, 7, 8, 9, 10, 11, 14 block real-model work; items 3 and 4 are decided but carry founder ratification of the two companion decisions and the bridge conditions C1–C4. Completing the deterministic chain does **not** lift the prohibition; `CANONICAL-EFFECT-OWNERSHIP-DECISION-R1` did not lift it either (`INFERENCE-PROHIBITION` stays `DEFERRED`).
+**Remaining blockers (2026-09-17, after CANONICAL-AUTHORITY-PRODUCTION-BRIDGE-R1):** items 6, 7, 8, 11 (governance: inference lift, model/provider, privacy boundary, cost budget) and items 9, 10, 14 (deterministic research-infra: reproducibility capture, stochastic evaluation plan, preregistration schema extension). The architecture-side blockers (3, 4) are closed. **Inference prohibition = `ACTIVE`** — not `LIFTED`, not yet `ELIGIBLE_FOR_GOVERNANCE_REVIEW` (items 9, 10, 14 are still open deterministic work). Completing the deterministic chain does **not** lift the prohibition.

@@ -1,6 +1,6 @@
 # ADR — Canonical Effect Ownership Decision
 
-**Status:** `APPROVED` (ownership option, founder) · companion decisions `EFFECT-ORACLE-SCOPE` and `PRODUCTION-BRIDGE-READINESS` below are `PROPOSED` (evidence-based, pending founder ratification)
+**Status:** `APPROVED` (ownership option, founder, 2026-09-17) · companion decisions `EFFECT-ORACLE-SCOPE` and `PRODUCTION-BRIDGE-READINESS` below **ratified `APPROVED` by the founder on 2026-09-17** (`CANONICAL-AUTHORITY-PRODUCTION-BRIDGE-R1`, Section 1)
 **Date:** 2026-09-17
 **Work order:** `CANONICAL-EFFECT-OWNERSHIP-DECISION-R1` · base `4795b16` (`DETERMINISTIC_CHAIN_CONSOLIDATED_R1`)
 **Supersedes the open question in:** `ADR-PROPOSED-CANONICAL-EFFECT-OWNERSHIP.md` (kept as the option record)
@@ -111,7 +111,7 @@ requirement or a production grant resolver appears.
 
 # Decision — `EFFECT-ORACLE-SCOPE`
 
-**Value:** `REFERENCE_TEST_ORACLE` · **State:** `PROPOSED` (recorded by the executor from evidence; the founder stated no preference; ratification: founder)
+**Value:** `REFERENCE_TEST_ORACLE` · **State:** `APPROVED` (recorded by the executor from evidence; ratified by the founder on 2026-09-17 in `CANONICAL-AUTHORITY-PRODUCTION-BRIDGE-R1`; `effect_oracle.py` stays the reference oracle for differential/regression tests and is not a production owner)
 
 Rationale: `src/logos_research/experiments/effect_oracle.py` is the differential-
 parity source for the production owner (`CEO-MTR8`, `PAR` tests) and the frozen
@@ -121,7 +121,7 @@ not deleted, and it is not the migration source *only* — it keeps its test rol
 
 # Decision — `PRODUCTION-BRIDGE-READINESS`
 
-**Value:** `PRODUCTION_BRIDGE_READY_WITH_CONDITIONS` · **State:** `PROPOSED` (recorded by the executor from evidence; ratification: founder)
+**Value:** `PRODUCTION_BRIDGE_READY_WITH_CONDITIONS` · **State:** `APPROVED` (ratified by the founder on 2026-09-17 in `CANONICAL-AUTHORITY-PRODUCTION-BRIDGE-R1`, which closes conditions C1–C4 sequentially)
 
 | Dimension | Assessment |
 |---|---|
