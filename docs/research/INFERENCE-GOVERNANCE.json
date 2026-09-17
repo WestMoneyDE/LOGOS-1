@@ -146,6 +146,11 @@
     "prereg schema logos.stochastic-prereg/1 frozen before any model call",
     "drift MODEL_VERSION / PROMPT / PROVIDER / REGION / DATASET / TOOL_SCHEMA -> INVALID_MEASUREMENT (no silent pooling)"
   ],
-  "artifact_pointer": null,
+  "artifact_pointer": {
+    "run_id": "INFERENCE-GOVERNANCE-LIFT-R1-run-a2c23a8b",
+    "artifact_id": "365b2fb6d62fbac7cec812a2bcdffa3e",
+    "sha256": "365b2fb6d62fbac7cec812a2bcdffa3e2339447c22ba6ff98fe698a41d5082c2",
+    "integrity_ok": true
+  },
   "next_work_order": "COGNITIVE-PROVENANCE-ABLATION-R1 (05-WORK-ORDERS/COGNITIVE-PROVENANCE-ABLATION-R1.md; generated, not executed)"
 }
