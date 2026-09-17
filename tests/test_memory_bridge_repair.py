@@ -489,9 +489,9 @@ def _canonical_from_claim(mp, *, ext=False, rev=False, appr=False):
 MUTANTS = [
     ("restore proposal.externality = claim", lambda mp: _canonical_from_claim(mp, ext=True)),
     ("restore proposal.reversibility = claim", lambda mp: _canonical_from_claim(mp, rev=True)),
-    ("fallback canonical effect to memory claim", lambda mp: mp.setattr(ma, "_decide", (lambda real: (lambda action, contract, authority, claims, **kw: real(action, contract, authority, claims, **{**kw, "effect": None})))(ma._decide))),
+    ("fallback canonical effect to memory claim", lambda mp: mp.setattr(ma, "_decide", (lambda real: (lambda action, contract, authority, claims, **kw: real(action, contract, authority, claims, **{**kw, "effect": None, "canonical_contract": True})))(ma._decide))),   # MBGV-F1 guard: the mutant must now LIE explicitly
     ("derive consequentiality from claim", lambda mp: _canonical_from_claim(mp, ext=True, rev=True)),
-    ("ignore canonical effect oracle", lambda mp: mp.setattr(ma, "_decide", (lambda real: (lambda action, contract, authority, claims, **kw: real(action, contract, authority, claims, **{**kw, "effect": None})))(ma._decide))),
+    ("ignore canonical effect oracle", lambda mp: mp.setattr(ma, "_decide", (lambda real: (lambda action, contract, authority, claims, **kw: real(action, contract, authority, claims, **{**kw, "effect": None, "canonical_contract": True})))(ma._decide))),   # MBGV-F1 guard: the mutant must now LIE explicitly
     ("claimed scope drives classification", lambda mp: _canonical_from_claim(mp, ext=True, rev=True, appr=True)),
     ("claimed approval waives canonical approval", lambda mp: _canonical_from_claim(mp, appr=True)),
     ("skip declared_* mapping and write canonical", lambda mp: (_canonical_from_claim(mp, ext=True, rev=True, appr=True),
