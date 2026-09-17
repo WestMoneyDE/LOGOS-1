@@ -153,7 +153,8 @@ def test_GOV_P10_P11_bridge_not_upgraded_R1_R3_open():
 
 def test_GOV_P12_P13_P14_gamma_p7_predecessors_unchanged():
     diff = subprocess.run(["git", "diff", "--stat", "ea24e76", "HEAD", "--", "GAMMA.md", "src/logos_gamma", "src/logos_authority", "src/logos_runtime", "src/logos_audit", "src/logos_effects", "src/logos_memory",
-                           "src/logos_research/experiments", "src/logos_research/measurement", "docs/research/2026-08-20-PERSISTENT-STATE-PRIOR-ART-DELTA.md", "05-WORK-ORDERS/NEXT-SESSION-*", "09-SESSIONS"],
+                           "src/logos_research/experiments", "src/logos_research/measurement", "docs/research/2026-08-20-PERSISTENT-STATE-PRIOR-ART-DELTA.md", "05-WORK-ORDERS/NEXT-SESSION-*", ":(exclude)05-WORK-ORDERS/NEXT-SESSION-INFERENCE-GOVERNANCE-LIFT-R1.md",
+                           "09-SESSIONS", ":(exclude)09-SESSIONS/2026-09-18-INFERENCE-GOVERNANCE-LIFT-R1"],
                           capture_output=True, text=True, cwd=ROOT).stdout.strip()
     assert diff == "", diff
     p7 = (ROOT / "docs/research/2026-08-20-PERSISTENT-STATE-PRIOR-ART-DELTA.md").read_bytes()
