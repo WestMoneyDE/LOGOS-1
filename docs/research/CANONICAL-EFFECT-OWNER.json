@@ -398,6 +398,10 @@
       "src/logos_memory/reader.py": {
         "class": "NON_CONSEQUENTIAL",
         "note": "CAPB-R1 C4: production memory reader; declared effect / claimed scope are evidence, never canonical"
+      },
+      "src/logos_research/experiments/trajectory_compromise.py": {
+        "class": "EXPERIMENTAL_REFERENCE",
+        "note": "RADAR-R1 Phase 5: trajectory fixture; declared effect from the fixture contract as evidence; authority via the production bridge"
       }
     },
     "unclassified": 0

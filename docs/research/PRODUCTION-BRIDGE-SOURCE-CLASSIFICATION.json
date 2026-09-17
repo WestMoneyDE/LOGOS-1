@@ -157,6 +157,18 @@
     "src/logos_runtime/types.py": {
       "class": "PRODUCTION_BRIDGE",
       "note": "production bridge v1"
+    },
+    "src/logos_research/experiments/causal_provenance.py": {
+      "class": "REFERENCE_TEST_FIXTURE",
+      "note": "RADAR-R1 Phase 3: deterministic provenance fixture; authority only via resolve_authority"
+    },
+    "src/logos_research/experiments/reconsolidation.py": {
+      "class": "REFERENCE_TEST_FIXTURE",
+      "note": "RADAR-R1 Phase 4: memory-graph fixture; authority only via resolve_authority"
+    },
+    "src/logos_research/experiments/trajectory_compromise.py": {
+      "class": "REFERENCE_TEST_FIXTURE",
+      "note": "RADAR-R1 Phase 5: trajectory fixture; authority via decide_action / resolve_authority"
     }
   },
   "unclassified": 0
