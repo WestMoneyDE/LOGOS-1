@@ -109,11 +109,13 @@ def construct_validity(metric: list[float], ground_truth: list[float]) -> float:
     return abs(sum((a - mx) * (b - my) for a, b in zip(metric, ground_truth)) / (len(metric) * sx * sy))
 
 
-def causal_discrimination(metric_baseline: list[float], metric_intervened: list[float], construct_changed: bool) -> bool:
-    """Does the metric move when (and only when) the construct is intervened on?"""
+def causal_discrimination(metric_baseline: list[float], metric_intervened: list[float], construct_changed: bool, *, noise_sd: float = 0.0, resolution: float = 0.01) -> bool:
+    """Does the metric move when (and only when) the construct is intervened on?
+    `noise_sd` is the instrument's repeatability (not the between-item spread);
+    a shift counts when it exceeds max(3 * noise_sd, resolution)."""
     if not metric_baseline or not metric_intervened:
         return False
-    moved = abs(statistics.mean(metric_intervened) - statistics.mean(metric_baseline)) > 3 * (statistics.pstdev(metric_baseline) + 1e-9)
+    moved = abs(statistics.mean(metric_intervened) - statistics.mean(metric_baseline)) > max(3 * noise_sd, resolution)
     return moved == construct_changed
 
 
