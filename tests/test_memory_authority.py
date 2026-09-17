@@ -567,6 +567,9 @@ READERS = {
     # registered by CANONICAL-AUTHORITY-PRODUCTION-BRIDGE-R1 (2026-09-17, C4): the PRODUCTION reader; content -> strict note parse ->
     # refs / claimed scope / declared effect / provenance labels (copied as metadata); NEVER resolves authority (the resolver does, by reference)
     "logos_memory/reader.py": "production memory reader: evidence only (refs, claimed scope, declared effect, provenance); resolves nothing",
+    # registered by LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1 (2026-09-17, Phase 4): reads MemoryItem.content of its OWN fixture graph
+    # (not MemoryRecord); belief follows provenance-weighted evidence; authority only via resolve_authority; resolves nothing
+    "logos_research/experiments/reconsolidation.py": "reconsolidation fixture: .content of MemoryItem (fixture type); resolves nothing",
 }
 
 

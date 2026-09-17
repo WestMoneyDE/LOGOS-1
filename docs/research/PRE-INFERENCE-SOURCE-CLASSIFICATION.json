@@ -1,0 +1,153 @@
+{
+  "order": "LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1",
+  "base": "eb1f642",
+  "vocabulary": [
+    "PRODUCTION",
+    "EXPERIMENTAL_DETERMINISTIC",
+    "REFERENCE_FIXTURE",
+    "POST_INFERENCE_SPEC",
+    "HISTORICAL_ONLY",
+    "GOVERNANCE_ONLY",
+    "UNCLASSIFIED"
+  ],
+  "rule": "no file created or changed by this order is PRODUCTION; production packages (logos_gamma, logos_effects, logos_authority, logos_runtime, logos_audit, logos_memory) are untouched",
+  "sites": {
+    "05-WORK-ORDERS/NEXT-SESSION-LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "governance / research record / renderer"
+    },
+    "09-SESSIONS/2026-09-17-LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1/SESSION-REPORT.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "governance / research record / renderer"
+    },
+    "docs/architecture/LOGOS-MEMORY-TAXONOMY-PROPOSED.md": {
+      "class": "POST_INFERENCE_SPEC",
+      "note": "PROPOSED schema documentation"
+    },
+    "docs/architecture/LOGOS-STATE-DECOMPOSITION-PROPOSED.md": {
+      "class": "POST_INFERENCE_SPEC",
+      "note": "PROPOSED schema documentation"
+    },
+    "docs/research/CANONICAL-EFFECT-OWNER.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "governance / research record / renderer"
+    },
+    "docs/research/LOGOS-METRIC-CONSTRUCT-REGISTRY.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "metric/construct registry (evidence licensing)"
+    },
+    "docs/research/LOGOS-METRIC-CONSTRUCT-REGISTRY.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "metric/construct registry (evidence licensing)"
+    },
+    "docs/research/LOGOS1-POST-DETERMINISTIC-RESEARCH-MAP.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "governance / research record / renderer"
+    },
+    "docs/research/POST-INFERENCE-EXPERIMENT-QUEUE.md": {
+      "class": "POST_INFERENCE_SPEC",
+      "note": "queue of blocked experiments"
+    },
+    "docs/research/PRE-INFERENCE-SOURCE-CLASSIFICATION.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "governance / research record / renderer"
+    },
+    "docs/research/PRODUCTION-BRIDGE-SOURCE-CLASSIFICATION.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "governance / research record / renderer"
+    },
+    "docs/research/REAL-MODEL-READINESS-CHECKLIST.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "governance / research record / renderer"
+    },
+    "docs/research/RESEARCH-DELTA-REGISTRY.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "governance / research record / renderer"
+    },
+    "docs/research/RESEARCH-EVIDENCE-STRENGTH.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "governance / research record / renderer"
+    },
+    "docs/research/RESEARCH-RADAR-DELTA-REGISTRY.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "governance / research record / renderer"
+    },
+    "docs/research/RESEARCH-RADAR.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "governance / research record / renderer"
+    },
+    "scripts/render_research_radar.py": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "governance / research record / renderer"
+    },
+    "src/logos_research/experiments/causal_provenance.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "deterministic experiment module (Phase 3/4/5); authority only via logos_authority"
+    },
+    "src/logos_research/experiments/reconsolidation.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "deterministic experiment module (Phase 3/4/5); authority only via logos_authority"
+    },
+    "src/logos_research/experiments/trajectory_compromise.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "deterministic experiment module (Phase 3/4/5); authority only via logos_authority"
+    },
+    "src/logos_research/measurement/__init__.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "research measurement infra; no provider; counters prove model_calls = 0"
+    },
+    "src/logos_research/measurement/construct.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "research measurement infra; no provider; counters prove model_calls = 0"
+    },
+    "src/logos_research/measurement/dryrun.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "research measurement infra; no provider; counters prove model_calls = 0"
+    },
+    "src/logos_research/measurement/gateway.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "research measurement infra; no provider; counters prove model_calls = 0"
+    },
+    "src/logos_research/measurement/manifest.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "research measurement infra; no provider; counters prove model_calls = 0"
+    },
+    "src/logos_research/measurement/plan.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "research measurement infra; no provider; counters prove model_calls = 0"
+    },
+    "src/logos_research/measurement/state_schema.py": {
+      "class": "POST_INFERENCE_SPEC",
+      "note": "typed PROPOSED schemas; no model use"
+    },
+    "tests/test_causal_taint_propagation.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "test suite"
+    },
+    "tests/test_construct_validity_gate.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "test suite"
+    },
+    "tests/test_measurement_readiness.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "test suite"
+    },
+    "tests/test_memory_authority.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "test suite"
+    },
+    "tests/test_pre_inference_readiness.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "test suite"
+    },
+    "tests/test_reconsolidation_path_dependence.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "test suite"
+    },
+    "tests/test_trajectory_compromise_audit.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "test suite"
+    }
+  },
+  "unclassified": 0
+}
