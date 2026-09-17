@@ -189,7 +189,8 @@
     {
       "id": "VALUE-OF-INFORMATION-GATE",
       "track": "metacognition",
-      "status": "QUEUED",
+      "status": "EXECUTED_R1_SUPPORTED",
+      "record": "09-SESSIONS/2026-09-17-VALUE-OF-INFORMATION-GATE-R1/SESSION-REPORT.md",
       "falsification_power": 4,
       "expected_information_gain": 5,
       "dependency_readiness": 3,

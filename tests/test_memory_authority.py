@@ -561,6 +561,9 @@ READERS = {
     # registered by RISK-AWARENESS-DECOMPOSITION-R1 (2026-09-13): authority() reads references via read_evidence and
     # uses the Γ-OWNED effect profile; keeps b2_bridge reachable for the preregistered probe (RAD-CE1)
     "logos_research/experiments/risk_decomposition.py": "authority(): refs -> ledger -> Γ on the RiskOracle profile; b2_bridge probe; resolves nothing itself",
+    # registered by VALUE-OF-INFORMATION-GATE-R1 (2026-09-17): records_for() reads claimed scope targets to route info actions;
+    # authority via the validated bridge; the epistemic branch reads no authority field
+    "logos_research/experiments/value_of_information.py": "records_for(): claimed-scope routing only; authority_of() -> validated bridge; resolves nothing",
 }
 
 
