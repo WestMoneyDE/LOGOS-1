@@ -516,7 +516,8 @@ def test_F_constructor_inventory():
     assert _calls("EffectProposal") == {("logos_research/experiments/memory_authority.py", "canonical_proposal"),
                                         ("logos_research/experiments/memory_authority.py", "evaluate_with_memory_prerepair"),
                                         ("logos_research/experiments/binding_state.py", "evaluate_action"),
-                                        ("logos_research/experiments/no_history_promotion.py", "_unauthorized_proposal")}
+                                        ("logos_research/experiments/no_history_promotion.py", "_unauthorized_proposal"),
+                                        ("logos_runtime/bridge.py", "build_proposal")}   # CAPB-R1 C2: production relocation (registered)
     assert _calls("proposal_for") == {("logos_research/experiments/risk_decomposition.py", "authority")}          # oracle contract only
     assert _calls("canonical_proposal") == {("logos_research/experiments/memory_authority.py", "proposal_for"),
                                             ("logos_research/experiments/memory_authority.py", "_decide")}
