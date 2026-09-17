@@ -1,0 +1,156 @@
+{
+  "schema": "logos.inference-governance/1",
+  "order": "INFERENCE-GOVERNANCE-LIFT-R1",
+  "status": "INFERENCE_GOVERNANCE_LIFT_APPROVED_R1",
+  "base_commit": "ea24e76",
+  "decision_date": "2026-09-18",
+  "decision_owner": "founder",
+  "governance_prereg_hash": "64b7c5bed8f91dc4c3b93836747e25234aab78fdfcfe12af8510caf5b278f7ee",
+  "inference_state": "LIFTED_WITH_CONDITIONS",
+  "G1": {
+    "decision": "LIFT",
+    "owner": "founder",
+    "date": "2026-09-18",
+    "verbatim": "G1: LIFT\n\nRationale:\nDie deterministischen Safety-, Measurement-, Construct-Validity-, Provenance- und Trajectory-Gates sind validiert. Daher darf kontrollierte Real-Model-Inference für exakt preregistrierte, simulations-only Forschungsruns freigegeben werden.\n\nCondition:\nINFERENCE_PROHIBITION = LIFTED_WITH_CONDITIONS\n\nKeine freie Inference, keine Production Actions und kein Real-Model-Run ohne bestandenen Zero-Inference-Dry-Run.",
+    "conditions": [
+      "INFERENCE_PROHIBITION = LIFTED_WITH_CONDITIONS",
+      "no free-form inference",
+      "no production actions",
+      "no real-model run without a passed zero-inference dry run",
+      "exactly preregistered, simulation-only research runs only"
+    ]
+  },
+  "G2": {
+    "decision": "APPROVED",
+    "owner": "founder",
+    "date": "2026-09-18",
+    "verbatim": "G2: APPROVED\n\nProvider: OpenAI\nModel: gpt-5.6-terra\nRegion: Europe\nExecution: API\nFallback: NONE\n\nVersion policy:\ngpt-5.6-terra ist die festgelegte Modell-ID. Provider-, Model-, API- und Region-Metadaten müssen pro Request erfasst werden.\n\nFalls keine unveränderliche Snapshot-ID verfügbar ist, muss jede erkannte serverseitige Modelländerung als\n\nMODEL_VERSION_DRIFT → INVALID_MEASUREMENT\n\nbehandelt werden.\n\nEs darf keine stille Zusammenführung von Ergebnissen über unterschiedliche Modellversionen geben.\n\nFalls die erforderliche europäische Region/Data-Residency-Konfiguration für den verwendeten Account nicht verfügbar ist:\n\nDEFER\n\nund nicht auf eine andere Region ausweichen.",
+    "provider": "OpenAI",
+    "model_family": "gpt-5.6",
+    "model_id": "gpt-5.6-terra",
+    "region": "Europe",
+    "execution_boundary": "API",
+    "fallback": "NONE",
+    "version_policy": "fixed model id gpt-5.6-terra; provider/model/API/region metadata captured per request; if no immutable snapshot id is available, any detected server-side model change -> MODEL_VERSION_DRIFT -> INVALID_MEASUREMENT; no silent pooling across model versions",
+    "region_policy": "Europe-only; if EU data-residency configuration is unavailable for the account -> DEFER; never switch region",
+    "pins": {
+      "provider": "OpenAI",
+      "model_id": "gpt-5.6-terra",
+      "model_version": "policy: per-request capture; drift -> INVALID_MEASUREMENT",
+      "region": "Europe",
+      "reasoning_effort": "to be pinned in the run prereg",
+      "temperature": "to be pinned in the run prereg",
+      "top_p": "to be pinned in the run prereg",
+      "seed": "to be pinned if supported",
+      "max_output_tokens": "to be pinned in the run prereg",
+      "tool_availability": "NO EXTERNAL TOOLS (default)",
+      "system_prompt_version": "to be pinned (hash captured)",
+      "api_version": "captured per request"
+    },
+    "trust_boundary": {
+      "data_leaving_local_environment": "synthetic prompts / inputs only (G3)",
+      "metadata_retained": "per-request provider/model/API/region metadata retained in the LOGOS lab",
+      "processing_location": "Europe (required); unavailable -> DEFER",
+      "account_tenant_boundary": "single LOGOS research account; no tenant data",
+      "logging": "provider-side logging assumptions recorded in the run prereg; local capture is complete (G3)",
+      "server_side_model_changes": "detected -> MODEL_VERSION_DRIFT -> INVALID_MEASUREMENT",
+      "outage_rate_limit": "STOP / INVALID_MEASUREMENT; no fallback"
+    }
+  },
+  "G3": {
+    "decision": "APPROVED",
+    "owner": "founder",
+    "date": "2026-09-18",
+    "verbatim": "G3: APPROVED\n\nAllowed data classes:\n- SYNTHETIC\n\nNot approved for the first run:\n- PUBLIC\n- INTERNAL_NON_SENSITIVE\n- CONFIDENTIAL\n- PERSONAL_DATA\n- SENSITIVE_PERSONAL_DATA\n- SECRETS_CREDENTIALS\n- PRODUCTION_CUSTOMER_DATA\n- real customer memory\n- production logs\n- private third-party communications\n- tokens\n- API keys\n- private keys\n\nCapture policy:\n- vollständige Prompts\n- vollständige synthetische Inputs\n- vollständige Outputs\n- vollständige Trajectories\n- vollständige Measurement-/Provenance-Artefakte\n\nRetention:\n- ausschließlich im bestehenden LOGOS-Lab-/Artifact-System\n- keine zusätzlichen externen Speicherorte\n\nRegion boundary:\n- Europe-only entsprechend G2\n\nDeletion:\n- alle Run-Artefakte müssen über run_id eindeutig auffindbar und löschbar sein\n\nIncident rule:\nJeder Data-Class-Mismatch führt zu\n\nSTOP → INVALID_MEASUREMENT",
+    "allowed_data_classes": [
+      "SYNTHETIC"
+    ],
+    "forbidden_data_classes": [
+      "PUBLIC",
+      "INTERNAL_NON_SENSITIVE",
+      "CONFIDENTIAL",
+      "PERSONAL_DATA",
+      "SENSITIVE_PERSONAL_DATA",
+      "SECRETS_CREDENTIALS",
+      "PRODUCTION_CUSTOMER_DATA"
+    ],
+    "forbidden_material": [
+      "real customer memory",
+      "production logs",
+      "private third-party communications",
+      "tokens",
+      "API keys",
+      "private keys"
+    ],
+    "capture": {
+      "SYNTHETIC": "full prompt capture; full inputs, outputs, trajectories, measurement/provenance artifacts"
+    },
+    "retention": "LOGOS lab / artifact system only; no additional external storage",
+    "region_boundary": "Europe-only (G2)",
+    "deletion": "all run artifacts addressable and deletable by run_id",
+    "incident_rule": "any data-class mismatch -> STOP -> INVALID_MEASUREMENT"
+  },
+  "G4": {
+    "decision": "APPROVED",
+    "owner": "founder",
+    "date": "2026-09-18",
+    "verbatim": "G4: APPROVED\n\nCurrency: USD\nMaximum total spend: $30\nMaximum total tokens: 2,000,000\nMaximum requests: 400\nMaximum wall-clock: 3 hours\nMaximum repeats: 10\nMaximum per-run spend: $3.00\n\nJede zuerst erreichte Grenze beendet den Run.\n\nKeine automatische Budgeterhöhung.\nKein Provider-Fallback.\nKein zusätzlicher Batch ohne neue Governance-Freigabe.",
+    "currency": "USD",
+    "max_total_spend": 30.0,
+    "max_total_tokens": 2000000,
+    "max_requests": 400,
+    "max_wall_clock_hours": 3,
+    "max_repeats": 10,
+    "max_per_run_spend": 3.0,
+    "semantics": "first cap reached ends the run (COST_CAP_REACHED -> STOP); no automatic expansion; no provider fallback; no additional batch without new governance approval"
+  },
+  "selected_experiment": {
+    "decision": "B",
+    "id": "COGNITIVE-PROVENANCE-ABLATION-R1",
+    "owner": "founder",
+    "date": "2026-09-18",
+    "verbatim": "Tier-A: B — COGNITIVE-PROVENANCE-ABLATION-R1\n\nRationale:\nDieses Experiment hat im aktuellen Repository die beste Kombination aus Dependency Readiness, exakter synthetischer Source-Ground-Truth, Safety-Relevanz, geringer Infrastrukturkomplexität und direktem Anschluss an die bereits validierte Causal-Taint-Provenance.\n\nPrimary research boundary:\n\nReasoningContent != ReasoningProvenance",
+    "primary_boundary": "ReasoningContent != ReasoningProvenance",
+    "alternatives": {
+      "A": "BELIEF-STATE-GEOMETRY-R1 (not selected)",
+      "C": "WORLD-MODEL-TRUST-BOUNDARY-R1 (not selected)",
+      "D": "TRAJECTORY-UNCERTAINTY-ACCUMULATION-R1 (not selected)"
+    }
+  },
+  "additional_decisions_verbatim": "Additional governance decisions:\n\nINFERENCE_PROHIBITION = LIFTED_WITH_CONDITIONS\n\nProvider activation:\nGovernance approval\n+\nPassed zero-inference dry run\n= REQUIRED\n\nPrivacy activation:\nSYNTHETIC approved\n+\nrun dataset classified SYNTHETIC\n= REQUIRED\n\nCost activation:\n$30 governance ceiling\n+\nrun-specific prereg cost cap\n= REQUIRED\n\nPrimary metric activation:\nconstruct-valid metric\n+\nexperiment-specific exact source ground truth\n= REQUIRED\n\nProduction bridge:\nPRODUCTION_BRIDGE_READY_WITH_CONDITIONS remains unchanged.\n\nR1–R3:\nremain OPEN.\n\nΓ:\nunchanged.\n\nP7:\nunchanged.\n\nThis governance run itself must still close with:\n\nmodel_calls = 0\nprovider_calls = 0",
+  "two_key_rules": {
+    "provider": [
+      "governance approval (G2)",
+      "passed zero-inference dry run"
+    ],
+    "privacy": [
+      "SYNTHETIC approved (G3)",
+      "run dataset classified SYNTHETIC"
+    ],
+    "cost": [
+      "$30 governance ceiling (G4)",
+      "run-specific prereg cost cap"
+    ],
+    "metric": [
+      "construct-valid metric (CONSTRUCT_SUPPORTED / CAUSALLY_DISCRIMINATED)",
+      "experiment-specific exact source ground truth"
+    ]
+  },
+  "conditions": [
+    "PRODUCTION_BRIDGE_READY_WITH_CONDITIONS unchanged",
+    "R1-R3 remain OPEN (PRODUCTION-BRIDGE-OPERATIONS-R1)",
+    "Γ unchanged",
+    "P7 unchanged",
+    "this governance run: model_calls = 0, provider_calls = 0",
+    "first run: SIMULATION ONLY, NO EXTERNAL TOOLS, no production action path",
+    "prereg schema logos.stochastic-prereg/1 frozen before any model call",
+    "drift MODEL_VERSION / PROMPT / PROVIDER / REGION / DATASET / TOOL_SCHEMA -> INVALID_MEASUREMENT (no silent pooling)"
+  ],
+  "artifact_pointer": {
+    "run_id": "INFERENCE-GOVERNANCE-LIFT-R1-run-a2c23a8b",
+    "artifact_id": "365b2fb6d62fbac7cec812a2bcdffa3e",
+    "sha256": "365b2fb6d62fbac7cec812a2bcdffa3e2339447c22ba6ff98fe698a41d5082c2",
+    "integrity_ok": true
+  },
+  "next_work_order": "COGNITIVE-PROVENANCE-ABLATION-R1 (05-WORK-ORDERS/COGNITIVE-PROVENANCE-ABLATION-R1.md; generated, not executed)"
+}

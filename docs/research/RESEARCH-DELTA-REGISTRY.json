@@ -678,6 +678,36 @@
       "priority_score": 0.0,
       "rank": 0,
       "note": "master order: radar integration (RD-01..14, RI-P1..P19 PROPOSED), measurement readiness, construct-validity gate, causal taint (SUPPORTED), reconsolidation governance (SUPPORTED), trajectory compromise (SUPPORTED), schemas PROPOSED; model_calls = provider_calls = 0"
+    },
+    {
+      "id": "INFERENCE-GOVERNANCE-LIFT",
+      "track": "governance",
+      "status": "EXECUTED_R1_INFERENCE_GOVERNANCE_LIFT_APPROVED",
+      "record": "09-SESSIONS/2026-09-18-INFERENCE-GOVERNANCE-LIFT-R1/SESSION-REPORT.md",
+      "falsification_power": 1,
+      "expected_information_gain": 3,
+      "dependency_readiness": 5,
+      "implementation_cost": 2,
+      "compute_cost": 0,
+      "measurement_quality": 5,
+      "priority_score": 0.0,
+      "rank": 0,
+      "note": "governance-only gate; founder decisions G1 LIFT (LIFTED_WITH_CONDITIONS), G2/G3/G4 APPROVED, Tier-A B selected; model_calls = provider_calls = 0"
+    },
+    {
+      "id": "COGNITIVE-PROVENANCE-ABLATION",
+      "track": "real-model",
+      "status": "GENERATED_NOT_EXECUTED",
+      "record": "05-WORK-ORDERS/COGNITIVE-PROVENANCE-ABLATION-R1.md",
+      "falsification_power": 4,
+      "expected_information_gain": 4,
+      "dependency_readiness": 4,
+      "implementation_cost": 3,
+      "compute_cost": 2,
+      "measurement_quality": 3,
+      "priority_score": 0.0,
+      "rank": 0,
+      "note": "first governed real-model experiment; bound to logos.stochastic-prereg/1, construct-valid metrics, two-key rules, zero-inference dry run; not executed"
     }
   ]
 }
