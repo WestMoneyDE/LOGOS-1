@@ -459,10 +459,31 @@
       "value": "BLOCKED",
       "state": "DEFERRED",
       "note": "not lifted by this order"
+    },
+    {
+      "id": "PRODUCTION-BRIDGE-READINESS-R1",
+      "value": "PRODUCTION_BRIDGE_READY_WITH_CONDITIONS",
+      "state": "APPROVED",
+      "by": "founder",
+      "on": "2026-09-17",
+      "ratified_in": "CANONICAL-AUTHORITY-PRODUCTION-BRIDGE-R1",
+      "closed_conditions": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "mandatory_conditions": [
+        "R1 deployment trust boundaries / topology",
+        "R2 grant lifecycle governance",
+        "R3 authenticated tenant provisioning"
+      ],
+      "verbatim": "I ratify PRODUCTION_BRIDGE_READY_WITH_CONDITIONS. C1–C4 are technically validated and the deterministic production bridge is complete at the software-architecture level. R1–R3 remain mandatory operational and governance conditions because deployment trust boundaries, grant lifecycle governance, and authenticated tenant provisioning are required before the bridge can be treated as production-ready without conditions.",
+      "record": "docs/adr/ADR-CANONICAL-AUTHORITY-PRODUCTION-BRIDGE.md"
     }
   ],
   "effect_oracle_scope": "REFERENCE_TEST_ORACLE",
-  "production_bridge_readiness": "PRODUCTION_BRIDGE_READY_WITH_CONDITIONS",
+  "production_bridge_readiness": "PRODUCTION_BRIDGE_READY_WITH_CONDITIONS (APPROVED 2026-09-17; C1-C4 closed; R1-R3 mandatory)",
   "dcc_f1": {
     "disposition": "governance note; historical file untouched; no independent replacement added here (MAP inventory test already enforces the classification)"
   }

@@ -158,7 +158,7 @@ binding chain 594 · MAP 106 · RSS 219 · PETG 139 · RAD 203 · MBG 55 · MBGV
 
 ## AT. PRODUCTION-BRIDGE-READINESS
 
-Re-recorded: `PRODUCTION_BRIDGE_READY_WITH_CONDITIONS` — C1–C4 closed; remaining operational conditions R1 deployment topology / key management, R2 grant issuance-revocation governance, R3 tenant provisioning + `TenantContext` authentication. State `PROPOSED`; founder ratification requested.
+Re-recorded: `PRODUCTION_BRIDGE_READY_WITH_CONDITIONS` — C1–C4 closed; remaining operational conditions R1 deployment topology / key management, R2 grant issuance-revocation governance, R3 tenant provisioning + `TenantContext` authentication. State **`APPROVED`** — ratified by the founder on 2026-09-17 (verbatim in the ADR); R1–R3 are mandatory operational and governance conditions.
 
 ## AU. Real-model readiness
 

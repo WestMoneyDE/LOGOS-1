@@ -23,7 +23,7 @@ end-to-end         failure matrix 16/16; six-way differential 1696 rows / 0 fals
                    20/20 cross-layer mutants; source classification UNCLASSIFIED = 0; full suite 3947 / 0 / 2
 divergence         one classified decrease-only class: revoked-reference-decrease (RevokedAuthority != HistoricalPermission)
 reference scopes   effect_oracle REFERENCE_TEST_ORACLE (APPROVED); GrantLedger REFERENCE_TEST_LEDGER; B1 + prerepair HISTORICAL_ONLY
-readiness          PRODUCTION_BRIDGE_READY_WITH_CONDITIONS re-recorded (PROPOSED, founder ratification): R1 deployment topology,
+readiness          PRODUCTION_BRIDGE_READY_WITH_CONDITIONS re-recorded, APPROVED (founder-ratified 2026-09-17; R1-R3 mandatory): R1 deployment topology,
                    R2 grant issuance governance, R3 tenant provisioning/authentication
 real-model         inference prohibition ACTIVE; remaining blockers 6, 7, 8, 11 (governance) and 9, 10, 14 (deterministic infra)
 findings           CAPB-F1 LOW, CAPB-F2 INFO, CAPB-F3 LOW, CAPB-F4 INFO, CAPB-F5 MEDIUM; DCC-F1 unchanged

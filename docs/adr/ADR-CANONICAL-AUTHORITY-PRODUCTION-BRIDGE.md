@@ -32,7 +32,7 @@ Only canonical, authority-owned state raises authority. Memory yields references
 
 ## 3. Decision — reference `GrantLedger` scope
 
-**`REFERENCE_TEST_LEDGER`** (`APPROVED` by this order's evidence; founder ratification recorded with the master report). The experimental `GrantLedger` remains the differential-parity source for the resolver and the frozen input of the predecessor evidence. It is not a production fallback (mutants C1-M10, C2 "fallback to GrantLedger", E2E "GrantLedger production fallback" all caught) and is not deleted.
+**`REFERENCE_TEST_LEDGER`** (`APPROVED`; covered by the founder's ratification of the master report on 2026-09-17). The experimental `GrantLedger` remains the differential-parity source for the resolver and the frozen input of the predecessor evidence. It is not a production fallback (mutants C1-M10, C2 "fallback to GrantLedger", E2E "GrantLedger production fallback" all caught) and is not deleted.
 
 ## 4. Schemas (frozen with the preregistration)
 
@@ -54,7 +54,11 @@ Tenant identity only from the typed `TenantContext`; memory references are `memo
 
 ## 7. Re-evaluated `PRODUCTION-BRIDGE-READINESS`
 
-**Value:** `PRODUCTION_BRIDGE_READY_WITH_CONDITIONS` · **State:** `PROPOSED` (founder ratification requested)
+**Value:** `PRODUCTION_BRIDGE_READY_WITH_CONDITIONS` · **State:** `APPROVED` — ratified by the founder on 2026-09-17, verbatim:
+
+> I ratify PRODUCTION_BRIDGE_READY_WITH_CONDITIONS. C1–C4 are technically validated and the deterministic production bridge is complete at the software-architecture level. R1–R3 remain mandatory operational and governance conditions because deployment trust boundaries, grant lifecycle governance, and authenticated tenant provisioning are required before the bridge can be treated as production-ready without conditions.
+
+R1–R3 are therefore **mandatory** conditions, not advisory ones.
 
 C1–C4 are closed and validated. The remaining conditions are operational, not architectural:
 
