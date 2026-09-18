@@ -458,3 +458,11 @@ def test_source_classification_complete_and_no_promotion():
     assert files - set(sites) == set(), files - set(sites)
     for f in ("docs/research/PRE-INFERENCE-SOURCE-CLASSIFICATION.json", "docs/research/INFERENCE-GOVERNANCE-AMENDMENT-SOURCE-CLASSIFICATION.json"):
         assert set(sites) <= set(json.loads((ROOT / f).read_text(encoding="utf-8"))["sites"])
+
+
+def test_fallback_and_bypass_flags_refused():
+    """Claude Code 2.1.x documents --fallback-model and --allow-dangerously-skip-permissions; neither is in the approved flag set."""
+    base = cc.build_argv("q", PIN, cc.Limits(1, 20000, 180.0, hz.DISALLOWED_TOOLS, ()))
+    for flag in ("--fallback-model", "--allow-dangerously-skip-permissions", "--dangerously-skip-permissions", "--resume", "--continue", "--mcp-config"):
+        with pytest.raises(cc.ProviderPolicyError):
+            cc.check_argv(base + [flag, "x"])
