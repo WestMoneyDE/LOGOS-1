@@ -275,6 +275,13 @@
   "amendment": {
     "id": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1",
     "date": "2026-09-18",
-    "prereg_hash": "6ad107d5aa86497d8300e3f039fae3d0d2897ee48d1cdf8f36bf2ae012951395"
+    "prereg_hash": "6ad107d5aa86497d8300e3f039fae3d0d2897ee48d1cdf8f36bf2ae012951395",
+    "artifact_pointer": {
+      "run_id": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1-run-cd026db3",
+      "artifact_id": "e6639693dadf124f116a14d25f0880b6",
+      "content_sha256": "e6639693dadf124f116a14d25f0880b6ab5ea6872c919d80a6d5fce0fbfbb238",
+      "integrity_ok": true,
+      "name": "inference-governance-provider-amendment-r1.json"
+    }
   }
 }
