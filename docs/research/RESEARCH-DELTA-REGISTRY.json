@@ -708,6 +708,21 @@
       "priority_score": 0.0,
       "rank": 0,
       "note": "first governed real-model experiment; bound to logos.stochastic-prereg/1, construct-valid metrics, two-key rules, zero-inference dry run; not executed"
+    },
+    {
+      "id": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT",
+      "track": "governance",
+      "status": "EXECUTED_R1_PROVIDER_AMENDED",
+      "record": "09-SESSIONS/2026-09-18-INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1/SESSION-REPORT.md",
+      "falsification_power": 1,
+      "expected_information_gain": 2,
+      "dependency_readiness": 5,
+      "implementation_cost": 2,
+      "compute_cost": 0,
+      "measurement_quality": 5,
+      "priority_score": 0.0,
+      "rank": 0,
+      "note": "provider boundary amended to Anthropic / Claude Code / Max subscription (API key NONE, PAYG forbidden); OpenAI G2/G4 superseded, not deleted; model_calls = provider_calls = claude_code_inference_invocations = 0"
     }
   ]
 }

@@ -1,7 +1,7 @@
 {
   "schema": "logos.inference-governance/1",
   "order": "INFERENCE-GOVERNANCE-LIFT-R1",
-  "status": "INFERENCE_GOVERNANCE_LIFT_APPROVED_R1",
+  "status": "INFERENCE_GOVERNANCE_LIFT_APPROVED_R1 + INFERENCE_GOVERNANCE_PROVIDER_AMENDED_R1",
   "base_commit": "ea24e76",
   "decision_date": "2026-09-18",
   "decision_owner": "founder",
@@ -24,37 +24,48 @@
     "decision": "APPROVED",
     "owner": "founder",
     "date": "2026-09-18",
-    "verbatim": "G2: APPROVED\n\nProvider: OpenAI\nModel: gpt-5.6-terra\nRegion: Europe\nExecution: API\nFallback: NONE\n\nVersion policy:\ngpt-5.6-terra ist die festgelegte Modell-ID. Provider-, Model-, API- und Region-Metadaten müssen pro Request erfasst werden.\n\nFalls keine unveränderliche Snapshot-ID verfügbar ist, muss jede erkannte serverseitige Modelländerung als\n\nMODEL_VERSION_DRIFT → INVALID_MEASUREMENT\n\nbehandelt werden.\n\nEs darf keine stille Zusammenführung von Ergebnissen über unterschiedliche Modellversionen geben.\n\nFalls die erforderliche europäische Region/Data-Residency-Konfiguration für den verwendeten Account nicht verfügbar ist:\n\nDEFER\n\nund nicht auf eine andere Region ausweichen.",
-    "provider": "OpenAI",
-    "model_family": "gpt-5.6",
-    "model_id": "gpt-5.6-terra",
-    "region": "Europe",
-    "execution_boundary": "API",
+    "amendment": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1",
+    "verbatim": "G2 = APPROVED\n\nProvider: Anthropic\nAccess path: Claude Code\nAuthentication: Claude Max subscription authentication\nExecution: native Claude Code CLI / supported non-interactive Claude Code mode\nAPI key: NONE\nAnthropic Console PAYG: NOT USED\nFallback provider: NONE\nFallback to API credits: FORBIDDEN",
+    "provider": "Anthropic",
+    "access_path": "Claude Code",
+    "auth_mode": "Claude Max subscription",
+    "execution_boundary": "native Claude Code CLI / documented non-interactive mode (claude -p, --output-format json|stream-json)",
+    "api_key": "NONE",
+    "console_payg": "NOT USED",
     "fallback": "NONE",
-    "version_policy": "fixed model id gpt-5.6-terra; provider/model/API/region metadata captured per request; if no immutable snapshot id is available, any detected server-side model change -> MODEL_VERSION_DRIFT -> INVALID_MEASUREMENT; no silent pooling across model versions",
-    "region_policy": "Europe-only; if EU data-residency configuration is unavailable for the account -> DEFER; never switch region",
-    "pins": {
-      "provider": "OpenAI",
-      "model_id": "gpt-5.6-terra",
-      "model_version": "policy: per-request capture; drift -> INVALID_MEASUREMENT",
-      "region": "Europe",
-      "reasoning_effort": "to be pinned in the run prereg",
-      "temperature": "to be pinned in the run prereg",
-      "top_p": "to be pinned in the run prereg",
-      "seed": "to be pinned if supported",
-      "max_output_tokens": "to be pinned in the run prereg",
-      "tool_availability": "NO EXTERNAL TOOLS (default)",
-      "system_prompt_version": "to be pinned (hash captured)",
-      "api_version": "captured per request"
-    },
+    "api_credit_fallback": "FORBIDDEN",
+    "model_id": "TO_BE_PINNED_FROM_MAX_ACCOUNT_BEFORE_RUN",
+    "region": "NOT_ASSUMED",
+    "model_policy": "no hard-coded historical model name; MODEL_PIN_GATE captures Claude Code version, auth mode, subscription class = Max, available models and the selected alias/full id before the run prereg is frozen; automatic model change -> MODEL_VERSION_DRIFT -> STOP -> INVALID_MEASUREMENT; no pooling across Opus<->Sonnet, alias resolution or backend change",
+    "capture_per_invocation": [
+      "provider = Anthropic",
+      "access_path = Claude Code",
+      "auth_mode = Max subscription",
+      "claude_code_version",
+      "requested_model",
+      "reported_model",
+      "session_id",
+      "timestamp",
+      "output_format",
+      "max_turns",
+      "system_prompt_hash",
+      "prompt_hash",
+      "dataset_hash",
+      "run_id",
+      "backend_snapshot (NOT_EXPOSED when the CLI does not expose it - documented limitation, never invented)"
+    ],
+    "credential_rule": "the harness must not extract OAuth/session tokens, copy Claude Code credentials into custom HTTP clients, impersonate Claude Code against private endpoints, call the Messages API with subscription credentials, set/use ANTHROPIC_API_KEY, reuse Console PAYG credentials, scrape cookies or reverse-engineer subscription auth; allowed path: LOGOS harness -> native Claude Code CLI -> Claude Code's own authenticated Max session",
+    "cli_policy": "documented flags only (--model, --max-turns, --system-prompt, --append-system-prompt, --allowedTools, --disallowedTools) under the frozen prereg; --dangerously-skip-permissions forbidden",
+    "region_guarantee": "NOT ASSUMED - no claim that an individual Claude Max subscription guarantees a processing region; acceptable for the first run only because data class = SYNTHETIC; re-evaluate before any non-synthetic data",
+    "data_leaving_machine": "synthetic prompts/inputs -> Claude Code -> Anthropic service (not local inference)",
     "trust_boundary": {
-      "data_leaving_local_environment": "synthetic prompts / inputs only (G3)",
-      "metadata_retained": "per-request provider/model/API/region metadata retained in the LOGOS lab",
-      "processing_location": "Europe (required); unavailable -> DEFER",
-      "account_tenant_boundary": "single LOGOS research account; no tenant data",
-      "logging": "provider-side logging assumptions recorded in the run prereg; local capture is complete (G3)",
-      "server_side_model_changes": "detected -> MODEL_VERSION_DRIFT -> INVALID_MEASUREMENT",
-      "outage_rate_limit": "STOP / INVALID_MEASUREMENT; no fallback"
+      "data_leaving_local_environment": "synthetic prompts/inputs only (G3)",
+      "metadata_retained": "per-invocation capture in the LOGOS lab; no tokens stored",
+      "processing_location": "Anthropic service; region not assumed",
+      "account_tenant_boundary": "the founder's Claude Max subscription account; no tenant data",
+      "logging": "Claude Code's own session handling; local capture complete (G3)",
+      "server_side_model_changes": "detected -> MODEL_VERSION_DRIFT -> STOP",
+      "outage_rate_limit": "USAGE_LIMIT_REACHED -> STOP; wait for reset only"
     }
   },
   "G3": {
@@ -94,15 +105,34 @@
     "decision": "APPROVED",
     "owner": "founder",
     "date": "2026-09-18",
-    "verbatim": "G4: APPROVED\n\nCurrency: USD\nMaximum total spend: $30\nMaximum total tokens: 2,000,000\nMaximum requests: 400\nMaximum wall-clock: 3 hours\nMaximum repeats: 10\nMaximum per-run spend: $3.00\n\nJede zuerst erreichte Grenze beendet den Run.\n\nKeine automatische Budgeterhöhung.\nKein Provider-Fallback.\nKein zusätzlicher Batch ohne neue Governance-Freigabe.",
+    "amendment": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1",
+    "verbatim": "G4: amended by founder order INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1 (Sections 11-12)\n\nBilling mode = CLAUDE_MAX_SUBSCRIPTION_ONLY\nIncremental API budget = USD 0\nAnthropic API PAYG = FORBIDDEN\nAPI credit fallback = FORBIDDEN\nConsole auto-reload = NOT RELIED UPON / MUST NOT BE USED FOR THIS RUN\nFallback provider = NONE\n\nmaximum wall-clock = 3 hours\nmaximum experimental repeats = 10\nmaximum Claude Code invocations = 200\nmaximum concurrent Claude Code sessions = 1\nAPI/PAYG spend = USD 0\n\nThe existing OpenAI API budget (USD 30 / 2,000,000 API tokens / 400 API requests / USD 3 per API run) is superseded for this experiment and must not remain an active gate.",
+    "billing_mode": "CLAUDE_MAX_SUBSCRIPTION_ONLY",
+    "incremental_api_budget_usd": 0,
+    "api_payg": "FORBIDDEN",
+    "api_credit_fallback": "FORBIDDEN",
+    "console_auto_reload": "NOT RELIED UPON / MUST NOT BE USED FOR THIS RUN",
+    "fallback_provider": "NONE",
     "currency": "USD",
-    "max_total_spend": 30.0,
-    "max_total_tokens": 2000000,
-    "max_requests": 400,
+    "max_total_spend": 0.0,
+    "max_per_run_spend": 0.0,
     "max_wall_clock_hours": 3,
     "max_repeats": 10,
-    "max_per_run_spend": 3.0,
-    "semantics": "first cap reached ends the run (COST_CAP_REACHED -> STOP); no automatic expansion; no provider fallback; no additional batch without new governance approval"
+    "max_claude_code_invocations": 200,
+    "max_concurrent_sessions": 1,
+    "run_prereg_must_define": [
+      "maximum turns per invocation",
+      "maximum output size",
+      "maximum total accepted trajectories"
+    ],
+    "usage_limit_semantics": "Claude Max usage limit reached -> STOP; allowed: wait for the subscription usage reset; forbidden: switch to API credits, Console PAYG, another provider or model, buy credits; continuation keeps the run identity only if the prereg explicitly permits pause/resume without violating drift assumptions, otherwise a new run",
+    "accounting_language": "incremental PAYG/API inference spend = USD 0; execution consumed Claude Max subscription quota (never 'inference cost = $0' in a total-economic sense)",
+    "quota_nuisance_variables": [
+      "run_start_usage_state",
+      "quota_interruption (yes/no)",
+      "reset_boundary_encountered (yes/no)"
+    ],
+    "superseded_openai_api_budget": "USD 30 / 2,000,000 tokens / 400 requests / USD 3 per run - SUPERSEDED_BY_FOUNDER_AMENDMENT; not an active gate"
   },
   "selected_experiment": {
     "decision": "B",
@@ -120,16 +150,17 @@
   "additional_decisions_verbatim": "Additional governance decisions:\n\nINFERENCE_PROHIBITION = LIFTED_WITH_CONDITIONS\n\nProvider activation:\nGovernance approval\n+\nPassed zero-inference dry run\n= REQUIRED\n\nPrivacy activation:\nSYNTHETIC approved\n+\nrun dataset classified SYNTHETIC\n= REQUIRED\n\nCost activation:\n$30 governance ceiling\n+\nrun-specific prereg cost cap\n= REQUIRED\n\nPrimary metric activation:\nconstruct-valid metric\n+\nexperiment-specific exact source ground truth\n= REQUIRED\n\nProduction bridge:\nPRODUCTION_BRIDGE_READY_WITH_CONDITIONS remains unchanged.\n\nR1–R3:\nremain OPEN.\n\nΓ:\nunchanged.\n\nP7:\nunchanged.\n\nThis governance run itself must still close with:\n\nmodel_calls = 0\nprovider_calls = 0",
   "two_key_rules": {
     "provider": [
-      "governance approval (G2)",
-      "passed zero-inference dry run"
+      "founder approval for the Claude Max path (G2 amended)",
+      "passed Claude-Max-auth zero-inference preflight",
+      "passed experiment dry run"
+    ],
+    "billing": [
+      "Max subscription confirmed",
+      "PAYG / API-key absence confirmed"
     ],
     "privacy": [
       "SYNTHETIC approved (G3)",
       "run dataset classified SYNTHETIC"
-    ],
-    "cost": [
-      "$30 governance ceiling (G4)",
-      "run-specific prereg cost cap"
     ],
     "metric": [
       "construct-valid metric (CONSTRUCT_SUPPORTED / CAUSALLY_DISCRIMINATED)",
@@ -144,7 +175,8 @@
     "this governance run: model_calls = 0, provider_calls = 0",
     "first run: SIMULATION ONLY, NO EXTERNAL TOOLS, no production action path",
     "prereg schema logos.stochastic-prereg/1 frozen before any model call",
-    "drift MODEL_VERSION / PROMPT / PROVIDER / REGION / DATASET / TOOL_SCHEMA -> INVALID_MEASUREMENT (no silent pooling)"
+    "drift MODEL_VERSION / PROMPT / PROVIDER / REGION / DATASET / TOOL_SCHEMA -> INVALID_MEASUREMENT (no silent pooling); automatic Claude model change -> STOP",
+    "first run through the native Claude Code CLI under the Max subscription only; API key / PAYG / credit fallback forbidden; MODEL_PIN_GATE before the run prereg"
   ],
   "artifact_pointer": {
     "run_id": "INFERENCE-GOVERNANCE-LIFT-R1-run-a2c23a8b",
@@ -152,5 +184,104 @@
     "sha256": "365b2fb6d62fbac7cec812a2bcdffa3e2339447c22ba6ff98fe698a41d5082c2",
     "integrity_ok": true
   },
-  "next_work_order": "COGNITIVE-PROVENANCE-ABLATION-R1 (05-WORK-ORDERS/COGNITIVE-PROVENANCE-ABLATION-R1.md; generated, not executed)"
+  "next_work_order": "COGNITIVE-PROVENANCE-ABLATION-R1 (05-WORK-ORDERS/COGNITIVE-PROVENANCE-ABLATION-R1.md; amended Claude Max header; MODEL_PIN_GATE first; generated, not executed)",
+  "superseded": {
+    "G2_openai": {
+      "decision": "APPROVED",
+      "owner": "founder",
+      "date": "2026-09-18",
+      "verbatim": "G2: APPROVED\n\nProvider: OpenAI\nModel: gpt-5.6-terra\nRegion: Europe\nExecution: API\nFallback: NONE\n\nVersion policy:\ngpt-5.6-terra ist die festgelegte Modell-ID. Provider-, Model-, API- und Region-Metadaten müssen pro Request erfasst werden.\n\nFalls keine unveränderliche Snapshot-ID verfügbar ist, muss jede erkannte serverseitige Modelländerung als\n\nMODEL_VERSION_DRIFT → INVALID_MEASUREMENT\n\nbehandelt werden.\n\nEs darf keine stille Zusammenführung von Ergebnissen über unterschiedliche Modellversionen geben.\n\nFalls die erforderliche europäische Region/Data-Residency-Konfiguration für den verwendeten Account nicht verfügbar ist:\n\nDEFER\n\nund nicht auf eine andere Region ausweichen.",
+      "provider": "OpenAI",
+      "model_family": "gpt-5.6",
+      "model_id": "gpt-5.6-terra",
+      "region": "Europe",
+      "execution_boundary": "API",
+      "fallback": "NONE",
+      "version_policy": "fixed model id gpt-5.6-terra; provider/model/API/region metadata captured per request; if no immutable snapshot id is available, any detected server-side model change -> MODEL_VERSION_DRIFT -> INVALID_MEASUREMENT; no silent pooling across model versions",
+      "region_policy": "Europe-only; if EU data-residency configuration is unavailable for the account -> DEFER; never switch region",
+      "pins": {
+        "provider": "OpenAI",
+        "model_id": "gpt-5.6-terra",
+        "model_version": "policy: per-request capture; drift -> INVALID_MEASUREMENT",
+        "region": "Europe",
+        "reasoning_effort": "to be pinned in the run prereg",
+        "temperature": "to be pinned in the run prereg",
+        "top_p": "to be pinned in the run prereg",
+        "seed": "to be pinned if supported",
+        "max_output_tokens": "to be pinned in the run prereg",
+        "tool_availability": "NO EXTERNAL TOOLS (default)",
+        "system_prompt_version": "to be pinned (hash captured)",
+        "api_version": "captured per request"
+      },
+      "trust_boundary": {
+        "data_leaving_local_environment": "synthetic prompts / inputs only (G3)",
+        "metadata_retained": "per-request provider/model/API/region metadata retained in the LOGOS lab",
+        "processing_location": "Europe (required); unavailable -> DEFER",
+        "account_tenant_boundary": "single LOGOS research account; no tenant data",
+        "logging": "provider-side logging assumptions recorded in the run prereg; local capture is complete (G3)",
+        "server_side_model_changes": "detected -> MODEL_VERSION_DRIFT -> INVALID_MEASUREMENT",
+        "outage_rate_limit": "STOP / INVALID_MEASUREMENT; no fallback"
+      },
+      "status": "SUPERSEDED_BY_FOUNDER_AMENDMENT",
+      "superseded_by": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1 (2026-09-18)",
+      "superseded_reason": "the founder's later explicit provider decision (Claude Code / Max subscription) supersedes the OpenAI API configuration; historical evidence preserved"
+    },
+    "G4_openai_api_budget": {
+      "decision": "APPROVED",
+      "owner": "founder",
+      "date": "2026-09-18",
+      "verbatim": "G4: APPROVED\n\nCurrency: USD\nMaximum total spend: $30\nMaximum total tokens: 2,000,000\nMaximum requests: 400\nMaximum wall-clock: 3 hours\nMaximum repeats: 10\nMaximum per-run spend: $3.00\n\nJede zuerst erreichte Grenze beendet den Run.\n\nKeine automatische Budgeterhöhung.\nKein Provider-Fallback.\nKein zusätzlicher Batch ohne neue Governance-Freigabe.",
+      "currency": "USD",
+      "max_total_spend": 30.0,
+      "max_total_tokens": 2000000,
+      "max_requests": 400,
+      "max_wall_clock_hours": 3,
+      "max_repeats": 10,
+      "max_per_run_spend": 3.0,
+      "semantics": "first cap reached ends the run (COST_CAP_REACHED -> STOP); no automatic expansion; no provider fallback; no additional batch without new governance approval",
+      "status": "SUPERSEDED_BY_FOUNDER_AMENDMENT",
+      "superseded_by": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1 (2026-09-18)",
+      "superseded_reason": "the founder's later explicit provider decision (Claude Code / Max subscription) supersedes the OpenAI API configuration; historical evidence preserved"
+    },
+    "note": "governance history; NOT an active gate; the lift artifact 365b2fb6... (run ...-a2c23a8b) is unchanged"
+  },
+  "contamination_check": {
+    "fails_on": [
+      "ANTHROPIC_API_KEY active",
+      "AWS Bedrock Claude credentials selected for the adapter",
+      "Vertex AI Claude credentials selected",
+      "Microsoft Foundry Claude credentials selected",
+      "Console PAYG authentication selected instead of Max"
+    ],
+    "records": "present / absent and auth class only; never values"
+  },
+  "preflight_zero_inference": [
+    "claude executable exists",
+    "Claude Code version captured",
+    "expected auth mode verifiable safely (else STOP for manual status evidence)",
+    "Max subscription selected",
+    "no ANTHROPIC_API_KEY active",
+    "no PAYG path selected",
+    "model selector configurable",
+    "tool restrictions configurable",
+    "structured output mode supported",
+    "artifact paths writable",
+    "prereg valid",
+    "dataset SYNTHETIC",
+    "all metrics registered",
+    "all caps loaded"
+  ],
+  "manual_auth_step": "if needed the founder runs `claude logout` / `claude login` with the Max account; the harness never enters credentials and resumes only after the auth state is confirmed",
+  "amendment": {
+    "id": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1",
+    "date": "2026-09-18",
+    "prereg_hash": "6ad107d5aa86497d8300e3f039fae3d0d2897ee48d1cdf8f36bf2ae012951395",
+    "artifact_pointer": {
+      "run_id": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1-run-cd026db3",
+      "artifact_id": "e6639693dadf124f116a14d25f0880b6",
+      "content_sha256": "e6639693dadf124f116a14d25f0880b6ab5ea6872c919d80a6d5fce0fbfbb238",
+      "integrity_ok": true,
+      "name": "inference-governance-provider-amendment-r1.json"
+    }
+  }
 }

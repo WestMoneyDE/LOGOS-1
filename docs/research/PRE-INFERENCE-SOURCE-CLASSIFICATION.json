@@ -50,7 +50,7 @@
     },
     "docs/research/PRE-INFERENCE-SOURCE-CLASSIFICATION.json": {
       "class": "GOVERNANCE_ONLY",
-      "note": "this classification (extended by registration)"
+      "note": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: governance record / ADR amendment / registry / checklist / report; OpenAI G2/G4 superseded, not deleted"
     },
     "docs/research/PRODUCTION-BRIDGE-SOURCE-CLASSIFICATION.json": {
       "class": "GOVERNANCE_ONLY",
@@ -58,11 +58,11 @@
     },
     "docs/research/REAL-MODEL-READINESS-CHECKLIST.md": {
       "class": "GOVERNANCE_ONLY",
-      "note": "INFERENCE-GOVERNANCE-LIFT-R1: governance record / registry / checklist / report"
+      "note": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: governance record / ADR amendment / registry / checklist / report; OpenAI G2/G4 superseded, not deleted"
     },
     "docs/research/RESEARCH-DELTA-REGISTRY.json": {
       "class": "GOVERNANCE_ONLY",
-      "note": "INFERENCE-GOVERNANCE-LIFT-R1: governance record / registry / checklist / report"
+      "note": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: governance record / ADR amendment / registry / checklist / report; OpenAI G2/G4 superseded, not deleted"
     },
     "docs/research/RESEARCH-EVIDENCE-STRENGTH.md": {
       "class": "GOVERNANCE_ONLY",
@@ -130,7 +130,7 @@
     },
     "tests/test_measurement_readiness.py": {
       "class": "EXPERIMENTAL_DETERMINISTIC",
-      "note": "test suite"
+      "note": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: exact counter inventory extended by claude_code_inference_invocations = 0 (registration, no weakening)"
     },
     "tests/test_memory_authority.py": {
       "class": "EXPERIMENTAL_DETERMINISTIC",
@@ -150,23 +150,51 @@
     },
     "05-WORK-ORDERS/COGNITIVE-PROVENANCE-ABLATION-R1.md": {
       "class": "POST_INFERENCE_SPEC",
-      "note": "INFERENCE-GOVERNANCE-LIFT-R1: generated first real-model order; not executed"
+      "note": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: regenerated with the amended Claude Max header and MODEL_PIN_GATE; not executed"
     },
     "docs/adr/ADR-INFERENCE-GOVERNANCE-LIFT-R1.md": {
       "class": "GOVERNANCE_ONLY",
-      "note": "INFERENCE-GOVERNANCE-LIFT-R1: governance record / registry / checklist / report"
+      "note": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: governance record / ADR amendment / registry / checklist / report; OpenAI G2/G4 superseded, not deleted"
     },
     "docs/research/INFERENCE-GOVERNANCE.json": {
       "class": "GOVERNANCE_ONLY",
-      "note": "INFERENCE-GOVERNANCE-LIFT-R1: governance record / registry / checklist / report"
+      "note": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: governance record / ADR amendment / registry / checklist / report; OpenAI G2/G4 superseded, not deleted"
     },
     "src/logos_research/governance.py": {
       "class": "GOVERNANCE_ONLY",
-      "note": "INFERENCE-GOVERNANCE-LIFT-R1: two-key activation gates and order/prereg binding validators; no provider adapter; no call"
+      "note": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: amended two-key gates (billing), contamination check, model-pin gate, amended order/prereg validators; no client; no call"
     },
     "tests/test_inference_governance.py": {
       "class": "EXPERIMENTAL_DETERMINISTIC",
-      "note": "INFERENCE-GOVERNANCE-LIFT-R1: governance tests, mutants, zero-inference proof"
+      "note": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: historical assertions moved to REG.superseded + hist() record; active assertions on amended record; no test removed"
+    },
+    "05-WORK-ORDERS/NEXT-SESSION-INFERENCE-GOVERNANCE-LIFT-R1.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: amendment notice appended; history preserved"
+    },
+    "05-WORK-ORDERS/NEXT-SESSION-INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: governance record / ADR amendment / registry / checklist / report; OpenAI G2/G4 superseded, not deleted"
+    },
+    "09-SESSIONS/2026-09-18-INFERENCE-GOVERNANCE-LIFT-R1/SESSION-REPORT.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: amendment notice appended; history preserved"
+    },
+    "09-SESSIONS/2026-09-18-INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1/SESSION-REPORT.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: governance record / ADR amendment / registry / checklist / report; OpenAI G2/G4 superseded, not deleted"
+    },
+    "docs/research/INFERENCE-GOVERNANCE-AMENDMENT-SOURCE-CLASSIFICATION.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: governance record / ADR amendment / registry / checklist / report; OpenAI G2/G4 superseded, not deleted"
+    },
+    "src/logos_research/measurement/claude_code.py": {
+      "class": "POST_INFERENCE_SPEC",
+      "note": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: ClaudeCodeMaxProvider adapter CONTRACT (documented CLI argv, forbidden-flag/API-key refusal, presence-only contamination, zero-inference preflight, token-gated invoke with injected runner); invoke() never executed; no HTTP client; no credential handling"
+    },
+    "tests/test_inference_governance_amendment.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: AMD-P1..P18, 15 mutants, zero-inference proof, classification completeness"
     }
   },
   "unclassified": 0

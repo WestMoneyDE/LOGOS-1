@@ -15,6 +15,7 @@ from hypothesis import given, settings
 from hypothesis import strategies as st
 
 import logos_research.measurement as ms
+import logos_research.measurement.claude_code  # noqa: F401  amendment: registers the claude_code_inference_invocations counter
 from logos_research.instrument import InstrumentCharacterization
 from logos_research.measurement import dryrun as dr
 from logos_research.measurement import plan as pl
@@ -146,7 +147,7 @@ def test_dry_run_gates_all_pass_on_synthetic_provider():
     r = ms.dry_run(manifest(), plan(), ITEMS, instrument=instrument())
     assert r.passed and set(r.gates) == set(ms.DRY_RUN_GATES) and r.samples == 12 and abs(r.cost - 0.12) < 1e-9 and r.outcome_status == "VALID"
     assert set(r.rules_exercised) == set(ms.INVALID_REASONS)
-    assert ms.CALLS == {"model_calls": 0, "provider_calls": 0, "dry_run_calls": 12}
+    assert ms.CALLS == {"model_calls": 0, "provider_calls": 0, "dry_run_calls": 12, "claude_code_inference_invocations": 0}   # amendment: Claude Code counter registered, stays 0
 
 
 def test_dry_run_fails_on_untyped_slot_missing_trace_uncharacterized_instrument():
