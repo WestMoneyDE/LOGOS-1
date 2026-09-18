@@ -1,0 +1,102 @@
+{
+  "order": "COGNITIVE-PROVENANCE-ABLATION-R1",
+  "base": "52563dd",
+  "vocabulary": [
+    "EXPERIMENTAL_INFERENCE",
+    "POST_INFERENCE_SPEC",
+    "GOVERNANCE_ONLY",
+    "REFERENCE_FIXTURE",
+    "EXPERIMENTAL_DETERMINISTIC",
+    "PRODUCTION",
+    "HISTORICAL_ONLY",
+    "UNCLASSIFIED"
+  ],
+  "rule": "experiment code stays EXPERIMENTAL_INFERENCE and is never promoted into a production package; Γ, P7, production bridge, canonical effect owner, authority resolver, reference fixtures and historical counterexamples are untouched",
+  "sites": {
+    "src/logos_research/experiments/cognitive_provenance_r1/__init__.py": {
+      "class": "EXPERIMENTAL_INFERENCE",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: package marker; EXPERIMENTAL_INFERENCE; never imported by production packages"
+    },
+    "src/logos_research/experiments/cognitive_provenance_r1/dataset.py": {
+      "class": "EXPERIMENTAL_INFERENCE",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: synthetic tie-design task families, conditions, balance/leakage validators; SYNTHETIC only"
+    },
+    "src/logos_research/experiments/cognitive_provenance_r1/prompts.py": {
+      "class": "EXPERIMENTAL_INFERENCE",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: frozen prompt templates, source wrappers, deterministic T1..T4 transformations with ProvenanceGraph ancestry"
+    },
+    "src/logos_research/experiments/cognitive_provenance_r1/parse.py": {
+      "class": "EXPERIMENTAL_INFERENCE",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: closed structured-response parser; INVALID_OUTPUT on anything else; no LLM judge"
+    },
+    "src/logos_research/experiments/cognitive_provenance_r1/metrics.py": {
+      "class": "EXPERIMENTAL_INFERENCE",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: M10/M32/M33/M34 scoring, Wilson/Newcombe intervals, preregistered verdict rule"
+    },
+    "src/logos_research/experiments/cognitive_provenance_r1/metric_gate.py": {
+      "class": "EXPERIMENTAL_INFERENCE",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: deterministic fixture licensing M32-M34 through the construct gate; METRIC_GATE"
+    },
+    "src/logos_research/experiments/cognitive_provenance_r1/harness.py": {
+      "class": "EXPERIMENTAL_INFERENCE",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: preregistered run loop: gates, budget, hard stops, retry policy, counters, artifact package, integrity"
+    },
+    "src/logos_research/experiments/cognitive_provenance_r1/claude_runner.py": {
+      "class": "EXPERIMENTAL_INFERENCE",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: the only process-start site for `claude`; reachable only with an ActivationToken; documented argv re-checked; no credentials"
+    },
+    "tests/test_cognitive_provenance_r1.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: instrument-first validation, harness properties, 15 harness mutants; fake runner only"
+    },
+    "tests/test_memory_authority.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: content-reader inventory extended by registration (harness reads ProviderResult.content)"
+    },
+    "docs/research/LOGOS-METRIC-CONSTRUCT-REGISTRY.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: M32 PlanAdoption, M33 MonitorDetection, M34 ActionCausalEffect registered (fixture-scoped); scope mapping for M10"
+    },
+    "docs/research/LOGOS-METRIC-CONSTRUCT-REGISTRY.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: rendered registry"
+    },
+    "docs/research/COGNITIVE-PROVENANCE-SOURCE-CLASSIFICATION.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: this classification"
+    },
+    "docs/research/PRE-INFERENCE-SOURCE-CLASSIFICATION.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: living classification extended"
+    },
+    "docs/research/INFERENCE-GOVERNANCE-AMENDMENT-SOURCE-CLASSIFICATION.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: living classification extended"
+    },
+    "05-WORK-ORDERS/NEXT-SESSION-COGNITIVE-PROVENANCE-ABLATION-R1.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: closure record"
+    },
+    "09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1/SESSION-REPORT.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: session report"
+    },
+    "09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1/MODEL-PIN-GATE.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: MODEL_PIN_GATE record (founder decision pending)"
+    },
+    "tests/test_inference_governance.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: diff scope registers the experiment package/records (registration, no weakening)"
+    },
+    "tests/test_inference_governance_amendment.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: diff scope registers the experiment package/records (registration, no weakening)"
+    },
+    "docs/research/RESEARCH-DELTA-REGISTRY.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: delta entry EXECUTED_R1_INVALID_MEASUREMENT"
+    }
+  },
+  "unclassified": 0
+}

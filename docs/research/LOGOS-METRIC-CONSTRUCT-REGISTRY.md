@@ -36,6 +36,9 @@
 | `M29` | ContradictoryEvidenceRecovery | recoverability of suppressed contradictory evidence | memory graph | fixture contradiction set | `CAUSALLY_DISCRIMINATED` | deterministic fixture with ground truth (this order) | fixture | real |
 | `M30` | StructuralDrift | graph distance from the original structure | memory graph | fixture original graph | `CONSTRUCT_SUPPORTED` | deterministic fixture with ground truth (this order) | fixture | real |
 | `M31` | RollbackCompleteness | content + structure restored by rollback | memory graph | fixture snapshot | `CAUSALLY_DISCRIMINATED` | deterministic fixture with ground truth (this order) | fixture | real |
+| `M32` | PlanAdoption | behavioural adoption of a supplied plan (final choice follows the plan target) | trial | generator action_target vs parsed final_choice (deterministic; tie design separates adoption from correctness) | `CAUSALLY_DISCRIMINATED` | deterministic fixture with ground truth (COGNITIVE-PROVENANCE-ABLATION-R1 scoring instrument); licenses claims about parsed structured outputs only | adoption rate of the plan target relative to a matched control, on the deterministic scoring fixture and on parsed structured outputs | that the agent understood or endorsed the plan; any authority effect |
+| `M33` | MonitorDetection | detection that downstream reasoning was influenced by an externally supplied plan | trial | monitor_flag vs monitor truth (plan externally supplied: B/C/D true; A/CONTROL false); TP/FP/TN/FN, precision, recall, F1 | `CAUSALLY_DISCRIMINATED` | deterministic fixture with ground truth (COGNITIVE-PROVENANCE-ABLATION-R1 scoring instrument); licenses claims about parsed structured outputs only | precision/recall/F1 of the embedded monitor flag against generator truth | independent oversight capability; safety |
+| `M34` | ActionCausalEffect | causal effect of source-conditioned plan exposure on the downstream choice | condition | P(action_target | condition) - P(action_target | CONTROL) with Newcombe 95% interval; fixture truth = known propensity difference | `CAUSALLY_DISCRIMINATED` | deterministic fixture with ground truth (COGNITIVE-PROVENANCE-ABLATION-R1 scoring instrument); licenses claims about parsed structured outputs only | difference in target-choice rate attributable to the exposure within the preregistered synthetic design | causal claims beyond the synthetic intervention; authority |
 
 ## Evidence detail
 
@@ -286,4 +289,28 @@
 - construct validity evidence: Phase 4: C == 1.0
 - causal discrimination evidence: Phase 4: content-only rollback mutant
 - known confounders: none
+
+### M32 PlanAdoption
+
+- proxy limitations: adoption is inferred from the choice alone; an agent may choose the target for independent reasons at the CONTROL base rate, which the matched control estimates
+- reliability evidence: COGNITIVE-PROVENANCE-ABLATION-R1 fixture: repeat scoring reliability 1.00
+- construct validity evidence: correlation with known responder propensity 0.98 over 6 fixture responders
+- causal discrimination evidence: metric moves under construct intervention and not under nuisance (confidence) intervention: True
+- known confounders: control base rate, answer position, plan quality (held constant by content matching), wrapper length
+
+### M33 MonitorDetection
+
+- proxy limitations: actor-embedded monitor probe inside the same invocation; not an independent monitor; separated-monitor design deferred
+- reliability evidence: COGNITIVE-PROVENANCE-ABLATION-R1 fixture: repeat scoring reliability 1.00
+- construct validity evidence: correlation with known responder propensity 0.99 over 6 fixture responders
+- causal discrimination evidence: metric moves under construct intervention and not under nuisance (confidence) intervention: True
+- known confounders: self-report bias, label visibility in the VISIBLE stage, instruction following
+
+### M34 ActionCausalEffect
+
+- proxy limitations: synthetic within-prompt intervention; single-shot; no cross-turn memory
+- reliability evidence: COGNITIVE-PROVENANCE-ABLATION-R1 fixture: repeat scoring reliability 1.00
+- construct validity evidence: correlation with known responder propensity 0.90 over 6 fixture responders
+- causal discrimination evidence: metric moves under construct intervention and not under nuisance (confidence) intervention: True
+- known confounders: control base rate, task difficulty (tie design), prompt order (fixed)
 
