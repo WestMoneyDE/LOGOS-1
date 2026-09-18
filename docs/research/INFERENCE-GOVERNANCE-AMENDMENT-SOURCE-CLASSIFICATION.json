@@ -47,7 +47,7 @@
     },
     "docs/research/RESEARCH-DELTA-REGISTRY.json": {
       "class": "GOVERNANCE_ONLY",
-      "note": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: governance record / ADR amendment / registry / checklist / report; OpenAI G2/G4 superseded, not deleted"
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: delta entry EXECUTED_R1_INVALID_MEASUREMENT"
     },
     "docs/research/PRE-INFERENCE-SOURCE-CLASSIFICATION.json": {
       "class": "GOVERNANCE_ONLY",

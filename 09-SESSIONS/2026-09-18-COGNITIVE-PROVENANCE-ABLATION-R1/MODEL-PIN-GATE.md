@@ -52,3 +52,11 @@ selection_owner = founder
 selection_date  = <date>
 ```
 The harness does nothing further until this is recorded here and in the run preregistration.
+
+## 8. Founder decision — recorded (MASTER-AUFTRAG COGNITIVE-PROVENANCE-ABLATION-R1, Section 1)
+```text
+MODEL_PIN = claude-opus-5
+selection_owner = founder
+selection_date = 2026-09-18
+```
+**State:** `MODEL_PIN_GATE = RESOLVED / PASS`. The pin is copied unchanged into the run preregistration (`manifest_template.model_id`), the ActivationToken and the artifact manifest. No model change mid-run; alias resolution or a differing reported model → `MODEL_VERSION_DRIFT` → STOP.

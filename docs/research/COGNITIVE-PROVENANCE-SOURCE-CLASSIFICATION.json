@@ -92,6 +92,10 @@
     "tests/test_inference_governance_amendment.py": {
       "class": "EXPERIMENTAL_DETERMINISTIC",
       "note": "COGNITIVE-PROVENANCE-ABLATION-R1: diff scope registers the experiment package/records (registration, no weakening)"
+    },
+    "docs/research/RESEARCH-DELTA-REGISTRY.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: delta entry EXECUTED_R1_INVALID_MEASUREMENT"
     }
   },
   "unclassified": 0
