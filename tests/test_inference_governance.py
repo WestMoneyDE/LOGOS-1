@@ -1,6 +1,11 @@
 """INFERENCE-GOVERNANCE-LIFT-R1 — governance property tests GOV-P1..P15, 15 governance mutants, zero-inference proof.
 
 No model call, no provider call, no experiment execution.
+
+Amended by INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1 (2026-09-18): the founder superseded the OpenAI API boundary (G2/G4) with
+Anthropic via the native Claude Code CLI under the Claude Max subscription. Historical values are asserted on
+REG["superseded"] (preserved, not deleted) and the superseded API-budget code path is still exercised on a historical
+record (`hist()`); the active record (`gov()`) is asserted on the amended values. No assertion was removed.
 """
 from __future__ import annotations
 
@@ -19,6 +24,7 @@ import logos_research.measurement as ms
 from logos_research import governance as gv
 from logos_research.measurement import construct as cs
 from logos_research.measurement.gateway import CALLS, DryRunProvider, ForbiddenProvider
+import logos_research.measurement.claude_code  # noqa: F401  amendment: registers CALLS["claude_code_inference_invocations"]
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
@@ -26,10 +32,28 @@ REG = json.loads((ROOT / "docs/research/INFERENCE-GOVERNANCE.json").read_text(en
 ORDER = (ROOT / "05-WORK-ORDERS/COGNITIVE-PROVENANCE-ABLATION-R1.md").read_text(encoding="utf-8")
 CAUGHT: dict[str, str] = {}
 H = "a" * 64
+SUP = REG["superseded"]                                   # amendment: superseded OpenAI G2/G4, preserved as governance history
+PIN = "claude-pinned-by-founder"                          # explicit MODEL_PIN_GATE result used by the amended path in tests
+CLEAN = gv.ContaminationReport((), "MAX_SUBSCRIPTION", True)
 
 
 def gov():
     return gv.load_governance()
+
+
+def hist():
+    """The superseded API-budget record (OpenAI, USD 30) — exercises the retained API_BUDGET code path; never the active boundary."""
+    return replace(gov(), provider="OpenAI", model_id="gpt-5.6-terra", region="Europe", billing_mode="API_BUDGET", max_total_spend=30.0, max_total_tokens=2000000, max_requests=400, max_per_run_spend=3.0)
+
+
+def manifest_amended():
+    return {**manifest_template(), "model_id": PIN, "model_version": "per-invocation", "provider": "Anthropic", "provider_region": "NOT_ASSUMED", "code_commit": "60e3703"}
+
+
+def prereg_amended(**o):
+    p = ms.stochastic_preregistration({"privacy_class": "SYNTHETIC"}, manifest_amended(), plan_dict(**{"cost_cap": 0.0, **o}), metric_ids=["M10", "M11"])
+    p["stochastic"]["claude_max_limits"] = {"max_turns_per_invocation": 1, "max_output_size": 20000, "max_total_accepted_trajectories": 400}
+    return p
 
 
 def manifest_template():
@@ -57,7 +81,7 @@ def _zero():
 
 def test_GOV_P1_P15_no_inference_calls_and_counters_zero():
     g = gov()
-    assert CALLS == {"model_calls": 0, "provider_calls": 0, "dry_run_calls": 0}
+    assert set(CALLS) >= {"model_calls", "provider_calls", "dry_run_calls"} and all(v == 0 for v in CALLS.values())      # amendment adds claude_code_inference_invocations
     with pytest.raises(ms.RealProviderForbidden):
         ForbiddenProvider().complete(ms.StochasticRunManifest.from_dict({**manifest_template(), "run_id": "r", "timestamp": "t", "hardware_runtime_metadata": {}}), {"q": 1})
     assert CALLS["model_calls"] == 0 and CALLS["provider_calls"] == 0
@@ -66,17 +90,30 @@ def test_GOV_P1_P15_no_inference_calls_and_counters_zero():
 def test_GOV_record_is_the_founder_decision_verbatim():
     g = gov()
     assert g.lifted and g.inference_state == "LIFTED_WITH_CONDITIONS" and g.decision_owner == "founder" and g.decision_date == "2026-09-18"
-    assert (g.provider, g.model_id, g.region, g.fallback) == ("OpenAI", "gpt-5.6-terra", "Europe", "NONE") and g.allowed_data_classes == ("SYNTHETIC",)
-    assert (g.max_total_spend, g.max_total_tokens, g.max_requests, g.max_wall_clock_hours, g.max_repeats, g.max_per_run_spend) == (30.0, 2000000, 400, 3, 10, 3.0)
+    # historical (superseded, preserved verbatim)
+    s2, s4 = SUP["G2_openai"], SUP["G4_openai_api_budget"]
+    assert (s2["provider"], s2["model_id"], s2["region"], s2["fallback"]) == ("OpenAI", "gpt-5.6-terra", "Europe", "NONE") and g.allowed_data_classes == ("SYNTHETIC",)
+    assert (s4["max_total_spend"], s4["max_total_tokens"], s4["max_requests"], s4["max_wall_clock_hours"], s4["max_repeats"], s4["max_per_run_spend"]) == (30.0, 2000000, 400, 3, 10, 3.0)
+    assert s2["status"] == s4["status"] == "SUPERSEDED_BY_FOUNDER_AMENDMENT" and "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1" in s2["superseded_by"]
+    # active (amended)
+    assert (g.provider, g.access_path, g.auth_mode, g.region, g.fallback, g.api_credit_fallback) == ("Anthropic", "Claude Code", "Claude Max subscription", "NOT_ASSUMED", "NONE", "FORBIDDEN")
+    assert g.billing_mode == "CLAUDE_MAX_SUBSCRIPTION_ONLY" and (g.max_total_spend, g.max_per_run_spend, g.max_wall_clock_hours, g.max_repeats, g.max_claude_code_invocations, g.max_concurrent_sessions) == (0.0, 0.0, 3, 10, 200, 1)
     assert g.selected_experiment == "COGNITIVE-PROVENANCE-ABLATION-R1"
     for k in ("G1", "G2", "G3", "G4", "selected_experiment"):
-        assert REG[k]["verbatim"].startswith(k.replace("selected_experiment", "Tier-A") + ":") and REG[k]["owner"] == "founder"
-    assert "LIFTED_WITH_CONDITIONS" in REG["G1"]["verbatim"] and "Fallback: NONE" in REG["G2"]["verbatim"] and "- SYNTHETIC" in REG["G3"]["verbatim"] and "$30" in REG["G4"]["verbatim"]
-    assert REG["status"] == "INFERENCE_GOVERNANCE_LIFT_APPROVED_R1"
+        assert REG[k]["verbatim"].startswith(k.replace("selected_experiment", "Tier-A") + (" = " if k == "G2" else ":")) and REG[k]["owner"] == "founder"   # amended G2 verbatim reads "G2 = APPROVED"
+    assert "LIFTED_WITH_CONDITIONS" in REG["G1"]["verbatim"] and "Fallback: NONE" in SUP["G2_openai"]["verbatim"] and "- SYNTHETIC" in REG["G3"]["verbatim"] and "$30" in SUP["G4_openai_api_budget"]["verbatim"]
+    assert "Fallback provider: NONE" in REG["G2"]["verbatim"] and "API key: NONE" in REG["G2"]["verbatim"]
+    assert REG["status"].startswith("INFERENCE_GOVERNANCE_LIFT_APPROVED_R1") and "INFERENCE_GOVERNANCE_PROVIDER_AMENDED_R1" in REG["status"]
 
 
 def test_GOV_P2_provider_cannot_activate_without_approval_or_dry_run():
-    g = gov()
+    a = gov()                                                                                             # amended: also needs clean report + preflight + explicit pin
+    assert isinstance(gv.resolve_provider(a, dry_run_passed=False, run_dataset_class="SYNTHETIC", run_cost_cap=0, report=CLEAN, preflight_passed=True, model_pin=PIN), ForbiddenProvider)
+    assert isinstance(gv.resolve_provider(replace(a, g2="DEFERRED"), dry_run_passed=True, run_dataset_class="SYNTHETIC", run_cost_cap=0, report=CLEAN, preflight_passed=True, model_pin=PIN), ForbiddenProvider)
+    assert isinstance(gv.resolve_provider(a, dry_run_passed=True, run_dataset_class="SYNTHETIC", run_cost_cap=0), ForbiddenProvider)
+    spec = gv.resolve_provider(a, dry_run_passed=True, run_dataset_class="SYNTHETIC", run_cost_cap=0, report=CLEAN, preflight_passed=True, model_pin=PIN)
+    assert isinstance(spec, gv.ProviderSpec) and (spec.provider, spec.model_id, spec.region) == ("Anthropic", PIN, "NOT_ASSUMED") and not hasattr(spec, "complete")
+    g = hist()                                                                                            # superseded API-budget path (retained code path)
     assert not gv.provider_activation(g, dry_run_passed=False)
     assert isinstance(gv.resolve_provider(g, dry_run_passed=False, run_dataset_class="SYNTHETIC", run_cost_cap=3.0), ForbiddenProvider)
     unapproved = replace(g, g2="DEFERRED")
@@ -99,7 +136,11 @@ def test_GOV_P3_unapproved_data_class_cannot_reach_provider():
 
 
 def test_GOV_P4_cost_cap_mandatory_and_bounded():
-    g = gov()
+    a = gov()                                                                                             # amended: incremental API spend must be exactly 0
+    assert not gv.cost_activation(a, run_cost_cap=None) and not gv.cost_activation(a, run_cost_cap=3.0) and not gv.cost_activation(a, run_cost_cap=0.01) and gv.cost_activation(a, run_cost_cap=0)
+    assert gv.validate_run_preregistration(prereg_amended(), a) == []
+    assert any("cost cap must be 0" in x for x in gv.validate_run_preregistration(prereg_amended(cost_cap=3.0), a))
+    g = hist()                                                                                            # superseded API-budget path (retained code path)
     assert not gv.cost_activation(g, run_cost_cap=None) and not gv.cost_activation(g, run_cost_cap=0) and not gv.cost_activation(g, run_cost_cap=3.01) and gv.cost_activation(g, run_cost_cap=3.0)
     assert isinstance(gv.resolve_provider(g, dry_run_passed=True, run_dataset_class="SYNTHETIC", run_cost_cap=None), ForbiddenProvider)
     p = gv.validate_run_preregistration(ms.stochastic_preregistration({"privacy_class": "SYNTHETIC"}, manifest_template(), plan_dict(cost_cap=5.0), metric_ids=["M10"]), g)
@@ -132,6 +173,9 @@ def test_GOV_P6_P7_P8_next_order_binds_prereg_metrics_and_drift():
     assert not gv.metric_activation("M04", ground_truth_mapping="synthetic source labels", registry=reg)                # UNVALIDATED never primary
     assert not gv.metric_activation("M10", ground_truth_mapping=None, registry=reg) and not gv.metric_activation("M10", ground_truth_mapping="LLM judge", registry=reg)
     payload = ms.stochastic_preregistration({"privacy_class": "SYNTHETIC"}, manifest_template(), plan_dict(), metric_ids=["M10", "M11"])
+    assert gv.validate_run_preregistration(payload, g), "a superseded OpenAI manifest must not validate against the amended record"
+    assert gv.validate_run_preregistration(prereg_amended(), g) == []
+    g = hist()
     assert gv.validate_run_preregistration(payload, g) == []
     assert gv.validate_run_preregistration({**payload, "privacy_class": "PUBLIC"}, g) and gv.validate_run_preregistration(ms.stochastic_preregistration({"privacy_class": "SYNTHETIC"}, {**manifest_template(), "provider_region": "US"}, plan_dict(), metric_ids=["M10"]), g)
 
@@ -154,7 +198,10 @@ def test_GOV_P10_P11_bridge_not_upgraded_R1_R3_open():
 def test_GOV_P12_P13_P14_gamma_p7_predecessors_unchanged():
     diff = subprocess.run(["git", "diff", "--stat", "ea24e76", "HEAD", "--", "GAMMA.md", "src/logos_gamma", "src/logos_authority", "src/logos_runtime", "src/logos_audit", "src/logos_effects", "src/logos_memory",
                            "src/logos_research/experiments", "src/logos_research/measurement", "docs/research/2026-08-20-PERSISTENT-STATE-PRIOR-ART-DELTA.md", "05-WORK-ORDERS/NEXT-SESSION-*", ":(exclude)05-WORK-ORDERS/NEXT-SESSION-INFERENCE-GOVERNANCE-LIFT-R1.md",
-                           "09-SESSIONS", ":(exclude)09-SESSIONS/2026-09-18-INFERENCE-GOVERNANCE-LIFT-R1"],
+                           "09-SESSIONS", ":(exclude)09-SESSIONS/2026-09-18-INFERENCE-GOVERNANCE-LIFT-R1",
+                           # INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: its own records and the adapter contract (frozen-hash checked by its own suite)
+                           ":(exclude)05-WORK-ORDERS/NEXT-SESSION-INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1.md", ":(exclude)09-SESSIONS/2026-09-18-INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1",
+                           ":(exclude)src/logos_research/measurement/claude_code.py"],
                           capture_output=True, text=True, cwd=ROOT).stdout.strip()
     assert diff == "", diff
     p7 = (ROOT / "docs/research/2026-08-20-PERSISTENT-STATE-PRIOR-ART-DELTA.md").read_bytes()
@@ -189,10 +236,12 @@ def test_ZERO_inference_proof():
                 assert tok not in txt, (py, tok)
         tree = ast.parse(txt)
         for n in ast.walk(tree):
-            if isinstance(n, ast.ClassDef) and any(isinstance(b, ast.FunctionDef) and b.name == "complete" for b in n.body):
+            if isinstance(n, ast.ClassDef) and any(isinstance(b, ast.FunctionDef) and b.name in ("complete", "invoke") for b in n.body):
                 adapters.add(f"{str(py.relative_to(SRC)).replace(chr(92), '/')}::{n.name}")
     # adapter inventory: the protocol, the forbidden guard and the synthetic dry-run provider — nothing that can reach a model
-    assert adapters == {"logos_research/measurement/gateway.py::ProviderGateway", "logos_research/measurement/gateway.py::ForbiddenProvider", "logos_research/measurement/gateway.py::DryRunProvider"}
+    assert adapters == {"logos_research/measurement/gateway.py::ProviderGateway", "logos_research/measurement/gateway.py::ForbiddenProvider", "logos_research/measurement/gateway.py::DryRunProvider",
+                        "logos_research/measurement/claude_code.py::ClaudeCodeMaxProvider"}                    # amendment: contract only; invoke() needs an ActivationToken + injected runner
+    assert CALLS["claude_code_inference_invocations"] == 0
     gtxt = (SRC / "logos_research/governance.py").read_text(encoding="utf-8")
     assert "def complete" not in gtxt and "ProviderSpec" in gtxt
 
@@ -202,14 +251,18 @@ def test_ZERO_inference_proof():
 # ==========================================================================
 
 def _battery():
-    g = gov()
-    assert g.lifted and g.g1 == "LIFT" and REG["G1"]["owner"] == "founder", "M1"
+    a = gov(); g = hist()
+    assert a.lifted and a.g1 == "LIFT" and REG["G1"]["owner"] == "founder", "M1"
     assert isinstance(gv.resolve_provider(g, dry_run_passed=False, run_dataset_class="SYNTHETIC", run_cost_cap=3.0), ForbiddenProvider), "M2"
-    assert g.model_id == "gpt-5.6-terra" and gv.validate_experiment_order(ORDER.replace("APPROVED_MODEL = gpt-5.6-terra", "APPROVED_MODEL = gpt-other"), g), "M3"
-    assert g.fallback == "NONE", "M4"
+    assert isinstance(gv.resolve_provider(a, dry_run_passed=False, run_dataset_class="SYNTHETIC", run_cost_cap=0, report=CLEAN, preflight_passed=True, model_pin=PIN), ForbiddenProvider), "M2"
+    assert SUP["G2_openai"]["model_id"] == "gpt-5.6-terra" and a.model_id == gv.MODEL_PIN_PLACEHOLDER, "M3"
+    assert gv.validate_experiment_order(ORDER.replace("APPROVED_MODEL = TO_BE_PINNED_FROM_MAX_ACCOUNT_BEFORE_RUN", "APPROVED_MODEL = gpt-other"), a), "M3"
+    assert gv.validate_experiment_order(ORDER.replace("APPROVED_PROVIDER = Anthropic", "APPROVED_PROVIDER = OpenAI"), a), "M3"
+    assert g.fallback == "NONE" and a.fallback == "NONE" and a.api_credit_fallback == "FORBIDDEN", "M4"
     assert not gv.privacy_activation(g, run_dataset_class="PRODUCTION_CUSTOMER_DATA") and not gv.privacy_activation(g, run_dataset_class="SENSITIVE_PERSONAL_DATA"), "M5"
-    assert not gv.cost_activation(g, run_cost_cap=None), "M6"
-    assert not gv.cost_activation(g, run_cost_cap=31.0) and g.max_total_spend == 30.0, "M7"
+    assert not gv.cost_activation(g, run_cost_cap=None) and not gv.cost_activation(a, run_cost_cap=None), "M6"
+    assert not gv.cost_activation(g, run_cost_cap=31.0) and g.max_total_spend == 30.0 and SUP["G4_openai_api_budget"]["max_total_spend"] == 30.0, "M7"
+    assert not gv.cost_activation(a, run_cost_cap=1.0) and a.max_total_spend == 0.0, "M7"
     assert not gv.metric_activation("M04", ground_truth_mapping="exact"), "M8"
     assert gv.validate_run_preregistration({"privacy_class": "SYNTHETIC"}, g), "M9"
     p = ms.stochastic_preregistration({"privacy_class": "SYNTHETIC"}, manifest_template(), plan_dict(invalid_measurement_criteria=[r for r in ms.INVALID_REASONS if r != "MODEL_VERSION_DRIFT"]), metric_ids=["M10"])
@@ -218,7 +271,7 @@ def _battery():
     assert any("PROMPT_DRIFT" in x for x in gv.validate_run_preregistration(p, g)), "M11"
     assert CALLS["provider_calls"] == 0 and CALLS["model_calls"] == 0, "M12"
     assert all(d["value"] != "PRODUCTION_BRIDGE_READY" for d in json.loads((ROOT / "docs/research/CANONICAL-EFFECT-OWNER.json").read_text(encoding="utf-8"))["governance_decisions"]), "M13"
-    assert "R1-R3 remain OPEN" in " ".join(g.raw["conditions"]), "M14"
+    assert "R1-R3 remain OPEN" in " ".join(a.raw["conditions"]), "M14"
     p7 = (ROOT / "docs/research/2026-08-20-PERSISTENT-STATE-PRIOR-ART-DELTA.md").read_bytes()
     assert hashlib.sha256(p7[p7.index(b"## Consciousness / P7 boundary"):]).hexdigest() == P7_HASH, "M15"
 
@@ -233,10 +286,10 @@ def _m(name):
     def m2(mp):
         mp.setattr(gv, "provider_activation", lambda g, *, dry_run_passed: g.g2 == "APPROVED")
         real = gv.resolve_provider
-        mp.setattr(gv, "resolve_provider", lambda g, **k: gv.ProviderSpec(g.provider, g.model_id, g.region, g.fallback) if g.g2 == "APPROVED" else real(g, **k))
+        mp.setattr(gv, "resolve_provider", lambda g, **k: gv.ProviderSpec(g.provider, k.get("model_pin") or g.model_id, g.region, g.fallback) if g.g2 == "APPROVED" else real(g, **k))
     def m3(mp):
         real = gv.validate_experiment_order
-        mp.setattr(gv, "validate_experiment_order", lambda text, g: [x for x in real(text, g) if "provider/model" not in x])
+        mp.setattr(gv, "validate_experiment_order", lambda text, g: [x for x in real(text, g) if "provider/model" not in x and "access path" not in x and "MODEL_PIN_GATE placeholder" not in x])
     def m4(mp):
         mp.setattr(gv, "load_governance", lambda path=None: replace(real_load(path), fallback="gpt-5.5"))
     def m5(mp):
