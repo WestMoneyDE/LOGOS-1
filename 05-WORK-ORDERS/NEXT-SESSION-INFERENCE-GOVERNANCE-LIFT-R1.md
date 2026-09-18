@@ -28,3 +28,8 @@ findings   GOV-F1 LOW (persistent-DB run-id collision in a predecessor infra tes
 `COGNITIVE-PROVENANCE-ABLATION-R1` — `05-WORK-ORDERS/COGNITIVE-PROVENANCE-ABLATION-R1.md`. Before its first model call it must: add and review a
 provider adapter (none exists), register PlanAdoption / MonitorDetection / ActionCausalEffect in the construct registry, freeze a
 `logos.stochastic-prereg/1` preregistration within the G4 caps, and pass the zero-inference dry run. Not started here.
+
+
+---
+
+**Amendment notice (2026-09-18, `INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1`):** the G2/G4 provider boundary recorded above (OpenAI `gpt-5.6-terra`, Europe, USD 30 API budget) is `SUPERSEDED_BY_FOUNDER_AMENDMENT`. Active boundary: Anthropic via the native Claude Code CLI under the Claude Max subscription, API key NONE, PAYG/credit fallback FORBIDDEN, model pinned at `MODEL_PIN_GATE`, region guarantee NOT ASSUMED. This record is preserved as governance history; the lift artifact `365b2fb6…` is unchanged.

@@ -91,3 +91,8 @@ First pass **4160 passed / 2 failed / 2 skipped**: (1) `test_pre_inference_readi
 
 ## AP. Next work order (exactly one, generated, NOT executed)
 `COGNITIVE-PROVENANCE-ABLATION-R1` — `05-WORK-ORDERS/COGNITIVE-PROVENANCE-ABLATION-R1.md`, header `INFERENCE_GOVERNANCE = APPROVED · APPROVED_PROVIDER = OpenAI · APPROVED_MODEL = gpt-5.6-terra · APPROVED_REGION = Europe · APPROVED_DATA_CLASSES = SYNTHETIC · MAX_BUDGET = 30 USD · MAX_REQUESTS = 400 · MAX_TOKENS = 2000000 · PREREG_SCHEMA = logos.stochastic-prereg/1 · DRY_RUN_REQUIRED = true · PRODUCTION_ACTIONS = forbidden`; validated by `governance.validate_experiment_order()`. Its execution requires: a reviewed provider adapter, a frozen run preregistration, registration of the three new metrics, a passed zero-inference dry run — and it is not started here.
+
+
+---
+
+**Amendment notice (2026-09-18, `INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1`):** the G2/G4 provider boundary recorded above (OpenAI `gpt-5.6-terra`, Europe, USD 30 API budget) is `SUPERSEDED_BY_FOUNDER_AMENDMENT`. Active boundary: Anthropic via the native Claude Code CLI under the Claude Max subscription, API key NONE, PAYG/credit fallback FORBIDDEN, model pinned at `MODEL_PIN_GATE`, region guarantee NOT ASSUMED. This record is preserved as governance history; the lift artifact `365b2fb6…` is unchanged.
