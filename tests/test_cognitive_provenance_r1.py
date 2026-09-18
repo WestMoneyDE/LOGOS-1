@@ -320,6 +320,7 @@ def test_governance_binding_and_predecessor_protection():
     assert gv.validate_experiment_order(order, g) == []
     diff = subprocess.run(["git", "diff", "--stat", "52563dd", "HEAD", "--", "GAMMA.md", "src/logos_gamma", "src/logos_authority", "src/logos_runtime", "src/logos_audit", "src/logos_effects", "src/logos_memory",
                            "src/logos_research/governance.py", "src/logos_research/measurement", "src/logos_research/experiments", ":(exclude)src/logos_research/experiments/cognitive_provenance_r1",
+                           ":(exclude)src/logos_research/measurement/result_model.py", ":(exclude)src/logos_research/measurement/claude_code.py",   # COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: resolver + repaired adapter (hash-recorded in the repair prereg/artifact)
                            "docs/research/2026-08-20-PERSISTENT-STATE-PRIOR-ART-DELTA.md", "docs/research/CANONICAL-EFFECT-OWNER.json", "docs/research/INFERENCE-GOVERNANCE.json"],
                           capture_output=True, text=True, cwd=ROOT).stdout.strip()
     assert diff == "", diff

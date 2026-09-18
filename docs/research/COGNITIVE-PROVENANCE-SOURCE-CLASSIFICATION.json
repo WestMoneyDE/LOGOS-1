@@ -47,7 +47,7 @@
     },
     "tests/test_cognitive_provenance_r1.py": {
       "class": "EXPERIMENTAL_DETERMINISTIC",
-      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: fake runner speaks documented stream-json/modelUsage incl. auxiliary entry"
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: fake runner speaks documented json/stream-json; diff scope registers resolver + repaired adapter"
     },
     "tests/test_memory_authority.py": {
       "class": "EXPERIMENTAL_DETERMINISTIC",
@@ -87,7 +87,7 @@
     },
     "tests/test_inference_governance.py": {
       "class": "EXPERIMENTAL_DETERMINISTIC",
-      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: diff scope registers the experiment package/records (registration, no weakening)"
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: diff scope registers resolver + repaired adapter (registration, no weakening)"
     },
     "tests/test_inference_governance_amendment.py": {
       "class": "EXPERIMENTAL_DETERMINISTIC",
