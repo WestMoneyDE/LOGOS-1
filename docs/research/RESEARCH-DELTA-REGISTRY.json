@@ -697,17 +697,17 @@
     {
       "id": "COGNITIVE-PROVENANCE-ABLATION",
       "track": "real-model",
-      "status": "GENERATED_NOT_EXECUTED",
+      "status": "EXECUTED_R1_FALSIFIED",
       "record": "05-WORK-ORDERS/COGNITIVE-PROVENANCE-ABLATION-R1.md",
       "falsification_power": 4,
       "expected_information_gain": 4,
       "dependency_readiness": 4,
       "implementation_cost": 3,
       "compute_cost": 2,
-      "measurement_quality": 3,
+      "measurement_quality": 4,
       "priority_score": 0.0,
       "rank": 0,
-      "note": "first governed real-model experiment; bound to logos.stochastic-prereg/1, construct-valid metrics, two-key rules, zero-inference dry run; not executed"
+      "note": "rerun after instrument repair: 156/156 trials, COGNITIVE_PROVENANCE_HYPOTHESIS_FALSIFIED_R1 by frozen criteria; floor effect (SELF_DERIVED 144/144 even with visible labels), weak plan influence; historical invalid run 1546654c preserved"
     },
     {
       "id": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT",
@@ -727,17 +727,32 @@
     {
       "id": "COGNITIVE-PROVENANCE-ABLATION",
       "track": "cognitive-provenance",
-      "status": "EXECUTED_R1_INVALID_MEASUREMENT",
+      "status": "EXECUTED_R1_FALSIFIED",
       "record": "09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1/SESSION-REPORT.md",
       "falsification_power": 4,
       "expected_information_gain": 4,
       "dependency_readiness": 4,
       "implementation_cost": 3,
       "compute_cost": 1,
-      "measurement_quality": 2,
+      "measurement_quality": 4,
       "priority_score": 0.0,
       "rank": 0,
-      "note": "first governed real-model run (claude-opus-5 via Claude Code / Max): 1 of 156 trials issued, MODEL_VERSION_DRIFT (auxiliary haiku entry in modelUsage) -> preregistered STOP; INVALID_MEASUREMENT, no scientific result; repair order named"
+      "note": "rerun after instrument repair: 156/156 trials, COGNITIVE_PROVENANCE_HYPOTHESIS_FALSIFIED_R1 by frozen criteria; floor effect (SELF_DERIVED 144/144 even with visible labels), weak plan influence; historical invalid run 1546654c preserved"
+    },
+    {
+      "id": "COGNITIVE-PROVENANCE-INSTRUMENT-REPAIR",
+      "track": "measurement-instrument",
+      "status": "EXECUTED_R1_VALIDATED",
+      "record": "09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1/SESSION-REPORT.md",
+      "falsification_power": 3,
+      "expected_information_gain": 3,
+      "dependency_readiness": 5,
+      "implementation_cost": 2,
+      "compute_cost": 1,
+      "measurement_quality": 4,
+      "priority_score": 0.0,
+      "rank": 0,
+      "note": "result-model resolver (documented evidence, never modelUsage key order); CPA_INSTRUMENT_REPAIR_VALIDATED_R1"
     }
   ]
 }

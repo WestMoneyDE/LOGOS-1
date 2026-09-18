@@ -51,7 +51,7 @@
     },
     "docs/research/PRE-INFERENCE-SOURCE-CLASSIFICATION.json": {
       "class": "GOVERNANCE_ONLY",
-      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: living classification extended"
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: living classification extended"
     },
     "docs/research/PRODUCTION-BRIDGE-SOURCE-CLASSIFICATION.json": {
       "class": "GOVERNANCE_ONLY",
@@ -63,7 +63,7 @@
     },
     "docs/research/RESEARCH-DELTA-REGISTRY.json": {
       "class": "GOVERNANCE_ONLY",
-      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: delta entry EXECUTED_R1_INVALID_MEASUREMENT"
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: delta entries"
     },
     "docs/research/RESEARCH-EVIDENCE-STRENGTH.md": {
       "class": "GOVERNANCE_ONLY",
@@ -167,7 +167,7 @@
     },
     "tests/test_inference_governance.py": {
       "class": "EXPERIMENTAL_DETERMINISTIC",
-      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: diff scope registers the experiment package/records (registration, no weakening)"
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: diff scope registers resolver + repaired adapter (registration, no weakening)"
     },
     "05-WORK-ORDERS/NEXT-SESSION-INFERENCE-GOVERNANCE-LIFT-R1.md": {
       "class": "GOVERNANCE_ONLY",
@@ -187,15 +187,15 @@
     },
     "docs/research/INFERENCE-GOVERNANCE-AMENDMENT-SOURCE-CLASSIFICATION.json": {
       "class": "GOVERNANCE_ONLY",
-      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: living classification extended"
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: living classification extended"
     },
     "src/logos_research/measurement/claude_code.py": {
       "class": "POST_INFERENCE_SPEC",
-      "note": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: ClaudeCodeMaxProvider adapter CONTRACT (documented CLI argv, forbidden-flag/API-key refusal, presence-only contamination, zero-inference preflight, token-gated invoke with injected runner); invoke() never executed; no HTTP client; no credential handling"
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: adapter repaired — resolver-based drift, cc-status/2 classifier, stream-json events, ActivationToken v2 bindings, RESULT_MODEL_AMBIGUOUS"
     },
     "tests/test_inference_governance_amendment.py": {
       "class": "EXPERIMENTAL_DETERMINISTIC",
-      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: diff scope registers the experiment package/records (registration, no weakening)"
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: drift probes now use documented modelUsage evidence; undocumented top-level model -> AMBIGUOUS asserted (strengthened)"
     },
     "src/logos_research/experiments/cognitive_provenance_r1/__init__.py": {
       "class": "EXPERIMENTAL_INFERENCE",
@@ -223,19 +223,19 @@
     },
     "src/logos_research/experiments/cognitive_provenance_r1/harness.py": {
       "class": "EXPERIMENTAL_INFERENCE",
-      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: preregistered run loop: gates, budget, hard stops, retry policy, counters, artifact package, integrity"
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: resolution logging, acceptance requires RESOLVED == pin, token v2 binding, auxiliary audit, scaffolding summary/CV rule"
     },
     "src/logos_research/experiments/cognitive_provenance_r1/claude_runner.py": {
       "class": "EXPERIMENTAL_INFERENCE",
-      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: the only process-start site for `claude`; reachable only with an ActivationToken; documented argv re-checked; no credentials"
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: isolated working directory for the research subprocess"
     },
     "tests/test_cognitive_provenance_r1.py": {
       "class": "EXPERIMENTAL_DETERMINISTIC",
-      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: instrument-first validation, harness properties, 15 harness mutants; fake runner only"
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: fake runner speaks documented json/stream-json; diff scope registers resolver + repaired adapter"
     },
     "docs/research/COGNITIVE-PROVENANCE-SOURCE-CLASSIFICATION.json": {
       "class": "GOVERNANCE_ONLY",
-      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: this classification"
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: living classification extended"
     },
     "05-WORK-ORDERS/NEXT-SESSION-COGNITIVE-PROVENANCE-ABLATION-R1.md": {
       "class": "GOVERNANCE_ONLY",
@@ -248,6 +248,38 @@
     "09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1/MODEL-PIN-GATE.md": {
       "class": "GOVERNANCE_ONLY",
       "note": "COGNITIVE-PROVENANCE-ABLATION-R1: MODEL_PIN_GATE record (founder decision pending)"
+    },
+    "src/logos_research/measurement/result_model.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: ResultModelResolution resolver (documented evidence only; never modelUsage key order); no I/O, no network"
+    },
+    "tests/test_cpa_instrument_repair.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: captured fixture, F1-F12 oracle + independent reference parser, IR-P1..P10, R-M1..R-M15"
+    },
+    "tests/fixtures/claude_code/cpa_r1_first_invocation_raw.json": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: byte-for-byte stdout of the invalid run's invocation 1 (raw log artifact 5f887962…); sha256 d8898c97…"
+    },
+    "tests/fixtures/claude_code/resolver_fixtures.json": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: declarative oracle F1-F12 with hard-coded expected classifications"
+    },
+    "docs/research/CLAUDE-CODE-OUTPUT-CONTRACT-R1.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: official output contract note"
+    },
+    "docs/research/CPA-INSTRUMENT-REPAIR-SOURCE-CLASSIFICATION.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: this classification"
+    },
+    "05-WORK-ORDERS/NEXT-SESSION-COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: closure record"
+    },
+    "09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1/SESSION-REPORT.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: session report (repair + rerun)"
     }
   },
   "unclassified": 0

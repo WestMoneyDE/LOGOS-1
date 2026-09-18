@@ -109,10 +109,14 @@ def test_AMD_P9_usage_limit_stop_and_P10_model_drift():
     assert cc.classify_stderr("Invalid API key · console billing") == "AUTH_NOT_MAX_SUBSCRIPTION"
     assert "USAGE_LIMIT_REACHED" in ORDER and "wait for the subscription usage reset" in ORDER and "MODEL_VERSION_DRIFT" in ORDER
     # a reported model that is not the pin is MODEL_DRIFT on the adapter (fake runner; counters are reset by the fixture after the test)
-    p = cc.ClaudeCodeMaxProvider(runner=lambda argv, t, env: (0, json.dumps({"model": "claude-other", "result": "x", "session_id": "s"}), ""))
-    tok = cc.ActivationToken("run-1", "claude-pinned", 1, 1)
+    # INSTRUMENT-REPAIR-R1: drift needs documented evidence — modelUsage without the pin (PIN_MISSING); an undocumented top-level `model` alone is AMBIGUOUS, never accepted
+    p = cc.ClaudeCodeMaxProvider(runner=lambda argv, t, env: (0, json.dumps({"result": "x", "session_id": "s", "modelUsage": {"claude-other": {"outputTokens": 5}}}), ""))
+    tok = cc.ActivationToken("run-1", "claude-pinned", 2, 1)
     r = p.invoke("q", "claude-pinned", {"run_id": "run-1"}, cc.Limits(1, 1000, 5.0), token=tok, env=CLEAN_ENV)
-    assert r.status == "MODEL_DRIFT" and CALLS["claude_code_inference_invocations"] == 1      # the fake path counts — proving the counter works
+    assert r.status == "MODEL_DRIFT" and r.resolution.status == "PIN_MISSING" and CALLS["claude_code_inference_invocations"] == 1      # the fake path counts — proving the counter works
+    p = cc.ClaudeCodeMaxProvider(runner=lambda argv, t, env: (0, json.dumps({"model": "claude-other", "result": "x", "session_id": "s"}), ""))
+    r = p.invoke("q", "claude-pinned", {"run_id": "run-1"}, cc.Limits(1, 1000, 5.0), token=tok, env=CLEAN_ENV)
+    assert r.status == "RESULT_MODEL_AMBIGUOUS" and r.content is None
     CALLS["claude_code_inference_invocations"] = 0; ms.reset_counters()
 
 
@@ -217,7 +221,7 @@ def _battery():
     assert cc.classify_stderr("usage limit reached") == "USAGE_LIMIT_REACHED" and g.raw["G4"]["api_credit_fallback"] == "FORBIDDEN", "M4"
     src = (SRC / "logos_research/measurement/claude_code.py").read_text(encoding="utf-8")
     assert "def invoke" in src and "token" in src and "credentials.json" not in src and ".claude/" not in src, "M5"
-    fake = cc.ClaudeCodeMaxProvider(runner=lambda argv, t, env: (0, json.dumps({"model": "claude-sonnet-x", "result": "x"}), ""))
+    fake = cc.ClaudeCodeMaxProvider(runner=lambda argv, t, env: (0, json.dumps({"result": "x", "modelUsage": {"claude-sonnet-x": {"outputTokens": 1}}}), ""))    # repair R1: documented evidence
     out = fake.invoke("q", "claude-opus-x", {"run_id": "r"}, cc.Limits(1, 1000, 1.0), token=cc.ActivationToken("r", "claude-opus-x", 5, 1), env=CLEAN_ENV)
     assert out.status == "MODEL_DRIFT", "M6"
     CALLS["claude_code_inference_invocations"] = 0; ms.reset_counters()             # the fake-runner drift probe is not an inference; reset before the zero check
