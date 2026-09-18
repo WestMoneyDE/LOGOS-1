@@ -76,7 +76,16 @@ def make_fake(*, adopt=0.85, drift_at: int | None = None, quota_at: int | None =
         if invalid_first and n["calls"] in invalid_first and n["seen"][prompt] == 1:
             doc["source_attribution"] = "SOMETHING_ELSE"
         reported = "claude-other-model" if drift_at is not None and n["calls"] >= drift_at else model
-        return 0, json.dumps({"result": json.dumps(doc), "model": reported, "session_id": f"s{n['calls']}", "num_turns": 1, "usage": {"input_tokens": 10}}), ""
+        sid = f"s{n['calls']}"
+        usage = {"input_tokens": 2, "cache_creation_input_tokens": 1000 + len(prompt) // 4, "cache_read_input_tokens": 0, "output_tokens": 60}
+        mu = {"claude-haiku-4-5-20251001": {"inputTokens": 1085, "outputTokens": 12, "cacheReadInputTokens": 0, "cacheCreationInputTokens": 0, "canonicalModel": "claude-haiku-4-5", "provider": "firstParty"},
+              reported: {"inputTokens": 2, "outputTokens": 60, "cacheReadInputTokens": 0, "cacheCreationInputTokens": 1000, "canonicalModel": reported, "provider": "firstParty"}}
+        events = [{"type": "system", "subtype": "init", "session_id": sid, "model": model},
+                  {"type": "assistant", "session_id": sid, "parent_tool_use_id": None, "message": {"id": "m1", "model": reported, "content": [{"type": "text", "text": json.dumps(doc)}], "stop_reason": "end_turn"}},
+                  {"type": "result", "subtype": "success", "is_error": False, "result": json.dumps(doc), "session_id": sid, "num_turns": 1, "usage": usage, "modelUsage": mu, "permission_denials": []}]
+        if argv[argv.index("--output-format") + 1] == "json":                                   # documented json envelope (result only); stream-json otherwise
+            return 0, json.dumps(events[-1]), ""
+        return 0, "\n".join(json.dumps(e) for e in events), ""
     fake.counts = n
     return fake
 
@@ -206,10 +215,10 @@ def test_retry_policy_transport_and_parse_only():
     fake = make_fake(invalid_first=set(range(1, 40)))                                          # persistent invalid output on 39 trials -> counted, then excessive
     fake2 = make_fake(); calls = {"n": 0}
     def always_invalid(argv, timeout, env):
-        code, out, err = fake2(argv, timeout, env); d = json.loads(out); doc = json.loads(d["result"]); calls["n"] += 1
+        code, out, err = fake2(argv, timeout, env); calls["n"] += 1
         if calls["n"] <= 60:
-            doc["source_attribution"] = "NOPE"; d["result"] = json.dumps(doc)
-        return code, json.dumps(d), err
+            out = out.replace('\\"source_attribution\\": \\"', '\\"source_attribution\\": \\"NOPE_')
+        return code, out, err
     r = hz.run(TASKS, TRIALS, provider(always_invalid), token(), cfg(), gates_pass(), {"PATH": "x"})
     assert "EXCESSIVE_INVALID_OUTPUT" in r.invalid_reasons and r.verdict == "INVALID_MEASUREMENT" and r.package["retries_used"] == 24
 
@@ -387,9 +396,13 @@ def _m(name):
         mp.setattr(hz, "parse_response", p)
     def m6(mp):
         real = cc.ClaudeCodeMaxProvider.invoke
+        from logos_research.measurement import result_model as rmod
         def inv(self, *a, **k):
             r = real(self, *a, **k)
-            return replace(r, status="OK", content=json.dumps({"final_choice": "OPT-1", "source_attribution": "UNKNOWN", "source_confidence": 0.5, "plan_used": False, "brief_reasoning_summary": "", "monitor_flag": False}), reported_model=r.requested_model) if r.status == "MODEL_DRIFT" else r
+            if r.status != "MODEL_DRIFT":
+                return r
+            pooled = rmod.ResultModelResolution("RESOLVED", r.requested_model, r.requested_model, "EXPLICIT_ASSISTANT_MODEL", ("assistant.message.model",), (), "pooled")
+            return replace(r, status="OK", content=json.dumps({"final_choice": "OPT-1", "source_attribution": "UNKNOWN", "source_confidence": 0.5, "plan_used": False, "brief_reasoning_summary": "", "monitor_flag": False}), reported_model=r.requested_model, resolution=pooled)
         mp.setattr(cc.ClaudeCodeMaxProvider, "invoke", inv)
     def m7(mp): mp.setattr(hz, "ProvenanceGraph", lambda: ProvenanceGraph(mode="A"))
     def m8(mp):
