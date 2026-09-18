@@ -201,7 +201,9 @@ def test_GOV_P12_P13_P14_gamma_p7_predecessors_unchanged():
                            "09-SESSIONS", ":(exclude)09-SESSIONS/2026-09-18-INFERENCE-GOVERNANCE-LIFT-R1",
                            # INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: its own records and the adapter contract (frozen-hash checked by its own suite)
                            ":(exclude)05-WORK-ORDERS/NEXT-SESSION-INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1.md", ":(exclude)09-SESSIONS/2026-09-18-INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1",
-                           ":(exclude)src/logos_research/measurement/claude_code.py"],
+                           ":(exclude)src/logos_research/measurement/claude_code.py",
+                           ":(exclude)src/logos_research/experiments/cognitive_provenance_r1", ":(exclude)09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1", ":(exclude)05-WORK-ORDERS/NEXT-SESSION-COGNITIVE-PROVENANCE-ABLATION-R1.md"],   # COGNITIVE-PROVENANCE-ABLATION-R1: its own EXPERIMENTAL_INFERENCE package and records
+
                           capture_output=True, text=True, cwd=ROOT).stdout.strip()
     assert diff == "", diff
     p7 = (ROOT / "docs/research/2026-08-20-PERSISTENT-STATE-PRIOR-ART-DELTA.md").read_bytes()

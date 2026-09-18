@@ -84,6 +84,14 @@
     "09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1/MODEL-PIN-GATE.md": {
       "class": "GOVERNANCE_ONLY",
       "note": "COGNITIVE-PROVENANCE-ABLATION-R1: MODEL_PIN_GATE record (founder decision pending)"
+    },
+    "tests/test_inference_governance.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: diff scope registers the experiment package/records (registration, no weakening)"
+    },
+    "tests/test_inference_governance_amendment.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: diff scope registers the experiment package/records (registration, no weakening)"
     }
   },
   "unclassified": 0

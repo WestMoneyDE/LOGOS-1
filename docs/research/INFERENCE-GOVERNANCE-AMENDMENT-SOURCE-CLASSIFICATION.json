@@ -67,11 +67,11 @@
     },
     "tests/test_inference_governance.py": {
       "class": "EXPERIMENTAL_DETERMINISTIC",
-      "note": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: historical assertions moved to REG.superseded + hist() record; active assertions on amended record; no test removed"
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: diff scope registers the experiment package/records (registration, no weakening)"
     },
     "tests/test_inference_governance_amendment.py": {
       "class": "EXPERIMENTAL_DETERMINISTIC",
-      "note": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: AMD-P1..P18, 15 mutants, zero-inference proof, classification completeness"
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: diff scope registers the experiment package/records (registration, no weakening)"
     },
     "tests/test_measurement_readiness.py": {
       "class": "EXPERIMENTAL_DETERMINISTIC",
