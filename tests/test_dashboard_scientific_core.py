@@ -206,5 +206,6 @@ def test_qa_and_governance_endpoints():
 
 def test_command_center_endpoint():
     b = client.get("/api/command-center").json()
-    assert {"stats", "active_research", "alerts", "verdict_mix"} <= set(b) and b["stats"]["queued_work_orders"] == 0 and b["stats"]["running_agents"] == 0
+    assert {"stats", "active_research", "alerts", "verdict_mix"} <= set(b) and b["stats"]["running_agents"] == 0 and isinstance(b["stats"]["queued_work_orders"], int)
+    assert b["stats"]["phase_pending"] == ["benchmark_delta"] and "ros" in b["stats"]   # Phase 2: queue/work-order counts are live (DB or records-only zeros)
     assert b["n_closures"] > 0 and all({"month", "supported", "falsified", "invalid"} <= set(r) for r in b["verdict_mix"])

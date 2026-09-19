@@ -178,3 +178,45 @@ def test_decisions_and_notes(conn, tid):
     assert n["decision_flag"] is True and [x["note_id"] for x in service.unconsumed_notes(conn, tid)] == [n["note_id"]]
     det = service.thesis_detail(conn, tid)
     assert len(det["decisions"]) == 1 and len(det["notes"]) == 1 and det["decisions"][0]["state"] == "APPROVED"
+
+
+# -- API ------------------------------------------------------------------------------------------------------------
+
+
+def test_ros_api_roundtrip(conn, tid):
+    from fastapi.testclient import TestClient
+    from logos_dashboard.api import app
+    client = TestClient(app)
+    st = client.get("/api/ros/status").json()
+    assert st["db"] == "ok" and st["schema_version"] == 1 and "thesis_advance" in st["claude_kinds"]
+    r = client.post("/api/ros/theses", json={"thesis_id": tid, "claim_ids": ["LOGOS-AUTH-001"], "title": "api thesis", "track": "authority"}); assert r.status_code == 200 and r.json()["state"] == "IDEA"
+    assert client.post("/api/ros/theses", json={"thesis_id": tid, "title": "dup", "track": "authority"}).status_code == 409
+    r = client.post(f"/api/ros/theses/{tid}/advance", json={"event": "triage", "reason": "api"}, headers={"X-Logos-Actor": "agent"}); assert r.json()["state"] == "TRIAGE"
+    for e in ("define_question", "define_hypothesis", "define_metrics", "draft_prereg"):
+        client.post(f"/api/ros/theses/{tid}/advance", json={"event": e}, headers={"X-Logos-Actor": "agent"})
+    r = client.post(f"/api/ros/theses/{tid}/advance", json={"event": "freeze_prereg"}, headers={"X-Logos-Actor": "agent"})
+    assert r.status_code == 409 and r.json()["detail"]["reason"] == "founder gate"
+    assert client.post(f"/api/ros/theses/{tid}/advance", json={"event": "freeze_prereg"}).json()["state"] == "PREREG_FROZEN"   # default actor = founder
+    assert client.post(f"/api/ros/theses/{tid}/advance", json={"event": "nope"}).status_code == 409
+    assert client.post(f"/api/ros/theses/{tid}/advance", json={"event": "triage"}, headers={"X-Logos-Actor": "robot"}).status_code == 400
+    d = client.get(f"/api/ros/theses/{tid}").json(); assert len(d["events"]) == 7 and d["thesis"]["state"] == "PREREG_FROZEN"
+    assert client.get("/api/ros/theses/NOPE").status_code == 404
+    spec = {"question": "q", "scope": "s", "hypothesis": "h", "falsification_criterion": "f", "metrics": ["m"], "governance": {"x": 1}, "caps": {"n": 1}}
+    assert client.post("/api/ros/work-orders", json={"work_order_id": f"{tid}-W", "thesis_id": tid, "spec": {"question": "q"}}).status_code == 400
+    assert client.post("/api/ros/work-orders", json={"work_order_id": f"{tid}-W", "thesis_id": tid, "spec": spec}, headers={"X-Logos-Actor": "agent"}).json()["state"] == "DRAFT"
+    assert client.post(f"/api/ros/work-orders/{tid}-W/transition", json={"event": "approve"}, headers={"X-Logos-Actor": "agent"}).status_code == 409
+    assert client.post(f"/api/ros/work-orders/{tid}-W/transition", json={"event": "approve", "prereg_hash": "b" * 64}).json()["approved_by"] == "founder"
+    wos = client.get("/api/ros/work-orders").json(); assert f"{tid}-W" in wos["ready"] and wos["required_fields"][0] == "question"
+    j = client.post("/api/ros/queue/enqueue", json={"kind": "thesis_advance", "thesis_id": tid, "work_order_id": f"{tid}-W"}).json(); assert j["state"] == "waiting_governance"
+    assert client.post("/api/ros/queue/enqueue", json={"kind": "thesis_advance", "thesis_id": tid, "work_order_id": f"{tid}-W"}).json()["duplicate"] is True
+    assert client.post(f"/api/ros/queue/{j['job_id']}/stop").json()["state"] == "stopped"
+    assert client.post(f"/api/ros/queue/{j['job_id']}/explode").status_code == 400
+    q = client.get("/api/ros/queue").json(); assert q["executor"].startswith("NOT BUILT") and any(x["job_id"] == j["job_id"] for x in q["jobs"])
+    dec = client.post("/api/ros/decisions", json={"decision_id": f"{tid}-D", "kind": "gate", "subject_ref": tid, "why": "w"}).json(); assert dec["state"] == "WAITING"
+    assert client.post(f"/api/ros/decisions/{tid}-D/decide", json={"event": "reject"}, headers={"X-Logos-Actor": "agent"}).status_code == 409
+    assert client.post(f"/api/ros/decisions/{tid}-D/decide", json={"event": "approve"}).json()["state"] == "APPROVED"
+    n = client.post("/api/ros/notes", json={"thesis_id": tid, "text": "note", "decision_flag": True}).json(); assert n["author"] == "founder"
+    assert len(client.get(f"/api/ros/events?thesis_id={tid}").json()["events"]) == 7
+    assert client.get("/api/ros/dag").json()["nodes"] and client.get("/api/ros/audit?limit=5").json()["audit"][0]["action"] == "note.add"
+    cc = client.get("/api/command-center").json()["stats"]; assert cc["ros"]["ros_records_only"] is False and cc["queued_work_orders"] >= 1
+    assert client.delete("/api/ros/theses/LOGOS-REAL").status_code == 400

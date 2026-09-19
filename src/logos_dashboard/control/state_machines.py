@@ -82,6 +82,7 @@ DECISION_TRANSITIONS: dict[tuple[str, str], str] = {
 
 TABLES = {"thesis": THESIS_TRANSITIONS, "work_order": WORK_ORDER_TRANSITIONS, "job": JOB_TRANSITIONS, "decision": DECISION_TRANSITIONS}
 DECISION_FOUNDER_EVENTS = frozenset({"approve", "reject", "defer"})
+ACTORS_DOC = {"founder": "the only actor who passes gates", "agent": "Claude host job; autonomy ends at PREREG_DRAFT", "worker": "deterministic Docker worker", "system": "API/scheduler bookkeeping"}
 
 
 class IllegalTransition(Exception):

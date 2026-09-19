@@ -12,11 +12,12 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from . import readers, registries
+from . import readers, registries, ros_api
 from .registries import DASH, FILES
 
 app = FastAPI(title="LOGOS-1 Research Dashboard", version="0.1.0")
-app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"], allow_methods=["GET", "POST"], allow_headers=["*"])
+app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"], allow_methods=["GET", "POST", "DELETE"], allow_headers=["*"])
+app.include_router(ros_api.router)
 _cache: dict[str, tuple[float, object]] = {}
 
 
@@ -294,8 +295,9 @@ def command_center():
         k = c["verdict_class"] if c["verdict_class"] in row else "other"
         row[k] += 1
     papers = regs["publications"]["papers"]
-    return {"stats": {"active_theses": len(active), "queued_work_orders": 0, "running_agents": 0, "blocked_gates": sum(len(c["open_decisions"]) for c in cl), "experiments_this_month": len(this_month), "negative_results_this_month": len(neg_month),
+    ros = cached("ros_stats", 2.0, ros_api.command_center_stats)
+    return {"stats": {"active_theses": len(active), "queued_work_orders": ros["queued_work_orders"], "running_agents": ros["running_agents"], "ros": ros, "blocked_gates": sum(len(c["open_decisions"]) for c in cl), "experiments_this_month": len(this_month), "negative_results_this_month": len(neg_month),
                       "benchmark_delta": None, "replication_debt": sum(1 for r in regs["replication"]["replications"] if r["count"] == "0/5"), "publication_candidates": sum(1 for p in papers if p["manuscript_status"] != "NOT_READY"),
-                      "integrity_violations": len(violations), "records_only": lab["records_only"], "phase_pending": ["queued_work_orders", "running_agents", "benchmark_delta"]},
+                      "integrity_violations": len(violations), "records_only": lab["records_only"], "phase_pending": ["benchmark_delta"]},
             "active_research": [{"claim_id": c["claim_id"], "title": c["title"], "track": c["track"], "status": c["status"], "strength": c["evidence_strength"], "next_test": c["next_falsification_test"], "risk": (c["known_limitations"] or [""])[0]} for c in active],
             "alerts": alerts, "verdict_mix": sorted(mix.values(), key=lambda r: r["month"]), "n_closures": len(cl), "latest_closure": cl[-1] if cl else None, "next_work_order": cl[-1]["successor_id"] if cl else None}
