@@ -17,7 +17,7 @@ from pathlib import Path
 from logos_research.measurement.claude_code import ProviderPolicyError, check_argv
 
 from .. import db, registries
-from . import executor, governor
+from . import executor, governor, telemetry
 
 ROOT = Path(__file__).resolve().parents[3]
 FORBIDDEN_ENV = ("ANTHROPIC_API_KEY", "CLAUDE_CODE_USE_BEDROCK", "CLAUDE_CODE_USE_VERTEX", "CLAUDE_CODE_USE_FOUNDRY")
@@ -41,7 +41,7 @@ def real_runner_factory(cwd: Path):
 
 
 def config(cli_version: str | None) -> executor.ExecutorConfig:
-    return executor.ExecutorConfig(ROOT, ROOT.parent / "logos-1-worktrees", real_runner_factory, regs_loader=registries.load_all, cli_version=cli_version)
+    return executor.ExecutorConfig(ROOT, ROOT.parent / "logos-1-worktrees", real_runner_factory, regs_loader=registries.load_all, cli_version=cli_version, telemetry_stack=telemetry.stack_from_env())
 
 
 def main(argv: list[str] | None = None) -> int:

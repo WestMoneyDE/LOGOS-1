@@ -16,7 +16,7 @@ export default async function RunPage({ params }: { params: Promise<{ id: string
     <Shell title={`${t("ros_console")} — ${r.run_id}`} subtitle={`${r.kind} · ${r.thesis_id ?? "—"} · job #${r.job_id ?? "—"} · ${r.branch ?? ""}`}>
       <RunConsole run={r} job={d.job} initial={d.events} labels={{ start: t("ros_start"), pause: t("ros_pause"), resume: t("ros_resume"), stop: t("ros_stop"), live: t("ros_live"), finished: t("ros_finished"), none: t("ros_no_events"), notes: t("ros_notes"), notePlaceholder: t("ros_note_placeholder"), addNote: t("ros_add_note") }} />
       <Section title="Links">
-        <ul className="flex flex-wrap gap-3 text-xs">{r.thesis_id && <li><Link className="underline" href={`/theses/${r.thesis_id}`}>{r.thesis_id}</Link></li>}<li><Link className="underline" href="/queue">/queue</Link></li><li><Link className="underline" href="/runs">/runs</Link></li>{r.worktree && <li><code className="font-mono">{r.worktree}</code></li>}</ul>
+        <ul className="flex flex-wrap gap-3 text-xs">{r.thesis_id && <li><Link className="underline" href={`/theses/${r.thesis_id}`}>{r.thesis_id}</Link></li>}<li><Link className="underline" href={`/traces/${r.run_id}`}>Trace</Link></li><li><Link className="underline" href="/queue">/queue</Link></li><li><Link className="underline" href="/runs">/runs</Link></li>{r.worktree && <li><code className="font-mono">{r.worktree}</code></li>}</ul>
       </Section>
     </Shell>
   );

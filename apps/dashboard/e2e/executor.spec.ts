@@ -34,6 +34,13 @@ test.describe.serial("executor surface", () => {
     await expect(page.getByText("beendet · done")).toBeVisible();
     await page.goto("/runs", { waitUntil: "load" });
     await expect(page.locator("main table tbody tr", { hasText: fr.run_id })).toBeVisible();
+    await page.goto(`/traces/${fr.run_id}`, { waitUntil: "load" });
+    await expect(page.getByLabel("waterfall").locator("li")).toHaveCount(1);          // one phase bar (packet) in the synthetic run
+    await expect(page.getByText("TIER3_PIN_CONTAINMENT")).toBeVisible();
+    await page.getByRole("button", { name: "Re-Score (ohne Inferenz)" }).click();
+    await expect(page.getByRole("status")).toContainText("404");                       // synthetic run has no claude_result artifact; nothing is invoked
+    await page.goto("/traces", { waitUntil: "load" });
+    await expect(page.locator("main table tbody tr", { hasText: fr.run_id })).toBeVisible();
   });
 
   test("system/claude shows evidence table and governed caps; cap is not editable", async ({ page }) => {

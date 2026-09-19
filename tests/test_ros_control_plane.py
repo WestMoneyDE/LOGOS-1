@@ -421,3 +421,48 @@ def test_ros_api_runs_governor_and_console(conn, tid, attested):
     assert body.count("event: ") == 6 and "event: state" in body and '"state": "done"' in body    # 5 replayed events + final state, then the stream closes (run not running)
     assert client.get("/api/ros/workers").json()["workers"] is not None
     cc = client.get("/api/command-center").json()["stats"]; assert cc["ros"]["quota"] == "OK" and cc["running_agents"] == 0
+
+
+
+def test_telemetry_mirror_and_trace_explorer(conn, tid, repo, tmp_path, attested):
+    from logos_dashboard.control import telemetry
+    from fastapi.testclient import TestClient
+    from logos_dashboard.api import app
+    service.create_thesis(conn, tid, ["LOGOS-AUTH-001"], "tel", "authority", "founder")
+    j = queue.enqueue(conn, "thesis_advance", thesis_id=tid); queue.start(conn, j["job_id"], "founder", governor.pre_run_gate(conn, j, "IDEA", "PREREG_DRAFT", ("IDEA", "PREREG_DRAFT")))
+    rel = f"docs/research/dashboard/theses/{tid}/TRIAGE.md"; stack = telemetry.null_stack()
+    out = executor.run_once(conn, _cfg(repo, tmp_path, _fake_claude(_result_doc(_agent_block("triage", [rel])), write={rel: "x"}), telemetry_stack=stack), "w-test")
+    assert out["state"] == "done"
+    run_id = runs.list_runs(conn, thesis_id=tid)[0]["run_id"]; tr = stack["tracker"]
+    assert set(tr.params[run_id]) == {"thesis_state", "allowed_events", "allowed_tools", "prompt_bytes", "branch", "contract", "model_requested", "model_resolved", "claude_status", "evidence_class", "prompt_sha256"}
+    assert {"latency_s", "turns", "status_ok", "tokens_input_tokens", "tokens_output_tokens", "files_changed", "event_applied", "needs_prior_art", "duration_s"} <= set(tr.metrics[run_id]) and tr.metrics[run_id]["status_ok"] == 1.0
+    assert tr.ended[run_id] == "COMPLETED" and set(tr.artifacts[run_id]) == {"prompt.txt", "claude_result.json"}
+    assert [s[1] for s in stack["traces"].spans] == ["run.start", "phase.worktree", "phase.packet", "phase.claude", "phase.verify", "run.finish"] and len(stack["llm_traces"].generations) == 1
+    links = telemetry.trace_links(conn, run_id); assert len(links) == 6 and links[0]["mlflow_run_id"] == f"null-{run_id}"
+    arts = telemetry.artifacts(conn, run_id); assert [a["kind"] for a in arts] == ["prompt", "claude_result"] and all(len(a["sha256"]) == 64 for a in arts)
+    assert out["result"]["telemetry"]["degraded"] == [] and out["result"]["telemetry"]["stack"] == "null"
+    client = TestClient(app)
+    t = client.get(f"/api/ros/runs/{run_id}/trace").json()
+    assert [b["phase"] for b in t["waterfall"]] == ["worktree", "packet", "claude", "verify"] and all(b["duration_s"] >= 0 for b in t["waterfall"]) and len(t["invocations"]) == 1 and t["invocations"][0]["result"]["status"] == "OK"
+    assert t["mlflow_ui"] is not None and "null-" in t["mlflow_ui"] and len(t["artifacts"]) == 2 and t["n_events"] == 13
+    lst = client.get("/api/ros/traces").json(); mine = next(r for r in lst["runs"] if r["run_id"] == run_id); assert mine["links"]["mlflow_run_id"] == f"null-{run_id}" and lst["experiment"] == "logos-research-os"
+    assert client.post(f"/api/ros/runs/{run_id}/rescore").status_code == 409     # null stack: artifact not retrievable; and never an inference
+    assert client.post("/api/ros/runs/NOPE/rescore").status_code == 404
+
+
+def test_telemetry_degrades_without_blocking(conn, tid, repo, tmp_path, attested):
+    from logos_dashboard.control import telemetry
+
+    class Broken:
+        def start_run(self, *a, **k): raise RuntimeError("mlflow down")
+        def log_params(self, *a, **k): raise RuntimeError("mlflow down")
+        def log_metrics(self, *a, **k): raise RuntimeError("mlflow down")
+        def end_run(self, *a, **k): raise RuntimeError("mlflow down")
+        def log_artifact(self, *a, **k): raise RuntimeError("mlflow down")
+    service.create_thesis(conn, tid, [], "tel2", "authority", "founder")
+    j = queue.enqueue(conn, "thesis_advance", thesis_id=tid); queue.start(conn, j["job_id"], "founder", governor.pre_run_gate(conn, j, "IDEA", "PREREG_DRAFT", ("IDEA", "PREREG_DRAFT")))
+    stack = {**telemetry.null_stack(), "tracker": Broken(), "kind": "broken"}
+    out = executor.run_once(conn, _cfg(repo, tmp_path, _fake_claude(_result_doc(_agent_block("triage", []))), telemetry_stack=stack), "w-test")
+    assert out["state"] == "done" and len(out["result"]["telemetry"]["degraded"]) >= 4 and all("mlflow down" in d for d in out["result"]["telemetry"]["degraded"])
+    run_id = runs.list_runs(conn, thesis_id=tid)[0]["run_id"]; kinds = [e["kind"] for e in runs.events_after(conn, run_id)]
+    assert kinds.count("note") == 1 and kinds[-1] == "done"

@@ -417,3 +417,74 @@ def fake_run(thesis_id: str):
             cur.execute("UPDATE ros_jobs SET state = 'done', updated_at = now() WHERE job_id = %s", (j["job_id"],))
         c.commit()
         return {"run_id": run_id, "job_id": j["job_id"]}
+
+
+
+# -- Phase 4: trace explorer ---------------------------------------------------------------------------------------------
+
+import hashlib  # noqa: E402
+import os  # noqa: E402
+
+from .control import telemetry as _tel  # noqa: E402
+
+MLFLOW_UI = os.environ.get("MLFLOW_TRACKING_URI", "http://127.0.0.1:55000")
+
+
+@router.get("/traces")
+def traces(limit: int = 100):
+    with _conn() as c:
+        rs = runs.list_runs(c, limit)
+        with c.cursor() as cur:
+            cur.execute("SELECT run_id, mlflow_run_id, trace_id FROM ros_trace_links"); links: dict[str, dict] = {}
+            for run_id, ml, tr in cur.fetchall():
+                d = links.setdefault(run_id, {"mlflow_run_id": None, "otel_trace_ids": []}); d["mlflow_run_id"] = d["mlflow_run_id"] or ml
+                if tr:
+                    d["otel_trace_ids"].append(tr)
+        for r in rs:
+            r["links"] = links.get(r["run_id"], {"mlflow_run_id": None, "otel_trace_ids": []})
+            tl = (r.get("summary") or {}).get("telemetry") or {}
+            r["mlflow_ui"] = _tel.mlflow_ui_url(MLFLOW_UI, tl.get("mlflow_experiment_id"), r["links"]["mlflow_run_id"])
+            r["telemetry_degraded"] = tl.get("degraded", [])
+        return {"runs": rs, "mlflow_ui": MLFLOW_UI, "experiment": _tel.MLFLOW_EXPERIMENT}
+
+
+@router.get("/runs/{run_id}/trace")
+def run_trace(run_id: str, fetch_mlflow: bool = False):
+    with _conn() as c:
+        r = runs.get_run(c, run_id)
+        if r is None:
+            raise HTTPException(404, run_id)
+        ev = runs.events_after(c, run_id, 0, 2000)
+        links = _tel.trace_links(c, run_id); arts = _tel.artifacts(c, run_id)
+        tl = (r.get("summary") or {}).get("telemetry") or {}
+        inv = [e["payload"] for e in ev if e["kind"] == "claude.invoke"]; res = [e["payload"] for e in ev if e["kind"] == "claude.result"]
+        ml = None
+        if fetch_mlflow and links and links[0]["mlflow_run_id"] and not str(links[0]["mlflow_run_id"]).startswith("null-"):
+            try:
+                ml = _tel.stack_from_env()["tracker"].fetch(links[0]["mlflow_run_id"])
+            except Exception as e:
+                ml = {"error": f"{type(e).__name__}: {str(e)[:200]}"}
+        return {"run": r, "waterfall": _tel.waterfall(ev), "links": links, "artifacts": arts, "invocations": [{"invoke": i, "result": rr} for i, rr in zip(inv, res)], "mlflow": ml,
+                "mlflow_ui": _tel.mlflow_ui_url(MLFLOW_UI, tl.get("mlflow_experiment_id"), links[0]["mlflow_run_id"] if links else None), "telemetry": tl, "n_events": len(ev)}
+
+
+@router.post("/runs/{run_id}/rescore")
+def run_rescore(run_id: str):
+    """Re-parse the stored agent result (claude_result.json artifact in MLflow) against the current contract. Never invokes Claude."""
+    from .control import packet as _pk
+    with _conn() as c:
+        arts = _tel.artifacts(c, run_id); a = next((x for x in arts if x["kind"] == "claude_result"), None)
+        if a is None:
+            raise HTTPException(404, "no claude_result artifact for this run")
+        links = _tel.trace_links(c, run_id)
+        if not links or not links[0]["mlflow_run_id"] or str(links[0]["mlflow_run_id"]).startswith("null-"):
+            raise HTTPException(409, "artifact not retrievable (telemetry stack was null for this run)")
+        try:
+            from mlflow.tracking import MlflowClient
+            path = MlflowClient(MLFLOW_UI).download_artifacts(links[0]["mlflow_run_id"], "claude_result.json")
+            doc = json.loads(open(path, encoding="utf-8").read())
+        except Exception as e:
+            raise HTTPException(502, f"mlflow: {type(e).__name__}: {str(e)[:200]}")
+        parsed = _pk.parse_agent_result(doc.get("content") or "")
+        return {"run_id": run_id, "artifact_sha256": a["sha256"], "content_sha256": hashlib.sha256(json.dumps(doc, sort_keys=True).encode()).hexdigest(), "contract": _pk.RESULT_SCHEMA, "valid": parsed is not None,
+                "parsed": parsed.raw if parsed else None, "status": doc.get("status"), "resolved_model": doc.get("resolved_model"), "evidence_class": doc.get("evidence_class"), "inference": "none (re-score only)"}
