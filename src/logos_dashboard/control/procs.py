@@ -61,13 +61,25 @@ def _compose(*args: str, timeout: float = 600.0) -> tuple[int, str]:
     return cp.returncode, (cp.stdout + cp.stderr)[-2000:]
 
 
-def docker_status(conn) -> dict:
-    hb = next((w for w in governor.workers(conn) if w["worker_id"] == "ros-worker-docker-1"), None)
+_DOCKER_CACHE: dict = {"at": 0.0, "val": None}
+
+
+def _compose_ps() -> tuple[bool, str]:
+    """`docker compose ps` is slow (~1 s); cached 10 s. A missing docker binary is reported, never raised."""
+    if time.time() - _DOCKER_CACHE["at"] < 10 and _DOCKER_CACHE["val"] is not None:
+        return _DOCKER_CACHE["val"]
     try:
         code, out = _compose("ps", "--format", "json", "ros-worker", timeout=60)
-        running = code == 0 and '"running"' in out.lower()
+        val = (code == 0 and '"running"' in out.lower(), out)
     except Exception as e:
-        code, out, running = -1, str(e)[:200], False
+        val = (False, f"docker unavailable: {type(e).__name__}")
+    _DOCKER_CACHE.update(at=time.time(), val=val)
+    return val
+
+
+def docker_status(conn) -> dict:
+    hb = next((w for w in governor.workers(conn) if w["worker_id"] == "ros-worker-docker-1"), None)
+    running, out = _compose_ps()
     return {"worker_id": "ros-worker-docker-1", "container_running": running, "alive": bool(hb and hb["alive"]), "last_seen": hb["last_seen"] if hb else None, "current_job": hb["current_job"] if hb else None, "compose": out[-300:]}
 
 
@@ -78,7 +90,7 @@ def docker_start(conn, actor: str, build: bool = False) -> dict:
     args = ["up", "-d"] + (["--build"] if build else []) + ["ros-worker"]
     env_sha = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=str(ROOT), capture_output=True, text=True).stdout.strip()
     os.environ["LOGOS_REPO_SHA"] = env_sha
-    code, out = _compose(*args)
+    code, out = _compose(*args); _DOCKER_CACHE["at"] = 0.0
     return {**docker_status(conn), "exit_code": code, "note": out[-300:]}
 
 
@@ -86,5 +98,5 @@ def docker_stop(conn, actor: str) -> dict:
     if actor != "founder":
         from logos_research.governance import GovernanceError
         raise GovernanceError("only the founder stops the Docker worker")
-    code, out = _compose("stop", "ros-worker", timeout=120)          # stop, never `down -v`
+    code, out = _compose("stop", "ros-worker", timeout=120); _DOCKER_CACHE["at"] = 0.0          # stop, never `down -v`
     return {**docker_status(conn), "exit_code": code, "note": out[-300:]}

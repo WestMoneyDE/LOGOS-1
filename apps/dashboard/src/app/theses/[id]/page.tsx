@@ -13,7 +13,7 @@ import { AgentJob } from "@/components/ros/agent-job";
 export default async function ThesisWorkspace({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params; const { t } = await getT();
   const d = await rosGet(`/api/ros/theses/${id}`);
-  if (d === null) return <Shell title={id}><RecordsOnly text={t("ros_records_only")} /></Shell>;
+  if (d === null) return <Shell title={id} help={t("help_theses")}><RecordsOnly text={t("ros_records_only")} /></Shell>;
   if (!d.thesis) notFound();
   const th = d.thesis;
   return (

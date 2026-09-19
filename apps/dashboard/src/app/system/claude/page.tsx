@@ -7,7 +7,7 @@ import { RecordsOnly } from "@/components/ros/records-only";
 export default async function ClaudeAuth() {
   const { t } = await getT(); const g = await rosGet("/api/ros/governor");
   return (
-    <Shell title={t("ros_claude_title")} subtitle={t("ros_claude_subtitle")}>
+    <Shell title={t("ros_claude_title")} subtitle={t("ros_claude_subtitle")} help={t("help_claude")}>
       {g === null ? <RecordsOnly text={t("ros_records_only")} /> : (<>
         <Section title={t("ros_attestation")} hint={g.attestation.present ? `${g.attestation.fresh ? "fresh" : "STALE"} · ${g.attestation.age_h} h` : "—"}>
           <div className="mb-3"><PreflightButton label={t("ros_preflight")} /></div>

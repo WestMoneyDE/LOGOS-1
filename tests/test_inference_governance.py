@@ -203,6 +203,9 @@ def test_GOV_P12_P13_P14_gamma_p7_predecessors_unchanged():
                            ":(exclude)05-WORK-ORDERS/NEXT-SESSION-INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1.md", ":(exclude)09-SESSIONS/2026-09-18-INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1",
                            ":(exclude)05-WORK-ORDERS/NEXT-SESSION-COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1.md", ":(exclude)09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1",
                            ":(exclude)05-WORK-ORDERS/NEXT-SESSION-LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1.md", ":(exclude)09-SESSIONS/2026-09-19-LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1",
+                           # LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 / -AUTOPILOT-R2: their own closure + session records (tooling orders; no Γ/P7/experiment/measurement file touched)
+                           ":(exclude)05-WORK-ORDERS/NEXT-SESSION-LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1.md", ":(exclude)09-SESSIONS/2026-09-19-LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1",
+                           ":(exclude)05-WORK-ORDERS/NEXT-SESSION-LOGOS1-RESEARCH-OS-AUTOPILOT-R2.md", ":(exclude)09-SESSIONS/2026-09-19-LOGOS1-RESEARCH-OS-AUTOPILOT-R2",
                            ":(exclude)src/logos_research/measurement/result_model.py", ":(exclude)src/logos_research/measurement/claude_code.py",   # COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: resolver + repaired adapter (hash-recorded in the repair prereg/artifact)
                            ":(exclude)src/logos_research/experiments/cognitive_provenance_r1", ":(exclude)09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1", ":(exclude)05-WORK-ORDERS/NEXT-SESSION-COGNITIVE-PROVENANCE-ABLATION-R1.md"],   # COGNITIVE-PROVENANCE-ABLATION-R1: its own EXPERIMENTAL_INFERENCE package and records
 
@@ -244,7 +247,8 @@ def test_ZERO_inference_proof():
                 adapters.add(f"{str(py.relative_to(SRC)).replace(chr(92), '/')}::{n.name}")
     # adapter inventory: the protocol, the forbidden guard and the synthetic dry-run provider — nothing that can reach a model
     assert adapters == {"logos_research/measurement/gateway.py::ProviderGateway", "logos_research/measurement/gateway.py::ForbiddenProvider", "logos_research/measurement/gateway.py::DryRunProvider",
-                        "logos_research/measurement/claude_code.py::ClaudeCodeMaxProvider"}                    # amendment: contract only; invoke() needs an ActivationToken + injected runner
+                        "logos_research/measurement/claude_code.py::ClaudeCodeMaxProvider",                    # amendment: contract only; invoke() needs an ActivationToken + injected runner
+                        "logos_dashboard/control/agent_provider.py::AgentProvider"}                            # LOGOS1-RESEARCH-OS-AUTOPILOT-R2: agent-job adapter (stream-json + --verbose per founder amendment); same token + injected-runner gate, own flag allowlist
     assert CALLS["claude_code_inference_invocations"] == 0
     gtxt = (SRC / "logos_research/governance.py").read_text(encoding="utf-8")
     assert "def complete" not in gtxt and "ProviderSpec" in gtxt

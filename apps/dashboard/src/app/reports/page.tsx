@@ -8,7 +8,7 @@ export default async function Reports({ searchParams }: { searchParams: Promise<
   const { t } = await getT(); const sp = await searchParams; const month = sp.month ?? new Date().toISOString().slice(0, 7);
   const r = await rosGet(`/api/ros/reports/${month}`); const list = await rosGet("/api/ros/reports"); const pr = await rosGet("/api/ros/paper-readiness");
   return (
-    <Shell title={`${t("ros_reports_title")} — ${month}`} subtitle={t("ros_reports_subtitle")}>
+    <Shell title={`${t("ros_reports_title")} help={t("help_reports")} — ${month}`} subtitle={t("ros_reports_subtitle")}>
       {r === null ? <RecordsOnly text={t("ros_records_only")} /> : (<>
         <div className="mb-4 flex flex-wrap items-center gap-3"><ReportFreeze month={month} label={t("ros_reports_freeze")} frozen={r.frozen} /><span className="font-mono text-xs text-muted-foreground">sha {r.doc.sha256.slice(0, 16)} · {r.doc.version}</span></div>
         <Section title="Markdown"><pre className="max-w-5xl overflow-x-auto whitespace-pre-wrap border border-border bg-muted/20 p-3 font-mono text-[0.72rem] leading-relaxed" aria-label="monthly report">{r.markdown}</pre></Section>

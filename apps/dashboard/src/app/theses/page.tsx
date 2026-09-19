@@ -14,7 +14,7 @@ export default async function Theses() {
   const ros = await rosGet<{ theses: RosThesis[] }>("/api/ros/theses");
   const existing = new Set((ros?.theses ?? []).flatMap((x) => x.claim_ids));
   return (
-    <Shell title={t("ros_theses_title")} subtitle={t("ros_theses_subtitle")}>
+    <Shell title={t("ros_theses_title")} subtitle={t("ros_theses_subtitle")} help={t("help_theses")}>
       <Section title={t("ros_lifecycle")} hint="ros_theses">
         {ros === null ? <RecordsOnly text={t("ros_records_only")} /> : ros.theses.length === 0 ? <p className="text-sm text-muted-foreground">{t("ros_no_theses")}</p> : <RosThesesTable rows={ros.theses} labels={{ search: t("search"), columns: t("columns"), rows: t("rows"), detail: t("inspector_title") }} />}
         {ros !== null && active.length > 0 && (

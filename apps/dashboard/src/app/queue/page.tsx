@@ -9,7 +9,7 @@ export default async function Queue() {
   const { t } = await getT();
   const q = await rosGet("/api/ros/queue"); const st = await rosGet("/api/ros/status"); const th = await rosGet("/api/ros/theses");
   return (
-    <Shell title={t("ros_queue_title")} subtitle={t("ros_queue_subtitle")}>
+    <Shell title={t("ros_queue_title")} subtitle={t("ros_queue_subtitle")} help={t("help_queue")}>
       {q === null ? <RecordsOnly text={t("ros_records_only")} /> : (<>
         <Section title="Status" hint={q.executor}><StatCards items={Object.entries(q.stats as Record<string, number>).map(([k, v]) => ({ label: k, value: v }))} /></Section>
         <Section title="Jobs" hint={`${q.jobs.length}`}>

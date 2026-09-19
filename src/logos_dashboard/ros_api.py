@@ -813,3 +813,36 @@ def leitstand():
             t["open_jobs"] = [j for j in queue.list_jobs(c, 500) if j["thesis_id"] == t["thesis_id"] and j["state"] in _ap.OPEN_JOB_STATES]
         return {"host": _procs.host_status(c), "docker": _procs.docker_status(c), "autopilot": _ap.status(c), "theses": theses, "attention": att, "live_run": live_run, "live_events": live, "governor": governor.state(c), "ceiling": AGENT_CEILING, "states": list(THESIS_STATES),
                 "first_steps": {"auth": a["fresh"], "thesis": len(theses) > 0, "host_running": _procs.host_status(c)["alive"], "autopilot": _ap.master(c)}}
+
+
+
+# -- R2: trace statistics (bars, not lists) ----------------------------------------------------------------------------
+
+
+@router.get("/traces/stats")
+def traces_stats(limit: int = 300):
+    """Aggregates over the last `limit` runs: per day × state, tokens per run, mean phase durations, tool calls, per thesis. Counts only; n shown everywhere."""
+    with _conn() as c:
+        rs = runs.list_runs(c, limit)
+        per_day: dict[str, dict] = {}; tokens = []; phase_tot: dict[str, list[float]] = {}; tools: dict[str, int] = {}; per_thesis: dict[str, dict] = {}; latencies = []
+        for r in rs:
+            day = str(r["created_at"])[:10]; d = per_day.setdefault(day, {"day": day, "done": 0, "failed": 0, "stopped": 0, "running": 0, "waiting_quota": 0})
+            d[r["state"] if r["state"] in d else "failed"] = d.get(r["state"], 0) + 1
+            th = per_thesis.setdefault(r["thesis_id"] or "—", {"thesis": r["thesis_id"] or "—", "runs": 0, "done": 0}); th["runs"] += 1; th["done"] += 1 if r["state"] == "done" else 0
+            ev = runs.events_after(c, r["run_id"], 0, 3000)
+            for b in _tel.waterfall(ev):
+                phase_tot.setdefault(b["phase"], []).append(b["duration_s"])
+            for e in ev:
+                if e["kind"] == "claude.result":
+                    u = e["payload"].get("usage") or {}
+                    tokens.append({"run": r["run_id"][-12:], "run_id": r["run_id"], "input": int(u.get("input_tokens") or 0), "cache": int(u.get("cache_read_input_tokens") or 0) + int(u.get("cache_creation_input_tokens") or 0), "output": int(u.get("output_tokens") or 0), "latency_s": e["payload"].get("latency_s"), "status": e["payload"].get("status")})
+                    if e["payload"].get("latency_s") is not None:
+                        latencies.append(float(e["payload"]["latency_s"]))
+                if e["kind"] == "agent.batch":
+                    for it in e["payload"].get("items", []):
+                        if it.get("kind") == "agent.tool":
+                            tools[it.get("tool") or "?"] = tools.get(it.get("tool") or "?", 0) + 1
+        phases = [{"phase": k, "mean_s": round(sum(v) / len(v), 3), "n": len(v), "max_s": round(max(v), 3)} for k, v in phase_tot.items()]
+        lat = _stats.bootstrap_mean(latencies, reps=500, seed=0) if len(latencies) >= 2 else {"value": _stats.NOT_DEFINED, "ci95": None, "n": len(latencies), "method": "bootstrap_percentile"}
+        return {"n_runs": len(rs), "per_day": sorted(per_day.values(), key=lambda x: x["day"]), "tokens": tokens[-40:], "phases": sorted(phases, key=lambda x: x["phase"]), "tools": [{"tool": k, "n": v} for k, v in sorted(tools.items(), key=lambda kv: -kv[1])],
+                "per_thesis": sorted(per_thesis.values(), key=lambda x: -x["runs"]), "latency": lat, "version": _stats.VERSION, "note": "counts from ros_runs / ros_run_events; token figures as exposed by the CLI (no decomposition claimed)"}

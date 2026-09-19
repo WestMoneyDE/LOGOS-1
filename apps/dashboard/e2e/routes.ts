@@ -1,6 +1,6 @@
 // Route inventory (§93). Every core route is checked on every viewport project.
 export const ROUTES: { path: string; expect: string }[] = [
-  { path: "/", expect: "Kommandozentrale" },
+  { path: "/", expect: "Forschungsleitstand" },
   { path: "/tracks", expect: "Research tracks" },
   { path: "/tracks/authority", expect: "Authority-Preserving" },
   { path: "/tracks/provenance", expect: "Causal Provenance" },

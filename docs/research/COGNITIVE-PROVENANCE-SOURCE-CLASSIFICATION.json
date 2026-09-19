@@ -1301,6 +1301,54 @@
     "09-SESSIONS/2026-09-19-LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1/SESSION-REPORT.md": {
       "class": "GOVERNANCE_ONLY",
       "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: closure / session report; no code, no model call"
+    },
+    "apps/dashboard/e2e/leitstand.spec.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1/LOGOS1-RESEARCH-OS-AUTOPILOT-R2: dashboard UI (leitstand, run console, traces statistics, Playwright QA); reads the localhost API only; no model call"
+    },
+    "apps/dashboard/src/components/ros/leitstand.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1/LOGOS1-RESEARCH-OS-AUTOPILOT-R2: dashboard UI (leitstand, run console, traces statistics, Playwright QA); reads the localhost API only; no model call"
+    },
+    "apps/dashboard/src/components/ros/repo-chain.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1/LOGOS1-RESEARCH-OS-AUTOPILOT-R2: dashboard UI (leitstand, run console, traces statistics, Playwright QA); reads the localhost API only; no model call"
+    },
+    "apps/dashboard/src/components/ros/traces-stats.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1/LOGOS1-RESEARCH-OS-AUTOPILOT-R2: dashboard UI (leitstand, run console, traces statistics, Playwright QA); reads the localhost API only; no model call"
+    },
+    "docs/research/INFERENCE-GOVERNANCE-FLAG-AMENDMENT-R1.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OS-AUTOPILOT-R2: founder flag amendment (--verbose + stream-json for agent jobs only); measurement whitelist unchanged"
+    },
+    "docs/superpowers/plans/2026-09-19-research-os-r2-autopilot.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OS-AUTOPILOT-R2: design record / plan; no code, no model call"
+    },
+    "docs/superpowers/specs/2026-09-19-research-os-r2-autopilot-design.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OS-AUTOPILOT-R2: design record / plan; no code, no model call"
+    },
+    "src/logos_dashboard/control/agent_provider.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OS-AUTOPILOT-R2: streaming agent provider (stream-json + --verbose per founder amendment; live console events; Tier-1 producer evidence; graceful stop)"
+    },
+    "src/logos_dashboard/control/autopilot.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OS-AUTOPILOT-R2: autopilot scheduler / worker process control / repository order import; founder gates unchanged; no model call in these modules"
+    },
+    "src/logos_dashboard/control/procs.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OS-AUTOPILOT-R2: autopilot scheduler / worker process control / repository order import; founder gates unchanged; no model call in these modules"
+    },
+    "src/logos_dashboard/control/repo_orders.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OS-AUTOPILOT-R2: autopilot scheduler / worker process control / repository order import; founder gates unchanged; no model call in these modules"
+    },
+    "tests/fixtures/ros/agent_stream.jsonl": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-RESEARCH-OS-AUTOPILOT-R2: recorded stream-json shape for the fake agent runner; no model call"
     }
   },
   "unclassified": 0

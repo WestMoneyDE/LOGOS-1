@@ -5,35 +5,42 @@ import { getT } from "@/i18n";
 import { Shell, Section } from "@/components/shell";
 import { StatCards } from "@/components/stat-cards";
 import { VerdictMix } from "@/components/charts/verdict-mix";
-import { StatusBadge, StrengthBadge, VerdictBadge } from "@/components/badges";
+import { RecordsOnly } from "@/components/ros/records-only";
+import { CreateThesis } from "@/components/ros/create-thesis";
+import { WorkerSwitch, MasterSwitch, ThesisCard, LiveTicker, FirstSteps } from "@/components/ros/leitstand";
 
-export default async function CommandCenter() {
-  const { t, locale } = await getT();
-  const cc = await api("/api/command-center"); const o = await api("/api/overview"); const att = await rosGet("/api/attention".replace("/api/", "/api/ros/"));
-  const s = cc.stats; const de = locale === "de";
-  const items = [
-    { label: de ? "Aktive Thesen" : "Active theses", value: s.active_theses, href: "/theses" }, { label: de ? "Work Orders in Warteschlange" : "Queued work orders", value: s.queued_work_orders, sub: de ? `${s.ros.queued_jobs ?? 0} Jobs · ${s.ros.waiting_governance ?? 0} warten auf Governance` : `${s.ros.queued_jobs ?? 0} jobs · ${s.ros.waiting_governance ?? 0} waiting governance`, href: "/queue" },
-    { label: de ? "Laufende Agenten" : "Running agents", value: s.running_agents, sub: de ? "Executor: Phase 3" : "executor: Phase 3", href: "/runs" }, { label: de ? "Blockierte Gates" : "Blocked gates", value: s.blocked_gates, href: "/decisions" },
-    { label: de ? "Experimente diesen Monat" : "Experiments this month", value: s.experiments_this_month, sub: de ? "Closures" : "closures", href: "/experiments" }, { label: de ? "Negativergebnisse diesen Monat" : "Negative results this month", value: s.negative_results_this_month, href: "/negative-results" },
-    { label: "Benchmark-Delta", value: s.benchmark_delta, pending: true, href: "/benchmarks" }, { label: de ? "Replikationsschuld" : "Replication debt", value: s.replication_debt, sub: de ? "Befunde 0/5" : "findings 0/5", href: "/replication" },
-    { label: de ? "Publikationskandidaten" : "Publication candidates", value: s.publication_candidates, href: "/publications" }, { label: de ? "Systemzustand" : "System health", value: s.integrity_violations === 0 && !s.records_only ? "OK" : (de ? "Achtung" : "attention"), sub: `${s.integrity_violations} ${de ? "Integritätsverstöße" : "integrity violations"}${s.records_only ? " · records-only" : ""}`, href: "/system/health" },
-  ];
+export default async function Leitstand() {
+  const { t, locale } = await getT(); const de = locale === "de";
+  const ls = await rosGet("/api/ros/leitstand"); const cc = await api("/api/command-center"); const claims = (await api("/api/registries/claims")).claims;
+  const keys = ["ls_running", "ls_theses", "ls_decisions", "ls_first_steps", "ls_master", "ls_on", "ls_off", "ls_master_hint", "ls_host", "ls_docker", "ls_start", "ls_stop", "ls_alive", "ls_dead", "ls_stopping", "ls_work_on", "ls_paused", "ls_ceiling", "ls_no_theses", "ls_add_thesis", "ls_live", "ls_live_empty", "ls_step_1", "ls_step_2", "ls_step_3", "ls_step_4", "ls_done", "ls_todo", "ls_last_result", "ls_next_for_you", "ls_agent_working", "ls_waiting", "ls_stage", "console_reads", "console_writes", "console_searches", "console_web", "console_skill", "console_says", "console_thinks", "console_tool_result"] as const;
+  const l = Object.fromEntries(keys.map((k) => [k, t(k)]));
+  const s = cc.stats;
   return (
-    <Shell title={t("nav_command_center")} subtitle={de ? "Forschungsprogramm für Autorität, Provenienz, Gedächtnis und Evaluation agentischer KI — deterministischer Kern, empirische Tracks, falsifizierte Hypothesen, aktive Experimente, Publikationskandidaten." : "Research program for agentic AI authority, provenance, memory and evaluation."}>
-      <Section title={de ? "Kennzahlen" : "Key figures"}><StatCards items={items} /></Section>
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Section title={de ? "Kette" : "Chain"} hint={de ? "letzte Closure → nächster Auftrag (nicht ausgeführt)" : "latest closure → next order (not executed)"}>
-          {cc.latest_closure && <div className="border border-border p-3 text-sm"><div className="font-mono text-xs text-muted-foreground">{cc.latest_closure.id}</div><div className="mt-1">{cc.latest_closure.verdict ? <VerdictBadge verdict={cc.latest_closure.verdict} /> : "—"}</div><div className="mt-2 text-xs">{de ? "Nächster Auftrag" : "Next order"}: <code className="font-mono">{cc.next_work_order ?? "—"}</code></div></div>}
+    <Shell title={t("ls_title")} subtitle={t("ls_subtitle")} help={t("help_home")}>
+      {ls === null ? <RecordsOnly text={t("ros_records_only")} /> : (<>
+        <FirstSteps fs={ls.first_steps} l={l} />
+        <Section title={t("ls_running")}>
+          <div className="grid gap-3 xl:grid-cols-[1fr_1fr]">
+            <div className="flex flex-col gap-3" id="workers"><WorkerSwitch which="host" label={t("ls_host")} status={ls.host} l={l} /><WorkerSwitch which="docker" label={t("ls_docker")} status={ls.docker} l={l} /><div id="master"><MasterSwitch on={!!ls.autopilot.master} l={l} /></div></div>
+            <LiveTicker initialRun={ls.live_run} initialEvents={ls.live_events} l={l} />
+          </div>
+          <p className="mt-2 font-mono text-[0.65rem] text-muted-foreground">Claude-Sitzungen {ls.governor.running.claude}/{ls.governor.caps.max_parallel_claude_sessions} · Quota {ls.governor.quota.state} · Auth {ls.governor.attestation.auth_class ?? "—"}{ls.governor.attestation.fresh ? "" : " (Preflight nötig)"} · Pin {ls.governor.caps.model_pin}</p>
         </Section>
-        <Section title={de ? "Aktive Forschung" : "Active research"} hint={de ? "vom Founder ausgewählte Thesen" : "theses selected by the founder"}>
-          {cc.active_research.length ? <div className="grid gap-2">{cc.active_research.map((a: any) => <Link key={a.claim_id} href={`/claims/${a.claim_id}`} className="border border-border p-3 text-sm hover:bg-muted/30"><div className="font-mono text-xs text-muted-foreground">{a.claim_id} · {a.track}</div><div className="font-medium">{a.title}</div><div className="mt-1 flex flex-wrap gap-2"><StatusBadge status={a.status} /><StrengthBadge strength={a.strength} /></div><div className="mt-1 text-xs text-muted-foreground">{de ? "nächster Test" : "next test"}: {a.next_test || "—"} · {de ? "Risiko" : "risk"}: {a.risk || "—"}</div></Link>)}</div> : <p className="text-sm text-muted-foreground">{de ? "Keine These ausgewählt —" : "No thesis selected —"} <Link href="/theses" className="underline">{t("nav_theses")}</Link></p>}
+        <Section title={t("ls_theses")} hint={`${ls.theses.length}`}>
+          {ls.theses.length === 0 ? <p className="mb-3 text-sm text-muted-foreground">{t("ls_no_theses")}</p> : <div className="grid gap-3 xl:grid-cols-2">{ls.theses.map((th: any) => <ThesisCard key={th.thesis_id} t={th} states={ls.states} l={l} />)}</div>}
+          <details className="mt-3 text-sm"><summary className="cursor-pointer text-xs font-semibold uppercase tracking-widest text-muted-foreground">{t("ls_add_thesis")}</summary>
+            <ul className="mt-2 grid gap-1 md:grid-cols-2">{claims.filter((c: any) => ["hypothesis", "invariant", "architecture"].includes(c.claim_type) && !ls.theses.some((th: any) => (th.claim_ids ?? []).includes(c.claim_id))).map((c: any) => <li key={c.claim_id} className="flex flex-wrap items-center gap-2 border border-border p-2 text-xs"><span className="font-mono">{c.claim_id}</span><span className="grow">{c.title}</span><CreateThesis claim={c} existing={false} label={t("ls_add_thesis")} /></li>)}</ul>
+          </details>
         </Section>
-      </div>
-      {att && att.n > 0 && <Section title={de ? "Aufmerksamkeit (nur Founder)" : "Attention (founder only)"} hint={`${att.n}`}><ul className="grid gap-1 text-sm">{att.items.map((a: any) => <li key={a.kind + a.id} className="border border-border border-l-4 border-l-amber-500 px-3 py-1.5"><span className="mr-2 font-mono text-[0.6rem] uppercase tracking-widest text-muted-foreground">{a.kind}</span><Link href={a.href} className="hover:underline">{a.text}</Link></li>)}</ul></Section>}
-      <Section title={de ? "Forschungs-Alerts" : "Research alerts"}>{cc.alerts.length ? <ul className="grid gap-1 text-sm">{cc.alerts.map((a: any, i: number) => <li key={i} className="border border-border px-3 py-1.5"><span className="mr-2 font-mono text-[0.6rem] uppercase tracking-widest text-muted-foreground">{a.kind}</span><Link href={a.href} className="hover:underline">{a.text}</Link></li>)}</ul> : <p className="text-sm text-muted-foreground">{de ? "keine" : "none"}</p>}</Section>
-      <Section title={de ? "Wissenschaftlicher Fortschritt" : "Scientific progress"}><VerdictMix data={cc.verdict_mix} n={cc.n_closures} /></Section>
-      <Section title={de ? "Forschungsprinzipien" : "Research principles"}><p className="text-sm">{o.principles.join(" · ")}</p></Section>
-      <Section title={de ? "Was LOGOS-1 nicht behauptet" : "What LOGOS-1 does not claim"}><ul className="list-disc pl-5 text-sm">{o.does_not_claim.map((x: string) => <li key={x}>{x}</li>)}</ul></Section>
+        <Section title={t("ls_decisions")} hint={`${ls.attention.length}`}>
+          {ls.attention.length === 0 ? <p className="text-sm text-muted-foreground">—</p> : <ul className="grid gap-1 text-sm">{ls.attention.map((a: any) => <li key={a.kind + a.id} className="border border-border border-l-4 border-l-amber-500 px-3 py-1.5"><span className="mr-2 font-mono text-[0.6rem] uppercase tracking-widest text-muted-foreground">{a.kind}</span><Link href={a.href} className="hover:underline">{a.text}</Link></li>)}</ul>}
+        </Section>
+        <Section title={de ? "Stand der Forschung (Zählung)" : "State of research (counts)"}>
+          <StatCards items={[{ label: de ? "Aktive Thesen" : "Active theses", value: ls.theses.length, href: "/theses" }, { label: de ? "Läufe gesamt" : "Runs total", value: s.ros.running_jobs ?? 0, sub: de ? "gerade laufend" : "running now", href: "/runs" }, { label: de ? "Experimente diesen Monat" : "Experiments this month", value: s.experiments_this_month, href: "/experiments" }, { label: de ? "Negativergebnisse" : "Negative results", value: s.negative_results_this_month, href: "/negative-results" }, { label: de ? "Offene Gates" : "Open gates", value: s.blocked_gates, href: "/decisions" }]} />
+          <div className="mt-3"><VerdictMix data={cc.verdict_mix} n={cc.n_closures} /></div>
+          <p className="mt-2 text-xs text-muted-foreground">{de ? "Kette:" : "Chain:"} <span className="font-mono">{cc.latest_closure?.id}</span> → <span className="font-mono">{cc.next_work_order}</span> · <Link className="underline" href="/work-orders">Work Orders</Link> · <Link className="underline" href="/traces">Traces</Link></p>
+        </Section>
+      </>)}
     </Shell>
   );
 }

@@ -3,7 +3,7 @@ import { getT, NAV } from "@/i18n";
 import { SidebarNav } from "@/components/sidebar-nav";
 import { InspectorFrame } from "@/components/inspector";
 
-export async function Shell({ children, title, subtitle }: { children: React.ReactNode; title: string; subtitle?: string }) {
+export async function Shell({ children, title, subtitle, help }: { children: React.ReactNode; title: string; subtitle?: string; help?: string }) {
   const { locale, t } = await getT();
   const groups = NAV.map((g) => ({ label: t(g.area), items: g.items.map((it) => ({ href: it.href, label: t(it.key) })) }));
   return (
@@ -14,6 +14,7 @@ export async function Shell({ children, title, subtitle }: { children: React.Rea
           <header className="mb-6 border-b border-border pb-4">
             <h1 className="font-heading text-2xl font-semibold tracking-tight">{title}</h1>
             {subtitle && <p className="mt-1 max-w-4xl text-sm text-muted-foreground">{subtitle}</p>}
+            {help && <details className="mt-2 max-w-4xl text-sm"><summary className="cursor-pointer select-none text-xs font-semibold uppercase tracking-widest text-muted-foreground">{t("help_what")}</summary><p className="mt-1 border-l-2 border-border pl-3 text-muted-foreground">{help}</p></details>}
           </header>
           <div className="min-w-0">{children}</div>
         </main>
