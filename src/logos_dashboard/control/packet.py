@@ -17,8 +17,10 @@ AGENT_EVENTS_BY_STATE = {"IDEA": ["triage"], "TRIAGE": ["start_prior_art", "defi
 STAGE_DELIVERABLE = {"IDEA": "TRIAGE.md (why this thesis, which claims, which track, what would falsify it in one paragraph)", "TRIAGE": "PRIOR-ART.md (closest prior art; or a justified 'not needed' note) — decide needs_prior_art",
                      "PRIOR_ART": "QUESTION.md (one scientific question, scope, out-of-scope)", "QUESTION_DEFINED": "HYPOTHESES.md (H0/H1, directional predictions, alternative mechanisms)",
                      "HYPOTHESIS_DEFINED": "METRICS.md (metric ids, ground-truth mapping, statistics: Wilson/Newcombe/bootstrap, N, effect size, stopping rules)",
-                     "METRICS_DEFINED": "PREREG-DRAFT.json + WORK-ORDER-DRAFT.md (all §12 mandatory fields; founder gates listed; caps; deterministic tests to add)"}
-ALLOWED_TOOLS_ADVANCE = ("Read", "Write", "Edit", "Glob", "Grep")
+                     "METRICS_DEFINED": "PREREG-DRAFT.json + WORK-ORDER-DRAFT.json (JSON with the mandatory fields question, scope, hypothesis, falsification_criterion, metrics[], governance{}, caps{}; the executor turns it into a work-order DRAFT for the founder) + WORK-ORDER-DRAFT.md (readable version, founder gates listed, deterministic tests to add)"}
+ALLOWED_TOOLS_ADVANCE = ("Read", "Write", "Edit", "Glob", "Grep", "Skill")
+SKILLS_ADVANCE = ("scientific-thinking-scholar-evaluation", "eval-harness")
+SKILLS_PRIOR_ART = ("deep-research", "scientific-thinking-literature-review", "research-ops", "logos-prior-art-research")
 ALLOWED_TOOLS_PRIOR_ART = ("Read", "Write", "Edit", "Glob", "Grep", "WebSearch", "WebFetch", "Skill")
 DISALLOWED_TOOLS = ("Bash", "NotebookEdit", "Agent", "Task")
 
@@ -66,7 +68,9 @@ def build_thesis_packet(detail: dict, regs: dict, notes: list[dict], prior_art_c
               "5. Set needs_prior_art=true only if the heuristic above applies and no PRIOR-ART.md exists yet.",
               "", "## Result (mandatory, last thing in your answer)", "Return one fenced JSON block:", "```json",
               json.dumps({"schema": RESULT_SCHEMA, "proposed_event": events[0] if events else None, "files": [f"{allowed_dir}/EXAMPLE.md"], "needs_prior_art": False, "summary": "one paragraph", "uncertainties": ["..."]}, indent=1), "```"]
-    return {"prompt": "\n".join(lines), "system": "You are a research agent inside LOGOS-1. You draft; you never approve, freeze, publish or run inference. Cite repository records by path.",
+    skills = SKILLS_PRIOR_ART if kind == "prior_art" else SKILLS_ADVANCE
+    lines += ["", "## Skills you may invoke (Skill tool) when you judge them useful", *[f"- {sk}" for sk in skills]]
+    return {"prompt": "\n".join(lines), "system": "You are a research agent inside LOGOS-1. You draft; you never approve, freeze, publish or run inference. Cite repository records by path.", "skills": list(skills),
             "allowed_tools": ALLOWED_TOOLS_PRIOR_ART if kind == "prior_art" else ALLOWED_TOOLS_ADVANCE, "disallowed_tools": DISALLOWED_TOOLS,
             "allowed_prefixes": (allowed_dir + "/",) + ((BRIEFS_DIR + "/",) if kind == "prior_art" else ()), "allowed_events": events, "state": state, "thesis_id": th["thesis_id"]}
 

@@ -351,7 +351,7 @@ def test_executor_happy_path_applies_agent_event_and_requests_prior_art(conn, ti
     assert out["state"] == "done" and out["result"]["applied_state"] == "TRIAGE" and out["result"]["files"] == [rel] and out["result"]["prior_art_job"]
     assert service.thesis_detail(conn, tid)["thesis"]["state"] == "TRIAGE"
     run = runs.list_runs(conn, thesis_id=tid)[0]; ev = runs.events_after(conn, run["run_id"])
-    assert [e["kind"] for e in ev] == ["gate", "phase", "worktree", "phase", "packet", "phase", "claude.invoke", "claude.result", "phase", "artifact", "commit", "thesis.event", "phase", "done"]
+    assert [e["kind"] for e in ev] == ["gate", "phase", "worktree", "phase", "packet", "phase", "claude.invoke", "agent.result", "claude.result", "phase", "artifact", "commit", "thesis.event", "phase", "done"]   # R2: stream events (legacy json fake -> one synthetic agent.result)
     cr = next(e for e in ev if e["kind"] == "claude.result")["payload"]; assert cr["status"] == "OK" and cr["resolved_model"] == "claude-opus-5" and cr["requested_model"] == "claude-opus-5"
     assert run["state"] == "done" and run["branch"] == f"ros/{tid}/{run['run_id']}"
     sub = [x for x in queue.list_jobs(conn, 500) if x["thesis_id"] == tid and x["kind"] == "prior_art"]; assert len(sub) == 1 and sub[0]["state"] == "waiting_governance"
@@ -437,15 +437,15 @@ def test_telemetry_mirror_and_trace_explorer(conn, tid, repo, tmp_path, attested
     run_id = runs.list_runs(conn, thesis_id=tid)[0]["run_id"]; tr = stack["tracker"]
     assert set(tr.params[run_id]) == {"thesis_state", "allowed_events", "allowed_tools", "prompt_bytes", "branch", "contract", "model_requested", "model_resolved", "claude_status", "evidence_class", "prompt_sha256"}
     assert {"latency_s", "turns", "status_ok", "tokens_input_tokens", "tokens_output_tokens", "files_changed", "event_applied", "needs_prior_art", "duration_s"} <= set(tr.metrics[run_id]) and tr.metrics[run_id]["status_ok"] == 1.0
-    assert tr.ended[run_id] == "COMPLETED" and set(tr.artifacts[run_id]) == {"prompt.txt", "claude_result.json"}
+    assert tr.ended[run_id] == "COMPLETED" and set(tr.artifacts[run_id]) == {"prompt.txt", "claude_stream.jsonl", "claude_result.json"}
     assert [s[1] for s in stack["traces"].spans] == ["run.start", "phase.worktree", "phase.packet", "phase.claude", "phase.verify", "run.finish"] and len(stack["llm_traces"].generations) == 1
     links = telemetry.trace_links(conn, run_id); assert len(links) == 6 and links[0]["mlflow_run_id"] == f"null-{run_id}"
-    arts = telemetry.artifacts(conn, run_id); assert [a["kind"] for a in arts] == ["prompt", "claude_result"] and all(len(a["sha256"]) == 64 for a in arts)
+    arts = telemetry.artifacts(conn, run_id); assert [a["kind"] for a in arts] == ["prompt", "claude_stream", "claude_result"] and all(len(a["sha256"]) == 64 for a in arts)
     assert out["result"]["telemetry"]["degraded"] == [] and out["result"]["telemetry"]["stack"] == "null"
     client = TestClient(app)
     t = client.get(f"/api/ros/runs/{run_id}/trace").json()
     assert [b["phase"] for b in t["waterfall"]] == ["worktree", "packet", "claude", "verify"] and all(b["duration_s"] >= 0 for b in t["waterfall"]) and len(t["invocations"]) == 1 and t["invocations"][0]["result"]["status"] == "OK"
-    assert t["mlflow_ui"] is not None and "null-" in t["mlflow_ui"] and len(t["artifacts"]) == 2 and t["n_events"] == 13
+    assert t["mlflow_ui"] is not None and "null-" in t["mlflow_ui"] and len(t["artifacts"]) == 3 and t["n_events"] == 14
     lst = client.get("/api/ros/traces").json(); mine = next(r for r in lst["runs"] if r["run_id"] == run_id); assert mine["links"]["mlflow_run_id"] == f"null-{run_id}" and lst["experiment"] == "logos-research-os"
     assert client.post(f"/api/ros/runs/{run_id}/rescore").status_code == 409     # null stack: artifact not retrievable; and never an inference
     assert client.post("/api/ros/runs/NOPE/rescore").status_code == 404
@@ -660,3 +660,80 @@ def test_evidence_debt_paper_readiness_and_monthly_report(conn):
     assert client.get("/api/ros/reports/2026-09").json()["doc"]["sha256"] == doc["sha256"]        # deterministic (generated_at excluded from the hash)
     assert client.post("/api/ros/reports/2026-09/freeze", headers={"X-Logos-Actor": "agent"}).status_code == 403 and client.post("/api/ros/reports/TEST-ROS-1/freeze").status_code == 400
     assert client.get("/api/ros/evidence-debt").json()["n"] == d["n"] and len(client.get("/api/ros/paper-readiness").json()["papers"]) == len(pr) and "reports" in client.get("/api/ros/reports").json()
+
+
+
+# -- R2: agent provider (stream-json + --verbose under INFERENCE-GOVERNANCE-FLAG-AMENDMENT-R1), live events, stop mid-stream ------------
+
+
+def _stream_fixture_runner(*, stop_after: int | None = None, write: dict[str, str] | None = None):
+    lines = (_Path(__file__).resolve().parent / "fixtures/ros/agent_stream.jsonl").read_text(encoding="utf-8").splitlines()
+
+    def factory(cwd):
+        def run(argv, timeout, env, on_line, stop_check):
+            assert argv[:1] == ["claude"] and "--verbose" in argv and "stream-json" in argv and "--dangerously-skip-permissions" not in argv and "ANTHROPIC_API_KEY" not in env
+            for rel, text in (write or {}).items():
+                p = _Path(cwd) / rel; p.parent.mkdir(parents=True, exist_ok=True); p.write_text(text, encoding="utf-8")
+            for i, l in enumerate(lines):
+                on_line(l)
+                if stop_check() or (stop_after is not None and i + 1 >= stop_after):
+                    return "STOPPED", "\n".join(lines[: i + 1]), ""
+            return 0, "\n".join(lines), ""
+        return run
+    return factory
+
+
+def test_agent_provider_argv_contract_and_condense():
+    from logos_dashboard.control import agent_provider as ap
+    from logos_research.measurement.claude_code import DOCUMENTED_FLAGS, Limits, ProviderPolicyError
+    assert "--verbose" not in DOCUMENTED_FLAGS and "--verbose" in ap.AGENT_FLAGS        # measurement whitelist unchanged; agent flags amended
+    argv = ap.build_agent_argv("p", "claude-opus-5", Limits(5, 1000, 10.0, ("Bash",), ("Read", "Skill")), system_prompt="s")
+    assert argv[:6] == ["claude", "-p", "p", "--output-format", "stream-json", "--verbose"] and "--append-system-prompt" in argv and "--allowedTools" in argv
+    with pytest.raises(ProviderPolicyError):
+        ap.check_agent_argv(["claude", "-p", "x", "--resume", "abc"])
+    with pytest.raises(ProviderPolicyError):
+        ap.check_agent_argv(["claude", "-p", "x", "--dangerously-skip-permissions"])
+    amend = _json.loads((_Path(__file__).resolve().parents[1] / "docs/research/INFERENCE-GOVERNANCE-FLAG-AMENDMENT-R1.json").read_text(encoding="utf-8"))
+    assert amend["decision"] == "APPROVED" and amend["decision_owner"] == "founder" and amend["flag"] == "--verbose" and set(amend["scope"]) == set(ap.AGENT_KINDS) and "--resume" in amend["still_forbidden"]
+    c = ap.condense({"type": "assistant", "message": {"model": "m", "content": [{"type": "tool_use", "id": "1", "name": "Read", "input": {"file_path": "a.md"}}, {"type": "text", "text": "hi"}]}})
+    assert c["kind"] == "agent.batch" and [i["kind"] for i in c["items"]] == ["agent.tool", "agent.text"] and c["items"][0]["target"] == "a.md"
+    assert ap.condense({"type": "user", "message": {"content": "plain"}}) is None and ap.condense({"type": "result", "num_turns": 2})["kind"] == "agent.result"
+
+
+def test_executor_streams_live_events_with_tier1_evidence(conn, tid, repo, tmp_path, attested):
+    service.create_thesis(conn, tid, ["LOGOS-AUTH-001"], "stream", "authority", "founder")
+    j = queue.enqueue(conn, "thesis_advance", thesis_id=tid); queue.start(conn, j["job_id"], "founder", governor.pre_run_gate(conn, j, "IDEA", "PREREG_DRAFT", ("IDEA", "PREREG_DRAFT")))
+    rel = "docs/research/dashboard/theses/T/TRIAGE.md"     # the fixture writes under theses/T — outside this thesis' allowlist -> we place the real file under the thesis dir instead
+    out = executor.run_once(conn, _cfg(repo, tmp_path, _stream_fixture_runner(write={f"docs/research/dashboard/theses/{tid}/TRIAGE.md": "# triage"})), "w-test")
+    assert out["state"] == "done", out.get("error")
+    run = runs.list_runs(conn, thesis_id=tid)[0]; ev = runs.events_after(conn, run["run_id"])
+    kinds = [e["kind"] for e in ev]
+    assert kinds.count("agent.init") == 1 and kinds.count("agent.batch") == 7 and kinds.count("agent.result") == 1 and kinds.index("agent.init") > kinds.index("claude.invoke") and kinds.index("agent.result") < kinds.index("claude.result")
+    tools = [i["tool"] for e in ev if e["kind"] == "agent.batch" for i in e["payload"]["items"] if i["kind"] == "agent.tool"]
+    assert tools == ["Read", "Grep", "Write"]
+    cr = next(e for e in ev if e["kind"] == "claude.result")["payload"]
+    assert cr["status"] == "OK" and cr["resolved_model"] == "claude-opus-5" and cr["evidence_class"] == "EXPLICIT_ASSISTANT_MODEL"          # assistant.message.model -> Tier-1 evidence
+    ci = next(e for e in ev if e["kind"] == "claude.invoke")["payload"]; assert ci["output_format"] == "stream-json" and ci["verbose"] == "INFERENCE-GOVERNANCE-FLAG-AMENDMENT-R1" and "scientific-thinking-scholar-evaluation" in ci["skills"]
+    assert service.thesis_detail(conn, tid)["thesis"]["state"] == "TRIAGE" and (repo / rel).exists() is False
+
+
+def test_executor_stop_mid_stream_discards_branch(conn, tid, repo, tmp_path, attested):
+    service.create_thesis(conn, tid, [], "stop", "authority", "founder")
+    j = queue.enqueue(conn, "thesis_advance", thesis_id=tid); queue.start(conn, j["job_id"], "founder", governor.pre_run_gate(conn, j, "IDEA", "PREREG_DRAFT", ("IDEA", "PREREG_DRAFT")))
+    out = executor.run_once(conn, _cfg(repo, tmp_path, _stream_fixture_runner(stop_after=3)), "w-test")
+    assert out["state"] == "stopped" and service.thesis_detail(conn, tid)["thesis"]["state"] == "IDEA"
+    run = runs.list_runs(conn, thesis_id=tid)[0]; kinds = [e["kind"] for e in runs.events_after(conn, run["run_id"])]
+    assert run["state"] == "stopped" and kinds[-1] == "stop" and kinds.count("agent.batch") == 2
+    assert _sp.run(["git", "branch", "--list", f"ros/{tid}/*"], cwd=repo, capture_output=True, text=True).stdout.strip() == ""
+
+
+def test_executor_creates_work_order_draft_from_agent_file(conn, tid, repo, tmp_path, attested):
+    service.create_thesis(conn, tid, ["LOGOS-AUTH-001"], "wo", "authority", "founder")
+    for e in ("triage", "define_question", "define_hypothesis", "define_metrics"):
+        service.advance(conn, tid, e, "agent")
+    j = queue.enqueue(conn, "thesis_advance", thesis_id=tid); queue.start(conn, j["job_id"], "founder", governor.pre_run_gate(conn, j, "METRICS_DEFINED", "PREREG_DRAFT", ("IDEA", "METRICS_DEFINED", "PREREG_DRAFT")))
+    d = f"docs/research/dashboard/theses/{tid}"
+    spec = {"question": "q", "scope": "s", "hypothesis": "h", "falsification_criterion": "f", "metrics": ["m1"], "governance": {"provider": "claude-max"}, "caps": {"invocations": 20}}
+    out = executor.run_once(conn, _cfg(repo, tmp_path, _fake_claude(_result_doc(_agent_block("draft_prereg", [f"{d}/PREREG-DRAFT.json", f"{d}/WORK-ORDER-DRAFT.json"])), write={f"{d}/PREREG-DRAFT.json": "{}", f"{d}/WORK-ORDER-DRAFT.json": _json.dumps(spec)})), "w-test")
+    assert out["state"] == "done" and out["result"]["applied_state"] == "PREREG_DRAFT" and out["result"]["work_order_draft"] == f"WO-{tid}-D{j['job_id']}"
+    wos = [w for w in service.list_work_orders(conn) if w["thesis_id"] == tid]; assert len(wos) == 1 and wos[0]["state"] == "DRAFT" and wos[0]["created_by"] == "agent" and wos[0]["spec"]["origin"]["agent_job"] == j["job_id"]

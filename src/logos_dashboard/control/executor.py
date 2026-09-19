@@ -16,7 +16,9 @@ from hashlib import sha256
 from pathlib import Path
 from typing import Callable
 
-from logos_research.measurement.claude_code import ActivationToken, ClaudeCodeMaxProvider, Limits, ProviderPolicyError, contamination
+from logos_research.measurement.claude_code import ActivationToken, Limits, ProviderPolicyError, contamination
+
+from .agent_provider import AMENDMENT, AgentProvider
 
 from . import governor, packet as pk, queue, radar, runs, service, telemetry, worktree
 from .state_machines import AGENT_CEILING, THESIS_STATES, IllegalTransition
@@ -91,17 +93,25 @@ def run_job(conn, job: dict, cfg: ExecutorConfig) -> dict:
         return queue.stop(conn, job_id, actor="founder")
     token = ActivationToken(run_id=run_id, model_pin=caps.model_pin, max_invocations=caps.max_claude_invocations_per_job, max_turns=cfg.limits["max_turns"], issued_by="logos_dashboard.control.governor",
                             cli_version=cfg.cli_version, contract_version="ros-agent-result/1", dataset_hash=None, prompt_bundle_hash=prompt_hash)
-    provider = ClaudeCodeMaxProvider(runner=cfg.runner_factory(wt), expected_cli_version=cfg.cli_version)
+    provider = AgentProvider(runner=_as_stream_runner(cfg.runner_factory(wt)), expected_cli_version=cfg.cli_version)
     limits = Limits(max_turns=cfg.limits["max_turns"], max_output_bytes=cfg.limits["max_output_bytes"], timeout_s=cfg.limits["timeout_s"], disallowed_tools=packet["disallowed_tools"], allowed_tools=packet["allowed_tools"])
     runs.emit(conn, run_id, "phase", {"phase": "claude"}); tel.span("phase.claude", {"phase": "claude", "model_requested": caps.model_pin})
-    runs.emit(conn, run_id, "claude.invoke", {"requested_model": caps.model_pin, "max_turns": limits.max_turns, "allowed_tools": packet["allowed_tools"], "disallowed_tools": packet["disallowed_tools"], "output_format": "json", "contamination_presence": contamination(), "invocation": 1})
+    runs.emit(conn, run_id, "claude.invoke", {"requested_model": caps.model_pin, "max_turns": limits.max_turns, "allowed_tools": packet["allowed_tools"], "disallowed_tools": packet["disallowed_tools"], "output_format": "stream-json", "verbose": AMENDMENT, "skills": packet.get("skills", []), "contamination_presence": contamination(), "invocation": 1})
+    def _on_event(ev: dict) -> None:
+        runs.emit(conn, run_id, ev["kind"], ev)
     try:
-        res = provider.invoke(packet["prompt"], caps.model_pin, {"run_id": run_id, "system_prompt": packet["system"]}, limits, token=token, env=dict(os.environ))   # provider strips CONTAMINATION_ENV; presence already checked by the gate
+        res = provider.invoke(packet["prompt"], caps.model_pin, {"run_id": run_id, "system_prompt": packet["system"], "kind": kind}, limits, token=token, env=dict(os.environ), on_event=_on_event, stop_check=lambda: queue.stop_requested(conn, job_id))
     except ProviderPolicyError as e:
         _cleanup(cfg, wt, branch, discard=True); tel.finish("failed", None)
         return _job_fail(conn, job_id, "POLICY_BLOCK", run_id, {"error": str(e)})
     evidence = res.resolution.evidence_class if res.resolution else None
     tel.generation(model_requested=res.requested_model, model_resolved=res.reported_model, status=res.status, evidence_class=evidence, prompt=packet["prompt"], output=res.content, usage=res.usage_metadata, turns=res.turn_count, latency_s=res.latency_s)
+    if provider.raw_lines:
+        tel.artifact("claude_stream.jsonl", provider.stream_text().encode("utf-8"), "claude_stream")
+        tel.metrics({f"tool_{k}": v for k, v in provider.tool_histogram().items()})
+    if res.stderr_classification == "stopped":
+        runs.emit(conn, run_id, "stop", {"during": "invoke"}); runs.finish_run(conn, run_id, "stopped", "founder_stop"); _cleanup(cfg, wt, branch, discard=True); tel.finish("stopped", None)
+        return queue.stop(conn, job_id, actor="founder")
     if res.content is not None:
         tel.artifact("claude_result.json", json.dumps({"status": res.status, "requested_model": res.requested_model, "resolved_model": res.reported_model, "evidence_class": evidence, "turns": res.turn_count, "usage": res.usage_metadata, "content": res.content}, sort_keys=True).encode("utf-8"), "claude_result")
     runs.emit(conn, run_id, "claude.result", {"status": res.status, "requested_model": res.requested_model, "resolved_model": res.reported_model, "evidence_class": evidence, "reason_code": res.stderr_classification, "turns": res.turn_count,
@@ -152,11 +162,25 @@ def run_job(conn, job: dict, cfg: ExecutorConfig) -> dict:
                 applied = row["state"]; runs.emit(conn, run_id, "thesis.event", {"proposed": result.proposed_event, "applied": True, "to": applied})
             except IllegalTransition as e:
                 conn.rollback(); runs.emit(conn, run_id, "thesis.event", {"proposed": result.proposed_event, "applied": False, "reason": e.reason})
+    wo_draft = None
+    if kind == "thesis_advance":
+        wo_path = wt / pk.thesis_dir(thesis_id) / "WORK-ORDER-DRAFT.json"
+        if wo_path.exists():
+            try:
+                spec = json.loads(wo_path.read_text(encoding="utf-8")); missing = service.validate_spec(spec)
+                if missing:
+                    runs.emit(conn, run_id, "work_order.draft", {"created": False, "missing": missing})
+                else:
+                    wo_id = f"WO-{thesis_id}-D{job_id}"
+                    row = service.create_work_order(conn, wo_id, thesis_id, {**spec, "origin": {"agent_job": job_id, "run_id": run_id, "branch": branch}}, "agent"); wo_draft = row["work_order_id"]
+                    runs.emit(conn, run_id, "work_order.draft", {"created": True, "work_order_id": wo_draft, "state": row["state"]})
+            except (ValueError, Exception) as e:
+                conn.rollback(); runs.emit(conn, run_id, "work_order.draft", {"created": False, "error": f"{type(e).__name__}: {str(e)[:160]}"})
     sub = None
     if result.needs_prior_art and kind == "thesis_advance":
         sub = queue.enqueue(conn, "prior_art", thesis_id=thesis_id, work_order_id=job.get("work_order_id"), payload={"requested_by_job": job_id, "brief_task": {"task_id": f"PRIOR-ART-{job_id}"}}, actor="agent")
         runs.emit(conn, run_id, "phase", {"phase": "prior_art_requested", "job_id": sub["job_id"], "state": sub["state"]})
-    summary = {"status": "OK", "files": changed, "commit": sha, "branch": branch, "proposed_event": result.proposed_event, "applied_state": applied, "needs_prior_art": result.needs_prior_art, "summary": result.summary, "uncertainties": list(result.uncertainties), "prior_art_job": sub["job_id"] if sub else None}
+    summary = {"status": "OK", "files": changed, "commit": sha, "branch": branch, "proposed_event": result.proposed_event, "applied_state": applied, "needs_prior_art": result.needs_prior_art, "summary": result.summary, "uncertainties": list(result.uncertainties), "prior_art_job": sub["job_id"] if sub else None, "work_order_draft": wo_draft}
     tel.metrics({"files_changed": len(changed), "event_applied": 1 if applied else 0, "needs_prior_art": 1 if result.needs_prior_art else 0})
     links = tel.finish("done", summary); summary["telemetry"] = links
     if links["degraded"]:
@@ -199,3 +223,38 @@ def run_once(conn, cfg: ExecutorConfig, worker_id: str, kinds: tuple[str, ...] =
         return queue.fail(conn, job["job_id"], f"EXECUTOR_EXCEPTION:{type(e).__name__}:{str(e)[:200]}", actor="system")
     finally:
         governor.heartbeat(conn, worker_id, "host", platform.node(), list(kinds), None)
+
+
+def _as_stream_runner(runner):
+    """Accept both runner contracts: streaming `(argv, timeout, env, on_line, stop_check)` and the legacy `(argv, timeout, env)` (json-doc fakes in tests).
+    Legacy stdout is replayed line-wise; a single JSON document becomes a synthetic `result` event."""
+    import inspect
+    try:
+        n = len(inspect.signature(runner).parameters)
+    except (TypeError, ValueError):
+        n = 3
+    if n >= 5:
+        return runner
+
+    def wrapped(argv, timeout, env, on_line, stop_check):
+        code, out, err = runner(argv, timeout, env)
+        if out:
+            lines = [l for l in out.splitlines() if l.strip()]
+            parsed = []
+            for l in lines:
+                try:
+                    parsed.append(json.loads(l))
+                except ValueError:
+                    parsed = None; break
+            if parsed and all(isinstance(p, dict) and "type" in p for p in parsed):
+                for l in lines:
+                    on_line(l)
+            else:
+                try:
+                    doc = json.loads(out)
+                    if isinstance(doc, dict):
+                        on_line(json.dumps({"type": "result", **doc}))
+                except ValueError:
+                    pass
+        return code, out, err
+    return wrapped

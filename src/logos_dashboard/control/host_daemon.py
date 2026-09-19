@@ -9,12 +9,15 @@ from __future__ import annotations
 
 import argparse
 import shutil
+import time
 import platform
 import subprocess
 import time
 from pathlib import Path
 
-from logos_research.measurement.claude_code import ProviderPolicyError, check_argv
+from logos_research.measurement.claude_code import ProviderPolicyError
+
+from .agent_provider import check_agent_argv
 
 from .. import db, registries
 from . import executor, governor, telemetry
@@ -28,15 +31,31 @@ def real_runner_factory(cwd: Path):
     if not exe:
         raise ProviderPolicyError("claude executable not on PATH")
 
-    def _run(argv: list[str], timeout: float, env: dict) -> tuple[int | None, str, str]:
-        check_argv(argv)
+    def _run(argv: list[str], timeout: float, env: dict, on_line, stop_check) -> tuple:
+        """Streaming runner: one process, stdout line by line to `on_line`; `stop_check()` between lines terminates the process (graceful Stop)."""
+        check_agent_argv(argv)
         if argv[0] != "claude" or any(k in env for k in FORBIDDEN_ENV):
             raise ProviderPolicyError("argv/env contract violated")
+        proc = subprocess.Popen([exe, *argv[1:]], stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.DEVNULL, text=True, encoding="utf-8", errors="replace", env=env, shell=False, cwd=str(cwd), bufsize=1)
+        out_lines: list[str] = []; t0 = time.time(); stopped = False; timed_out = False
         try:
-            cp = subprocess.run([exe, *argv[1:]], capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=timeout, env=env, shell=False, stdin=subprocess.DEVNULL, cwd=str(cwd))
-        except subprocess.TimeoutExpired:
-            return None, "", "timeout"
-        return cp.returncode, cp.stdout, cp.stderr
+            for line in proc.stdout:
+                out_lines.append(line); on_line(line)
+                if stop_check():
+                    stopped = True; proc.terminate(); break
+                if time.time() - t0 > timeout:
+                    timed_out = True; proc.kill(); break
+        finally:
+            try:
+                proc.wait(timeout=30)
+            except subprocess.TimeoutExpired:
+                proc.kill(); proc.wait()
+        err = proc.stderr.read() if proc.stderr else ""
+        if timed_out:
+            return None, "".join(out_lines), "timeout"
+        if stopped:
+            return "STOPPED", "".join(out_lines), err
+        return proc.returncode, "".join(out_lines), err
     return _run
 
 
