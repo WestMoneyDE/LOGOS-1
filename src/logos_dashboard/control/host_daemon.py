@@ -20,7 +20,7 @@ from logos_research.measurement.claude_code import ProviderPolicyError
 from .agent_provider import check_agent_argv
 
 from .. import db, registries
-from . import executor, governor, telemetry
+from . import autopilot, executor, governor, procs, telemetry
 
 ROOT = Path(__file__).resolve().parents[3]
 FORBIDDEN_ENV = ("ANTHROPIC_API_KEY", "CLAUDE_CODE_USE_BEDROCK", "CLAUDE_CODE_USE_VERTEX", "CLAUDE_CODE_USE_FOUNDRY")
@@ -73,7 +73,14 @@ def main(argv: list[str] | None = None) -> int:
     ev = governor.preflight_evidence(); cfg = config(ev.get("cli_version"))
     print(f"host executor {a.worker_id}: cli={ev.get('cli_version')} auth_class={ev.get('auth_class')} pin={governor.caps(conn).model_pin}")
     while True:
-        governor.heartbeat(conn, a.worker_id, "host", platform.node(), ["thesis_advance", "prior_art", "radar_process"], None, {"cli_version": ev.get("cli_version")})
+        governor.heartbeat(conn, a.worker_id, "host", platform.node(), ["thesis_advance", "prior_art", "radar_process"], None, {"cli_version": ev.get("cli_version"), "autopilot": autopilot.master(conn)})
+        if procs.host_should_stop(conn):
+            print("stop requested — exiting"); procs.host_exited(conn); return 0
+        try:
+            for act in autopilot.tick(conn):
+                print(f"autopilot: {act}")
+        except Exception as e:
+            conn.rollback(); print(f"autopilot tick error: {type(e).__name__}: {e}")
         job = executor.run_once(conn, cfg, a.worker_id)
         if job:
             print(f"job {job['job_id']} -> {job['state']} {job.get('error') or ''}")

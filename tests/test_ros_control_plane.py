@@ -737,3 +737,92 @@ def test_executor_creates_work_order_draft_from_agent_file(conn, tid, repo, tmp_
     out = executor.run_once(conn, _cfg(repo, tmp_path, _fake_claude(_result_doc(_agent_block("draft_prereg", [f"{d}/PREREG-DRAFT.json", f"{d}/WORK-ORDER-DRAFT.json"])), write={f"{d}/PREREG-DRAFT.json": "{}", f"{d}/WORK-ORDER-DRAFT.json": _json.dumps(spec)})), "w-test")
     assert out["state"] == "done" and out["result"]["applied_state"] == "PREREG_DRAFT" and out["result"]["work_order_draft"] == f"WO-{tid}-D{j['job_id']}"
     wos = [w for w in service.list_work_orders(conn) if w["thesis_id"] == tid]; assert len(wos) == 1 and wos[0]["state"] == "DRAFT" and wos[0]["created_by"] == "agent" and wos[0]["spec"]["origin"]["agent_job"] == j["job_id"]
+
+
+
+# -- R2: autopilot scheduler, repository orders, worker control API ------------------------------------------------------
+
+
+@pytest.fixture
+def autopilot_clean(conn):
+    from logos_dashboard.control import governor
+    prev = {k: governor.get_setting(conn, k) for k in ("autopilot_master", "autopilot_theses")}
+    yield
+    conn.rollback()
+    with conn.cursor() as cur:
+        for k, v in prev.items():
+            if v is None:
+                cur.execute("DELETE FROM ros_settings WHERE key = %s", (k,))
+            else:
+                cur.execute("UPDATE ros_settings SET value = %s WHERE key = %s", (_json.dumps(v), k))
+    conn.commit()
+
+
+def test_autopilot_runs_stages_until_ceiling_and_pauses_on_gate(conn, tid, repo, tmp_path, attested, autopilot_clean):
+    from logos_dashboard.control import autopilot
+    from logos_research.governance import GovernanceError
+    service.create_thesis(conn, tid, ["LOGOS-AUTH-001"], "auto", "authority", "founder")
+    with pytest.raises(GovernanceError):
+        autopilot.set_master(conn, True, "agent")
+    autopilot.set_master(conn, True, "founder"); f = autopilot.set_thesis(conn, tid, True, "founder", "test")
+    assert f["enabled"] and f["gate_at_enable"]["auth_evidence_fresh"] is True
+    d = f"docs/research/dashboard/theses/{tid}"
+    plan = {"IDEA": ("triage", "TRIAGE.md"), "TRIAGE": ("define_question", "QUESTION.md"), "QUESTION_DEFINED": ("define_hypothesis", "HYPOTHESES.md"), "HYPOTHESIS_DEFINED": ("define_metrics", "METRICS.md"), "METRICS_DEFINED": ("draft_prereg", "PREREG-DRAFT.json")}
+    started = 0
+    for _ in range(8):
+        acts = autopilot.tick(conn)
+        st = service.thesis_detail(conn, tid)["thesis"]["state"]
+        if any(a["action"] == "ceiling" for a in acts):
+            break
+        assert any(a["action"] == "started" and a["thesis_id"] == tid for a in acts), (acts, st)
+        started += 1
+        ev, fn = plan[st]
+        out = executor.run_once(conn, _cfg(repo, tmp_path, _fake_claude(_result_doc(_agent_block(ev, [f"{d}/{fn}"])), write={f"{d}/{fn}": "x"})), "w-test")
+        assert out["state"] == "done", out.get("error")
+    assert started == 5 and service.thesis_detail(conn, tid)["thesis"]["state"] == "PREREG_DRAFT"
+    st = autopilot.status(conn); assert st["theses"][tid]["enabled"] is False and "ceiling" in st["paused"][tid]
+    # a second thesis with stale auth evidence -> gate fails -> paused with reason, job stopped, nothing invoked
+    tid2 = tid + "-B"; service.create_thesis(conn, tid2, [], "auto2", "authority", "founder"); autopilot.set_thesis(conn, tid2, True, "founder")
+    governor.record_attestation(conn, {"auth_class": "MAX_SUBSCRIPTION", "at": "2020-01-01T00:00:00+00:00"}, "founder")
+    acts = autopilot.tick(conn); assert any(a["action"] == "gate_failed" and "auth_evidence_fresh" in a["failed"] for a in acts)
+    assert autopilot.status(conn)["paused"][tid2].startswith("gate failed") and all(j["state"] == "stopped" for j in queue.list_jobs(conn, 500) if j["thesis_id"] == tid2)
+    service.delete_thesis(conn, tid2, "system")
+
+
+def test_repository_orders_import_idempotent_and_chained(conn):
+    from logos_dashboard.control import repo_orders
+    docs = repo_orders.parse_documents()
+    assert len(docs) == 39 and sum(1 for d in docs if d["kind"] == "closure") == 35 and {d["state"] for d in docs} == {"VALIDATED", "FALSIFIED", "DRAFT"}     # 40 files, 39 orders (one generated master order has its closure) — exact for 05-WORK-ORDERS on 2026-09-19
+    falsified = sorted(d["order_id"] for d in docs if d["state"] == "FALSIFIED"); assert falsified == ["COGNITIVE-PROVENANCE-ABLATION-R1", "RISK-AWARENESS-DECOMPOSITION-R1"]
+    r1 = repo_orders.import_orders(conn); r2 = repo_orders.import_orders(conn)
+    assert r1["documents"] == r2["documents"] == 39 and r2["new"] == 0 and r2["updated"] == 39 and r2["edges_added"] == 0 and r1["states"]["FALSIFIED"] == 2
+    ch = repo_orders.chain(conn); assert len(ch) == 39 and all(x["work_order_id"].startswith("REPO:") for x in ch) and all(x["origin"]["repository"] for x in ch)
+    with conn.cursor() as cur:
+        cur.execute("SELECT count(*) FROM ros_work_order_deps WHERE child LIKE 'REPO:%%' AND parent LIKE 'REPO:%%'"); n_edges = cur.fetchone()[0]
+        cur.execute("SELECT parent FROM ros_work_order_deps WHERE child = 'REPO:COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1'"); parents = [r[0] for r in cur.fetchall()]
+    assert n_edges == 16 and "REPO:COGNITIVE-PROVENANCE-ABLATION-R1" in parents          # successor edges resolvable inside 05-WORK-ORDERS on 2026-09-19
+    with conn.cursor() as cur:
+        cur.execute("SELECT count(*) FROM ros_work_orders WHERE work_order_id LIKE 'REPO:%%' AND state <> 'DRAFT' AND approved_by IS NULL"); assert cur.fetchone()[0] == 0
+
+
+def test_r2_api_autopilot_workers_repo_orders_leitstand(conn, tid, attested, autopilot_clean):
+    from fastapi.testclient import TestClient
+    from logos_dashboard.api import app
+    client = TestClient(app)
+    service.create_thesis(conn, tid, ["LOGOS-AUTH-001"], "api", "authority", "founder")
+    assert client.post("/api/ros/autopilot/master", json={"enabled": True}, headers={"X-Logos-Actor": "agent"}).status_code == 403
+    assert client.post("/api/ros/autopilot/master", json={"enabled": True}).json()["enabled"] is True
+    assert client.post(f"/api/ros/autopilot/theses/{tid}", json={"enabled": True, "reason": "ui"}).json()["flag"]["enabled"] is True
+    assert client.post("/api/ros/autopilot/tick", headers={"X-Logos-Actor": "agent"}).status_code == 403
+    acts = client.post("/api/ros/autopilot/tick").json()["actions"]; assert any(a["action"] == "started" for a in acts)
+    for j in queue.list_jobs(conn, 500):
+        if j["thesis_id"] == tid and j["state"] in ("queued",):
+            queue.request_stop(conn, j["job_id"], "founder")
+    wc = client.get("/api/ros/workers/control").json(); assert {"host", "docker", "autopilot"} <= set(wc) and "alive" in wc["host"]
+    assert client.post("/api/ros/workers/host/start", headers={"X-Logos-Actor": "agent"}).status_code == 403 and client.post("/api/ros/workers/nope/start").status_code == 400
+    ro = client.post("/api/ros/repo-orders/import").json(); assert ro["documents"] == 39
+    lst = client.get("/api/ros/repo-orders").json(); assert len(lst["orders"]) == 39 and len(lst["documents"]) == 39
+    ls = client.get("/api/ros/leitstand").json()
+    assert {"host", "docker", "autopilot", "theses", "attention", "governor", "first_steps", "states"} <= set(ls) and ls["ceiling"] == "PREREG_DRAFT"
+    mine = next(t for t in ls["theses"] if t["thesis_id"] == tid); assert mine["autopilot"]["enabled"] is True and mine["stage_index"] == 0
+    assert client.post(f"/api/ros/autopilot/theses/{tid}", json={"enabled": False}).json()["flag"]["enabled"] is False

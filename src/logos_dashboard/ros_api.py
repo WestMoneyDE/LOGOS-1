@@ -725,3 +725,91 @@ def report_freeze(month: str, x_logos_actor: str | None = Header(default=None)):
                 c.rollback(); raise HTTPException(409, f"month {month} already frozen (immutable); report files rewritten? no — remove is not allowed")
             raise
         return {"month": month, "sha256": doc["sha256"], "path": f"docs/research/dashboard/reports/{month}.md", "snapshot": row}
+
+
+
+# -- R2: autopilot, worker control, repository orders, leitstand ---------------------------------------------------------
+
+from .control import autopilot as _ap, procs as _procs, repo_orders as _ro  # noqa: E402
+
+
+class SwitchIn(BaseModel):
+    enabled: bool
+    reason: str = ""
+
+
+@router.get("/autopilot")
+def autopilot_status():
+    with _conn() as c:
+        return _ap.status(c)
+
+
+@router.post("/autopilot/master")
+def autopilot_master(s: SwitchIn, x_logos_actor: str | None = Header(default=None)):
+    with _conn() as c:
+        return {**_ap.set_master(c, s.enabled, _actor(x_logos_actor)), "status": _ap.status(c)}
+
+
+@router.post("/autopilot/theses/{thesis_id}")
+def autopilot_thesis(thesis_id: str, s: SwitchIn, x_logos_actor: str | None = Header(default=None)):
+    with _conn() as c:
+        return {"thesis_id": thesis_id, "flag": _ap.set_thesis(c, thesis_id, s.enabled, _actor(x_logos_actor), s.reason), "status": _ap.status(c)}
+
+
+@router.post("/autopilot/tick")
+def autopilot_tick(x_logos_actor: str | None = Header(default=None)):
+    """Manual scheduler pass (the host daemon does this every few seconds). Founder only."""
+    if _actor(x_logos_actor) != "founder":
+        raise HTTPException(403, {"governance": "founder only"})
+    with _conn() as c:
+        return {"actions": _ap.tick(c)}
+
+
+@router.get("/workers/control")
+def workers_control():
+    with _conn() as c:
+        return {"host": _procs.host_status(c), "docker": _procs.docker_status(c), "autopilot": _ap.status(c)}
+
+
+@router.post("/workers/{which}/{action}")
+def workers_action(which: str, action: str, build: bool = False, x_logos_actor: str | None = Header(default=None)):
+    actor = _actor(x_logos_actor)
+    fn = {("host", "start"): lambda c: _procs.host_start(c, actor), ("host", "stop"): lambda c: _procs.host_stop(c, actor), ("docker", "start"): lambda c: _procs.docker_start(c, actor, build), ("docker", "stop"): lambda c: _procs.docker_stop(c, actor)}.get((which, action))
+    if fn is None:
+        raise HTTPException(400, f"unknown {which}/{action}")
+    with _conn() as c:
+        return fn(c)
+
+
+@router.post("/repo-orders/import")
+def repo_orders_import(x_logos_actor: str | None = Header(default=None)):
+    with _conn() as c:
+        return _ro.import_orders(c, _actor(x_logos_actor))
+
+
+@router.get("/repo-orders")
+def repo_orders_list():
+    with _conn() as c:
+        return {"orders": _ro.chain(c), "documents": _ro.parse_documents()}
+
+
+@router.get("/leitstand")
+def leitstand():
+    """Everything the home page needs in one call: workers, autopilot, theses with progress, attention, latest live events."""
+    with _conn() as c:
+        theses = service.list_theses(c); flags = _ap.thesis_flags(c)
+        rs = runs.list_runs(c, 5)
+        live = []
+        for r in rs:
+            if r["state"] == "running":
+                live = [e for e in runs.events_after(c, r["run_id"], 0, 2000)][-8:]; live_run = r; break
+        else:
+            live_run = rs[0] if rs else None
+        att = _radar.attention(c); a = governor.attestation(c)
+        if not a["fresh"]:
+            att.append({"kind": "auth_evidence", "id": "claude_auth", "text": "Claude-Auth-Nachweis fehlt oder ist älter als 24 h — Preflight ausführen", "href": "/system/claude"})
+        for t in theses:
+            t["autopilot"] = flags.get(t["thesis_id"], {"enabled": False}); t["stage_index"] = THESIS_STATES.index(t["state"]) if t["state"] in THESIS_STATES else -1
+            t["open_jobs"] = [j for j in queue.list_jobs(c, 500) if j["thesis_id"] == t["thesis_id"] and j["state"] in _ap.OPEN_JOB_STATES]
+        return {"host": _procs.host_status(c), "docker": _procs.docker_status(c), "autopilot": _ap.status(c), "theses": theses, "attention": att, "live_run": live_run, "live_events": live, "governor": governor.state(c), "ceiling": AGENT_CEILING, "states": list(THESIS_STATES),
+                "first_steps": {"auth": a["fresh"], "thesis": len(theses) > 0, "host_running": _procs.host_status(c)["alive"], "autopilot": _ap.master(c)}}
