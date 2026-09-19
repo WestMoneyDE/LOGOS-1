@@ -5,7 +5,7 @@ import { Src } from "@/components/shell";
 
 export function ClaimCard({ c, full = false }: { c: Claim; full?: boolean }) {
   return (
-    <article className="border border-border p-4">
+    <article className="min-w-0 border border-border p-4">
       <div className="flex flex-wrap items-center gap-3">
         <Link href={`/claims/${c.claim_id}`} className="font-mono text-xs text-muted-foreground hover:text-foreground">{c.claim_id}</Link>
         <KindBadge kind={c.kind} /><StatusBadge status={c.status} /><StrengthBadge strength={c.evidence_strength} />
@@ -14,11 +14,11 @@ export function ClaimCard({ c, full = false }: { c: Claim; full?: boolean }) {
       <p className="mt-1 text-sm">{c.statement}</p>
       <p className="mt-2 text-xs text-muted-foreground"><span className="font-semibold uppercase tracking-widest">Scope</span> — {c.scope}</p>
       {full && (
-        <dl className="mt-4 grid gap-3 text-sm md:grid-cols-2">
+        <dl className="mt-4 grid min-w-0 gap-3 text-sm md:grid-cols-2 [&>div]:min-w-0">
           <Row k="Falsification test">{c.falsification_test}</Row>
           <Row k="Next falsification test">{c.next_falsification_test || "none named"}</Row>
           <Row k="Evidence strength basis">{c.evidence_strength_basis}</Row>
-          <Row k="Preregistration"><code className="font-mono text-xs">{c.preregistration}</code></Row>
+          <Row k="Preregistration"><code className="break-all font-mono text-xs">{c.preregistration}</code></Row>
           <Row k="Supporting artifacts"><ul>{c.supporting_artifacts.map((a) => <li key={a}><Src path={a} /></li>)}</ul></Row>
           <Row k="Counterevidence">{c.counterevidence.length ? <ul className="list-disc pl-4">{c.counterevidence.map((x) => <li key={x}>{x}</li>)}</ul> : "none recorded"}</Row>
           <Row k="Known limitations">{c.known_limitations.length ? <ul className="list-disc pl-4">{c.known_limitations.map((x) => <li key={x}>{x}</li>)}</ul> : "none recorded"}</Row>

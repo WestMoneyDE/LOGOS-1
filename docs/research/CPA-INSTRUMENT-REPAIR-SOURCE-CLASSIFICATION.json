@@ -120,11 +120,11 @@
     },
     "apps/dashboard/package.json": {
       "class": "TOOLING",
-      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Playwright QA (viewport matrix, overflow/clipping/console checks, route inventory) / layout remediation"
     },
     "apps/dashboard/pnpm-lock.yaml": {
       "class": "TOOLING",
-      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Playwright QA (viewport matrix, overflow/clipping/console checks, route inventory) / layout remediation"
     },
     "apps/dashboard/pnpm-workspace.yaml": {
       "class": "TOOLING",
@@ -168,7 +168,7 @@
     },
     "apps/dashboard/src/app/experiments/[id]/page.tsx": {
       "class": "TOOLING",
-      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Playwright QA (viewport matrix, overflow/clipping/console checks, route inventory) / layout remediation"
     },
     "apps/dashboard/src/app/experiments/page.tsx": {
       "class": "TOOLING",
@@ -256,7 +256,7 @@
     },
     "apps/dashboard/src/components/claim-card.tsx": {
       "class": "TOOLING",
-      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Playwright QA (viewport matrix, overflow/clipping/console checks, route inventory) / layout remediation"
     },
     "apps/dashboard/src/components/export-button.tsx": {
       "class": "TOOLING",
@@ -352,7 +352,7 @@
     },
     "docs/research/dashboard/ACTIVE-THESES.json": {
       "class": "GOVERNANCE_ONLY",
-      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: structured scientific state / rules / roadmap"
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase-0 inventory / architecture"
     },
     "docs/research/dashboard/CLAIM-REGISTRY.json": {
       "class": "GOVERNANCE_ONLY",
@@ -437,6 +437,30 @@
     "docs/superpowers/specs/2026-09-18-logos-dashboard-part1-design.md": {
       "class": "GOVERNANCE_ONLY",
       "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: record"
+    },
+    "apps/dashboard/e2e/.gitignore": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Playwright QA (viewport matrix, overflow/clipping/console checks, route inventory) / layout remediation"
+    },
+    "apps/dashboard/e2e/layout.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Playwright QA (viewport matrix, overflow/clipping/console checks, route inventory) / layout remediation"
+    },
+    "apps/dashboard/e2e/routes.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Playwright QA (viewport matrix, overflow/clipping/console checks, route inventory) / layout remediation"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Playwright QA (viewport matrix, overflow/clipping/console checks, route inventory) / layout remediation"
+    },
+    "apps/dashboard/playwright.config.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Playwright QA (viewport matrix, overflow/clipping/console checks, route inventory) / layout remediation"
+    },
+    "docs/research/dashboard/RESEARCH-OS-CURRENT-STATE.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase-0 inventory / architecture"
     }
   },
   "unclassified": 0

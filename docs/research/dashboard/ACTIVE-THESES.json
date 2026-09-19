@@ -1,5 +1,8 @@
 {
   "schema": "logos.active-theses/1",
   "note": "founder selection of theses to work on next; multiple allowed; selection only \u2014 execution stays a separate governed order",
-  "active": []
+  "active": [
+    "LOGOS-AUTH-001"
+  ],
+  "updated_at": "2026-09-19T03:50:39.180685+00:00"
 }
