@@ -201,6 +201,8 @@ def test_GOV_P12_P13_P14_gamma_p7_predecessors_unchanged():
                            "09-SESSIONS", ":(exclude)09-SESSIONS/2026-09-18-INFERENCE-GOVERNANCE-LIFT-R1",
                            # INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: its own records and the adapter contract (frozen-hash checked by its own suite)
                            ":(exclude)05-WORK-ORDERS/NEXT-SESSION-INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1.md", ":(exclude)09-SESSIONS/2026-09-18-INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1",
+                           ":(exclude)05-WORK-ORDERS/NEXT-SESSION-COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1.md", ":(exclude)09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1",
+                           ":(exclude)05-WORK-ORDERS/NEXT-SESSION-LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1.md", ":(exclude)09-SESSIONS/2026-09-19-LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1",
                            ":(exclude)src/logos_research/measurement/result_model.py", ":(exclude)src/logos_research/measurement/claude_code.py",   # COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: resolver + repaired adapter (hash-recorded in the repair prereg/artifact)
                            ":(exclude)src/logos_research/experiments/cognitive_provenance_r1", ":(exclude)09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1", ":(exclude)05-WORK-ORDERS/NEXT-SESSION-COGNITIVE-PROVENANCE-ABLATION-R1.md"],   # COGNITIVE-PROVENANCE-ABLATION-R1: its own EXPERIMENTAL_INFERENCE package and records
 

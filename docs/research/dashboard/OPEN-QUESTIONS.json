@@ -1,0 +1,92 @@
+{
+  "schema": "logos.open-questions/1",
+  "date": "2026-09-18",
+  "priority_rule": "scientific leverage, not excitement",
+  "count": 7,
+  "questions": [
+    {
+      "question_id": "OQ-001",
+      "question": "Is the attribution floor an artefact of the probe wording, of the tie design, or genuine provenance disregard?",
+      "track": "cognitive-provenance",
+      "why_important": "decides whether LOGOS-CP-001 can be tested at all with single-shot designs",
+      "current_evidence": "RER-F2/F3/F7: floor across stages and families; adoption within noise",
+      "missing": "probe-wording arm; non-tie design; two-turn arm",
+      "minimal_decisive_experiment": "COGNITIVE-PROVENANCE-ATTRIBUTION-FLOOR-R1",
+      "dependency": "founder pin unchanged; governance decision on --verbose/--resume for the two-turn arm",
+      "blocked_by": "none for arms 1-2; governance for arm 3",
+      "leverage": "HIGH"
+    },
+    {
+      "question_id": "OQ-002",
+      "question": "Does the authority invariant chain hold with a real-model actor behind the production bridge?",
+      "track": "authority",
+      "why_important": "all Track-A evidence is fixture-scoped",
+      "current_evidence": "deterministic chain validated; bridge READY_WITH_CONDITIONS",
+      "missing": "a governed real-model actor experiment",
+      "minimal_decisive_experiment": "actor proposes actions through build_proposal/decide_action with fixed grants; count ALLOWs without grant",
+      "dependency": "INFERENCE governance (SYNTHETIC only) suffices",
+      "blocked_by": "order not written",
+      "leverage": "HIGH"
+    },
+    {
+      "question_id": "OQ-003",
+      "question": "Does transitive provenance survive real multi-agent propagation?",
+      "track": "provenance",
+      "why_important": "SafeAgents != SafeSystem is untested beyond fixtures",
+      "current_evidence": "EXP-CTP-R1 fixture",
+      "missing": "real-agent hand-offs",
+      "minimal_decisive_experiment": "two claude-opus-5 sessions passing a tainted plan; taint labels carried by the harness; measure escalation",
+      "dependency": "governance: synthetic only, invocation caps",
+      "blocked_by": "BLOCKED_BY_GOVERNANCE (multi-session = 1 concurrent session cap)",
+      "leverage": "MEDIUM_TO_HIGH"
+    },
+    {
+      "question_id": "OQ-004",
+      "question": "Can any real-model metric reach CONSTRUCT_SUPPORTED beyond fixture scope?",
+      "track": "measurement",
+      "why_important": "PAPER-4 needs one non-fixture validation",
+      "current_evidence": "M32-M34 fixture-scoped",
+      "missing": "construct validation with real-model ground truth",
+      "minimal_decisive_experiment": "validate M32 PlanAdoption against a non-tie design where the plan is the unique correct path",
+      "dependency": "OQ-001",
+      "blocked_by": "none",
+      "leverage": "MEDIUM"
+    },
+    {
+      "question_id": "OQ-005",
+      "question": "How does rate-distortion in memory interact with fidelity and provenance?",
+      "track": "memory",
+      "why_important": "RD-04 open; MemoryExistence != Retrievability != Fidelity untested",
+      "current_evidence": "none measured",
+      "missing": "fidelity metric with ground truth",
+      "minimal_decisive_experiment": "deterministic compression fixture with exact fidelity labels",
+      "dependency": "none",
+      "blocked_by": "none",
+      "leverage": "MEDIUM"
+    },
+    {
+      "question_id": "OQ-006",
+      "question": "Is MAP-F1 (evidence completion through a memory reference) an authority hazard or acceptable?",
+      "track": "authority",
+      "why_important": "MAP is only PARTIALLY_SUPPORTED",
+      "current_evidence": "grant unchanged; provenance completed",
+      "missing": "governance decision + test that proposals carry their own provenance",
+      "minimal_decisive_experiment": "refuse proposals without own provenance and re-run MAP",
+      "dependency": "Γ integration owner",
+      "blocked_by": "governance decision",
+      "leverage": "MEDIUM"
+    },
+    {
+      "question_id": "OQ-007",
+      "question": "Which of the 20.6k scaffolding tokens Claude Code injects affect research prompts?",
+      "track": "measurement",
+      "why_important": "context confound for every real-model run under the Max path",
+      "current_evidence": "REP-F2/F3: 6.2k from project dir (removed); 20.6k base not decomposable",
+      "missing": "decomposition or a governance-approved bare path",
+      "minimal_decisive_experiment": "compare isolated-dir runs with and without user-level plugins (founder action)",
+      "dependency": "founder settings",
+      "blocked_by": "--bare needs an API key (forbidden)",
+      "leverage": "MEDIUM"
+    }
+  ]
+}

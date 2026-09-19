@@ -9,7 +9,8 @@
     "HISTORICAL_ONLY",
     "GOVERNANCE_ONLY",
     "UNCLASSIFIED",
-    "EXPERIMENTAL_INFERENCE"
+    "EXPERIMENTAL_INFERENCE",
+    "TOOLING"
   ],
   "rule": "no file created or changed by this order is PRODUCTION; production packages (logos_gamma, logos_effects, logos_authority, logos_runtime, logos_audit, logos_memory) are untouched",
   "sites": {
@@ -51,7 +52,7 @@
     },
     "docs/research/PRE-INFERENCE-SOURCE-CLASSIFICATION.json": {
       "class": "GOVERNANCE_ONLY",
-      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: living classification extended"
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: living classification extended"
     },
     "docs/research/PRODUCTION-BRIDGE-SOURCE-CLASSIFICATION.json": {
       "class": "GOVERNANCE_ONLY",
@@ -63,7 +64,7 @@
     },
     "docs/research/RESEARCH-DELTA-REGISTRY.json": {
       "class": "GOVERNANCE_ONLY",
-      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: delta entries"
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: record"
     },
     "docs/research/RESEARCH-EVIDENCE-STRENGTH.md": {
       "class": "GOVERNANCE_ONLY",
@@ -167,7 +168,7 @@
     },
     "tests/test_inference_governance.py": {
       "class": "EXPERIMENTAL_DETERMINISTIC",
-      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: diff scope registers resolver + repaired adapter (registration, no weakening)"
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: diff scope registers the repair and dashboard records (registration, no weakening)"
     },
     "05-WORK-ORDERS/NEXT-SESSION-INFERENCE-GOVERNANCE-LIFT-R1.md": {
       "class": "GOVERNANCE_ONLY",
@@ -280,6 +281,358 @@
     "09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1/SESSION-REPORT.md": {
       "class": "GOVERNANCE_ONLY",
       "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: session report (repair + rerun)"
+    },
+    ".claude/skills/logos-prior-art-research/SKILL.md": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: project skill wrapping deep-research for prior-art briefs"
+    },
+    "apps/dashboard/.gitignore": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/AGENTS.md": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/CLAUDE.md": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/README.md": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/components.json": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/eslint.config.mjs": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/next.config.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/package.json": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/pnpm-lock.yaml": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/pnpm-workspace.yaml": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/postcss.config.mjs": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/public/file.svg": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/public/globe.svg": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/public/next.svg": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/public/vercel.svg": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/public/window.svg": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/claims/[id]/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/claims/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/counterexamples/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/experiments/[id]/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/experiments/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/falsification/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/favicon.ico": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/globals.css": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/invariants/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/layout.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/negative-results/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/open-questions/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/p7/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/prior-art/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/publications/[id]/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/publications/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/replication/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/reproducibility/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/research/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/theses/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/timeline/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/tracks/[track]/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/tracks/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/badges.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/claim-card.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/export-button.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/invariant-graph.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/shell.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/theses-selector.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/badge.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/button.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/card.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/checkbox.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/command.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/dialog.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/input-group.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/input.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/progress.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/scroll-area.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/separator.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/sheet.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/table.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/tabs.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/textarea.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/tooltip.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/lib/api.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/lib/utils.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/tsconfig.json": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "docs/research/dashboard/ACTIVE-THESES.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: structured scientific state / rules / roadmap"
+    },
+    "docs/research/dashboard/CLAIM-REGISTRY.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: structured scientific state / rules / roadmap"
+    },
+    "docs/research/dashboard/EXPERIMENT-REGISTRY.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: structured scientific state / rules / roadmap"
+    },
+    "docs/research/dashboard/INVARIANT-REGISTRY.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: structured scientific state / rules / roadmap"
+    },
+    "docs/research/dashboard/OPEN-QUESTIONS.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: structured scientific state / rules / roadmap"
+    },
+    "docs/research/dashboard/PRIOR-ART-REGISTRY.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: structured scientific state / rules / roadmap"
+    },
+    "docs/research/dashboard/PUBLICATION-REGISTRY.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: structured scientific state / rules / roadmap"
+    },
+    "docs/research/dashboard/PUBLICATION-ROADMAP.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: structured scientific state / rules / roadmap"
+    },
+    "docs/research/dashboard/REPLICATION-REGISTRY.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: structured scientific state / rules / roadmap"
+    },
+    "docs/research/dashboard/SCIENTIFIC-DASHBOARD-SCHEMA.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: structured scientific state / rules / roadmap"
+    },
+    "docs/research/dashboard/SCIENTIFIC-INTEGRITY-RULES.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: structured scientific state / rules / roadmap"
+    },
+    "requirements-dashboard.txt": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: service dependencies (separate from requirements.lock)"
+    },
+    "src/logos_dashboard/__init__.py": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: read-mostly FastAPI service (registries, readers, research intake); single write = ACTIVE-THESES.json; never imported by production packages"
+    },
+    "src/logos_dashboard/api.py": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: read-mostly FastAPI service (registries, readers, research intake); single write = ACTIVE-THESES.json; never imported by production packages"
+    },
+    "src/logos_dashboard/readers.py": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: read-mostly FastAPI service (registries, readers, research intake); single write = ACTIVE-THESES.json; never imported by production packages"
+    },
+    "src/logos_dashboard/registries.py": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: read-mostly FastAPI service (registries, readers, research intake); single write = ACTIVE-THESES.json; never imported by production packages"
+    },
+    "src/logos_dashboard/research_intake.py": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: read-mostly FastAPI service (registries, readers, research intake); single write = ACTIVE-THESES.json; never imported by production packages"
+    },
+    "tests/test_dashboard_scientific_core.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: integrity validation layer + API route tests"
+    },
+    "05-WORK-ORDERS/NEXT-SESSION-LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: record"
+    },
+    "09-SESSIONS/2026-09-19-LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1/SESSION-REPORT.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: record"
+    },
+    "docs/research/DASHBOARD-SOURCE-CLASSIFICATION.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: record"
+    },
+    "docs/superpowers/specs/2026-09-18-logos-dashboard-part1-design.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: record"
     }
   },
   "unclassified": 0

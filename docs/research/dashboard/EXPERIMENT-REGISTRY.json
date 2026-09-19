@@ -1,0 +1,683 @@
+{
+  "schema": "logos.experiment-registry/1",
+  "date": "2026-09-18",
+  "count": 22,
+  "note": "verdict strings are copied from the closure records; deterministic-chain verdicts frozen in docs/research/DETERMINISTIC-CHAIN-CONSOLIDATION.json",
+  "experiments": [
+    {
+      "experiment_id": "EXP-BSP-R1",
+      "order_id": "BINDING-STATE-PRESERVATION-R1",
+      "research_track": "authority",
+      "scientific_question": "Does a representation transformation of binding state preserve authority modality, scope and preconditions?",
+      "hypothesis": "Strong H1: binding state survives prose/summary transformations without authority change.",
+      "verdict": "FALSIFIED",
+      "kind": "EMPIRICAL_SCIENCE",
+      "record": "09-SESSIONS/2026-09-11-BINDING-STATE-PRESERVATION-R1/SESSION-REPORT.md",
+      "prereg_hash": "",
+      "run_id": "",
+      "model_provider": "none (deterministic)",
+      "sample_size": "fixture",
+      "controls": "typed vs prose readers",
+      "metrics": [
+        "binding modality",
+        "scope dimensions"
+      ],
+      "construct_status": "fixture ground truth",
+      "artifact_hash": "",
+      "limitations": [
+        "deterministic fixture; no model"
+      ],
+      "next_experiment": "BINDING-STATE-PRESERVATION-REPAIR-R1",
+      "commit": "9fe2474",
+      "pr": 14,
+      "invariants": [
+        "INV-AUTH-GRANT"
+      ],
+      "negative_result": true,
+      "secondary_tracks": []
+    },
+    {
+      "experiment_id": "EXP-BSP-REPAIR-R1",
+      "order_id": "BINDING-STATE-PRESERVATION-REPAIR-R1",
+      "research_track": "authority",
+      "scientific_question": "architecture repair (typed binding envelope)",
+      "hypothesis": "n/a (repair)",
+      "verdict": "REPAIR_IMPLEMENTED_NOT_INDEPENDENTLY_VALIDATED",
+      "kind": "DETERMINISTIC_ENGINEERING",
+      "record": "05-WORK-ORDERS/NEXT-SESSION-BINDING-STATE-PRESERVATION-REPAIR-R1.md",
+      "prereg_hash": "",
+      "run_id": "",
+      "model_provider": "none (deterministic)",
+      "sample_size": "",
+      "controls": "",
+      "metrics": [],
+      "construct_status": "",
+      "artifact_hash": "",
+      "limitations": [],
+      "next_experiment": "BINDING-STATE-PRESERVATION-REPAIR-VALIDATION-R1",
+      "commit": "b7b084b",
+      "pr": 15,
+      "invariants": [],
+      "negative_result": false,
+      "secondary_tracks": []
+    },
+    {
+      "experiment_id": "EXP-BSP-VAL-R1",
+      "order_id": "BINDING-STATE-PRESERVATION-REPAIR-VALIDATION-R1",
+      "research_track": "authority",
+      "scientific_question": "Does the R1 repair hold under independent validation?",
+      "hypothesis": "Repair preserves authority under adversarial reads.",
+      "verdict": "REPAIR_FALSIFIED",
+      "kind": "DETERMINISTIC_ENGINEERING",
+      "record": "09-SESSIONS/2026-09-11-BINDING-STATE-PRESERVATION-REPAIR-VALIDATION-R1/SESSION-REPORT.md",
+      "prereg_hash": "",
+      "run_id": "",
+      "model_provider": "none (deterministic)",
+      "sample_size": "",
+      "controls": "",
+      "metrics": [],
+      "construct_status": "",
+      "artifact_hash": "",
+      "limitations": [
+        "VCE-1 CRITICAL: authority_origin defaulted to human on read (TRANSFER DENY -> ALLOW)"
+      ],
+      "next_experiment": "BINDING-STATE-PRESERVATION-REPAIR-R2",
+      "commit": "fa3be5c",
+      "pr": 16,
+      "invariants": [
+        "INV-AUTH-GRANT"
+      ],
+      "negative_result": true,
+      "secondary_tracks": []
+    },
+    {
+      "experiment_id": "EXP-BSP-REPAIR-R2",
+      "order_id": "BINDING-STATE-PRESERVATION-REPAIR-R2",
+      "research_track": "authority",
+      "scientific_question": "architecture repair R2 (strict read boundary, no defaults on read)",
+      "hypothesis": "n/a (repair)",
+      "verdict": "REPAIR_R2_IMPLEMENTED_NOT_INDEPENDENTLY_VALIDATED",
+      "kind": "DETERMINISTIC_ENGINEERING",
+      "record": "05-WORK-ORDERS/NEXT-SESSION-BINDING-STATE-PRESERVATION-REPAIR-R2.md",
+      "prereg_hash": "",
+      "run_id": "",
+      "model_provider": "none (deterministic)",
+      "sample_size": "",
+      "controls": "",
+      "metrics": [],
+      "construct_status": "",
+      "artifact_hash": "",
+      "limitations": [],
+      "next_experiment": "BINDING-STATE-PRESERVATION-REPAIR-R2-VALIDATION-R1",
+      "commit": "c6fb56a",
+      "pr": 17,
+      "invariants": [],
+      "negative_result": false,
+      "secondary_tracks": []
+    },
+    {
+      "experiment_id": "EXP-BSP-VAL-R2",
+      "order_id": "BINDING-STATE-PRESERVATION-REPAIR-R2-VALIDATION-R1",
+      "research_track": "authority",
+      "scientific_question": "Does the R2 repair hold under independent validation?",
+      "hypothesis": "No default or lenient read can raise authority.",
+      "verdict": "REPAIR_R2_VALIDATED",
+      "kind": "DETERMINISTIC_ENGINEERING",
+      "record": "09-SESSIONS/2026-09-11-BINDING-STATE-PRESERVATION-REPAIR-R2-VALIDATION-R1/SESSION-REPORT.md",
+      "prereg_hash": "",
+      "run_id": "",
+      "model_provider": "none (deterministic)",
+      "sample_size": "",
+      "controls": "",
+      "metrics": [],
+      "construct_status": "",
+      "artifact_hash": "",
+      "limitations": [
+        "VF-2 domain-invalid values accepted (no operational reader)",
+        "VF-3 duplicate JSON keys collapse before validation"
+      ],
+      "next_experiment": "",
+      "commit": "dc426ee",
+      "pr": 18,
+      "invariants": [
+        "INV-AUTH-GRANT"
+      ],
+      "negative_result": false,
+      "secondary_tracks": []
+    },
+    {
+      "experiment_id": "EXP-MAP-R1",
+      "order_id": "MEMORY-AUTHORITY-PROVENANCE-R1",
+      "research_track": "authority",
+      "scientific_question": "Can memory provenance alone turn a no-grant DENY/DEFER into ALLOW?",
+      "hypothesis": "Memory provenance never mints authority (Memory != Authority).",
+      "verdict": "PARTIALLY_SUPPORTED",
+      "kind": "EMPIRICAL_SCIENCE",
+      "record": "09-SESSIONS/2026-09-12-MEMORY-AUTHORITY-PROVENANCE-R1/SESSION-REPORT.md",
+      "prereg_hash": "",
+      "run_id": "",
+      "model_provider": "none (deterministic)",
+      "sample_size": "",
+      "controls": "grant present vs absent; memory reference present vs absent",
+      "metrics": [],
+      "construct_status": "",
+      "artifact_hash": "",
+      "limitations": [
+        "MAP-F1: a memory reference to a valid grant completes provenance for a proposal that has none (evidence completion, grant unchanged)",
+        "MAP-F4 revoked records not filtered on read"
+      ],
+      "next_experiment": "RELATIONAL-STATE-SWAP-R1",
+      "commit": "ae65319",
+      "pr": 19,
+      "invariants": [
+        "INV-AUTH-MEM"
+      ],
+      "negative_result": false,
+      "secondary_tracks": []
+    },
+    {
+      "experiment_id": "EXP-RSS-R1",
+      "order_id": "RELATIONAL-STATE-SWAP-R1",
+      "research_track": "authority",
+      "scientific_question": "Can a metadata-only relational change (trust) broaden or mint authority?",
+      "hypothesis": "Trust != Grant.",
+      "verdict": "SUPPORTED",
+      "kind": "EMPIRICAL_SCIENCE",
+      "record": "09-SESSIONS/2026-09-13-RELATIONAL-STATE-SWAP-R1/SESSION-REPORT.md",
+      "prereg_hash": "",
+      "run_id": "",
+      "model_provider": "none (deterministic)",
+      "sample_size": "",
+      "controls": "",
+      "metrics": [],
+      "construct_status": "",
+      "artifact_hash": "",
+      "limitations": [
+        "RSS-F1 narrower memory-claimed scope vetoes a valid grant (decrease only)"
+      ],
+      "next_experiment": "",
+      "commit": "d0e386b",
+      "pr": 20,
+      "invariants": [
+        "INV-AUTH-TRUST"
+      ],
+      "negative_result": false,
+      "secondary_tracks": []
+    },
+    {
+      "experiment_id": "EXP-PETG-R1",
+      "order_id": "PREDICTION-ERROR-TRUST-GATE-R1",
+      "research_track": "authority",
+      "scientific_question": "Does a reliability/trust change with fixed canonical authority produce an authority increase?",
+      "hypothesis": "PredictionAccuracy != Authority.",
+      "verdict": "SUPPORTED",
+      "kind": "EMPIRICAL_SCIENCE",
+      "record": "09-SESSIONS/2026-09-13-PREDICTION-ERROR-TRUST-GATE-R1/SESSION-REPORT.md",
+      "prereg_hash": "",
+      "run_id": "",
+      "model_provider": "none (deterministic)",
+      "sample_size": "",
+      "controls": "",
+      "metrics": [],
+      "construct_status": "",
+      "artifact_hash": "",
+      "limitations": [],
+      "next_experiment": "",
+      "commit": "1af5ce9",
+      "pr": 21,
+      "invariants": [
+        "INV-AUTH-PRED",
+        "INV-AUTH-TRUST"
+      ],
+      "negative_result": false,
+      "secondary_tracks": []
+    },
+    {
+      "experiment_id": "EXP-RAD-R1",
+      "order_id": "RISK-AWARENESS-DECOMPOSITION-R1",
+      "research_track": "authority",
+      "scientific_question": "Do risk or risk-adjacent state changes alter canonical effect, grant requirement or authority?",
+      "hypothesis": "Risk awareness is strategy, never authority.",
+      "verdict": "FALSIFIED",
+      "kind": "EMPIRICAL_SCIENCE",
+      "record": "09-SESSIONS/2026-09-13-RISK-AWARENESS-DECOMPOSITION-R1/SESSION-REPORT.md",
+      "prereg_hash": "",
+      "run_id": "",
+      "model_provider": "none (deterministic)",
+      "sample_size": "",
+      "controls": "",
+      "metrics": [],
+      "construct_status": "",
+      "artifact_hash": "",
+      "limitations": [
+        "RAD-CE1 CRITICAL: memory-claimed externality/reversibility written into Γ canonical fields (GAMMA_INPUT_MAPPING) turned canonical DENY into bridge ALLOW without grant"
+      ],
+      "next_experiment": "MEMORY-BRIDGE-GAMMA-INPUT-REPAIR-R1",
+      "commit": "2fb6bc1",
+      "pr": 22,
+      "invariants": [
+        "INV-AUTH-EFFECT",
+        "INV-AUTH-MEM"
+      ],
+      "negative_result": true,
+      "secondary_tracks": []
+    },
+    {
+      "experiment_id": "EXP-MBG-R1",
+      "order_id": "MEMORY-BRIDGE-GAMMA-INPUT-REPAIR-R1",
+      "research_track": "authority",
+      "scientific_question": "architecture repair: canonical effect + effect oracle; unknown -> DEFER",
+      "hypothesis": "n/a (repair)",
+      "verdict": "MEMORY_BRIDGE_GAMMA_INPUT_REPAIR_IMPLEMENTED_NOT_INDEPENDENTLY_VALIDATED",
+      "kind": "DETERMINISTIC_ENGINEERING",
+      "record": "09-SESSIONS/2026-09-13-MEMORY-BRIDGE-GAMMA-INPUT-REPAIR-R1/SESSION-REPORT.md",
+      "prereg_hash": "",
+      "run_id": "",
+      "model_provider": "none (deterministic)",
+      "sample_size": "",
+      "controls": "",
+      "metrics": [],
+      "construct_status": "",
+      "artifact_hash": "",
+      "limitations": [],
+      "next_experiment": "MEMORY-BRIDGE-GAMMA-INPUT-REPAIR-VALIDATION-R1",
+      "commit": "27ef324",
+      "pr": 23,
+      "invariants": [],
+      "negative_result": false,
+      "secondary_tracks": []
+    },
+    {
+      "experiment_id": "EXP-MBGV-R1",
+      "order_id": "MEMORY-BRIDGE-GAMMA-INPUT-REPAIR-VALIDATION-R1",
+      "research_track": "authority",
+      "scientific_question": "Does the MBG repair hold under independent validation?",
+      "hypothesis": "No declared effect overwrites the canonical effect.",
+      "verdict": "REPAIR_VALIDATED",
+      "kind": "DETERMINISTIC_ENGINEERING",
+      "record": "09-SESSIONS/2026-09-17-MEMORY-BRIDGE-GAMMA-INPUT-REPAIR-VALIDATION-R1/SESSION-REPORT.md",
+      "prereg_hash": "",
+      "run_id": "",
+      "model_provider": "none (deterministic)",
+      "sample_size": "",
+      "controls": "",
+      "metrics": [],
+      "construct_status": "",
+      "artifact_hash": "",
+      "limitations": [
+        "MBGV-F1 latent API hazard (guarded)",
+        "MBGV-F3 B1 defect class frozen on an experimental path (NON_PRODUCTION_FROZEN_RISK_GUARDED)"
+      ],
+      "next_experiment": "",
+      "commit": "7fa2065",
+      "pr": 24,
+      "invariants": [
+        "INV-AUTH-EFFECT"
+      ],
+      "negative_result": false,
+      "secondary_tracks": []
+    },
+    {
+      "experiment_id": "EXP-VOI-R1",
+      "order_id": "VALUE-OF-INFORMATION-GATE-R1",
+      "research_track": "authority",
+      "scientific_question": "Does an epistemic improvement or VOI increase raise authority while canonical authority evidence is fixed?",
+      "hypothesis": "InformationValue != Permission.",
+      "verdict": "SUPPORTED",
+      "kind": "EMPIRICAL_SCIENCE",
+      "record": "09-SESSIONS/2026-09-17-VALUE-OF-INFORMATION-GATE-R1/SESSION-REPORT.md",
+      "prereg_hash": "",
+      "run_id": "",
+      "model_provider": "none (deterministic)",
+      "sample_size": "",
+      "controls": "",
+      "metrics": [],
+      "construct_status": "",
+      "artifact_hash": "",
+      "limitations": [
+        "VOI-F1 fixture convention"
+      ],
+      "next_experiment": "",
+      "commit": "46643bd",
+      "pr": 25,
+      "invariants": [
+        "INV-AUTH-VOI"
+      ],
+      "negative_result": false,
+      "secondary_tracks": []
+    },
+    {
+      "experiment_id": "EXP-DCC-R1",
+      "order_id": "DETERMINISTIC-CHAIN-CONSOLIDATION-R1",
+      "research_track": "authority",
+      "scientific_question": "consolidation of the deterministic chain (evidence matrix, counterexample registry, residual risks, frozen hashes)",
+      "hypothesis": "n/a",
+      "verdict": "CONSOLIDATED",
+      "kind": "GOVERNANCE",
+      "record": "09-SESSIONS/2026-09-17-DETERMINISTIC-CHAIN-CONSOLIDATION-R1/SESSION-REPORT.md",
+      "prereg_hash": "",
+      "run_id": "",
+      "model_provider": "none (deterministic)",
+      "sample_size": "",
+      "controls": "",
+      "metrics": [],
+      "construct_status": "",
+      "artifact_hash": "",
+      "limitations": [
+        "DCC-F1 backspace byte in a historical test; guard added"
+      ],
+      "next_experiment": "",
+      "commit": "",
+      "pr": 26,
+      "invariants": [],
+      "negative_result": false,
+      "secondary_tracks": []
+    },
+    {
+      "experiment_id": "EXP-CEO-R1",
+      "order_id": "CANONICAL-EFFECT-OWNERSHIP-DECISION-R1",
+      "research_track": "authority",
+      "scientific_question": "which component owns the canonical effect? (founder: Option A static registry)",
+      "hypothesis": "n/a (decision + owner validation)",
+      "verdict": "OWNER_IMPLEMENTATION_VALIDATED",
+      "kind": "GOVERNANCE",
+      "record": "09-SESSIONS/2026-09-17-CANONICAL-EFFECT-OWNERSHIP-DECISION-R1/SESSION-REPORT.md",
+      "prereg_hash": "",
+      "run_id": "",
+      "model_provider": "none (deterministic)",
+      "sample_size": "",
+      "controls": "",
+      "metrics": [],
+      "construct_status": "",
+      "artifact_hash": "",
+      "limitations": [],
+      "next_experiment": "",
+      "commit": "",
+      "pr": 27,
+      "invariants": [
+        "INV-AUTH-EFFECT"
+      ],
+      "negative_result": false,
+      "secondary_tracks": []
+    },
+    {
+      "experiment_id": "EXP-CAPB-R1",
+      "order_id": "CANONICAL-AUTHORITY-PRODUCTION-BRIDGE-R1",
+      "research_track": "authority",
+      "scientific_question": "Is the deterministic production bridge (resolver C1, bridge C2, audit C3, reader C4) complete at the software-architecture level?",
+      "hypothesis": "n/a (engineering validation)",
+      "verdict": "PRODUCTION_BRIDGE_VALIDATED_R1",
+      "kind": "DETERMINISTIC_ENGINEERING",
+      "record": "09-SESSIONS/2026-09-17-CANONICAL-AUTHORITY-PRODUCTION-BRIDGE-R1/SESSION-REPORT.md",
+      "prereg_hash": "",
+      "run_id": "",
+      "model_provider": "none (deterministic)",
+      "sample_size": "",
+      "controls": "",
+      "metrics": [],
+      "construct_status": "",
+      "artifact_hash": "",
+      "limitations": [
+        "PRODUCTION_BRIDGE_READY_WITH_CONDITIONS: R1 deployment/keys, R2 grant lifecycle, R3 tenant provisioning remain open"
+      ],
+      "next_experiment": "",
+      "commit": "",
+      "pr": 28,
+      "invariants": [
+        "INV-AUTH-GRANT",
+        "INV-AUTH-OUTPUT",
+        "INV-AUTH-AUDIT"
+      ],
+      "negative_result": false,
+      "secondary_tracks": []
+    },
+    {
+      "experiment_id": "EXP-CTP-R1",
+      "order_id": "LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1 (Phase 3)",
+      "research_track": "provenance",
+      "scientific_question": "Does causal taint survive 1/10/100/1000 transformations under six attacks in provenance systems A/B/C?",
+      "hypothesis": "TransformationOfInformation preserves EpistemicAncestry (system C).",
+      "verdict": "CAUSAL_TAINT_PROPAGATION_SUPPORTED",
+      "kind": "EMPIRICAL_SCIENCE",
+      "record": "09-SESSIONS/2026-09-17-LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1/SESSION-REPORT.md",
+      "prereg_hash": "",
+      "run_id": "",
+      "model_provider": "none (deterministic)",
+      "sample_size": "1147 rows (chain lengths 1/10/100/1000 x 6 attacks)",
+      "controls": "system A (content only), B (labels lost on merge/re-authoring), C (transitive)",
+      "metrics": [
+        "M11 TaintSurvival",
+        "M12 AuthorityEscalation",
+        "M19 ProvenanceLoss",
+        "M20 TransformationDepth"
+      ],
+      "construct_status": "CAUSALLY_DISCRIMINATED (fixture)",
+      "artifact_hash": "",
+      "limitations": [
+        "deterministic fixture; no real agents; external scale (RD-12) unreplicated"
+      ],
+      "next_experiment": "multi-agent real-model propagation (BLOCKED_BY_GOVERNANCE for non-synthetic data)",
+      "commit": "",
+      "pr": null,
+      "invariants": [
+        "INV-PROV-ANC"
+      ],
+      "negative_result": false,
+      "secondary_tracks": [
+        "memory"
+      ]
+    },
+    {
+      "experiment_id": "EXP-RPD-R1",
+      "order_id": "LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1 (Phase 4)",
+      "research_track": "memory",
+      "scientific_question": "Does retrieval-driven reconsolidation turn frequency into belief and destroy rollback without provenance?",
+      "hypothesis": "Persistence + Plasticity requires TransitiveProvenance + Rollback.",
+      "verdict": "RECONSOLIDATION_GOVERNANCE_SUPPORTED",
+      "kind": "EMPIRICAL_SCIENCE",
+      "record": "09-SESSIONS/2026-09-17-LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1/SESSION-REPORT.md",
+      "prereg_hash": "",
+      "run_id": "",
+      "model_provider": "none (deterministic)",
+      "sample_size": "",
+      "controls": "systems A/B/C",
+      "metrics": [
+        "M26 GraphCentrality",
+        "M27 FutureRetrievalProbability",
+        "M28 BeliefInfluence",
+        "M29 ContradictoryEvidenceRecovery",
+        "M30 StructuralDrift",
+        "M31 RollbackCompleteness"
+      ],
+      "construct_status": "fixture-scoped",
+      "artifact_hash": "",
+      "limitations": [
+        "deterministic memory fixture; no learned memory"
+      ],
+      "next_experiment": "",
+      "commit": "",
+      "pr": null,
+      "invariants": [
+        "INV-MEM-FREQ",
+        "INV-MEM-CENT",
+        "INV-MEM-ROLL"
+      ],
+      "negative_result": false,
+      "secondary_tracks": []
+    },
+    {
+      "experiment_id": "EXP-TCA-R1",
+      "order_id": "LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1 (Phase 5)",
+      "research_track": "trajectory",
+      "scientific_question": "Can a safe final output hide an intermediate compromise across six gates and five injection points?",
+      "hypothesis": "SafeFinalOutput != SafeTrajectory.",
+      "verdict": "TRAJECTORY_COMPROMISE_BOUNDARIES_SUPPORTED",
+      "kind": "EMPIRICAL_SCIENCE",
+      "record": "09-SESSIONS/2026-09-17-LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1/SESSION-REPORT.md",
+      "prereg_hash": "",
+      "run_id": "",
+      "model_provider": "none (deterministic)",
+      "sample_size": "",
+      "controls": "injection point x gate",
+      "metrics": [
+        "M03 TrajectorySafety",
+        "M21 ContainmentLatency",
+        "M22 DetectionLatency",
+        "M23 IntermediateCompromise",
+        "M24 PersistentStateCorruption",
+        "M25 ExternalSideEffects"
+      ],
+      "construct_status": "CAUSALLY_DISCRIMINATED (fixture)",
+      "artifact_hash": "",
+      "limitations": [
+        "deterministic fixture"
+      ],
+      "next_experiment": "",
+      "commit": "",
+      "pr": null,
+      "invariants": [
+        "INV-TRAJ-SAFE",
+        "INV-PROV-DET",
+        "INV-MEAS-FINAL"
+      ],
+      "negative_result": false,
+      "secondary_tracks": [
+        "provenance"
+      ]
+    },
+    {
+      "experiment_id": "EXP-CVG-R1",
+      "order_id": "LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1 (Phase 2)",
+      "research_track": "measurement",
+      "scientific_question": "Can a reliable-but-invalid metric pass a construct gate?",
+      "hypothesis": "ReliableMetric != ValidMetric (gate refuses).",
+      "verdict": "CONSTRUCT_VALIDITY_GATE_VALIDATED",
+      "kind": "DETERMINISTIC_ENGINEERING",
+      "record": "09-SESSIONS/2026-09-17-LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1/SESSION-REPORT.md",
+      "prereg_hash": "",
+      "run_id": "",
+      "model_provider": "none (deterministic)",
+      "sample_size": "",
+      "controls": "",
+      "metrics": [
+        "registry of 31 metrics"
+      ],
+      "construct_status": "gate",
+      "artifact_hash": "",
+      "limitations": [],
+      "next_experiment": "",
+      "commit": "",
+      "pr": null,
+      "invariants": [
+        "INV-MEAS-REL"
+      ],
+      "negative_result": false,
+      "secondary_tracks": []
+    },
+    {
+      "experiment_id": "EXP-CPA-R1",
+      "order_id": "COGNITIVE-PROVENANCE-ABLATION-R1",
+      "research_track": "cognitive-provenance",
+      "scientific_question": "Can a real LLM agent preserve causal source provenance of a plan after assimilation, paraphrase and transformation?",
+      "hypothesis": "H1: content retained while source attribution is lost.",
+      "verdict": "INVALID_MEASUREMENT",
+      "kind": "EMPIRICAL_SCIENCE",
+      "record": "09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1/SESSION-REPORT.md",
+      "prereg_hash": "42ef348ac1dffa868a198ac5d0ba1a1ba9fca4284f1b4155b3e1edf9dc6ba622",
+      "run_id": "COGNITIVE-PROVENANCE-ABLATION-R1-run-1546654c",
+      "model_provider": "claude-opus-5 via Claude Code 2.1.275 (Max subscription)",
+      "sample_size": "1 of 156 planned trials issued",
+      "controls": "CONTROL arm (12) + A/B/C/D x 3 stages",
+      "metrics": [
+        "M10",
+        "M32",
+        "M33",
+        "M34"
+      ],
+      "construct_status": "M32-M34 CAUSALLY_DISCRIMINATED (fixture-scoped)",
+      "artifact_hash": "28a263ea4208a0a503cbc1672b096f9485572b2517b4ac777b23858156753663",
+      "limitations": [
+        "stopped on invocation 1: false-positive MODEL_VERSION_DRIFT (adapter read the first modelUsage key = auxiliary haiku entry) — CPA-F5"
+      ],
+      "next_experiment": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1",
+      "commit": "",
+      "pr": 32,
+      "invariants": [
+        "INV-CP-CONTENT"
+      ],
+      "negative_result": true,
+      "secondary_tracks": []
+    },
+    {
+      "experiment_id": "EXP-CPA-REPAIR",
+      "order_id": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1",
+      "research_track": "measurement",
+      "scientific_question": "Which model produced Claude Code's result? (instrument repair)",
+      "hypothesis": "Producer identity must come from documented evidence, never modelUsage key order.",
+      "verdict": "CPA_INSTRUMENT_REPAIR_VALIDATED_R1",
+      "kind": "DETERMINISTIC_ENGINEERING",
+      "record": "09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1/SESSION-REPORT.md",
+      "prereg_hash": "ded746c0fe52edb7e75b308f7b1a2223c1f77b86e54001ddd398ed76fc1b81d0",
+      "run_id": "COGNITIVE-PROVENANCE-INSTRUMENT-REPAIR-R1-run-ded746c0",
+      "model_provider": "claude-opus-5 (2 real probes)",
+      "sample_size": "F1-F12 fixtures, 15 mutants, 4 probes (2 real)",
+      "controls": "",
+      "metrics": [],
+      "construct_status": "",
+      "artifact_hash": "7a44c65c2827c5d73a2982a57e0393e7fcb2f2a02018244dee522ea9c83fb9a0",
+      "limitations": [
+        "Tier-1 evidence needs --verbose (not approved; REP-F1)",
+        "~20.6k tokens of base scaffolding not decomposable (REP-F3)"
+      ],
+      "next_experiment": "",
+      "commit": "",
+      "pr": 33,
+      "invariants": [
+        "INV-MEAS-REL"
+      ],
+      "negative_result": false,
+      "secondary_tracks": [
+        "cognitive-provenance"
+      ]
+    },
+    {
+      "experiment_id": "EXP-CPA-RERUN",
+      "order_id": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1 (rerun)",
+      "research_track": "cognitive-provenance",
+      "scientific_question": "Can a real LLM agent preserve causal source provenance of a plan after assimilation, paraphrase and transformation?",
+      "hypothesis": "H1: content retained while source attribution is lost.",
+      "verdict": "COGNITIVE_PROVENANCE_HYPOTHESIS_FALSIFIED_R1",
+      "kind": "EMPIRICAL_SCIENCE",
+      "record": "09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1/SESSION-REPORT.md",
+      "prereg_hash": "99525f856ae0653c99e97804bba1b7d00abf7565c3439b63e9a0fd5ed051786e",
+      "run_id": "COGNITIVE-PROVENANCE-ABLATION-R1-run-010518cb",
+      "model_provider": "claude-opus-5 via Claude Code 2.1.275 (Max subscription; isolated working directory; json output, Tier-3 producer evidence)",
+      "sample_size": "156 trials (12 tasks x 13 cells); 48 per stage for attribution; 12 per cell",
+      "controls": "CONTROL (no plan) 12; A self-derived framing",
+      "metrics": [
+        "M10 SourceAttributionAccuracy 0.29/0.27/0.25",
+        "M32 PlanAdoption +0.14/+0.08/+0.11 vs control 0.58",
+        "M33 MonitorDetection recall 0.056",
+        "M34 ActionCausalEffect all CIs include 0"
+      ],
+      "construct_status": "M10/M32/M33/M34 CAUSALLY_DISCRIMINATED (fixture-scoped scoring instrument)",
+      "artifact_hash": "61fe86dc16aa40240a448417dcb9dd304679efd4ecc2e15fedbd94f58fe48097",
+      "limitations": [
+        "floor effect: SELF_DERIVED 144/144 even with visible labels (RER-F2)",
+        "weak plan influence under the tie design (RER-F3)",
+        "single-shot context, no cross-turn assimilation (RER-F7c)",
+        "scope: claude-opus-5, synthetic tasks, one prompt family"
+      ],
+      "next_experiment": "COGNITIVE-PROVENANCE-ATTRIBUTION-FLOOR-R1",
+      "commit": "",
+      "pr": 33,
+      "invariants": [
+        "INV-CP-CONTENT",
+        "INV-CP-SELFREPORT",
+        "INV-MEAS-SELF"
+      ],
+      "negative_result": true,
+      "secondary_tracks": []
+    }
+  ]
+}
