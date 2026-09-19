@@ -261,3 +261,41 @@ def qa_last_run():
     violations = [r for r in routes if (r.get("overflow") or {}).get("overflow") or r.get("clipped") or r.get("consoleErrors") or r.get("failedRequests")]
     return {"last_run": stats, "routes": routes, "screenshots": shots, "projects": sorted({r["project"] for r in routes}), "violations": violations,
             "routes_passed": sum(1 for r in routes if r not in violations and r.get("status") == 200), "routes_failed": len(violations) + sum(1 for r in routes if r.get("status") != 200)}
+
+
+
+# -- Command Center (order §4; Phase-1 skeleton: queue/agent counts are literal 0 until Phase 2/3) ------------
+
+@app.get("/api/command-center")
+def command_center():
+    regs = _regs(); cl = readers.closures(); lab = cached("lab", 10.0, readers.lab_runs)
+    claims = {c["claim_id"]: c for c in regs["claims"]["claims"]}
+    active = [claims[a] for a in regs["active_theses"]["active"] if a in claims]
+    month = datetime.now(timezone.utc).strftime("%Y-%m")
+    exps = regs["experiments"]["experiments"]
+    this_month = [c for c in cl if (c["closed"] or "").startswith(month)]
+    neg_month = [c for c in this_month if c["verdict_class"] in ("falsified", "invalid")]
+    violations = registries.validate(regs)
+    alerts = [{"kind": "integrity", "text": f"{v['rule']}: {v['entity']} — {v['detail']}", "href": "/system/health"} for v in violations]
+    if lab["records_only"]:
+        alerts.append({"kind": "lab", "text": f"Lab nicht erreichbar (records-only): {lab.get('error')}", "href": "/system/health"})
+    for e in exps:
+        if e["run_id"] and not e["artifact_hash"]:
+            alerts.append({"kind": "artifact", "text": f"{e['experiment_id']}: Run ohne Artefakt-Hash", "href": f"/experiments/{e['experiment_id']}"})
+    for c in cl:
+        for t in c["open_decisions"]:
+            alerts.append({"kind": "gate", "text": f"Founder-Entscheidung offen ({c['id']}): {t}", "href": "/decisions"})
+    mix: dict[str, dict[str, int]] = {}
+    for c in cl:
+        m = (c["closed"] or "")[:7]
+        if not m:
+            continue
+        row = mix.setdefault(m, {"month": m, "supported": 0, "partial": 0, "falsified": 0, "invalid": 0, "validated": 0, "other": 0})
+        k = c["verdict_class"] if c["verdict_class"] in row else "other"
+        row[k] += 1
+    papers = regs["publications"]["papers"]
+    return {"stats": {"active_theses": len(active), "queued_work_orders": 0, "running_agents": 0, "blocked_gates": sum(len(c["open_decisions"]) for c in cl), "experiments_this_month": len(this_month), "negative_results_this_month": len(neg_month),
+                      "benchmark_delta": None, "replication_debt": sum(1 for r in regs["replication"]["replications"] if r["count"] == "0/5"), "publication_candidates": sum(1 for p in papers if p["manuscript_status"] != "NOT_READY"),
+                      "integrity_violations": len(violations), "records_only": lab["records_only"], "phase_pending": ["queued_work_orders", "running_agents", "benchmark_delta"]},
+            "active_research": [{"claim_id": c["claim_id"], "title": c["title"], "track": c["track"], "status": c["status"], "strength": c["evidence_strength"], "next_test": c["next_falsification_test"], "risk": (c["known_limitations"] or [""])[0]} for c in active],
+            "alerts": alerts, "verdict_mix": sorted(mix.values(), key=lambda r: r["month"]), "n_closures": len(cl), "latest_closure": cl[-1] if cl else None, "next_work_order": cl[-1]["successor_id"] if cl else None}

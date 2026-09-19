@@ -201,3 +201,10 @@ def test_qa_and_governance_endpoints():
     g = client.get("/api/governance-record").json()
     assert g["status"].endswith("INFERENCE_GOVERNANCE_PROVIDER_AMENDED_R1") and [x["id"] for x in g["gates"]] == ["G1", "G2", "G3", "G4"]
     assert g["caps"]["max_concurrent_sessions"] == 1 and "--fallback-model" in g["forbidden_flags"] and any(s["status"] == "SUPERSEDED_BY_FOUNDER_AMENDMENT" for s in g["superseded"])
+
+
+
+def test_command_center_endpoint():
+    b = client.get("/api/command-center").json()
+    assert {"stats", "active_research", "alerts", "verdict_mix"} <= set(b) and b["stats"]["queued_work_orders"] == 0 and b["stats"]["running_agents"] == 0
+    assert b["n_closures"] > 0 and all({"month", "supported", "falsified", "invalid"} <= set(r) for r in b["verdict_mix"])

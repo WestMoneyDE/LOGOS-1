@@ -1,6 +1,6 @@
 // Route inventory (§93). Every core route is checked on every viewport project.
 export const ROUTES: { path: string; expect: string }[] = [
-  { path: "/", expect: "LOGOS-1" },
+  { path: "/", expect: "Kommandozentrale" },
   { path: "/tracks", expect: "Research tracks" },
   { path: "/tracks/authority", expect: "Authority-Preserving" },
   { path: "/tracks/provenance", expect: "Causal Provenance" },
@@ -10,9 +10,9 @@ export const ROUTES: { path: string; expect: string }[] = [
   { path: "/tracks/trajectory", expect: "Trajectory Safety" },
   { path: "/claims", expect: "Claim-Register" },
   { path: "/claims/LOGOS-CP-001", expect: "ReasoningContent" },
-  { path: "/experiments", expect: "Experiment registry" },
+  { path: "/experiments", expect: "Experimente" },
   { path: "/experiments/EXP-CPA-RERUN", expect: "EXP-CPA-RERUN" },
-  { path: "/invariants", expect: "Invariant registry" },
+  { path: "/invariants", expect: "Invarianten" },
   { path: "/counterexamples", expect: "Counterexample registry" },
   { path: "/negative-results", expect: "Negative results" },
   { path: "/falsification", expect: "What could prove us wrong" },

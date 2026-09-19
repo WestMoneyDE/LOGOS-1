@@ -1,14 +1,16 @@
 import { api } from "@/lib/api";
-import { Shell, Section, Table, Src } from "@/components/shell";
-import { KindBadge, StatusBadge } from "@/components/badges";
+import { getT } from "@/i18n";
+import { Shell, Section } from "@/components/shell";
 import { InvariantGraph } from "@/components/invariant-graph";
+import { InvariantsTable } from "@/components/tables/invariants-table";
 
 export default async function Invariants() {
+  const { t } = await getT();
   const r = await api("/api/registries/invariants"); const g = await api("/api/invariants/graph");
   return (
-    <Shell title="Invariant registry" subtitle={`${r.count} invariants (CANONICAL from GAMMA.md, PROPOSED from the research radar). Relations: ${r.relation_vocabulary.join(", ")}.`}>
-      <Section title="Invariant graph" hint="click a node for definition, origin, evidence, counterexamples, experiments"><InvariantGraph nodes={g.nodes} edges={g.edges} invariants={r.invariants} /></Section>
-      <Section title="All invariants"><Table head={["id", "statement", "track", "class", "status", "kind", "origin", "relations"]} rows={r.invariants.map((i: any) => [<code key="i" className="font-mono text-xs">{i.invariant_id}</code>, i.statement, i.track, i.class, <StatusBadge key="s" status={i.status} />, <KindBadge key="k" kind={i.kind} />, <Src key="o" path={i.origin} />, i.relations.map((x: any) => `${x.type} → ${x.target}`).join("; ")])} /></Section>
+    <Shell title={t("nav_invariants")} subtitle={`${r.count} Invarianten (CANONICAL aus GAMMA.md, PROPOSED aus dem Research Radar). Relationen: ${r.relation_vocabulary.join(", ")}.`}>
+      <Section title="Invariantengraph" hint="Knoten anklicken: Definition, Herkunft, Evidenz, Gegenbeispiele, Experimente"><InvariantGraph nodes={g.nodes} edges={g.edges} invariants={r.invariants} /></Section>
+      <Section title="Alle Invarianten"><InvariantsTable rows={r.invariants} labels={{ search: t("search"), columns: t("columns"), rows: t("rows"), detail: t("inspector_title") }} /></Section>
     </Shell>
   );
 }

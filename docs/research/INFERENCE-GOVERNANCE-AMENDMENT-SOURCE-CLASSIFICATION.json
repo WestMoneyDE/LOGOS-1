@@ -913,6 +913,122 @@
     "apps/dashboard/src/components/phase-placeholder.tsx": {
       "class": "TOOLING",
       "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/command-center.spec.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/e2e/datatable.spec.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/e2e/i18n.spec.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/e2e/shell.spec.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/app/api/locale/route.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/charts/verdict-mix.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/data-table.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/hash.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/inspector.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/locale-switch.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/sidebar-nav.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/stat-cards.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/tables/claims-table.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/tables/experiments-table.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/tables/invariants-table.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ui/alert.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ui/breadcrumb.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ui/chart.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ui/dropdown-menu.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ui/popover.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ui/resizable.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ui/skeleton.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/i18n/de.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/i18n/en.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/i18n/index.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "docs/adr/ADR-LOGOS1-RESEARCH-OPERATING-SYSTEM-R1.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 0/1 design record (spec / plan / ADR / architecture); no code, no model call"
+    },
+    "docs/research/dashboard/RESEARCH-OS-TARGET-ARCHITECTURE.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 0/1 design record (spec / plan / ADR / architecture); no code, no model call"
+    },
+    "docs/superpowers/plans/2026-09-19-research-os-phase1-layout-qa.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 0/1 design record (spec / plan / ADR / architecture); no code, no model call"
+    },
+    "docs/superpowers/specs/2026-09-19-research-os-r1-design.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 0/1 design record (spec / plan / ADR / architecture); no code, no model call"
     }
   },
   "unclassified": 0
