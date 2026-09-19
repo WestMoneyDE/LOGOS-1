@@ -122,7 +122,7 @@ def test_closure_reader_never_guesses():
         if c["verdict"]:
             assert c["verdict_class"] in ("falsified", "invalid", "partial", "supported", "validated", "approved", "amended", "other")
     latest = rd.closures()[-1]
-    assert latest["id"].startswith("COGNITIVE-PROVENANCE") and latest["successor_id"]
+    assert latest["successor_id"] == "COGNITIVE-PROVENANCE-ATTRIBUTION-FLOOR-R1"          # the chain head names the one next order
 
 
 def test_theses_selection_roundtrip(tmp_path, monkeypatch):
