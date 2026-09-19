@@ -6,7 +6,7 @@ import * as fs from "fs";
 // Smoke + layout QA for every core route (§58-63). Results are also written as a JSON inventory for /system/qa (§93).
 const results: any[] = [];
 // Live control-plane pages change while the behaviour specs (control-plane/executor) create TEST-ROS rows in parallel; they keep every layout gate but no pixel baseline.
-const DYNAMIC = new Set(["/", "/system/qa", "/queue", "/runs", "/theses", "/board", "/work-orders", "/decisions", "/system/workers", "/system/quotas", "/system/claude", "/traces", "/benchmarks", "/progress", "/inbox", "/radar", "/notes", "/reports", "/measurements", "/observability", "/registry"]);
+const DYNAMIC = new Set(["/", "/system/qa", "/queue", "/runs", "/theses", "/board", "/work-orders", "/decisions", "/system/workers", "/system/quotas", "/system/claude", "/traces", "/benchmarks", "/progress", "/inbox", "/radar", "/notes", "/reports", "/measurements", "/observability", "/registry", "/prior-art/matrix", "/evals"]);
 
 for (const r of ROUTES) {
   test(`route ${r.path} renders, no overflow, no clipping, no console errors`, async ({ page }, testInfo) => {
@@ -43,9 +43,8 @@ test("theses selection roundtrip", async ({ page }) => {
   expect(await box.isChecked()).toBe(before);
 });
 
-test.afterAll(async () => {
+test.afterAll(async ({}, info) => {
+  // one shard per project: parallel workers used to read-modify-write a single file, which corrupted it (R5 finding)
   fs.mkdirSync("e2e/results", { recursive: true });
-  const file = "e2e/results/route-inventory.json";
-  const prev = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, "utf-8")) : [];
-  fs.writeFileSync(file, JSON.stringify([...prev, ...results], null, 1));
+  fs.writeFileSync(`e2e/results/route-inventory.${info.project.name}.w${info.workerIndex}.json`, JSON.stringify(results, null, 1));   // one shard per worker: several workers serve one project
 });

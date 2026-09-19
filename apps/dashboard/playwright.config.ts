@@ -4,6 +4,7 @@ import { defineConfig, devices } from "@playwright/test";
 const desktop = (name: string, width: number, height: number) => ({ name, use: { ...devices["Desktop Chrome"], viewport: { width, height } } });
 
 export default defineConfig({
+  globalSetup: "./e2e/global-setup.ts",
   testDir: "./e2e",
   timeout: 60_000,
   expect: { timeout: 10_000, toHaveScreenshot: { maxDiffPixelRatio: 0.02 } },

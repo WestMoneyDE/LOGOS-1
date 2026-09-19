@@ -255,12 +255,18 @@ QA_DIR = _ROOT / "apps/dashboard/e2e/results"
 
 @app.get("/api/qa/last-run")
 def qa_last_run():
-    inv = QA_DIR / "route-inventory.json"; last = QA_DIR / "last-run.json"
-    routes = json.loads(inv.read_text(encoding="utf-8")) if inv.exists() else []
+    last = QA_DIR / "last-run.json"
+    routes: list = []; broken: list = []
+    for inv in sorted(QA_DIR.glob("route-inventory*.json")):            # one shard per Playwright project
+        try:
+            part = json.loads(inv.read_text(encoding="utf-8"))
+            routes += part if isinstance(part, list) else []
+        except ValueError as e:
+            broken.append({"file": inv.name, "error": f"{type(e).__name__}: {str(e)[:120]}"})
     stats = json.loads(last.read_text(encoding="utf-8")).get("stats", {}) if last.exists() else {}
     shots = sorted(str(p.relative_to(QA_DIR)).replace("\\", "/") for p in (QA_DIR / "screenshots").rglob("*.png")) if (QA_DIR / "screenshots").exists() else []
     violations = [r for r in routes if (r.get("overflow") or {}).get("overflow") or r.get("clipped") or r.get("consoleErrors") or r.get("failedRequests")]
-    return {"last_run": stats, "routes": routes, "screenshots": shots, "projects": sorted({r["project"] for r in routes}), "violations": violations,
+    return {"last_run": stats, "routes": routes, "screenshots": shots, "projects": sorted({r["project"] for r in routes}), "violations": violations, "broken_shards": broken,
             "routes_passed": sum(1 for r in routes if r not in violations and r.get("status") == 200), "routes_failed": len(violations) + sum(1 for r in routes if r.get("status") != 200)}
 
 

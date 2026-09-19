@@ -792,11 +792,11 @@ def test_autopilot_runs_stages_until_ceiling_and_pauses_on_gate(conn, tid, repo,
 def test_repository_orders_import_idempotent_and_chained(conn):
     from logos_dashboard.control import repo_orders
     docs = repo_orders.parse_documents()
-    assert len(docs) == 42 and sum(1 for d in docs if d["kind"] == "closure") == 38 and {d["state"] for d in docs} == {"VALIDATED", "FALSIFIED", "DRAFT"}     # 43 files, 42 orders (one generated master order has its own closure) — exact for 05-WORK-ORDERS on 2026-09-19
+    assert len(docs) == 43 and sum(1 for d in docs if d["kind"] == "closure") == 39 and {d["state"] for d in docs} == {"VALIDATED", "FALSIFIED", "DRAFT"}     # 44 files, 43 orders (one generated master order has its own closure) — exact for 05-WORK-ORDERS on 2026-09-19
     falsified = sorted(d["order_id"] for d in docs if d["state"] == "FALSIFIED"); assert falsified == ["COGNITIVE-PROVENANCE-ABLATION-R1", "RISK-AWARENESS-DECOMPOSITION-R1"]
     r1 = repo_orders.import_orders(conn); r2 = repo_orders.import_orders(conn)
-    assert r1["documents"] == r2["documents"] == 42 and r2["new"] == 0 and r2["updated"] == 42 and r2["edges_added"] == 0 and r1["states"]["FALSIFIED"] == 2
-    ch = repo_orders.chain(conn); assert len(ch) == 42 and all(x["work_order_id"].startswith("REPO:") for x in ch) and all(x["origin"]["repository"] for x in ch)
+    assert r1["documents"] == r2["documents"] == 43 and r2["new"] == 0 and r2["updated"] == 43 and r2["edges_added"] == 0 and r1["states"]["FALSIFIED"] == 2
+    ch = repo_orders.chain(conn); assert len(ch) == 43 and all(x["work_order_id"].startswith("REPO:") for x in ch) and all(x["origin"]["repository"] for x in ch)
     with conn.cursor() as cur:
         cur.execute("SELECT count(*) FROM ros_work_order_deps WHERE child LIKE 'REPO:%%' AND parent LIKE 'REPO:%%'"); n_edges = cur.fetchone()[0]
         cur.execute("SELECT parent FROM ros_work_order_deps WHERE child = 'REPO:COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1'"); parents = [r[0] for r in cur.fetchall()]
@@ -820,8 +820,8 @@ def test_r2_api_autopilot_workers_repo_orders_leitstand(conn, tid, attested, aut
             queue.request_stop(conn, j["job_id"], "founder")
     wc = client.get("/api/ros/workers/control").json(); assert {"host", "docker", "autopilot"} <= set(wc) and "alive" in wc["host"]
     assert client.post("/api/ros/workers/host/start", headers={"X-Logos-Actor": "agent"}).status_code == 403 and client.post("/api/ros/workers/nope/start").status_code == 400
-    ro = client.post("/api/ros/repo-orders/import").json(); assert ro["documents"] == 42
-    lst = client.get("/api/ros/repo-orders").json(); assert len(lst["orders"]) == 42 and len(lst["documents"]) == 42
+    ro = client.post("/api/ros/repo-orders/import").json(); assert ro["documents"] == 43
+    lst = client.get("/api/ros/repo-orders").json(); assert len(lst["orders"]) == 43 and len(lst["documents"]) == 43
     ls = client.get("/api/ros/leitstand").json()
     assert {"host", "docker", "autopilot", "theses", "attention", "governor", "first_steps", "states"} <= set(ls) and ls["ceiling"] == "PREREG_DRAFT"
     mine = next(t for t in ls["theses"] if t["thesis_id"] == tid); assert mine["autopilot"]["enabled"] is True and mine["stage_index"] == 0
@@ -1249,3 +1249,136 @@ def test_r4_api_observability_insights_registry(conn):
     assert client.post("/api/ros/registry/apply", json={"registry": "claims", "entity_id": "LOGOS-AUTH-001", "field": "known_limitations", "value": ["TEST-ROS x"], "reason": "lange genug begründet hier"}, headers={"X-Logos-Actor": "agent"}).status_code == 403
     assert client.get("/api/ros/registry/changelog").json()["file"].endswith("registry-changelog.jsonl")
     assert client.get("/api/ros/runs/RUN-nope/all-traces").status_code == 404
+
+
+
+# -- R5: Prior-Art-Matrix, Agenten-Evals, Publikationspfad --------------------------------------------------------------
+
+
+def test_prior_art_matrix_is_honest_about_gaps():
+    from logos_dashboard import prior_art, registries
+    m = prior_art.matrix(); regs = registries.load_all()
+    assert m["n_citations"] == len(regs["prior_art"]["citations"]) == 14 and m["min_per_track"] == 3 and m["version"] == "ros-prior-art/1"
+    assert [r["track"] for r in m["tracks"]] == list(regs["claims"]["tracks"]) and len(m["claims"]) == len(regs["claims"]["claims"])
+    auth = next(r for r in m["tracks"] if r["track"] == "authority")
+    assert auth["citations"] == 2 and auth["status"] == "rot" and any("weitere Quelle" in x for x in auth["missing"])
+    assert all(r["status"] in ("rot", "gelb", "gruen") for r in m["tracks"]) and not any(r["status"] == "gruen" for r in m["tracks"])   # heute ist keine Spur belegt genug
+    c = next(x for x in m["claims"] if x["claim_id"] == "LOGOS-AUTH-001")
+    assert "Neuheit ist damit nicht belegt" in c["novelty_statement"] and len(c["closest_prior_art"]) == 2
+    assert m["n_open_tasks"] == len(__import__("logos_dashboard.research_intake", fromlist=["queue"]).queue(regs)) >= 20
+    p = prior_art.task_payload(m_task_id := [t["task_id"] for t in __import__("logos_dashboard.research_intake", fromlist=["queue"]).queue(regs)][0])
+    assert p["brief_task"]["task_id"] == m_task_id and p["brief_task"]["novelty_cap"] == "CLEAR_DIFFERENTIATION" and p["brief_task"]["min_sources"] == 3
+    with pytest.raises(KeyError):
+        prior_art.task_payload("RQ-DOES-NOT-EXIST")
+
+
+def test_prior_art_brief_merge_is_founder_only_and_checked(conn):
+    from logos_dashboard import prior_art, research_intake
+    from logos_research.governance import GovernanceError
+    briefs_dir = research_intake.BRIEFS; briefs_dir.mkdir(exist_ok=True)
+    bid = "TEST-ROS-BRIEF-1"; path = briefs_dir / f"{bid}.json"
+    reg_path = _Path(__file__).resolve().parents[1] / "docs/research/dashboard/PRIOR-ART-REGISTRY.json"
+    cl_path = _Path(__file__).resolve().parents[1] / "docs/research/dashboard/registry-changelog.jsonl"
+    reg_before = reg_path.read_bytes(); cl_before = cl_path.read_bytes() if cl_path.exists() else None
+    brief = {"schema": "logos.research-brief/1", "brief_id": bid, "date": "2026-09-19", "claim_id": "LOGOS-AUTH-001", "question": "Closest prior art?", "sub_questions": ["capability systems"],
+             "sources": [{"citation_id": "TEST-ROS-PA-1", "title": "A capability paper", "authors": "Doe, J.", "year": 2001, "venue": "Proc.", "url": "https://example.org/x",
+                          "claim_supported": "capabilities bind authority to an unforgeable token", "claim_not_supported": "nothing about memory-derived authority",
+                          "notes": "read in full", "research_track": "authority", "novelty_status": "POSSIBLE_INCREMENTAL"}],
+             "synthesis": "Capability systems bind authority to tokens; LOGOS binds it to a canonical grant record.", "novelty_assessment": "POSSIBLE_INCREMENTAL",
+             "limitations": "one source only", "reviewed_by_founder": False}
+    path.write_text(_json.dumps(brief, indent=1), encoding="utf-8")
+    try:
+        d = prior_art.brief_diff(bid)
+        assert d["ok"] is True and d["issues"] == [] and [c["citation_id"] for c in d["new_citations"]] == ["TEST-ROS-PA-1"] and d["after_count"] == d["before_count"] + 1
+        with pytest.raises(GovernanceError):
+            prior_art.merge(conn, bid, "agent")
+        # a CLEAR_DIFFERENTIATION claim with a single source is refused
+        brief_hot = {**brief, "sources": [{**brief["sources"][0], "novelty_status": "CLEAR_DIFFERENTIATION"}]}
+        path.write_text(_json.dumps(brief_hot, indent=1), encoding="utf-8")
+        with pytest.raises(ValueError):
+            prior_art.merge(conn, bid, "founder")
+        path.write_text(_json.dumps(brief, indent=1), encoding="utf-8")
+        res = prior_art.merge(conn, bid, "founder")
+        assert _json.loads(path.read_text(encoding="utf-8"))["reviewed_by_founder"] is True      # der Klick ist die Prüfung, und sie steht danach im Brief
+        assert res["merged"] is True and res["added"] == ["TEST-ROS-PA-1"] and res["count"] == d["after_count"] and res["file_sha256_before"] != res["file_sha256_after"]
+        from logos_dashboard.control import registry_edit
+        assert registry_edit.changelog()[0]["origin"]["brief_id"] == bid
+        with pytest.raises(ValueError):
+            prior_art.merge(conn, bid, "founder")                        # nothing new the second time
+        with pytest.raises(KeyError):
+            prior_art.brief_diff("TEST-ROS-NOPE")
+    finally:
+        path.unlink(missing_ok=True); reg_path.write_bytes(reg_before)
+        if cl_before is None:
+            cl_path.unlink(missing_ok=True)
+        else:
+            cl_path.write_bytes(cl_before)
+
+
+def test_agent_eval_profiles_are_deterministic():
+    from logos_dashboard import evals
+    p = evals.profiles()
+    assert set(p["stages"]) == set(evals.STAGES) and len(evals.STAGES) == 6 and all(len(v) == 4 for v in p["stages"].values()) and "kein Modell bewertet ein Modell" in p["rule"]
+    good = ("# Triage LOGOS-AUTH-001\n" + "Diese These betrifft docs/research/dashboard/CLAIM-REGISTRY.json und den Track authority. " * 4 +
+            "\nFalsifikation: widerlegt, wenn die Rate falscher Freigaben mit Konfidenzintervall über der Schwelle 0.0 liegt (n = 40, Wilson).\n")
+    g = evals.score_file("TRIAGE", good); assert g["k"] == 4 and g["n_scored"] == 4 and g["passed"] is True
+    bad = evals.score_file("TRIAGE", "Kurz. Diese These ist SUPPORTED und sicher.")
+    assert bad["k"] == 0 and bad["checks"]["no_status_claim"] is False and bad["checks"]["falsifier_measurable"] is False and bad["passed"] is False
+    assert evals.score_file("PREREG", '{"question": "q", "hypothesis": "h", "falsification_criterion": "Wilson-KI über Schwelle", "scope": "fixture"}')["checks"]["prereg_fields"] is True
+    assert evals.score_file("PREREG", "not json")["checks"]["prereg_fields"] is False
+    assert evals.score_file("METRICS", "Wir nutzen json_field_equals als Scorer; falsifiziert bei Konfidenzintervall unter der Schwelle." * 4)["checks"]["metrics_map_to_scorers"] is True
+    assert evals.score_file("PRIOR_ART", "Smith et al. (2001) zeigt X." * 20)["checks"]["no_uncited_claims"] is False       # Zitat ohne Quelle
+    assert evals.score_file("PRIOR_ART", ("Smith et al. (2001) zeigt X, siehe https://example.org/a. " * 10))["checks"]["no_uncited_claims"] is True
+    assert evals.score_file("TRIAGE", None)["n_scored"] == 0 and evals.score_file("TRIAGE", None)["missing"] == 4
+    with pytest.raises(ValueError):
+        evals.score_file("NOPE", "x")
+    agg = evals.aggregate([{"stages": [g, bad]}])
+    assert agg["total"]["k"] == 4 and agg["total"]["n"] == 8 and agg["total"]["rate"] == 0.5 and agg["stages"][0]["status"] == "OK" and agg["stages"][1]["status"] == "NO_DATA"
+
+
+def test_paper_draft_uses_records_only(conn):
+    from logos_dashboard import paper
+    d = paper.build(conn, "PAPER-2")
+    assert d["paper_id"] == "PAPER-2" and d["abstract"] == "TO_BE_WRITTEN" and len(d["sha256"]) == 64 and d["manuscript_status_in_registry"] == "INTERNAL_DRAFT"
+    assert len(d["contributions"]) == 6 and all("Status" in c and "Evidenz" in c for c in d["contributions"])
+    assert [r["track"] for r in d["related_work"]] == ["authority"] and d["related_work"][0]["gap"].startswith("1 Quelle")
+    assert all(m["n_experiments"] >= 0 for m in d["methods"]) and any(m["n_experiments"] > 0 for m in d["methods"])
+    assert all(("measurement_id" in r) for r in d["results"]) and any(r.get("note", "").startswith("kein governed Messlauf") for r in d["results"])
+    assert any("P7" in x for x in d["does_not_claim"]) and d["reproducibility"]["registries"] and d["readiness"]["of"] == 8
+    md = paper.render_markdown(d)
+    assert md.startswith("# Authority-Preserving Execution") and "TO_BE_WRITTEN" in md and "Was dieses Papier nicht behauptet" in md and "Reifegrad im Register: **INTERNAL_DRAFT**" in md
+    assert paper.build(conn, "PAPER-2")["sha256"] == d["sha256"]                      # deterministisch
+    with pytest.raises(KeyError):
+        paper.build(conn, "PAPER-999")
+
+
+def test_r5_api_prior_art_evals_paper(conn):
+    from fastapi.testclient import TestClient
+    from logos_dashboard.api import app
+    client = TestClient(app)
+    m = client.get("/api/ros/prior-art/matrix").json(); assert m["n_citations"] == 14 and len(m["tracks"]) == 6
+    b = client.get("/api/ros/prior-art/briefs").json(); assert "tasks" in b and b["schema"]["schema"] == "logos.research-brief/1"
+    assert client.get("/api/ros/prior-art/briefs/NOPE/diff").status_code == 404
+    assert client.post("/api/ros/prior-art/briefs/NOPE/merge", headers={"X-Logos-Actor": "agent"}).status_code == 403
+    task_id = b["tasks"][0]["task_id"]
+    j = client.post(f"/api/ros/prior-art/tasks/{task_id}/job").json(); assert j["kind"] == "prior_art" and j["state"] == "waiting_governance" and j["payload"]["brief_task"]["task_id"] == task_id
+    queue.request_stop(conn, j["job_id"], "founder")
+    pf = client.get("/api/ros/evals/profiles").json(); assert len(pf["stages"]) == 6
+    ev = client.get("/api/ros/evals").json(); assert "aggregate" in ev and ev["aggregate"]["suite"] == "AGENT_QUALITY"
+    dr = client.get("/api/ros/papers/PAPER-2/draft").json(); assert dr["doc"]["paper_id"] == "PAPER-2" and dr["markdown"].startswith("# ")
+    assert client.get("/api/ros/papers/PAPER-999/draft").status_code == 404
+    p = _Path(__file__).resolve().parents[1] / "docs/research/dashboard/paper-drafts"
+    had = p.exists() and (p / "PAPER-2.md").exists()
+    ex = client.post("/api/ros/papers/PAPER-2/export").json()
+    try:
+        assert ex["path"].endswith("PAPER-2.md") and ex["manuscript_status_unchanged"] == "INTERNAL_DRAFT" and (p / "PAPER-2.md").exists()
+        import json as J
+        reg = J.loads((_Path(__file__).resolve().parents[1] / "docs/research/dashboard/PUBLICATION-REGISTRY.json").read_text(encoding="utf-8"))
+        assert next(x for x in reg["papers"] if x["paper_id"] == "PAPER-2")["manuscript_status"] == "INTERNAL_DRAFT"      # export ändert den Reifegrad nicht
+    finally:
+        if not had:
+            (p / "PAPER-2.md").unlink(missing_ok=True); (p / "PAPER-2.json").unlink(missing_ok=True)
+            try:
+                p.rmdir()
+            except OSError:
+                pass

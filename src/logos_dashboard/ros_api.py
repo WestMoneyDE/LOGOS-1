@@ -1031,3 +1031,96 @@ def registry_revert(index: int = 0):
         return _redit.revert_proposal(index)
     except KeyError as ex:
         raise HTTPException(404, str(ex))
+
+
+# -- R5: Prior-Art-Matrix, Agenten-Evals, Publikationspfad -----------------------------------------------------------------
+
+from . import evals as _evals, paper as _paper, prior_art as _pa, research_intake as _intake  # noqa: E402
+
+
+@router.get("/prior-art/matrix")
+def prior_art_matrix():
+    return _pa.matrix()
+
+
+@router.get("/prior-art/briefs")
+def prior_art_briefs():
+    return {"briefs": _intake.briefs(), "tasks": _intake.queue(_registries.load_all()), "schema": _intake.BRIEF_SCHEMA}
+
+
+@router.get("/prior-art/briefs/{brief_id}/diff")
+def prior_art_brief_diff(brief_id: str):
+    try:
+        return _pa.brief_diff(brief_id)
+    except KeyError:
+        raise HTTPException(404, brief_id)
+
+
+@router.post("/prior-art/briefs/{brief_id}/merge")
+def prior_art_merge(brief_id: str, x_logos_actor: str | None = Header(default=None)):
+    with _conn() as c:
+        return _pa.merge(c, brief_id, _actor(x_logos_actor))
+
+
+@router.post("/prior-art/tasks/{task_id}/job")
+def prior_art_job(task_id: str, thesis_id: str | None = None, x_logos_actor: str | None = Header(default=None)):
+    """Enqueue a `prior_art` agent job for exactly one queued research task (waits for founder Start)."""
+    with _conn() as c:
+        try:
+            payload = _pa.task_payload(task_id)
+        except KeyError:
+            raise HTTPException(404, task_id)
+        n = sum(1 for j in queue.list_jobs(c, 10000) if j["kind"] == "prior_art" and (j.get("payload") or {}).get("brief_task", {}).get("task_id") == task_id)
+        return queue.enqueue(c, "prior_art", thesis_id=thesis_id, payload=payload, attempt_group=n, actor=_actor(x_logos_actor))
+
+
+@router.get("/evals/profiles")
+def evals_profiles():
+    return _evals.profiles()
+
+
+@router.get("/evals")
+def evals_run(thesis_id: str | None = None):
+    """Evaluate the agent drafts that exist on disk (deterministic checks, no model call)."""
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    with _conn() as c:
+        ids = [thesis_id] if thesis_id else [t["thesis_id"] for t in service.list_theses(c)]
+        evaluations = [_evals.evaluate_thesis_dir(root, t) for t in ids]
+    evaluations = [e for e in evaluations if e["n_stages"]]
+    return {"evaluations": evaluations, "aggregate": _evals.aggregate(evaluations), "n_theses": len(evaluations), "profiles": _evals.profiles()}
+
+
+@router.post("/evals/record")
+def evals_record(thesis_id: str | None = None, x_logos_actor: str | None = Header(default=None)):
+    """Write the aggregate into ros_metric_results (suite AGENT_QUALITY) so it shows up in the benchmark lab."""
+    from pathlib import Path as _P
+    root = _P(__file__).resolve().parents[2]
+    with _conn() as c:
+        ids = [thesis_id] if thesis_id else [t["thesis_id"] for t in service.list_theses(c)]
+        evaluations = [e for e in (_evals.evaluate_thesis_dir(root, t) for t in ids) if e["n_stages"]]
+        agg = _evals.aggregate(evaluations)
+        rows = []
+        for r in agg["stages"]:
+            if r["status"] == "OK":
+                rows.append(_bl.record_metric(c, _evals.SUITE, "DETERMINISTIC", f"agent_{r['stage'].lower()}", r["k"], r["n"], {"files": r["files"], "missing": r["missing"], "version": _evals.VERSION, "mode": "DETERMINISTIC", "model_pin": None, "dataset_hash": None, "prompt_bundle_hash": None, "tool_boundary": "eval profiles"}, None, None))
+        return {"recorded": [{"metric": x["metric"], "k": x["k"], "n": x["n"], "value": x["value"]} for x in rows], "aggregate": agg["total"], "suite": _evals.SUITE}
+
+
+@router.get("/papers/{paper_id}/draft")
+def paper_draft(paper_id: str):
+    with _conn() as c:
+        try:
+            doc = _paper.build(c, paper_id)
+        except KeyError:
+            raise HTTPException(404, paper_id)
+        return {"doc": doc, "markdown": _paper.render_markdown(doc)}
+
+
+@router.post("/papers/{paper_id}/export")
+def paper_export(paper_id: str, x_logos_actor: str | None = Header(default=None)):
+    with _conn() as c:
+        try:
+            return _paper.export(c, paper_id, _actor(x_logos_actor))
+        except KeyError:
+            raise HTTPException(404, paper_id)

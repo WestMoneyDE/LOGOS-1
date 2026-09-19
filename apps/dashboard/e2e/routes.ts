@@ -19,7 +19,7 @@ export const ROUTES: { path: string; expect: string }[] = [
   { path: "/replication", expect: "Replication layer" },
   { path: "/publications", expect: "paper series" },
   { path: "/publications/PAPER-3", expect: "Reasoning Content Is Not Reasoning Provenance" },
-  { path: "/prior-art", expect: "Prior-art registry" },
+  { path: "/prior-art/matrix", expect: "Literatur-Matrix" }, { path: "/evals", expect: "Agenten-Qualität" }, { path: "/publications/PAPER-2/draft", expect: "Paper-Entwurf" }, { path: "/prior-art", expect: "Prior-art registry" },
   { path: "/open-questions", expect: "Research questions queue" },
   { path: "/research", expect: "Deep-research queue" },
   { path: "/timeline", expect: "Scientific timeline" },
