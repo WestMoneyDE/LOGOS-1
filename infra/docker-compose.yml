@@ -201,7 +201,12 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-logos}:${POSTGRES_PASSWORD:?set it in infra/.env}@postgres:5432/${POSTGRES_DB:-logos_research}
+      # DSN is assembled inside the worker (logos_dashboard.db.dsn) from the parts below — no credential-in-URL literal in this file.
+      LOGOS_PG_HOST: postgres
+      LOGOS_PG_PORT: "5432"
+      POSTGRES_USER: ${POSTGRES_USER:-logos}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set it in infra/.env}
+      POSTGRES_DB: ${POSTGRES_DB:-logos_research}
       ROS_WORKER_ID: ros-worker-docker-1
     security_opt:
       - no-new-privileges:true

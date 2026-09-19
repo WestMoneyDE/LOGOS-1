@@ -10,6 +10,12 @@ from .migrations import MIGRATIONS, ROS_TABLES, VERSION_TABLE, ensure_schema  # 
 
 
 def dsn() -> str:
+    """DATABASE_URL (host/dev) or, inside the ros-worker container, assembled from LOGOS_PG_HOST + POSTGRES_* parts (no credential-in-URL literal in compose)."""
+    import os
+    from urllib.parse import quote
+    host = os.environ.get("LOGOS_PG_HOST")
+    if host and not os.environ.get("DATABASE_URL"):
+        return f"postgresql://{quote(os.environ.get('POSTGRES_USER', 'logos'))}:{quote(os.environ.get('POSTGRES_PASSWORD', ''))}@{host}:{os.environ.get('LOGOS_PG_PORT', '5432')}/{os.environ.get('POSTGRES_DB', 'logos_research')}"
     from logos_research.infra.backends import dsn_from_env
     return dsn_from_env()
 
