@@ -8,10 +8,10 @@ import json
 
 from psycopg.rows import dict_row
 
-from .state_machines import JOB_STATES, transition
+from .state_machines import IllegalTransition, JOB_STATES, transition
 
-DETERMINISTIC_KINDS = ("prior_art", "tests", "dataset", "dry_run", "rescore", "playwright_qa", "snapshot")
-CLAUDE_KINDS = ("claude", "thesis_advance", "radar_process")
+DETERMINISTIC_KINDS = ("tests", "dataset", "dry_run", "rescore", "playwright_qa", "snapshot")
+CLAUDE_KINDS = ("claude", "thesis_advance", "prior_art", "radar_process")   # prior_art needs the deep-research skill (Claude + web tools) -> host job, not Docker (recorded deviation from spec §5)
 KINDS = DETERMINISTIC_KINDS + CLAUDE_KINDS
 
 
@@ -68,6 +68,42 @@ def resume(conn, job_id: int, actor: str = "founder") -> dict: return _apply(con
 def stop(conn, job_id: int, actor: str = "founder") -> dict: return _apply(conn, job_id, "stop", actor)
 def retry(conn, job_id: int, actor: str = "founder") -> dict: return _apply(conn, job_id, "retry", actor)
 def governance_pass(conn, job_id: int, actor: str = "system") -> dict: return _apply(conn, job_id, "governance_pass", actor)
+
+
+def request_stop(conn, job_id: int, actor: str = "founder") -> dict:
+    """Graceful stop: the executor checks the flag before every invocation and terminates the current process; the job state moves via `stop`."""
+    with conn.cursor(row_factory=dict_row) as cur:
+        cur.execute("UPDATE ros_jobs SET stop_requested = TRUE, updated_at = now() WHERE job_id = %s RETURNING *", (job_id,)); row = cur.fetchone()
+        if row is None:
+            raise KeyError(job_id)
+        cur.execute("INSERT INTO ros_audit (actor, action, subject, detail) VALUES (%s, 'job.stop_requested', %s, '{}')", (actor, str(job_id)))
+    conn.commit()
+    if row["state"] in ("queued", "waiting_quota", "waiting_dependency", "waiting_governance", "paused"):
+        return _apply(conn, job_id, "stop", actor)
+    return row
+
+
+def stop_requested(conn, job_id: int) -> bool:
+    with conn.cursor() as cur:
+        cur.execute("SELECT stop_requested FROM ros_jobs WHERE job_id = %s", (job_id,)); r = cur.fetchone()
+    return bool(r and r[0])
+
+
+def start(conn, job_id: int, actor: str, gate: dict) -> dict:
+    """Founder Start for a Claude job: waiting_governance -> queued, only with a passed pre-run gate (recorded in the audit row)."""
+    if actor != "founder":
+        raise IllegalTransition("job", "waiting_governance", "governance_pass", actor, "founder gate")
+    if not gate.get("passed"):
+        raise ValueError(f"pre-run gate failed: {[k for k, v in gate.get('checks', {}).items() if not v]}")
+    with conn.cursor(row_factory=dict_row) as cur:
+        cur.execute("SELECT * FROM ros_jobs WHERE job_id = %s FOR UPDATE", (job_id,)); job = cur.fetchone()
+        if job is None:
+            raise KeyError(job_id)
+        nxt = transition("job", job["state"], "governance_pass", "system")
+        cur.execute("UPDATE ros_jobs SET state = %s, started_by = %s, updated_at = now() WHERE job_id = %s RETURNING *", (nxt, actor, job_id)); row = cur.fetchone()
+        cur.execute("INSERT INTO ros_audit (actor, action, subject, detail) VALUES (%s, 'job.start', %s, %s)", (actor, str(job_id), json.dumps({"gate": gate})))
+    conn.commit()
+    return row
 
 
 def stats(conn) -> dict:

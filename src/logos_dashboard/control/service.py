@@ -89,6 +89,7 @@ def delete_thesis(conn, thesis_id: str, actor: str) -> int:
         raise ValueError("only TEST-ROS-* theses may be deleted")
     with conn.cursor() as cur:
         cur.execute("DELETE FROM ros_jobs WHERE thesis_id = %s", (thesis_id,))
+        cur.execute("DELETE FROM ros_runs WHERE thesis_id = %s", (thesis_id,))
         cur.execute("DELETE FROM ros_decisions WHERE subject_ref = %s OR subject_ref LIKE %s", (thesis_id, thesis_id + "%"))
         cur.execute("DELETE FROM ros_theses WHERE thesis_id = %s", (thesis_id,)); n = cur.rowcount
         _audit(cur, actor, "thesis.delete", thesis_id, {})

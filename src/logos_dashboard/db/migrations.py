@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 VERSION_TABLE = "ros_schema_version"
 ROS_TABLES = ["ros_theses", "ros_thesis_events", "ros_work_orders", "ros_work_order_deps", "ros_runs", "ros_run_events", "ros_jobs", "ros_decisions",
-              "ros_inbox_items", "ros_radar_items", "ros_notes", "ros_artifacts", "ros_trace_links", "ros_audit"]
+              "ros_inbox_items", "ros_radar_items", "ros_notes", "ros_artifacts", "ros_trace_links", "ros_audit", "ros_settings", "ros_worker_heartbeats"]
 
 
 @dataclass(frozen=True)
@@ -61,6 +61,16 @@ MIGRATIONS: tuple[Migration, ...] = (
             link_id BIGSERIAL PRIMARY KEY, run_id TEXT NOT NULL REFERENCES ros_runs(run_id) ON DELETE CASCADE, mlflow_run_id TEXT, trace_id TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT now())""",
         """CREATE TABLE IF NOT EXISTS ros_audit (
             audit_id BIGSERIAL PRIMARY KEY, at TIMESTAMPTZ NOT NULL DEFAULT now(), actor TEXT NOT NULL, action TEXT NOT NULL, subject TEXT NOT NULL, detail JSONB NOT NULL DEFAULT '{}')""",
+    )),
+    Migration(2, "ros_executor", (
+        """CREATE TABLE IF NOT EXISTS ros_settings (
+            key TEXT PRIMARY KEY, value JSONB NOT NULL, set_by TEXT NOT NULL, set_at TIMESTAMPTZ NOT NULL DEFAULT now())""",
+        """CREATE TABLE IF NOT EXISTS ros_worker_heartbeats (
+            worker_id TEXT PRIMARY KEY, kind TEXT NOT NULL, host TEXT NOT NULL, kinds TEXT[] NOT NULL DEFAULT '{}', last_seen TIMESTAMPTZ NOT NULL DEFAULT now(), current_job BIGINT, info JSONB NOT NULL DEFAULT '{}')""",
+        "ALTER TABLE ros_jobs ADD COLUMN IF NOT EXISTS started_by TEXT",
+        "ALTER TABLE ros_jobs ADD COLUMN IF NOT EXISTS stop_requested BOOLEAN NOT NULL DEFAULT FALSE",
+        "ALTER TABLE ros_runs ADD COLUMN IF NOT EXISTS job_id BIGINT",
+        "ALTER TABLE ros_runs ADD COLUMN IF NOT EXISTS summary JSONB",
     )),
 )
 

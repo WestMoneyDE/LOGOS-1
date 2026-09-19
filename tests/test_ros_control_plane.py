@@ -79,11 +79,11 @@ def _count(conn, sql, *args):
 
 def test_ros_migrations_idempotent(conn):
     v1 = db.ensure_schema(conn); v2 = db.ensure_schema(conn)
-    assert v1 == v2 == 1
+    assert v1 == v2 == 2                                     # v1 control plane (Phase 2) + v2 executor settings/heartbeats (Phase 3)
     with conn.cursor() as cur:
         cur.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_name LIKE 'ros\\_%'")
         names = {r[0] for r in cur.fetchall()}
-    assert set(db.ROS_TABLES) <= names and len(db.ROS_TABLES) == 14
+    assert set(db.ROS_TABLES) <= names and len(db.ROS_TABLES) == 16
 
 
 def test_service_thesis_events_and_audit(conn, tid):
@@ -188,7 +188,7 @@ def test_ros_api_roundtrip(conn, tid):
     from logos_dashboard.api import app
     client = TestClient(app)
     st = client.get("/api/ros/status").json()
-    assert st["db"] == "ok" and st["schema_version"] == 1 and "thesis_advance" in st["claude_kinds"]
+    assert st["db"] == "ok" and st["schema_version"] == 2 and "thesis_advance" in st["claude_kinds"]
     r = client.post("/api/ros/theses", json={"thesis_id": tid, "claim_ids": ["LOGOS-AUTH-001"], "title": "api thesis", "track": "authority"}); assert r.status_code == 200 and r.json()["state"] == "IDEA"
     assert client.post("/api/ros/theses", json={"thesis_id": tid, "title": "dup", "track": "authority"}).status_code == 409
     r = client.post(f"/api/ros/theses/{tid}/advance", json={"event": "triage", "reason": "api"}, headers={"X-Logos-Actor": "agent"}); assert r.json()["state"] == "TRIAGE"
@@ -220,3 +220,178 @@ def test_ros_api_roundtrip(conn, tid):
     assert client.get("/api/ros/dag").json()["nodes"] and client.get("/api/ros/audit?limit=5").json()["audit"][0]["action"] == "note.add"
     cc = client.get("/api/command-center").json()["stats"]; assert cc["ros"]["ros_records_only"] is False and cc["queued_work_orders"] >= 1
     assert client.delete("/api/ros/theses/LOGOS-REAL").status_code == 400
+
+
+# -- Phase 3: governor, worktree, packet, executor (fake claude; the real CLI is never invoked) ------------------------
+
+
+import json as _json
+import subprocess as _sp
+from pathlib import Path as _Path
+
+from logos_research.measurement.claude_code import CALLS as _CALLS
+from logos_dashboard.control import executor, governor, packet as pk, runs, worktree
+from logos_dashboard.registries import load_all as _load_all
+
+
+def _fake_claude(result_doc: dict | None = None, *, exit_code: int = 0, stderr: str = "", write: dict[str, str] | None = None):
+    """Runner factory producing a documented-JSON `claude -p` result and optionally writing files into the worktree (the agent's outputs)."""
+    def factory(cwd):
+        def run(argv, timeout, env):
+            assert argv[0] == "claude" and "-p" in argv and "--dangerously-skip-permissions" not in argv and "ANTHROPIC_API_KEY" not in env
+            for rel, text in (write or {}).items():
+                p = _Path(cwd) / rel; p.parent.mkdir(parents=True, exist_ok=True); p.write_text(text, encoding="utf-8")
+            if exit_code != 0:
+                return exit_code, "", stderr
+            return 0, _json.dumps(result_doc), ""
+        return run
+    return factory
+
+
+def _result_doc(content: str, model: str = "claude-opus-5") -> dict:
+    return {"type": "result", "subtype": "success", "is_error": False, "result": content, "session_id": "fake", "num_turns": 3, "usage": {"input_tokens": 10, "output_tokens": 20},
+            "modelUsage": {model: {"inputTokens": 10, "outputTokens": 20}}}
+
+
+def _agent_block(event, files, needs=False, summary="drafted"):
+    return "prose\n```json\n" + _json.dumps({"schema": "ros-agent-result/1", "proposed_event": event, "files": files, "needs_prior_art": needs, "summary": summary, "uncertainties": ["u1"]}) + "\n```\n"
+
+
+@pytest.fixture
+def repo(tmp_path):
+    r = tmp_path / "repo"; r.mkdir()
+    for a in (["init", "-q", "-b", "main"], ["config", "user.email", "t@t"], ["config", "user.name", "t"]):
+        _sp.run(["git", *a], cwd=r, check=True, capture_output=True)
+    (r / "docs/research/dashboard/theses").mkdir(parents=True); (r / "docs/research/dashboard/CLAIM-REGISTRY.json").write_text("{}", encoding="utf-8"); (r / "README.md").write_text("x", encoding="utf-8")
+    _sp.run(["git", "add", "-A"], cwd=r, check=True, capture_output=True); _sp.run(["git", "commit", "-q", "-m", "init"], cwd=r, check=True, capture_output=True)
+    return r
+
+
+@pytest.fixture
+def attested(conn):
+    """Fake auth evidence for the executor tests; the founder's real settings rows are restored afterwards (no residue in the lab DB)."""
+    prev = {k: governor.get_setting(conn, k) for k in ("claude_auth", "quota_state")}
+    governor.record_attestation(conn, {"auth_class": "MAX_SUBSCRIPTION", "auth": {"loggedIn": True, "authMethod": "claude.ai", "apiProvider": "firstParty", "subscriptionType": "max"}, "cli_version": "fake 0.0", "contamination_presence": {}}, "founder")
+    governor.set_quota_state(conn, "OK", "founder")
+    yield
+    conn.rollback()
+    with conn.cursor() as cur:
+        for k, v in prev.items():
+            if v is None:
+                cur.execute("DELETE FROM ros_settings WHERE key = %s", (k,))
+            else:
+                cur.execute("UPDATE ros_settings SET value = %s WHERE key = %s", (_json.dumps(v), k))
+        cur.execute("DELETE FROM ros_worker_heartbeats WHERE worker_id = 'w-test'")
+    conn.commit()
+
+
+def _cfg(repo, tmp_path, factory, **kw):
+    return executor.ExecutorConfig(repo, tmp_path / "wts", factory, regs_loader=_load_all, cli_version="fake 0.0", **kw)
+
+
+def test_governor_caps_quota_attestation_and_cap_change_refused(conn, attested):
+    c = governor.caps(conn)
+    assert c.max_parallel_claude_sessions == 1 and c.model_pin == "claude-opus-5" and c.max_claude_invocations_total == 200 and c.max_claude_invocations_per_job == 3
+    assert governor.can_dispatch(conn, "thesis_advance") == (True, "OK") and governor.can_dispatch(conn, "tests") == (True, "OK")
+    governor.set_quota_state(conn, "USAGE_LIMIT_REACHED", "system", "test")
+    assert governor.can_dispatch(conn, "thesis_advance") == (False, "USAGE_LIMIT_REACHED")
+    from logos_research.governance import GovernanceError
+    with pytest.raises(GovernanceError):
+        governor.set_quota_state(conn, "OK", "agent")
+    governor.set_quota_state(conn, "OK", "founder")
+    with pytest.raises(GovernanceError):
+        governor.set_setting(conn, "max_parallel_claude_sessions", 2, "founder")
+    with pytest.raises(GovernanceError):
+        governor.record_attestation(conn, {"auth_class": "MAX_SUBSCRIPTION"}, "agent")
+    assert governor.classify_auth({"loggedIn": True, "authMethod": "claude.ai", "apiProvider": "firstParty", "subscriptionType": "max"}) == "MAX_SUBSCRIPTION"
+    assert governor.classify_auth({"loggedIn": True, "authMethod": "console", "apiProvider": "firstParty", "subscriptionType": None}) == "CONSOLE_PAYG"
+    assert governor.classify_auth({"loggedIn": True, "authMethod": "claude.ai", "apiProvider": "bedrock", "subscriptionType": "max"}) == "THIRD_PARTY_CLOUD"
+    assert governor.classify_auth({"loggedIn": False}) is None
+    governor.record_attestation(conn, {"auth_class": "MAX_SUBSCRIPTION", "at": "2020-01-01T00:00:00+00:00"}, "founder")
+    assert governor.can_dispatch(conn, "thesis_advance") == (False, "AUTH_EVIDENCE_STALE")
+
+
+def test_worktree_isolation_and_allowlist(repo, tmp_path):
+    wt = worktree.create(repo, tmp_path / "wts", "T", "R1")
+    assert wt.exists() and worktree.changed_files(wt) == []
+    (wt / "docs/research/dashboard/theses/T").mkdir(parents=True); (wt / "docs/research/dashboard/theses/T/TRIAGE.md").write_text("ok", encoding="utf-8"); (wt / "README.md").write_text("changed", encoding="utf-8")
+    ch = worktree.changed_files(wt)
+    assert ch == ["README.md", "docs/research/dashboard/theses/T/TRIAGE.md"] and worktree.check_allowlist(ch, ("docs/research/dashboard/theses/T/",)) == ["README.md"]
+    sha = worktree.commit(wt, "t"); assert sha and len(sha) == 40 and worktree.changed_files(wt) == []
+    assert worktree.head(repo) != sha                      # main tree untouched
+    assert (repo / "README.md").read_text(encoding="utf-8") == "x"
+    worktree.remove(repo, wt, delete_branch="ros/T/R1"); assert not wt.exists()
+
+
+def test_packet_and_result_contract(conn, tid):
+    service.create_thesis(conn, tid, ["LOGOS-AUTH-001"], "packet thesis", "authority", "founder"); service.add_note(conn, tid, None, "founder", "check tie design", True)
+    d = service.thesis_detail(conn, tid); regs = _load_all()
+    p = pk.build_thesis_packet(d, regs, d["notes"], 2)
+    assert "check tie design" in p["prompt"] and "LOGOS-AUTH-001" in p["prompt"] and p["allowed_events"] == ["triage"] and p["allowed_prefixes"] == (f"docs/research/dashboard/theses/{tid}/",)
+    assert "freeze_prereg" in p["prompt"] and "Bash" in p["disallowed_tools"] and "WebSearch" not in p["allowed_tools"]
+    pa = pk.build_thesis_packet(d, regs, [], 0, kind="prior_art")
+    assert "WebSearch" in pa["allowed_tools"] and "research-briefs/" in pa["allowed_prefixes"][1]
+    assert pk.parse_agent_result("no json") is None and pk.parse_agent_result('```json\n{"schema": "other"}\n```') is None
+    r = pk.parse_agent_result(_agent_block("triage", ["a.md"], True)); assert r.proposed_event == "triage" and r.needs_prior_art and r.files == ("a.md",) and r.uncertainties == ("u1",)
+
+
+def test_executor_happy_path_applies_agent_event_and_requests_prior_art(conn, tid, repo, tmp_path, attested):
+    n0 = _CALLS["claude_code_inference_invocations"]
+    service.create_thesis(conn, tid, ["LOGOS-AUTH-001"], "exec thesis", "authority", "founder")
+    j = queue.enqueue(conn, "thesis_advance", thesis_id=tid); assert j["state"] == "waiting_governance"
+    gate = governor.pre_run_gate(conn, j, "IDEA", "PREREG_DRAFT", ("IDEA", "TRIAGE", "PREREG_DRAFT"))
+    assert gate["passed"], gate
+    with pytest.raises(IllegalTransition):
+        queue.start(conn, j["job_id"], "agent", gate)
+    assert queue.start(conn, j["job_id"], "founder", gate)["state"] == "queued"
+    rel = f"docs/research/dashboard/theses/{tid}/TRIAGE.md"
+    cfg = _cfg(repo, tmp_path, _fake_claude(_result_doc(_agent_block("triage", [rel], needs=True)), write={rel: "# triage\n"}))
+    out = executor.run_once(conn, cfg, "w-test")
+    assert out["state"] == "done" and out["result"]["applied_state"] == "TRIAGE" and out["result"]["files"] == [rel] and out["result"]["prior_art_job"]
+    assert service.thesis_detail(conn, tid)["thesis"]["state"] == "TRIAGE"
+    run = runs.list_runs(conn, thesis_id=tid)[0]; ev = runs.events_after(conn, run["run_id"])
+    assert [e["kind"] for e in ev] == ["gate", "phase", "worktree", "phase", "packet", "phase", "claude.invoke", "claude.result", "phase", "artifact", "commit", "thesis.event", "phase", "done"]
+    cr = next(e for e in ev if e["kind"] == "claude.result")["payload"]; assert cr["status"] == "OK" and cr["resolved_model"] == "claude-opus-5" and cr["requested_model"] == "claude-opus-5"
+    assert run["state"] == "done" and run["branch"] == f"ros/{tid}/{run['run_id']}"
+    sub = [x for x in queue.list_jobs(conn, 500) if x["thesis_id"] == tid and x["kind"] == "prior_art"]; assert len(sub) == 1 and sub[0]["state"] == "waiting_governance"
+    assert (repo / "README.md").read_text(encoding="utf-8") == "x"                     # main tree untouched
+    assert _sp.run(["git", "branch", "--list", f"ros/{tid}/*"], cwd=repo, capture_output=True, text=True).stdout.strip() != ""
+    assert _CALLS["claude_code_inference_invocations"] == n0 + 1                       # counted once (fake runner)
+    assert executor.run_once(conn, cfg, "w-test") is None                              # nothing queued (prior_art waits for governance)
+
+
+def test_executor_integrity_violation_and_invalid_output(conn, tid, repo, tmp_path, attested):
+    service.create_thesis(conn, tid, ["LOGOS-AUTH-001"], "t", "authority", "founder")
+    j = queue.enqueue(conn, "thesis_advance", thesis_id=tid); queue.start(conn, j["job_id"], "founder", governor.pre_run_gate(conn, j, "IDEA", "PREREG_DRAFT", ("IDEA", "PREREG_DRAFT")))
+    cfg = _cfg(repo, tmp_path, _fake_claude(_result_doc(_agent_block("triage", [])), write={"docs/research/dashboard/CLAIM-REGISTRY.json": "{\"hacked\": true}"}))
+    out = executor.run_once(conn, cfg, "w-test"); assert out["state"] == "failed" and out["error"] == "INTEGRITY_VIOLATION"
+    assert service.thesis_detail(conn, tid)["thesis"]["state"] == "IDEA" and (repo / "docs/research/dashboard/CLAIM-REGISTRY.json").read_text(encoding="utf-8") == "{}"
+    assert _sp.run(["git", "branch", "--list", f"ros/{tid}/*"], cwd=repo, capture_output=True, text=True).stdout.strip() == ""   # branch discarded
+    j2 = queue.enqueue(conn, "thesis_advance", thesis_id=tid, attempt_group=1); queue.start(conn, j2["job_id"], "founder", governor.pre_run_gate(conn, j2, "IDEA", "PREREG_DRAFT", ("IDEA", "PREREG_DRAFT")))
+    out = executor.run_once(conn, _cfg(repo, tmp_path, _fake_claude(_result_doc("no block"))), "w-test"); assert out["state"] == "failed" and out["error"] == "INVALID_OUTPUT"
+
+
+def test_executor_usage_limit_blocks_everything_until_founder_reset(conn, tid, repo, tmp_path, attested):
+    service.create_thesis(conn, tid, [], "t", "authority", "founder")
+    j = queue.enqueue(conn, "thesis_advance", thesis_id=tid); queue.start(conn, j["job_id"], "founder", governor.pre_run_gate(conn, j, "IDEA", "PREREG_DRAFT", ("IDEA", "PREREG_DRAFT")))
+    out = executor.run_once(conn, _cfg(repo, tmp_path, _fake_claude(None, exit_code=1, stderr="You have hit your usage limit. Resets at 5pm")), "w-test")
+    assert out["state"] == "waiting_quota" and out["error"] == "USAGE_LIMIT_REACHED" and governor.quota_state(conn)["state"] == "USAGE_LIMIT_REACHED"
+    assert governor.can_dispatch(conn, "thesis_advance") == (False, "USAGE_LIMIT_REACHED")
+    j2 = queue.enqueue(conn, "thesis_advance", thesis_id=tid, attempt_group=1); queue.start(conn, j2["job_id"], "founder", {"passed": True})
+    assert executor.run_once(conn, _cfg(repo, tmp_path, _fake_claude(_result_doc("x"))), "w-test") is None          # blocked, no invocation
+    governor.set_quota_state(conn, "OK", "founder")
+    assert governor.can_dispatch(conn, "thesis_advance") == (True, "OK")
+
+
+def test_executor_stop_before_invocation_and_gate_refuses_above_ceiling(conn, tid, repo, tmp_path, attested):
+    service.create_thesis(conn, tid, [], "t", "authority", "founder")
+    j = queue.enqueue(conn, "thesis_advance", thesis_id=tid); queue.start(conn, j["job_id"], "founder", governor.pre_run_gate(conn, j, "IDEA", "PREREG_DRAFT", ("IDEA", "PREREG_DRAFT")))
+    queue.request_stop(conn, j["job_id"], "founder")
+    assert any(x["job_id"] == j["job_id"] for x in queue.list_jobs(conn, 500, "stopped"))   # queued -> stopped immediately
+    for e in ("triage", "define_question", "define_hypothesis", "define_metrics", "draft_prereg"):
+        service.advance(conn, tid, e, "agent")
+    j3 = queue.enqueue(conn, "thesis_advance", thesis_id=tid, attempt_group=3)
+    g = governor.pre_run_gate(conn, j3, "PREREG_DRAFT", "PREREG_DRAFT", ("IDEA", "PREREG_DRAFT"))
+    assert g["passed"] is False and g["checks"]["thesis_below_agent_ceiling"] is False
+    with pytest.raises(ValueError):
+        queue.start(conn, j3["job_id"], "founder", g)
