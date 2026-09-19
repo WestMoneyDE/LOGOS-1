@@ -5,6 +5,8 @@ import * as fs from "fs";
 
 // Smoke + layout QA for every core route (§58-63). Results are also written as a JSON inventory for /system/qa (§93).
 const results: any[] = [];
+// Live control-plane pages change while the behaviour specs (control-plane/executor) create TEST-ROS rows in parallel; they keep every layout gate but no pixel baseline.
+const DYNAMIC = new Set(["/system/qa", "/queue", "/runs", "/theses", "/board", "/work-orders", "/decisions", "/system/workers", "/system/quotas", "/system/claude"]);
 
 for (const r of ROUTES) {
   test(`route ${r.path} renders, no overflow, no clipping, no console errors`, async ({ page }, testInfo) => {
@@ -20,7 +22,7 @@ for (const r of ROUTES) {
     const clipped = await clippedElements(page);
     results.push({ route: r.path, project: testInfo.project.name, viewport: testInfo.project.use.viewport, status: resp?.status(), overflow: ov, clipped, consoleErrors, failedRequests, durationMs: Date.now() - t0 });
     await page.screenshot({ path: `e2e/results/screenshots/${testInfo.project.name}${r.path === "/" ? "/index" : r.path}.png`, fullPage: true });
-    if (["desktop-1440", "mobile-390"].includes(testInfo.project.name) && r.path !== "/system/qa") await expect(page).toHaveScreenshot({ fullPage: true, mask: [page.locator("time")] });
+    if (["desktop-1440", "mobile-390"].includes(testInfo.project.name) && !DYNAMIC.has(r.path)) await expect(page).toHaveScreenshot({ fullPage: true, mask: [page.locator("time")] });
     expect(ov.overflow, `page-level horizontal overflow on ${r.path} (${ov.scrollWidth} > ${ov.innerWidth})`).toBe(false);
     expect(clipped, `clipped key content on ${r.path}`).toEqual([]);
     expect(consoleErrors, `console errors on ${r.path}`).toEqual([]);

@@ -8,6 +8,7 @@ import { EventLog } from "@/components/ros/event-log";
 import { Notes } from "@/components/ros/notes";
 import { ThesisState, WoState, JobState } from "@/components/ros/state-badge";
 import { RecordsOnly } from "@/components/ros/records-only";
+import { AgentJob } from "@/components/ros/agent-job";
 
 export default async function ThesisWorkspace({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params; const { t } = await getT();
@@ -20,6 +21,10 @@ export default async function ThesisWorkspace({ params }: { params: Promise<{ id
       <Section title={t("ros_lifecycle")} hint={`${t("ros_agent_ceiling")}: ${d.agent_ceiling}`}>
         <div className="mb-2"><ThesisState state={th.state} /></div>
         <ThesisLifecycle thesisId={th.thesis_id} state={th.state} available={d.available_events} agentCeiling={d.agent_ceiling} labels={{ available: t("ros_available"), actor: t("ros_actor"), gate: t("ros_founder_gate"), reason: t("ros_reason"), apply: t("ros_apply"), ceiling: t("ros_agent_ceiling") }} />
+      </Section>
+      <Section title="Agent" hint="thesis_advance">
+        <AgentJob thesisId={th.thesis_id} jobs={d.jobs} labels={{ enqueue: t("ros_agent_job"), hint: t("ros_agent_job_hint"), gate: t("ros_gate_preview"), start: t("ros_start"), stop: t("ros_stop") }} />
+        {d.runs.length > 0 && <ul className="mt-2 flex flex-wrap gap-2 text-xs">{d.runs.map((r: any) => <li key={r.run_id}><Link className="font-mono underline" href={`/runs/${r.run_id}`}>{r.run_id}</Link> <span className="text-muted-foreground">{r.state}</span></li>)}</ul>}
       </Section>
       <div className="grid gap-8 xl:grid-cols-2">
         <Section title="Work Orders" hint={`${d.work_orders.length}`}>

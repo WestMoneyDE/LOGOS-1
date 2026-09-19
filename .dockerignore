@@ -1,0 +1,9 @@
+.venv
+node_modules
+apps/dashboard/node_modules
+apps/dashboard/.next
+apps/dashboard/e2e/results
+apps/dashboard/e2e/smoke.spec.ts-snapshots
+.git
+**/__pycache__
+infra/.env

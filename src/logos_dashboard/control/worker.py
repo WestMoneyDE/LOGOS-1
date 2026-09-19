@@ -6,7 +6,8 @@ from __future__ import annotations
 
 import argparse
 import json
-import socket
+import os
+import platform
 import subprocess
 import sys
 import time
@@ -46,18 +47,18 @@ def handle(conn, job: dict) -> dict:
 
 
 def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(); ap.add_argument("--once", action="store_true"); ap.add_argument("--loop", action="store_true"); ap.add_argument("--interval", type=float, default=3.0); ap.add_argument("--worker-id", default=f"det-{socket.gethostname()}")
+    ap = argparse.ArgumentParser(); ap.add_argument("--once", action="store_true"); ap.add_argument("--loop", action="store_true"); ap.add_argument("--interval", type=float, default=3.0); ap.add_argument("--worker-id", default=os.environ.get("ROS_WORKER_ID", f"det-{platform.node()}"))
     a = ap.parse_args(argv)
     conn = db.connect()
     if conn is None:
         print("lab Postgres unreachable"); return 2
     db.ensure_schema(conn)
     while True:
-        governor.heartbeat(conn, a.worker_id, "deterministic", socket.gethostname(), list(queue.DETERMINISTIC_KINDS), None)
+        governor.heartbeat(conn, a.worker_id, "deterministic", platform.node(), list(queue.DETERMINISTIC_KINDS), None)
         ok, _ = governor.can_dispatch(conn, "tests")
         job = queue.dequeue(conn, a.worker_id, queue.DETERMINISTIC_KINDS) if ok else None
         if job:
-            governor.heartbeat(conn, a.worker_id, "deterministic", socket.gethostname(), list(queue.DETERMINISTIC_KINDS), job["job_id"])
+            governor.heartbeat(conn, a.worker_id, "deterministic", platform.node(), list(queue.DETERMINISTIC_KINDS), job["job_id"])
             try:
                 r = handle(conn, job); print(f"job {job['job_id']} -> {r['state']}")
             except Exception as e:

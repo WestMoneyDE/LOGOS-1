@@ -35,3 +35,7 @@ export const THESIS_STATE_TONE: Record<string, string> = {
   BLOCKED_BY_GOVERNANCE: "text-zinc-500", BLOCKED_BY_DEPENDENCY: "text-zinc-500", INVALID_MEASUREMENT: "text-orange-700", FALSIFIED: "text-rose-700", INCONCLUSIVE: "text-muted-foreground", SUPERSEDED: "text-zinc-400",
 };
 export const JOB_STATE_TONE: Record<string, string> = { queued: "text-sky-700", running: "text-emerald-700", paused: "text-amber-700", failed: "text-rose-700", done: "text-zinc-500", stopped: "text-zinc-500", waiting_quota: "text-amber-700", waiting_dependency: "text-amber-700", waiting_governance: "text-amber-800" };
+
+export type RosRun = { run_id: string; job_id: number | null; work_order_id: string | null; thesis_id: string | null; kind: string; state: string; branch: string | null; worktree: string | null; started: string | null; finished: string | null; stop_reason: string | null; summary: any; created_at: string; n_events?: number };
+export type RosRunEvent = { seq: number; run_id: string; at: string; kind: string; payload: any; privacy_class: string };
+export const RUN_STATE_TONE: Record<string, string> = { running: "text-emerald-700", done: "text-zinc-600", failed: "text-rose-700", stopped: "text-zinc-500", waiting_quota: "text-amber-800" };

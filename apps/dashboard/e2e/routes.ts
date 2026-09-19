@@ -26,7 +26,8 @@ export const ROUTES: { path: string; expect: string }[] = [
   { path: "/reproducibility", expect: "Reproducibility" },
   { path: "/p7", expect: "Functional Evidence Boundary" },
   { path: "/theses", expect: "Thesen-Arbeit" }, { path: "/board", expect: "Thesen-Board" },
-  { path: "/work-orders", expect: "Work Orders" }, { path: "/queue", expect: "Warteschlange" }, { path: "/runs", expect: "Phase 3" }, { path: "/decisions", expect: "Entscheidungen" },
+  { path: "/work-orders", expect: "Work Orders" }, { path: "/queue", expect: "Warteschlange" }, { path: "/runs", expect: "Live-Läufe" }, { path: "/decisions", expect: "Entscheidungen" },
   { path: "/inbox", expect: "Phase 6" }, { path: "/radar", expect: "Phase 6" }, { path: "/traces", expect: "Phase 4" }, { path: "/benchmarks", expect: "Phase 5" },
-  { path: "/progress", expect: "Phase 5" }, { path: "/statistics", expect: "Phase 5" }, { path: "/system/health", expect: "Systemzustand" }, { path: "/system/qa", expect: "Playwright-QA" }, { path: "/system/governance", expect: "Governance" },
+  { path: "/progress", expect: "Phase 5" }, { path: "/statistics", expect: "Phase 5" }, { path: "/system/health", expect: "Systemzustand" }, { path: "/system/qa", expect: "Playwright-QA" }, { path: "/system/claude", expect: "Claude-Auth" }, { path: "/system/workers", expect: "Worker" }, { path: "/system/quotas", expect: "Quoten" },
+  { path: "/system/governance", expect: "Governance" },
 ];

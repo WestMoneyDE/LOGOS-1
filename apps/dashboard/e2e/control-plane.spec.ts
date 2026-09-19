@@ -65,9 +65,9 @@ test.describe.serial("control plane", () => {
     await page.getByLabel("kind").selectOption("thesis_advance");
     await page.getByLabel("thesis").selectOption(tid);
     await page.getByRole("button", { name: "Job einreihen" }).click();
-    await expect(page.getByRole("status")).toContainText("waiting_governance");
+    await expect(page.getByLabel("enqueue-status")).toContainText("waiting_governance");
     await page.locator("main table tbody tr", { hasText: tid }).first().click();
     await page.getByRole("button", { name: "Stopp" }).click();
-    await expect(page.getByRole("status").last()).toContainText("stopped");
+    await expect(page.getByLabel("job-status")).toContainText("stopped");
   });
 });

@@ -15,7 +15,7 @@ function JobActions({ job, labels }: { job: RosJob; labels: Record<string, strin
   return (
     <div className="flex flex-wrap gap-1">
       {(ACTIONS[job.state] ?? []).map((a) => <Button key={a} size="sm" variant="outline" onClick={async () => { const r = await rosPost(`/api/ros/queue/${job.job_id}/${a}`, {}); setMsg(r.ok ? r.data.state : errText(r)); if (r.ok) router.refresh(); }}>{labels[a] ?? a}</Button>)}
-      {msg && <span className="w-full font-mono text-xs text-muted-foreground" role="status">{msg}</span>}
+      {msg && <span className="w-full font-mono text-xs text-muted-foreground" role="status" aria-label="job-status">{msg}</span>}
     </div>
   );
 }
@@ -44,7 +44,7 @@ export function EnqueueForm({ theses, kinds, label }: { theses: { thesis_id: str
       <select aria-label="thesis" className="border border-border bg-background px-2 py-1 font-mono" value={thesis} onChange={(e) => setThesis(e.target.value)}><option value="">—</option>{theses.map((t) => <option key={t.thesis_id}>{t.thesis_id}</option>)}</select>
       <Input className="h-8 w-56 font-mono text-xs" placeholder="work_order_id" value={wo} onChange={(e) => setWo(e.target.value)} />
       <Button size="sm" onClick={async () => { const r = await rosPost("/api/ros/queue/enqueue", { kind, thesis_id: thesis || null, work_order_id: wo || null }); setMsg(r.ok ? `job ${r.data.job_id} ${r.data.state}${r.data.duplicate ? " (duplicate)" : ""}` : errText(r)); if (r.ok) router.refresh(); }}>{label}</Button>
-      {msg && <span className="font-mono text-muted-foreground" role="status">{msg}</span>}
+      {msg && <span className="font-mono text-muted-foreground" role="status" aria-label="enqueue-status">{msg}</span>}
     </div>
   );
 }

@@ -1,18 +1,24 @@
 """Control-plane endpoints (`/api/ros/*`). Localhost single-user: the actor comes from header `X-Logos-Actor` (default `founder`) and is written to the audit log.
 
-Nothing here executes a job — enqueue/pause/stop only change queue state (Phase 3 adds the executor). 503 `records_only` when the lab DB is unreachable.
+Nothing here invokes Claude: Start only lifts a job to `queued` after the §75 gate; the host daemon executes. 503 `records_only` when the lab DB is unreachable.
 """
 from __future__ import annotations
 
 from contextlib import contextmanager
 from typing import Any
 
+import json
+import time
+
 from fastapi import APIRouter, Header, HTTPException
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
+from logos_research.governance import GovernanceError
+
 from . import db
-from .control import dag, queue, service
-from .control.state_machines import ACTORS_DOC, IllegalTransition
+from .control import dag, governor, queue, runs, service
+from .control.state_machines import ACTORS_DOC, AGENT_CEILING, THESIS_STATES, IllegalTransition
 
 router = APIRouter(prefix="/api/ros")
 
@@ -27,6 +33,8 @@ def _conn():
         yield c
     except IllegalTransition as e:
         c.rollback(); raise HTTPException(409, {"illegal_transition": str(e), "reason": e.reason, "state": e.state, "event": e.event, "actor": e.actor})
+    except GovernanceError as e:
+        c.rollback(); raise HTTPException(403, {"governance": str(e)})
     except (ValueError, dag.CycleError) as e:
         c.rollback(); raise HTTPException(400, str(e))
     except KeyError as e:
@@ -192,7 +200,7 @@ def decide(decision_id: str, e: EventIn, x_logos_actor: str | None = Header(defa
 @router.get("/queue")
 def queue_list(state: str | None = None, limit: int = 200):
     with _conn() as c:
-        return {"jobs": queue.list_jobs(c, limit, state), "stats": queue.stats(c), "executor": "NOT BUILT (Phase 3) — jobs are recorded, never run"}
+        return {"jobs": queue.list_jobs(c, limit, state), "stats": queue.stats(c), "executor": "host daemon (claude jobs, founder Start) + deterministic worker; see /system/workers"}
 
 
 @router.post("/queue/enqueue")
@@ -201,13 +209,156 @@ def enqueue(j: EnqueueIn, x_logos_actor: str | None = Header(default=None)):
         return queue.enqueue(c, j.kind, work_order_id=j.work_order_id, run_id=j.run_id, thesis_id=j.thesis_id, payload=j.payload, attempt_group=j.attempt_group, actor=_actor(x_logos_actor))
 
 
+def _gate_for(c, job: dict) -> dict:
+    th = service.thesis_detail(c, job["thesis_id"]) if job.get("thesis_id") else None
+    return governor.pre_run_gate(c, job, th["thesis"]["state"] if th else None, AGENT_CEILING, THESIS_STATES)
+
+
+@router.get("/queue/{job_id}/gate")
+def job_gate(job_id: int):
+    """§75 pre-run integrity gate preview for a Claude job (what Start would check)."""
+    with _conn() as c:
+        job = next((j for j in queue.list_jobs(c, 10000) if j["job_id"] == job_id), None)
+        if job is None:
+            raise HTTPException(404, str(job_id))
+        return _gate_for(c, job)
+
+
 @router.post("/queue/{job_id}/{action}")
 def job_action(job_id: int, action: str, x_logos_actor: str | None = Header(default=None)):
-    fn = {"pause": queue.pause, "resume": queue.resume, "stop": queue.stop, "retry": queue.retry}.get(action)
-    if fn is None:
-        raise HTTPException(400, f"unknown action {action}")
+    actor = _actor(x_logos_actor)
     with _conn() as c:
-        return fn(c, job_id, _actor(x_logos_actor))
+        if action == "start":                       # founder Start: gate evaluated now and recorded in the audit row
+            job = next((j for j in queue.list_jobs(c, 10000) if j["job_id"] == job_id), None)
+            if job is None:
+                raise HTTPException(404, str(job_id))
+            return queue.start(c, job_id, actor, _gate_for(c, job))
+        if action == "stop":
+            return queue.request_stop(c, job_id, actor)
+        fn = {"pause": queue.pause, "resume": queue.resume, "retry": queue.retry}.get(action)
+        if fn is None:
+            raise HTTPException(400, f"unknown action {action}")
+        return fn(c, job_id, actor)
+
+
+@router.post("/theses/{thesis_id}/agent-job")
+def agent_job(thesis_id: str, x_logos_actor: str | None = Header(default=None)):
+    """Enqueue a `thesis_advance` job (waiting_governance). Founder Start is a separate click."""
+    with _conn() as c:
+        d = service.thesis_detail(c, thesis_id)
+        if d is None:
+            raise HTTPException(404, thesis_id)
+        n = sum(1 for j in d["jobs"] if j["kind"] == "thesis_advance")
+        return queue.enqueue(c, "thesis_advance", thesis_id=thesis_id, attempt_group=n, payload={"state_at_enqueue": d["thesis"]["state"]}, actor=_actor(x_logos_actor))
+
+
+# -- runs + console -------------------------------------------------------------------------------------------------
+
+
+@router.get("/runs")
+def runs_list(thesis_id: str | None = None, limit: int = 100):
+    with _conn() as c:
+        return {"runs": runs.list_runs(c, limit, thesis_id)}
+
+
+@router.get("/runs/{run_id}")
+def run_get(run_id: str):
+    with _conn() as c:
+        r = runs.get_run(c, run_id)
+        if r is None:
+            raise HTTPException(404, run_id)
+        job = next((j for j in queue.list_jobs(c, 10000) if j["job_id"] == r.get("job_id")), None)
+        return {"run": r, "job": job, "events": runs.events_after(c, run_id, 0, 1000)}
+
+
+@router.get("/runs/{run_id}/events")
+def run_events(run_id: str, after: int = 0, limit: int = 500):
+    with _conn() as c:
+        return {"events": runs.events_after(c, run_id, after, limit)}
+
+
+@router.get("/runs/{run_id}/stream")
+def run_stream(run_id: str, after: int = 0):
+    """SSE: replays events after `after`, then polls the append-only table until the run leaves `running` (max 1 h)."""
+    def gen():
+        last = after; started = time.time()
+        while time.time() - started < 3600:
+            c = db.connect()
+            if c is None:
+                yield "event: error\ndata: {\"records_only\": true}\n\n"; return
+            try:
+                r = runs.get_run(c, run_id)
+                if r is None:
+                    yield f"event: error\ndata: {json.dumps({'missing': run_id})}\n\n"; return
+                for e in runs.events_after(c, run_id, last, 200):
+                    last = e["seq"]; yield f"id: {e['seq']}\nevent: {e['kind']}\ndata: {json.dumps(e, default=str)}\n\n"
+                yield f"event: state\ndata: {json.dumps({'state': r['state'], 'finished': r['finished']}, default=str)}\n\n"
+                if r["state"] != "running":
+                    return
+            finally:
+                c.close()
+            time.sleep(1.0)
+    return StreamingResponse(gen(), media_type="text/event-stream", headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
+
+
+@router.post("/runs/{run_id}/stop")
+def run_stop(run_id: str, x_logos_actor: str | None = Header(default=None)):
+    with _conn() as c:
+        r = runs.get_run(c, run_id)
+        if r is None or not r.get("job_id"):
+            raise HTTPException(404, run_id)
+        runs.emit(c, run_id, "stop", {"requested_by": _actor(x_logos_actor)})
+        return queue.request_stop(c, int(r["job_id"]), _actor(x_logos_actor))
+
+
+# -- governor / auth evidence / workers -------------------------------------------------------------------------------
+
+
+@router.get("/governor")
+def governor_state():
+    with _conn() as c:
+        st = governor.state(c)
+        return {**st, "model_pin_source": governor.FOUNDER_MODEL_PIN_SOURCE, "can_dispatch": {"claude": governor.can_dispatch(c, "thesis_advance"), "deterministic": governor.can_dispatch(c, "tests")}, "attestation_ttl_h": governor.ATTESTATION_TTL_H}
+
+
+@router.post("/governor/preflight")
+def governor_preflight(x_logos_actor: str | None = Header(default=None)):
+    """Runs the documented zero-inference commands (`claude --version`, `claude auth status --json`) and records class-level evidence. Founder only."""
+    actor = _actor(x_logos_actor)
+    ev = governor.preflight_evidence()
+    with _conn() as c:
+        rec = governor.record_attestation(c, ev, actor)
+        return {"evidence": ev, "recorded": rec, "attestation": governor.attestation(c)}
+
+
+class QuotaIn(BaseModel):
+    state: str = "OK"
+    detail: str = ""
+
+
+@router.post("/governor/quota")
+def governor_quota(q: QuotaIn, x_logos_actor: str | None = Header(default=None)):
+    with _conn() as c:
+        return governor.set_quota_state(c, q.state, _actor(x_logos_actor), q.detail)
+
+
+class SettingIn(BaseModel):
+    key: str
+    value: int
+
+
+@router.post("/governor/settings")
+def governor_setting(sv: SettingIn, x_logos_actor: str | None = Header(default=None)):
+    if sv.key not in ("max_active_theses", "max_parallel_deterministic_jobs", "max_claude_invocations_per_job"):
+        raise HTTPException(403, {"governance": f"{sv.key} is not an operator setting"})
+    with _conn() as c:
+        governor.set_setting(c, sv.key, int(sv.value), _actor(x_logos_actor)); return governor.state(c)
+
+
+@router.get("/workers")
+def workers_list():
+    with _conn() as c:
+        return {"workers": governor.workers(c)}
 
 
 @router.get("/events")
@@ -240,6 +391,29 @@ def command_center_stats() -> dict:
             cur.execute("SELECT count(*) FROM ros_work_orders WHERE state IN ('APPROVED','READY')"); qwo = cur.fetchone()[0]
             cur.execute("SELECT count(*) FROM ros_decisions WHERE state = 'WAITING'"); od = cur.fetchone()[0]
             cur.execute("SELECT count(*) FROM ros_theses"); nt = cur.fetchone()[0]
-        return {"queued_work_orders": int(qwo), "running_agents": s["running"], "queued_jobs": s["queued"], "waiting_governance": s["waiting_governance"], "open_decisions": int(od), "theses": int(nt), "ros_records_only": False}
+            cur.execute("SELECT count(*) FROM ros_jobs WHERE state = 'running' AND kind = ANY(%s)", (list(queue.CLAUDE_KINDS),)); ra = cur.fetchone()[0]
+        return {"queued_work_orders": int(qwo), "running_agents": int(ra), "running_jobs": s["running"], "queued_jobs": s["queued"], "waiting_governance": s["waiting_governance"], "waiting_quota": s["waiting_quota"], "open_decisions": int(od), "theses": int(nt),
+                "quota": governor.quota_state(c).get("state"), "ros_records_only": False}
     finally:
         c.close()
+
+
+# -- test hook (TEST-ROS-* only): a synthetic run with events so the console can be exercised without any Claude invocation ------
+
+
+@router.post("/test/fake-run/{thesis_id}")
+def fake_run(thesis_id: str):
+    if not thesis_id.startswith("TEST-ROS-"):
+        raise HTTPException(400, "TEST-ROS-* ids only")
+    with _conn() as c:
+        j = queue.enqueue(c, "thesis_advance", thesis_id=thesis_id, attempt_group=int(time.time()) % 100000, payload={"fake": True}, actor="system")
+        run_id = f"RUN-{j['job_id']}-fake"
+        runs.create_run(c, run_id, job_id=j["job_id"], kind="thesis_advance", thesis_id=thesis_id, work_order_id=None, branch=f"ros/{thesis_id}/{run_id}")
+        runs.emit(c, run_id, "gate", {"checks": {"db_ok": True}, "passed": True}); runs.emit(c, run_id, "phase", {"phase": "packet"})
+        runs.emit(c, run_id, "claude.invoke", {"requested_model": "claude-opus-5", "max_turns": 25, "invocation": 1})
+        runs.emit(c, run_id, "claude.result", {"status": "OK", "requested_model": "claude-opus-5", "resolved_model": "claude-opus-5", "evidence_class": "TIER3_PIN_CONTAINMENT", "turns": 3, "latency_s": 1.5})
+        runs.emit(c, run_id, "done", {"status": "OK", "files": [], "summary": "fake"}); runs.finish_run(c, run_id, "done", None, {"fake": True})
+        with c.cursor() as cur:
+            cur.execute("UPDATE ros_jobs SET state = 'done', updated_at = now() WHERE job_id = %s", (j["job_id"],))
+        c.commit()
+        return {"run_id": run_id, "job_id": j["job_id"]}

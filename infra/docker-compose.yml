@@ -184,3 +184,27 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+
+  # Research OS deterministic worker (Phase 3). Opt-in profile: `docker compose --profile ros up -d --build ros-worker`.
+  # No host mount (repo copied at build), no ports, no privileged mode; talks only to postgres on the bridge network.
+  ros-worker:
+    build:
+      context: ..
+      dockerfile: infra/ros-worker.Dockerfile
+      args:
+        LOGOS_REPO_SHA: ${LOGOS_REPO_SHA:-unknown}
+    image: logos-ros-worker:local
+    profiles: [ros]
+    restart: unless-stopped
+    networks: [logos-research]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-logos}:${POSTGRES_PASSWORD:?set it in infra/.env}@postgres:5432/${POSTGRES_DB:-logos_research}
+      ROS_WORKER_ID: ros-worker-docker-1
+    security_opt:
+      - no-new-privileges:true
+    read_only: false
+    tmpfs:
+      - /tmp

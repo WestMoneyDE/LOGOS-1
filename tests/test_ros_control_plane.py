@@ -211,7 +211,7 @@ def test_ros_api_roundtrip(conn, tid):
     assert client.post("/api/ros/queue/enqueue", json={"kind": "thesis_advance", "thesis_id": tid, "work_order_id": f"{tid}-W"}).json()["duplicate"] is True
     assert client.post(f"/api/ros/queue/{j['job_id']}/stop").json()["state"] == "stopped"
     assert client.post(f"/api/ros/queue/{j['job_id']}/explode").status_code == 400
-    q = client.get("/api/ros/queue").json(); assert q["executor"].startswith("NOT BUILT") and any(x["job_id"] == j["job_id"] for x in q["jobs"])
+    q = client.get("/api/ros/queue").json(); assert q["executor"].startswith("host daemon") and any(x["job_id"] == j["job_id"] for x in q["jobs"])
     dec = client.post("/api/ros/decisions", json={"decision_id": f"{tid}-D", "kind": "gate", "subject_ref": tid, "why": "w"}).json(); assert dec["state"] == "WAITING"
     assert client.post(f"/api/ros/decisions/{tid}-D/decide", json={"event": "reject"}, headers={"X-Logos-Actor": "agent"}).status_code == 409
     assert client.post(f"/api/ros/decisions/{tid}-D/decide", json={"event": "approve"}).json()["state"] == "APPROVED"
@@ -395,3 +395,29 @@ def test_executor_stop_before_invocation_and_gate_refuses_above_ceiling(conn, ti
     assert g["passed"] is False and g["checks"]["thesis_below_agent_ceiling"] is False
     with pytest.raises(ValueError):
         queue.start(conn, j3["job_id"], "founder", g)
+
+
+def test_ros_api_runs_governor_and_console(conn, tid, attested):
+    from fastapi.testclient import TestClient
+    from logos_dashboard.api import app
+    client = TestClient(app)
+    client.post("/api/ros/theses", json={"thesis_id": tid, "claim_ids": ["LOGOS-AUTH-001"], "title": "console", "track": "authority"})
+    g = client.get("/api/ros/governor").json()
+    assert g["caps"]["max_parallel_claude_sessions"] == 1 and g["caps"]["model_pin"] == "claude-opus-5" and g["attestation"]["fresh"] is True and g["cap_change_path"].startswith("founder amendment")
+    assert client.post("/api/ros/governor/settings", json={"key": "max_parallel_claude_sessions", "value": 2}).status_code == 403
+    assert client.post("/api/ros/governor/quota", json={"state": "OK"}, headers={"X-Logos-Actor": "agent"}).status_code == 403
+    j = client.post(f"/api/ros/theses/{tid}/agent-job").json(); assert j["state"] == "waiting_governance" and j["kind"] == "thesis_advance"
+    gate = client.get(f"/api/ros/queue/{j['job_id']}/gate").json(); assert gate["passed"] is True and gate["checks"]["thesis_below_agent_ceiling"] is True
+    assert client.post(f"/api/ros/queue/{j['job_id']}/start", headers={"X-Logos-Actor": "agent"}).status_code == 409
+    assert client.post(f"/api/ros/queue/{j['job_id']}/start").json()["state"] == "queued"
+    assert client.post(f"/api/ros/queue/{j['job_id']}/stop").json()["state"] == "stopped"
+    fr = client.post(f"/api/ros/test/fake-run/{tid}").json(); assert fr["run_id"].endswith("-fake")
+    assert client.post("/api/ros/test/fake-run/LOGOS-REAL").status_code == 400
+    r = client.get(f"/api/ros/runs/{fr['run_id']}").json(); assert r["run"]["state"] == "done" and [e["kind"] for e in r["events"]] == ["gate", "phase", "claude.invoke", "claude.result", "done"]
+    assert len(client.get(f"/api/ros/runs/{fr['run_id']}/events?after={r['events'][1]['seq']}").json()["events"]) == 3   # seq is global; `after` is a cursor
+    assert any(x["run_id"] == fr["run_id"] for x in client.get(f"/api/ros/runs?thesis_id={tid}").json()["runs"])
+    with client.stream("GET", f"/api/ros/runs/{fr['run_id']}/stream") as s:
+        body = "".join(s.iter_text())
+    assert body.count("event: ") == 6 and "event: state" in body and '"state": "done"' in body    # 5 replayed events + final state, then the stream closes (run not running)
+    assert client.get("/api/ros/workers").json()["workers"] is not None
+    cc = client.get("/api/command-center").json()["stats"]; assert cc["ros"]["quota"] == "OK" and cc["running_agents"] == 0

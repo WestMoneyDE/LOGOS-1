@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import json
 import os
-import socket
+import platform
 import time
 from hashlib import sha256
 from pathlib import Path
@@ -161,11 +161,11 @@ def run_once(conn, cfg: ExecutorConfig, worker_id: str, kinds: tuple[str, ...] =
     job = queue.dequeue(conn, worker_id, kinds)
     if job is None:
         return None
-    governor.heartbeat(conn, worker_id, "host", socket.gethostname(), list(kinds), job["job_id"])
+    governor.heartbeat(conn, worker_id, "host", platform.node(), list(kinds), job["job_id"])
     try:
         return run_job(conn, job, cfg)
     except Exception as e:  # never leave a job stuck in running
         conn.rollback()
         return queue.fail(conn, job["job_id"], f"EXECUTOR_EXCEPTION:{type(e).__name__}:{str(e)[:200]}", actor="system")
     finally:
-        governor.heartbeat(conn, worker_id, "host", socket.gethostname(), list(kinds), None)
+        governor.heartbeat(conn, worker_id, "host", platform.node(), list(kinds), None)

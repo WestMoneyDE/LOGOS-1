@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import shutil
+import platform
 import subprocess
 import time
 from pathlib import Path
@@ -53,7 +54,7 @@ def main(argv: list[str] | None = None) -> int:
     ev = governor.preflight_evidence(); cfg = config(ev.get("cli_version"))
     print(f"host executor {a.worker_id}: cli={ev.get('cli_version')} auth_class={ev.get('auth_class')} pin={governor.caps(conn).model_pin}")
     while True:
-        governor.heartbeat(conn, a.worker_id, "host", socket.gethostname(), ["thesis_advance", "prior_art"], None, {"cli_version": ev.get("cli_version")})
+        governor.heartbeat(conn, a.worker_id, "host", platform.node(), ["thesis_advance", "prior_art"], None, {"cli_version": ev.get("cli_version")})
         job = executor.run_once(conn, cfg, a.worker_id)
         if job:
             print(f"job {job['job_id']} -> {job['state']} {job.get('error') or ''}")
