@@ -1,0 +1,20 @@
+{
+  "schema": "logos.inference-governance-concurrency-amendment/1",
+  "amendment_id": "INFERENCE-GOVERNANCE-CONCURRENCY-AMENDMENT-R1",
+  "decision": "APPROVED",
+  "decision_owner": "founder",
+  "decision_date": "2026-09-19",
+  "recorded_by": "LOGOS1-RESEARCH-OS-MEASUREMENT-R3 (AI drafted the record; the founder decided in the brainstorm on 2026-09-19)",
+  "cap": "max_parallel_agent_sessions = 3",
+  "scope": ["thesis_advance", "prior_art", "radar_process"],
+  "scope_note": "agent jobs only (drafting, prior art, radar proposals). Measurement runs keep max_concurrent_sessions = 1 from INFERENCE-GOVERNANCE.json; while a measurement runs, no agent job is dispatched at all.",
+  "why": "the founder wants several theses worked out at the same time; agent jobs are drafting work whose attribution does not depend on serial execution, unlike measurement runs.",
+  "unchanged": [
+    "max_concurrent_sessions = 1 for measurement runs (governance record)",
+    "max_claude_code_invocations = 200 total",
+    "subscription-only path, no API key, no PAYG fallback",
+    "usage limit -> STOP until the founder resets",
+    "founder gates (prereg freeze, approve, ready_to_run, verdict)"
+  ],
+  "enforced_by": "src/logos_dashboard/control/governor.py::can_dispatch (AGENT_CONCURRENCY_CAP / MEASUREMENT_RUNNING) and set_agent_sessions (founder only, 1..5)"
+}

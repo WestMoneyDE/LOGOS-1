@@ -11,7 +11,9 @@ from psycopg.rows import dict_row
 from .state_machines import IllegalTransition, JOB_STATES, transition
 
 DETERMINISTIC_KINDS = ("tests", "dataset", "dry_run", "rescore", "playwright_qa", "snapshot", "benchmark")
-CLAUDE_KINDS = ("claude", "thesis_advance", "prior_art", "radar_process")   # prior_art needs the deep-research skill (Claude + web tools) -> host job, not Docker (recorded deviation from spec §5)
+AGENT_KINDS = ("thesis_advance", "prior_art", "radar_process")          # R3: agent cap 3 (amendment), measurement cap 1 (governance record)
+MEASUREMENT_KINDS = ("measurement",)
+CLAUDE_KINDS = ("claude",) + AGENT_KINDS + MEASUREMENT_KINDS   # prior_art needs the deep-research skill (Claude + web tools) -> host job, not Docker (recorded deviation from spec §5)
 KINDS = DETERMINISTIC_KINDS + CLAUDE_KINDS
 
 

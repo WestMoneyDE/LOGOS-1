@@ -19,18 +19,20 @@ from psycopg.rows import dict_row
 from logos_research.governance import GovernanceError, load_governance
 from logos_research.measurement.claude_code import MODEL_PIN_PLACEHOLDER, contamination
 
-from .queue import CLAUDE_KINDS, DETERMINISTIC_KINDS
+from .queue import AGENT_KINDS, CLAUDE_KINDS, DETERMINISTIC_KINDS, MEASUREMENT_KINDS
 
 ATTESTATION_TTL_H = 24
 FOUNDER_MODEL_PIN = "claude-opus-5"   # founder pin (selection_owner = founder, 2026-09-18; 09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1/MODEL-PIN-GATE.md); a change is a founder decision, never an API call
 FOUNDER_MODEL_PIN_SOURCE = "09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1/MODEL-PIN-GATE.md"
 AUTH_FIELDS = ("loggedIn", "authMethod", "apiProvider", "subscriptionType")      # class-level only; email/orgId/orgName/paths are never read into the record
 DEFAULTS = {"max_active_theses": 3, "max_parallel_deterministic_jobs": 2, "max_claude_invocations_per_job": 3}
+AGENT_SESSIONS_AMENDMENT = "INFERENCE-GOVERNANCE-CONCURRENCY-AMENDMENT-R1"   # founder 2026-09-19: agent jobs may run in parallel up to this cap; measurement runs stay at the governance record's max_concurrent_sessions
 
 
 @dataclass(frozen=True)
 class Caps:
     max_parallel_claude_sessions: int
+    max_parallel_agent_sessions: int
     max_claude_invocations_total: int
     max_claude_invocations_per_job: int
     max_active_theses: int
@@ -43,6 +45,20 @@ def get_setting(conn, key: str, default=None):
     with conn.cursor() as cur:
         cur.execute("SELECT value FROM ros_settings WHERE key = %s", (key,)); r = cur.fetchone()
     return r[0] if r else default
+
+
+def set_agent_sessions(conn, n: int, actor: str, amendment: str = AGENT_SESSIONS_AMENDMENT) -> dict:
+    """Founder amendment only: how many AGENT jobs may run in parallel. Measurement runs are untouched (governance record)."""
+    if actor != "founder":
+        raise GovernanceError("only the founder amends the agent concurrency cap")
+    if not isinstance(n, int) or not 1 <= n <= 5:
+        raise GovernanceError("agent session cap must be an integer between 1 and 5")
+    rec = {"max_parallel_agent_sessions": n, "amendment": amendment, "by": actor, "at": datetime.now(timezone.utc).isoformat()}
+    with conn.cursor() as cur:
+        cur.execute("INSERT INTO ros_settings (key, value, set_by, set_at) VALUES ('agent_sessions_amendment', %s, %s, now()) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, set_by = EXCLUDED.set_by, set_at = now()", (json.dumps(rec), actor))
+        cur.execute("INSERT INTO ros_audit (actor, action, subject, detail) VALUES (%s, 'governance.agent_sessions', %s, %s)", (actor, amendment, json.dumps(rec)))
+    conn.commit()
+    return rec
 
 
 def set_setting(conn, key: str, value, actor: str) -> None:
@@ -61,7 +77,11 @@ def caps(conn=None) -> Caps:
     if conn is not None:
         per_job = int(get_setting(conn, "max_claude_invocations_per_job", per_job)); active = int(get_setting(conn, "max_active_theses", active)); det = int(get_setting(conn, "max_parallel_deterministic_jobs", det))
     total = int(g.max_claude_code_invocations or 0)
-    return Caps(int(g.max_concurrent_sessions or 1), total, min(per_job, total or per_job), active, det, pin, g.inference_state)
+    agent_sessions = 1
+    if conn is not None:
+        rec = get_setting(conn, "agent_sessions_amendment")
+        agent_sessions = int((rec or {}).get("max_parallel_agent_sessions", 1))
+    return Caps(int(g.max_concurrent_sessions or 1), agent_sessions, total, min(per_job, total or per_job), active, det, pin, g.inference_state)
 
 
 def preflight_evidence(timeout: float = 30.0) -> dict:
@@ -132,7 +152,8 @@ def running_counts(conn) -> dict:
     with conn.cursor() as cur:
         cur.execute("SELECT kind, count(*) FROM ros_jobs WHERE state = 'running' GROUP BY kind"); rows = dict(cur.fetchall())
         cur.execute("SELECT count(DISTINCT thesis_id) FROM ros_jobs WHERE state IN ('running','queued') AND thesis_id IS NOT NULL"); active = cur.fetchone()[0]
-    return {"claude": sum(int(v) for k, v in rows.items() if k in CLAUDE_KINDS), "deterministic": sum(int(v) for k, v in rows.items() if k in DETERMINISTIC_KINDS), "active_theses": int(active)}
+    return {"claude": sum(int(v) for k, v in rows.items() if k in CLAUDE_KINDS), "agent": sum(int(v) for k, v in rows.items() if k in AGENT_KINDS), "measurement": sum(int(v) for k, v in rows.items() if k in MEASUREMENT_KINDS),
+            "deterministic": sum(int(v) for k, v in rows.items() if k in DETERMINISTIC_KINDS), "active_theses": int(active)}
 
 
 def state(conn) -> dict:
@@ -156,8 +177,14 @@ def can_dispatch(conn, kind: str) -> tuple[bool, str]:
             return False, f"AUTH_CLASS:{a.get('auth_class')}"
         if any(contamination().values()):
             return False, "CONTAMINATED_ENV"
-        if r["claude"] >= c.max_parallel_claude_sessions:
-            return False, "CONCURRENCY_CAP"
+        if kind in MEASUREMENT_KINDS:
+            if r["claude"] >= c.max_parallel_claude_sessions:                 # a measurement never shares the line with anything
+                return False, "CONCURRENCY_CAP"
+        else:
+            if r["measurement"] > 0:
+                return False, "MEASUREMENT_RUNNING"                            # agent jobs stand back while a measurement runs
+            if r["agent"] >= c.max_parallel_agent_sessions:
+                return False, "AGENT_CONCURRENCY_CAP"
         return True, "OK"
     if r["deterministic"] >= c.max_parallel_deterministic_jobs:
         return False, "DETERMINISTIC_CAP"

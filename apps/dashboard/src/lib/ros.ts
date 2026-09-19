@@ -16,6 +16,15 @@ export async function rosGet<T = any>(path: string): Promise<T | null> {
   return r.json();
 }
 
+/** GET that separates the three cases the UI must distinguish: 503 records-only (null), 404 missing ("NOT_FOUND"), ok (data). */
+export async function rosGetMaybe<T = any>(path: string): Promise<T | null | "NOT_FOUND"> {
+  const r = await fetch(`${API}${path}`, { cache: "no-store" });
+  if (r.status === 503) return null;
+  if (r.status === 404) return "NOT_FOUND";
+  if (!r.ok) throw new Error(`${path}: ${r.status}`);
+  return r.json();
+}
+
 export async function rosPost(path: string, body: unknown, actor: Actor = "founder", method: "POST" | "DELETE" = "POST"): Promise<{ ok: boolean; status: number; data: any }> {
   const r = await fetch(`${API}${path}`, { method, headers: { "Content-Type": "application/json", "X-Logos-Actor": actor }, body: method === "POST" ? JSON.stringify(body ?? {}) : undefined });
   let data: any = null; try { data = await r.json(); } catch {}

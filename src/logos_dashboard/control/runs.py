@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 
 from psycopg.rows import dict_row
 
-EVENT_KINDS = ("phase", "gate", "worktree", "packet", "claude.invoke", "claude.result", "artifact", "commit", "thesis.event", "quota", "stop", "error", "note", "done", "agent.init", "agent.batch", "agent.result", "work_order.draft", "autopilot")
+EVENT_KINDS = ("phase", "gate", "worktree", "packet", "claude.invoke", "claude.result", "artifact", "commit", "thesis.event", "quota", "stop", "error", "note", "done", "agent.init", "agent.batch", "agent.result", "work_order.draft", "autopilot", "measure.item")
 PRIVACY = ("public", "internal", "redacted")
 
 

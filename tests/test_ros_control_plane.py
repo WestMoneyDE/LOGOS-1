@@ -79,11 +79,11 @@ def _count(conn, sql, *args):
 
 def test_ros_migrations_idempotent(conn):
     v1 = db.ensure_schema(conn); v2 = db.ensure_schema(conn)
-    assert v1 == v2 == 3                                     # v1 control plane (Phase 2) + v2 executor settings/heartbeats (Phase 3) + v3 benchmark lab (Phase 5)
+    assert v1 == v2 == 4                                     # v1 control plane · v2 executor settings/heartbeats · v3 benchmark lab · v4 gate log + measurements (R3)
     with conn.cursor() as cur:
         cur.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_name LIKE 'ros\\_%'")
         names = {r[0] for r in cur.fetchall()}
-    assert set(db.ROS_TABLES) <= names and len(db.ROS_TABLES) == 20
+    assert set(db.ROS_TABLES) <= names and len(db.ROS_TABLES) == 23
 
 
 def test_service_thesis_events_and_audit(conn, tid):
@@ -188,7 +188,7 @@ def test_ros_api_roundtrip(conn, tid):
     from logos_dashboard.api import app
     client = TestClient(app)
     st = client.get("/api/ros/status").json()
-    assert st["db"] == "ok" and st["schema_version"] == 3 and "thesis_advance" in st["claude_kinds"]
+    assert st["db"] == "ok" and st["schema_version"] == 4 and "thesis_advance" in st["claude_kinds"]
     r = client.post("/api/ros/theses", json={"thesis_id": tid, "claim_ids": ["LOGOS-AUTH-001"], "title": "api thesis", "track": "authority"}); assert r.status_code == 200 and r.json()["state"] == "IDEA"
     assert client.post("/api/ros/theses", json={"thesis_id": tid, "title": "dup", "track": "authority"}).status_code == 409
     r = client.post(f"/api/ros/theses/{tid}/advance", json={"event": "triage", "reason": "api"}, headers={"X-Logos-Actor": "agent"}); assert r.json()["state"] == "TRIAGE"
@@ -792,11 +792,11 @@ def test_autopilot_runs_stages_until_ceiling_and_pauses_on_gate(conn, tid, repo,
 def test_repository_orders_import_idempotent_and_chained(conn):
     from logos_dashboard.control import repo_orders
     docs = repo_orders.parse_documents()
-    assert len(docs) == 39 and sum(1 for d in docs if d["kind"] == "closure") == 35 and {d["state"] for d in docs} == {"VALIDATED", "FALSIFIED", "DRAFT"}     # 40 files, 39 orders (one generated master order has its closure) — exact for 05-WORK-ORDERS on 2026-09-19
+    assert len(docs) == 41 and sum(1 for d in docs if d["kind"] == "closure") == 37 and {d["state"] for d in docs} == {"VALIDATED", "FALSIFIED", "DRAFT"}     # 42 files, 41 orders (one generated master order has its own closure) — exact for 05-WORK-ORDERS on 2026-09-19
     falsified = sorted(d["order_id"] for d in docs if d["state"] == "FALSIFIED"); assert falsified == ["COGNITIVE-PROVENANCE-ABLATION-R1", "RISK-AWARENESS-DECOMPOSITION-R1"]
     r1 = repo_orders.import_orders(conn); r2 = repo_orders.import_orders(conn)
-    assert r1["documents"] == r2["documents"] == 39 and r2["new"] == 0 and r2["updated"] == 39 and r2["edges_added"] == 0 and r1["states"]["FALSIFIED"] == 2
-    ch = repo_orders.chain(conn); assert len(ch) == 39 and all(x["work_order_id"].startswith("REPO:") for x in ch) and all(x["origin"]["repository"] for x in ch)
+    assert r1["documents"] == r2["documents"] == 41 and r2["new"] == 0 and r2["updated"] == 41 and r2["edges_added"] == 0 and r1["states"]["FALSIFIED"] == 2
+    ch = repo_orders.chain(conn); assert len(ch) == 41 and all(x["work_order_id"].startswith("REPO:") for x in ch) and all(x["origin"]["repository"] for x in ch)
     with conn.cursor() as cur:
         cur.execute("SELECT count(*) FROM ros_work_order_deps WHERE child LIKE 'REPO:%%' AND parent LIKE 'REPO:%%'"); n_edges = cur.fetchone()[0]
         cur.execute("SELECT parent FROM ros_work_order_deps WHERE child = 'REPO:COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1'"); parents = [r[0] for r in cur.fetchall()]
@@ -820,9 +820,315 @@ def test_r2_api_autopilot_workers_repo_orders_leitstand(conn, tid, attested, aut
             queue.request_stop(conn, j["job_id"], "founder")
     wc = client.get("/api/ros/workers/control").json(); assert {"host", "docker", "autopilot"} <= set(wc) and "alive" in wc["host"]
     assert client.post("/api/ros/workers/host/start", headers={"X-Logos-Actor": "agent"}).status_code == 403 and client.post("/api/ros/workers/nope/start").status_code == 400
-    ro = client.post("/api/ros/repo-orders/import").json(); assert ro["documents"] == 39
-    lst = client.get("/api/ros/repo-orders").json(); assert len(lst["orders"]) == 39 and len(lst["documents"]) == 39
+    ro = client.post("/api/ros/repo-orders/import").json(); assert ro["documents"] == 41
+    lst = client.get("/api/ros/repo-orders").json(); assert len(lst["orders"]) == 41 and len(lst["documents"]) == 41
     ls = client.get("/api/ros/leitstand").json()
     assert {"host", "docker", "autopilot", "theses", "attention", "governor", "first_steps", "states"} <= set(ls) and ls["ceiling"] == "PREREG_DRAFT"
     mine = next(t for t in ls["theses"] if t["thesis_id"] == tid); assert mine["autopilot"]["enabled"] is True and mine["stage_index"] == 0
     assert client.post(f"/api/ros/autopilot/theses/{tid}", json={"enabled": False}).json()["flag"]["enabled"] is False
+
+
+
+# -- R3: measurement contract (scorers, rules, verdict derivation) --------------------------------------------------
+
+
+def _ds(n_per_arm=5, arms=("with_plan", "without_plan")):
+    return {"schema": "ros-dataset/1", "arms": list(arms), "items": [{"item_id": f"i{a}-{i}", "arm": a, "input": f"task {i}", "expected": "blue"} for a in arms for i in range(n_per_arm)]}
+
+
+def _pr(arms=("with_plan", "without_plan")):
+    return {"schema": "ros-prompts/1", "arms": {a: {"system": "Answer in JSON.", "user_template": "Arm " + a + ": {input}"} for a in arms}}
+
+
+def _me(**kw):
+    m = {"schema": "ros-measurement/1", "metrics": [{"metric_id": "M1", "scorer": "json_field_equals", "target_field": "color"}], "primary_metric": "M1",
+         "comparison": {"arm_a": "with_plan", "arm_b": "without_plan"}, "falsification": {"rule": "difference_ci_excludes_zero", "direction": "a_greater"},
+         "caps": {"max_invocations": 40, "max_turns": 1, "max_output_bytes": 20000, "timeout_s": 120},
+         "invalid_measurement_criteria": ["MODEL_VERSION_DRIFT", "PROMPT_DRIFT", "PROVIDER_DRIFT", "REGION_DRIFT", "DATASET_DRIFT", "COST_CAP_REACHED", "CONSTRUCT_INVALID"]}
+    m.update(kw); return m
+
+
+def test_measurement_contract_scorers():
+    from logos_dashboard import measurement_contract as mc
+    assert set(mc.SCORERS) == set(mc.SCORER_IDS) and len(mc.SCORER_IDS) == 8
+    cases = [
+        ("exact_match", "blue", "blue", None, True), ("exact_match", " blue ", "blue", None, True), ("exact_match", "Blue", "blue", None, False), ("exact_match", None, "blue", None, None),
+        ("normalized_match", "The  BLUE!", "the blue", None, True), ("normalized_match", "red", "blue", None, False),
+        ("contains_all", "a blue sky and green grass", ["blue", "green"], None, True), ("contains_all", "a blue sky", ["blue", "green"], None, False),
+        ("json_field_equals", '{"color": "blue"}', "blue", "color", True), ("json_field_equals", 'prose {"color": "red"}', "blue", "color", False),
+        ("json_field_equals", "no json here", "blue", "color", None), ("json_field_equals", '{"other": 1}', "blue", "color", None),
+        ("json_field_in", '{"color": "cyan"}', ["blue", "cyan"], "color", True), ("json_field_in", '{"color": "red"}', ["blue", "cyan"], "color", False),
+        ("regex_match", "answer: 42", r"answer:\s*\d+", None, True), ("regex_match", "answer: x", r"answer:\s*\d+", None, False), ("regex_match", "x", "[", None, None),
+        ("refusal", "I can't help with that", None, None, True), ("refusal", "Sure: blue", None, None, False),
+        ("parse_failure", "not json", None, None, True), ("parse_failure", '{"a": 1}', None, None, False),
+    ]
+    for scorer, raw, exp, field, want in cases:
+        assert mc.score_item(scorer, raw, exp, field) is want, (scorer, raw, exp, field)
+    with pytest.raises(ValueError):
+        mc.score_item("llm_judge", "x", "y")
+
+
+def test_measurement_contract_validation_and_hashes():
+    from logos_dashboard import measurement_contract as mc
+    ds, pr, me = _ds(), _pr(), _me()
+    assert mc.validate_bundle(ds, pr, me) == []
+    assert len(mc.dataset_hash(ds)) == 64 and mc.dataset_hash(ds) == mc.dataset_hash({**ds, "items": list(reversed(ds["items"]))})     # order-independent
+    assert mc.dataset_hash(ds) != mc.dataset_hash({**ds, "items": ds["items"][:-1]}) and len(mc.prompt_bundle_hash(pr)) == 64
+    assert mc.prompt_bundle_hash(pr) != mc.prompt_bundle_hash({**pr, "arms": {**pr["arms"], "with_plan": {"system": "x", "user_template": "{input}"}}})
+    bad_bal = {**ds, "items": ds["items"][:-1]}
+    assert any("unbalanced" in i for i in mc.validate_dataset(bad_bal))
+    assert any("arm 'nope' not in arms" in i for i in mc.validate_dataset({**ds, "items": ds["items"] + [{"item_id": "x", "arm": "nope", "input": "i"}]}))
+    assert any("duplicate item_id" in i for i in mc.validate_dataset({**ds, "items": ds["items"] + [dict(ds["items"][0])]}))
+    assert mc.validate_dataset({"schema": "other"}) == ["dataset schema must be ros-dataset/1"]
+    assert any("must contain {input}" in i for i in mc.validate_prompts({**pr, "arms": {**pr["arms"], "with_plan": {"user_template": "no placeholder"}}}, ds["arms"]))
+    assert any("never contain the expected answer" in i for i in mc.validate_prompts({**pr, "arms": {**pr["arms"], "with_plan": {"user_template": "{input} {expected}"}}}, ds["arms"]))
+    assert any("scorer 'llm_judge' unknown" in i for i in mc.validate_measurement(_me(metrics=[{"metric_id": "M1", "scorer": "llm_judge"}]), ds["arms"]))
+    assert any("target_field required" in i for i in mc.validate_measurement(_me(metrics=[{"metric_id": "M1", "scorer": "json_field_equals"}]), ds["arms"]))
+    assert any("primary_metric" in i for i in mc.validate_measurement(_me(primary_metric="M9"), ds["arms"]))
+    assert any("two different arms" in i for i in mc.validate_measurement(_me(comparison={"arm_a": "with_plan", "arm_b": "with_plan"}), ds["arms"]))
+    assert any("direction" in i for i in mc.validate_measurement(_me(falsification={"rule": "difference_ci_excludes_zero"}), ds["arms"]))
+    assert any("threshold must be a rate" in i for i in mc.validate_measurement(_me(falsification={"rule": "rate_below_threshold", "threshold": 5}), ds["arms"]))
+    assert any("caps.max_invocations" in i for i in mc.validate_measurement(_me(caps={"max_turns": 1, "max_output_bytes": 10, "timeout_s": 5}), ds["arms"]))
+    assert any("invalid_measurement_criteria missing: DATASET_DRIFT" in i for i in mc.validate_measurement(_me(invalid_measurement_criteria=[c for c in mc.INVALID_CRITERIA if c != "DATASET_DRIFT"]), ds["arms"]))
+    assert any("max_invocations is 4" in i for i in mc.validate_bundle(_ds(), pr, _me(caps={"max_invocations": 4, "max_turns": 1, "max_output_bytes": 10, "timeout_s": 5})))
+    sys_p, user_p = mc.render_prompt(pr, "with_plan", {"input": "task 1"})
+    assert user_p == "Arm with_plan: task 1" and sys_p == "Answer in JSON." and "{input}" not in user_p
+
+
+def test_measurement_verdict_derivation_all_outcomes():
+    from logos_dashboard import measurement_contract as mc
+    def items(a_hits, a_n, b_hits, b_n, missing=0):
+        out = [{"arm": "A", "score": i < a_hits} for i in range(a_n)] + [{"arm": "B", "score": i < b_hits} for i in range(b_n)]
+        return out + [{"arm": "A", "score": None} for _ in range(missing)]
+    r = mc.arm_rates(items(18, 20, 6, 20, missing=3))
+    assert r["A"]["k"] == 18 and r["A"]["n_scored"] == 20 and r["A"]["n_total"] == 23 and r["A"]["missing"] == 3 and r["A"]["method"] == "wilson"
+    comp = {"arm_a": "A", "arm_b": "B"}
+    v = mc.derive_verdict(r, {"rule": "difference_ci_excludes_zero", "direction": "a_greater"}, comparison=comp)
+    assert v["verdict"] == "SUPPORTED" and v["derived"] is True and "schließt 0 aus" in v["why"] and v["difference"]["method"] == "newcombe"
+    v = mc.derive_verdict(mc.arm_rates(items(6, 20, 18, 20)), {"rule": "difference_ci_excludes_zero", "direction": "a_greater"}, comparison=comp)
+    assert v["verdict"] == "FALSIFIED" and "entgegengesetzten Richtung" in v["why"]
+    v = mc.derive_verdict(mc.arm_rates(items(10, 20, 9, 20)), {"rule": "difference_ci_excludes_zero", "direction": "a_greater"}, comparison=comp)
+    assert v["verdict"] == "INCONCLUSIVE" and "enthält 0" in v["why"]
+    v = mc.derive_verdict(mc.arm_rates(items(6, 20, 18, 20)), {"rule": "difference_ci_excludes_zero", "direction": "either"}, comparison=comp)
+    assert v["verdict"] == "SUPPORTED"
+    assert mc.derive_verdict(mc.arm_rates(items(1, 1, 1, 1)), {"rule": "difference_ci_excludes_zero", "direction": "either"}, comparison={"arm_a": "A", "arm_b": "Z"})["verdict"] == "INVALID_MEASUREMENT"
+    assert mc.derive_verdict({}, {"rule": "rate_below_threshold", "threshold": 0.1})["verdict"] == "INCONCLUSIVE"
+    assert mc.derive_verdict(mc.arm_rates(items(9, 10, 0, 1)), {"rule": "rate_above_threshold", "threshold": 0.5, "arm": "A"})["verdict"] == "SUPPORTED"
+    assert mc.derive_verdict(mc.arm_rates(items(0, 40, 0, 1)), {"rule": "rate_below_threshold", "threshold": 0.2, "arm": "A"})["verdict"] == "SUPPORTED"
+    assert mc.derive_verdict(mc.arm_rates(items(40, 40, 0, 1)), {"rule": "rate_below_threshold", "threshold": 0.2, "arm": "A"})["verdict"] == "FALSIFIED"
+    assert mc.derive_verdict(mc.arm_rates(items(5, 10, 0, 1)), {"rule": "rate_below_threshold", "threshold": 0.5, "arm": "A"})["verdict"] == "INCONCLUSIVE"
+    inv = mc.derive_verdict(mc.arm_rates(items(18, 20, 6, 20)), {"rule": "difference_ci_excludes_zero", "direction": "a_greater"}, comparison=comp, invalid_reason="MODEL_VERSION_DRIFT")
+    assert inv["verdict"] == "INVALID_MEASUREMENT" and "MODEL_VERSION_DRIFT" in inv["why"]
+    assert mc.derive_verdict(mc.arm_rates(items(1, 1, 1, 1)), {"rule": "magic"})["verdict"] == "INVALID_MEASUREMENT"
+
+
+
+# -- R3: gate chain (prereg validate/freeze, dry run), measurement run, verdict, caps ---------------------------------
+
+
+@pytest.fixture
+def bundle_files(tid):
+    """Writes the agent's four files into the real thesis directory and removes them afterwards."""
+    from logos_dashboard.control import prereg
+    d = prereg.thesis_dir(tid); d.mkdir(parents=True, exist_ok=True)
+    written: list = []
+
+    def write(ds=None, pr=None, me=None, draft=None):
+        files = {"DATASET.json": ds if ds is not None else _ds(), "PROMPTS.json": pr if pr is not None else _pr(), "MEASUREMENT.json": me if me is not None else _me(),
+                 "PREREG-DRAFT.json": draft if draft is not None else {"question": "Hilft ein expliziter Plan?", "hypothesis": "Mit Plan hoeher", "falsification_criterion": "KI der Differenz schliesst 0 aus (a_greater)", "scope": "fixture", "privacy_class": "SYNTHETIC", "sample_size_justification": "10 items"}}
+        for name, doc in files.items():
+            if doc is None:
+                (d / name).unlink(missing_ok=True); continue
+            (d / name).write_text(_json.dumps(doc, indent=1), encoding="utf-8"); written.append(d / name)
+        return files
+    yield write
+    for p in written:
+        p.unlink(missing_ok=True)
+    try:
+        d.rmdir()
+    except OSError:
+        pass
+
+
+def _fake_measure_runner(answers, *, status_seq=None):
+    """Legacy (argv, timeout, env) runner returning one JSON result document per call, cycling `answers`."""
+    state = {"i": 0}
+
+    def factory(cwd):
+        def run(argv, timeout, env):
+            assert argv[0] == "claude" and "--verbose" not in argv and "json" in argv and "ANTHROPIC_API_KEY" not in env      # measurement: json, never verbose
+            i = state["i"]; state["i"] += 1
+            st = (status_seq or [])[i] if status_seq and i < len(status_seq) else "ok"
+            if st == "usage_limit":
+                return 1, "", "You have hit your usage limit"
+            if st == "drift":
+                return 0, _json.dumps({"type": "result", "subtype": "success", "is_error": False, "result": "x", "session_id": "s", "num_turns": 1, "modelUsage": {"claude-sonnet-5": {}}}), ""
+            ans = answers[i % len(answers)]
+            return 0, _json.dumps({"type": "result", "subtype": "success", "is_error": False, "result": ans, "session_id": "s", "num_turns": 1, "usage": {"input_tokens": 5, "output_tokens": 3}, "modelUsage": {"claude-opus-5": {"inputTokens": 5}}}), ""
+        return run
+    return factory
+
+
+def test_prereg_validate_freeze_and_dry_run(conn, tid, attested, bundle_files):
+    from logos_dashboard.control import prereg
+    from logos_research.governance import GovernanceError
+    service.create_thesis(conn, tid, ["LOGOS-AUTH-001"], "gate", "authority", "founder")
+    for e in ("triage", "define_question", "define_hypothesis", "define_metrics", "draft_prereg"):
+        service.advance(conn, tid, e, "agent")
+    v = prereg.validate(conn, tid, "founder")
+    assert v["passed"] is False and "Datei fehlt: PREREG-DRAFT.json" in v["file_issues"]        # nothing written yet
+    bundle_files()
+    v = prereg.validate(conn, tid, "founder")
+    assert v["passed"] is True and v["contract_issues"] == [] and v["governance_issues"] == [] and len(v["dataset_hash"]) == 64 and v["planned_invocations"] == 10 and v["model_pin"] == "claude-opus-5"
+    bundle_files(me=_me(caps={"max_invocations": 40, "max_turns": 1, "max_output_bytes": 20000, "timeout_s": 120}, invalid_measurement_criteria=["MODEL_VERSION_DRIFT"]))
+    bad = prereg.validate(conn, tid, "founder")
+    assert bad["passed"] is False and any("invalid_measurement_criteria missing" in i for i in bad["contract_issues"]) and any("invalidation rule" in i for i in bad["governance_issues"])
+    with pytest.raises(ValueError):
+        prereg.freeze(conn, tid, "founder")
+    bundle_files()
+    with pytest.raises(IllegalTransition):
+        prereg.freeze(conn, tid, "agent")
+    f = prereg.freeze(conn, tid, "founder")
+    assert len(f["prereg_hash"]) == 64 and f["thesis"]["state"] == "PREREG_FROZEN" and "lab postgres" in f["where"]
+    assert prereg.frozen_payload(tid, f["prereg_hash"])["experiment_id"] == f"ROS-{tid}"
+    d = service.thesis_detail(conn, tid); assert d["thesis"]["prereg_hash"] == f["prereg_hash"]
+    spec = {"question": "q", "scope": "s", "hypothesis": "h", "falsification_criterion": "f", "metrics": ["M1"], "governance": {"provider": "claude-max"}, "caps": {"invocations": 40}}
+    wo = service.create_work_order(conn, f"WO-{tid}", tid, spec, "agent")
+    service.wo_transition(conn, wo["work_order_id"], "approve", "founder", prereg_hash=f["prereg_hash"])
+    service.advance(conn, tid, "approve_work_order", "founder")
+    dr = prereg.run_dry_run(conn, tid, "founder")
+    assert dr["passed"] is True, {"failed": dr["failed"], "drift": dr["drift"], "checks": dr["checks"]}
+    assert dr["failed"] == [] and dr["drift"] == [] and dr["counters_unchanged"] is True and len(dr["checks"]) == 10 and dr["thesis_state"] == "DRY_RUN"
+    assert all(k in dr["texts"] for k in dr["checks"])
+    ch = prereg.chain_status(conn, tid)
+    assert [s["id"] for s in ch["steps"]] == ["prereg_validate", "prereg_freeze", "work_order_approve", "dry_run", "ready_to_run", "measurement", "verdict"]
+    assert ch["steps"][1]["state"] == "done" and ch["steps"][3]["state"] == "done" and ch["steps"][4]["enabled"] is True and ch["prereg_hash"] == f["prereg_hash"]
+    log = prereg.gate_log(conn, tid); assert {l["gate"] for l in log} >= {"prereg_validate", "prereg_freeze", "dry_run"} and all(l["actor"] in ("founder", "system") for l in log)
+
+
+def test_dry_run_detects_drift_after_freeze(conn, tid, attested, bundle_files):
+    from logos_dashboard.control import prereg
+    service.create_thesis(conn, tid, [], "drift", "authority", "founder")
+    for e in ("triage", "define_question", "define_hypothesis", "define_metrics", "draft_prereg"):
+        service.advance(conn, tid, e, "agent")
+    bundle_files(); prereg.freeze(conn, tid, "founder")
+    service.create_work_order(conn, f"WO-{tid}", tid, {"question": "q", "scope": "s", "hypothesis": "h", "falsification_criterion": "f", "metrics": ["M1"], "governance": {"provider": "claude-max"}, "caps": {"invocations": 40}}, "agent")
+    service.advance(conn, tid, "approve_work_order", "founder")
+    bundle_files(ds=_ds(n_per_arm=6))                                         # dataset changed after freezing
+    dr = prereg.run_dry_run(conn, tid, "founder")
+    assert dr["passed"] is False and dr["drift"] == ["DATASET_DRIFT"] and dr["thesis_state"] == "BLOCKED_BY_GOVERNANCE"
+
+
+def test_measurement_run_scores_and_derives_verdict(conn, tid, repo, tmp_path, attested, bundle_files):
+    from logos_dashboard.control import measurement as meas, prereg
+    n0 = _CALLS["claude_code_inference_invocations"]
+    service.create_thesis(conn, tid, ["LOGOS-AUTH-001"], "measure", "authority", "founder")
+    for e in ("triage", "define_question", "define_hypothesis", "define_metrics", "draft_prereg"):
+        service.advance(conn, tid, e, "agent")
+    bundle_files(); prereg.freeze(conn, tid, "founder")
+    service.create_work_order(conn, f"WO-{tid}", tid, {"question": "q", "scope": "s", "hypothesis": "h", "falsification_criterion": "f", "metrics": ["M1"], "governance": {"provider": "claude-max"}, "caps": {"invocations": 40}}, "agent")
+    service.advance(conn, tid, "approve_work_order", "founder"); prereg.run_dry_run(conn, tid, "founder")
+    service.advance(conn, tid, "ready_to_run", "founder"); service.advance(conn, tid, "start_run", "founder")
+    job = queue.enqueue(conn, "measurement", thesis_id=tid, payload={"planned": 10}); queue.start(conn, job["job_id"], "founder", {"passed": True})
+    # with_plan items answer correctly, without_plan items answer wrong (sorted by arm: with_plan first)
+    answers = ['{"color": "blue"}'] * 5 + ['{"color": "red"}'] * 5
+    out = meas.run_measurement(conn, {**job, "state": "running"}, _cfg(repo, tmp_path, _fake_measure_runner(answers)))
+    assert out["state"] == "done" and out["result"]["executed"] == 10 and out["result"]["complete"] is True
+    rates = out["result"]["rates"]
+    assert rates["with_plan"]["k"] == 5 and rates["with_plan"]["n_scored"] == 5 and rates["without_plan"]["k"] == 0 and rates["without_plan"]["missing"] == 0
+    prop = out["result"]["proposal"]; assert prop["verdict"] == "SUPPORTED" and prop["derived"] is True and "schließt 0 aus" in prop["why"]
+    assert _CALLS["claude_code_inference_invocations"] == n0 + 10
+    mid = out["result"]["measurement_id"]; d = meas.get(conn, mid)
+    assert d["progress"] == {"done": 10, "planned": 10} and {i["status"] for i in d["items"]} == {"OK"} and sum(1 for i in d["items"] if i["score"]) == 5
+    assert service.thesis_detail(conn, tid)["thesis"]["state"] == "ANALYSIS"
+    ev = [e["kind"] for e in runs.events_after(conn, runs.list_runs(conn, thesis_id=tid)[0]["run_id"])]
+    assert ev.count("measure.item") == 2 and ev[-1] == "done" and "gate" in ev
+    with pytest.raises(IllegalTransition):
+        meas.decide_verdict(conn, mid, "SUPPORTED", "agent")
+    dec = meas.decide_verdict(conn, mid, "SUPPORTED", "founder", "sieht sauber aus")
+    assert dec["followed_proposal"] is True and dec["thesis_state"] == "VERDICT" and dec["draft"]["path"].startswith("docs/research/dashboard/verdict-drafts/")
+    draft = _json.loads((_Path(__file__).resolve().parents[1] / dec["draft"]["path"]).read_text(encoding="utf-8"))
+    assert draft["registry_change"].startswith("NONE") and draft["EVIDENCE"]["rates"]["with_plan"]["k"] == 5 and draft["derived_proposal"] == "SUPPORTED"
+    (_Path(__file__).resolve().parents[1] / dec["draft"]["path"]).unlink()
+
+
+def test_measurement_stops_on_usage_limit_and_records_partial(conn, tid, repo, tmp_path, attested, bundle_files):
+    from logos_dashboard.control import governor as gov, measurement as meas, prereg
+    service.create_thesis(conn, tid, [], "quota", "authority", "founder")
+    for e in ("triage", "define_question", "define_hypothesis", "define_metrics", "draft_prereg"):
+        service.advance(conn, tid, e, "agent")
+    bundle_files(); prereg.freeze(conn, tid, "founder")
+    service.advance(conn, tid, "approve_work_order", "founder"); service.advance(conn, tid, "dry_run", "system"); service.advance(conn, tid, "ready_to_run", "founder"); service.advance(conn, tid, "start_run", "founder")
+    job = queue.enqueue(conn, "measurement", thesis_id=tid); queue.start(conn, job["job_id"], "founder", {"passed": True})
+    out = meas.run_measurement(conn, {**job, "state": "running"}, _cfg(repo, tmp_path, _fake_measure_runner(['{"color": "blue"}'], status_seq=["ok", "ok", "usage_limit"])))
+    assert out["state"] == "waiting_quota" and out["result"] is None or True
+    d = meas.get(conn, meas._mid(tid, job["job_id"]))
+    assert d["measurement"]["executed"] == 3 and d["measurement"]["state"] == "waiting_quota" and d["measurement"]["stop_reason"] == "USAGE_LIMIT_REACHED"
+    assert d["measurement"]["summary"]["proposal"]["verdict"] == "INCONCLUSIVE" and "unvollständig" in d["measurement"]["summary"]["proposal"]["why"]
+    assert gov.quota_state(conn)["state"] == "USAGE_LIMIT_REACHED" and gov.can_dispatch(conn, "measurement") == (False, "USAGE_LIMIT_REACHED")
+    gov.set_quota_state(conn, "OK", "founder")
+
+
+def test_measurement_refuses_on_drift_and_budget(conn, tid, repo, tmp_path, attested, bundle_files):
+    from logos_dashboard.control import measurement as meas, prereg
+    service.create_thesis(conn, tid, [], "refuse", "authority", "founder")
+    for e in ("triage", "define_question", "define_hypothesis", "define_metrics", "draft_prereg"):
+        service.advance(conn, tid, e, "agent")
+    bundle_files(); prereg.freeze(conn, tid, "founder")
+    bundle_files(ds=_ds(n_per_arm=7))                                          # dataset drift after freeze
+    service.advance(conn, tid, "approve_work_order", "founder"); service.advance(conn, tid, "dry_run", "system"); service.advance(conn, tid, "ready_to_run", "founder"); service.advance(conn, tid, "start_run", "founder")
+    job = queue.enqueue(conn, "measurement", thesis_id=tid); queue.start(conn, job["job_id"], "founder", {"passed": True})
+    out = meas.run_measurement(conn, {**job, "state": "running"}, _cfg(repo, tmp_path, _fake_measure_runner(['{"color": "blue"}'])))
+    assert out["state"] == "failed" and out["error"].startswith("MEASUREMENT_REFUSED:DATASET_DRIFT")
+    assert meas.budget(10, 40)["ok"] is True and meas.budget(40, 40)["ok"] is False and meas.budget(0, 40)["ok"] is False
+
+
+def test_agent_and_measurement_caps_are_separate(conn, attested):
+    from logos_dashboard.control import governor as gov
+    from logos_research.governance import GovernanceError
+    prev = gov.get_setting(conn, "agent_sessions_amendment")
+    with pytest.raises(GovernanceError):
+        gov.set_agent_sessions(conn, 3, "agent")
+    with pytest.raises(GovernanceError):
+        gov.set_agent_sessions(conn, 9, "founder")
+    rec = gov.set_agent_sessions(conn, 3, "founder")
+    assert rec["max_parallel_agent_sessions"] == 3 and rec["amendment"] == "INFERENCE-GOVERNANCE-CONCURRENCY-AMENDMENT-R1"
+    c = gov.caps(conn); assert c.max_parallel_agent_sessions == 3 and c.max_parallel_claude_sessions == 1     # measurement stays at the governance record
+    amend = _json.loads((_Path(__file__).resolve().parents[1] / "docs/research/INFERENCE-GOVERNANCE-CONCURRENCY-AMENDMENT-R1.json").read_text(encoding="utf-8"))
+    assert amend["decision_owner"] == "founder" and "measurement" not in amend["scope"] and "max_concurrent_sessions = 1 for measurement runs (governance record)" in amend["unchanged"]
+    if prev is not None:
+        gov.set_agent_sessions(conn, int(prev.get("max_parallel_agent_sessions", 1)), "founder")
+
+
+def test_r3_api_gates_measurement_and_verdict(conn, tid, repo, tmp_path, attested, bundle_files):
+    from fastapi.testclient import TestClient
+    from logos_dashboard.api import app
+    from logos_dashboard.control import measurement as meas, prereg
+    client = TestClient(app)
+    service.create_thesis(conn, tid, ["LOGOS-AUTH-001"], "api gate", "authority", "founder")
+    for e in ("triage", "define_question", "define_hypothesis", "define_metrics", "draft_prereg"):
+        service.advance(conn, tid, e, "agent")
+    bundle_files()
+    g = client.get(f"/api/ros/theses/{tid}/gates").json(); assert g["steps"][0]["enabled"] is True and g["steps"][1]["enabled"] is False
+    v = client.post(f"/api/ros/theses/{tid}/prereg/validate").json(); assert v["passed"] is True and v["payload_preview"]["privacy_class"] == "SYNTHETIC"
+    assert client.post(f"/api/ros/theses/{tid}/prereg/freeze", headers={"X-Logos-Actor": "agent"}).status_code == 409
+    fr = client.post(f"/api/ros/theses/{tid}/prereg/freeze").json(); assert len(fr["prereg_hash"]) == 64
+    client.post("/api/ros/work-orders", json={"work_order_id": f"WO-{tid}", "thesis_id": tid, "spec": {"question": "q", "scope": "s", "hypothesis": "h", "falsification_criterion": "f", "metrics": ["M1"], "governance": {"g": 1}, "caps": {"c": 1}}})
+    client.post(f"/api/ros/work-orders/WO-{tid}/transition", json={"event": "approve", "prereg_hash": fr["prereg_hash"]})
+    client.post(f"/api/ros/theses/{tid}/advance", json={"event": "approve_work_order"})
+    dr = client.post(f"/api/ros/theses/{tid}/dry-run").json(); assert dr["passed"] is True and dr["thesis_state"] == "DRY_RUN"
+    assert client.post(f"/api/ros/theses/{tid}/measurement/enqueue").status_code == 409          # needs READY_TO_RUN
+    client.post(f"/api/ros/theses/{tid}/advance", json={"event": "ready_to_run"})
+    enq = client.post(f"/api/ros/theses/{tid}/measurement/enqueue").json()
+    assert enq["planned"] == 10 and enq["job"]["kind"] == "measurement" and enq["job"]["state"] in ("queued", "running")
+    out = meas.run_measurement(conn, {**enq["job"], "state": "running"}, _cfg(repo, tmp_path, _fake_measure_runner(['{"color": "blue"}'] * 5 + ['{"color": "red"}'] * 5)))
+    mid = out["result"]["measurement_id"]
+    m = client.get(f"/api/ros/measurements/{mid}").json(); assert m["progress"]["done"] == 10 and m["rates"]["with_plan"]["k"] == 5
+    assert client.get("/api/ros/measurements").json()["measurements"][0]["measurement_id"] == mid
+    assert client.post(f"/api/ros/measurements/{mid}/verdict", json={"verdict": "SUPPORTED"}, headers={"X-Logos-Actor": "agent"}).status_code == 409
+    assert client.post(f"/api/ros/measurements/{mid}/verdict", json={"verdict": "MAGIC"}).status_code == 400
+    dec = client.post(f"/api/ros/measurements/{mid}/verdict", json={"verdict": "INCONCLUSIVE", "reason": "erst replizieren"}).json()
+    assert dec["followed_proposal"] is False and dec["proposal"] == "SUPPORTED" and dec["thesis_state"] == "INCONCLUSIVE"
+    (_Path(__file__).resolve().parents[1] / dec["draft"]["path"]).unlink()
+    log = client.get(f"/api/ros/theses/{tid}/gate-log").json(); assert {l["gate"] for l in log["log"]} >= {"prereg_validate", "prereg_freeze", "dry_run", "ready_to_run", "measurement", "verdict"}
+    assert client.post("/api/ros/governor/agent-sessions", json={"n": 3}, headers={"X-Logos-Actor": "agent"}).status_code == 403

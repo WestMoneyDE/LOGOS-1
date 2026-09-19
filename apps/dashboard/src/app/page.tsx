@@ -8,6 +8,7 @@ import { VerdictMix } from "@/components/charts/verdict-mix";
 import { RecordsOnly } from "@/components/ros/records-only";
 import { CreateThesis } from "@/components/ros/create-thesis";
 import { WorkerSwitch, MasterSwitch, ThesisCard, LiveTicker, FirstSteps } from "@/components/ros/leitstand";
+import { NotifySwitch } from "@/components/ros/notify";
 
 export default async function Leitstand() {
   const { t, locale } = await getT(); const de = locale === "de";
@@ -21,10 +22,10 @@ export default async function Leitstand() {
         <FirstSteps fs={ls.first_steps} l={l} />
         <Section title={t("ls_running")}>
           <div className="grid gap-3 xl:grid-cols-[1fr_1fr]">
-            <div className="flex flex-col gap-3" id="workers"><WorkerSwitch which="host" label={t("ls_host")} status={ls.host} l={l} /><WorkerSwitch which="docker" label={t("ls_docker")} status={ls.docker} l={l} /><div id="master"><MasterSwitch on={!!ls.autopilot.master} l={l} /></div></div>
+            <div className="flex flex-col gap-3" id="workers"><WorkerSwitch which="host" label={t("ls_host")} status={ls.host} l={l} /><WorkerSwitch which="docker" label={t("ls_docker")} status={ls.docker} l={l} /><div id="master"><MasterSwitch on={!!ls.autopilot.master} l={l} /></div><div className="border border-border p-3"><NotifySwitch label={t("notify_on")} hint={t("notify_hint")} /></div></div>
             <LiveTicker initialRun={ls.live_run} initialEvents={ls.live_events} l={l} />
           </div>
-          <p className="mt-2 font-mono text-[0.65rem] text-muted-foreground">Claude-Sitzungen {ls.governor.running.claude}/{ls.governor.caps.max_parallel_claude_sessions} · Quota {ls.governor.quota.state} · Auth {ls.governor.attestation.auth_class ?? "—"}{ls.governor.attestation.fresh ? "" : " (Preflight nötig)"} · Pin {ls.governor.caps.model_pin}</p>
+          <p className="mt-2 font-mono text-[0.65rem] text-muted-foreground">Agenten-Sitzungen {ls.governor.running.agent ?? 0}/{ls.governor.caps.max_parallel_agent_sessions} · Messläufe {ls.governor.running.measurement ?? 0}/{ls.governor.caps.max_parallel_claude_sessions} · Quota {ls.governor.quota.state} · Auth {ls.governor.attestation.auth_class ?? "—"}{ls.governor.attestation.fresh ? "" : " (Preflight nötig)"} · Pin {ls.governor.caps.model_pin}</p>
         </Section>
         <Section title={t("ls_theses")} hint={`${ls.theses.length}`}>
           {ls.theses.length === 0 ? <p className="mb-3 text-sm text-muted-foreground">{t("ls_no_theses")}</p> : <div className="grid gap-3 xl:grid-cols-2">{ls.theses.map((th: any) => <ThesisCard key={th.thesis_id} t={th} states={ls.states} l={l} />)}</div>}

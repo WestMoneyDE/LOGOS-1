@@ -6,7 +6,8 @@ from dataclasses import dataclass
 VERSION_TABLE = "ros_schema_version"
 ROS_TABLES = ["ros_theses", "ros_thesis_events", "ros_work_orders", "ros_work_order_deps", "ros_runs", "ros_run_events", "ros_jobs", "ros_decisions",
               "ros_inbox_items", "ros_radar_items", "ros_notes", "ros_artifacts", "ros_trace_links", "ros_audit", "ros_settings", "ros_worker_heartbeats",
-              "ros_benchmark_suites", "ros_benchmark_snapshots", "ros_metric_results", "ros_monthly_snapshots"]
+              "ros_benchmark_suites", "ros_benchmark_snapshots", "ros_metric_results", "ros_monthly_snapshots",
+              "ros_gate_log", "ros_measurements", "ros_measurement_items"]
 
 
 @dataclass(frozen=True)
@@ -88,6 +89,23 @@ MIGRATIONS: tuple[Migration, ...] = (
         "CREATE TRIGGER ros_benchmark_snapshots_immutable BEFORE UPDATE OR DELETE ON ros_benchmark_snapshots FOR EACH ROW WHEN (OLD.frozen) EXECUTE FUNCTION ros_forbid_change()",
         "DROP TRIGGER IF EXISTS ros_monthly_snapshots_immutable ON ros_monthly_snapshots",
         "CREATE TRIGGER ros_monthly_snapshots_immutable BEFORE UPDATE OR DELETE ON ros_monthly_snapshots FOR EACH ROW WHEN (OLD.frozen) EXECUTE FUNCTION ros_forbid_change()",
+    )),
+    Migration(4, "ros_measurement", (
+        "ALTER TABLE ros_theses ADD COLUMN IF NOT EXISTS prereg_hash TEXT",
+        """CREATE TABLE IF NOT EXISTS ros_gate_log (
+            gate_id BIGSERIAL PRIMARY KEY, thesis_id TEXT NOT NULL REFERENCES ros_theses(thesis_id) ON DELETE CASCADE, gate TEXT NOT NULL, actor TEXT NOT NULL,
+            passed BOOLEAN NOT NULL, detail JSONB NOT NULL DEFAULT '{}', at TIMESTAMPTZ NOT NULL DEFAULT now())""",
+        "CREATE INDEX IF NOT EXISTS ros_gate_log_thesis_idx ON ros_gate_log (thesis_id, gate_id DESC)",
+        """CREATE TABLE IF NOT EXISTS ros_measurements (
+            measurement_id TEXT PRIMARY KEY, thesis_id TEXT NOT NULL REFERENCES ros_theses(thesis_id) ON DELETE CASCADE, work_order_id TEXT, run_id TEXT, job_id BIGINT,
+            prereg_hash TEXT NOT NULL, dataset_hash TEXT NOT NULL, prompt_bundle_hash TEXT NOT NULL, model_pin TEXT NOT NULL, state TEXT NOT NULL,
+            planned INTEGER NOT NULL, executed INTEGER NOT NULL DEFAULT 0, invalid_reason TEXT, stop_reason TEXT, summary JSONB,
+            started TIMESTAMPTZ NOT NULL DEFAULT now(), finished TIMESTAMPTZ)""",
+        """CREATE TABLE IF NOT EXISTS ros_measurement_items (
+            row_id BIGSERIAL PRIMARY KEY, measurement_id TEXT NOT NULL REFERENCES ros_measurements(measurement_id) ON DELETE CASCADE, item_id TEXT NOT NULL, arm TEXT NOT NULL,
+            invocation INTEGER NOT NULL, status TEXT NOT NULL, raw_sha256 TEXT, answer TEXT, score BOOLEAN, latency_s DOUBLE PRECISION, tokens JSONB, resolved_model TEXT,
+            at TIMESTAMPTZ NOT NULL DEFAULT now(), UNIQUE (measurement_id, item_id))""",
+        "CREATE INDEX IF NOT EXISTS ros_measurement_items_m_idx ON ros_measurement_items (measurement_id, row_id)",
     )),
 )
 

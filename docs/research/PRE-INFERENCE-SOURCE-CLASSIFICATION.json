@@ -1493,6 +1493,70 @@
     "tests/fixtures/ros/agent_stream.jsonl": {
       "class": "REFERENCE_FIXTURE",
       "note": "LOGOS1-RESEARCH-OS-AUTOPILOT-R2: recorded stream-json shape for the fake agent runner; no model call"
+    },
+    "05-WORK-ORDERS/NEXT-SESSION-LOGOS1-RESEARCH-OS-AUTOPILOT-R2.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "record; no code, no model call"
+    },
+    "09-SESSIONS/2026-09-19-LOGOS1-RESEARCH-OS-AUTOPILOT-R2/SESSION-REPORT.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "record; no code, no model call"
+    },
+    "docs/research/INFERENCE-GOVERNANCE-CONCURRENCY-AMENDMENT-R1.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OS-MEASUREMENT-R3: founder amendment (agent jobs may run 3 in parallel; measurement stays at 1)"
+    },
+    "docs/superpowers/plans/2026-09-19-research-os-r3-measurement.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OS-MEASUREMENT-R3: design record / plan; no code, no model call"
+    },
+    "docs/superpowers/specs/2026-09-19-research-os-r3-gates-and-measurement-design.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OS-MEASUREMENT-R3: design record / plan; no code, no model call"
+    },
+    "src/logos_dashboard/control/measurement.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OS-MEASUREMENT-R3: governed measurement run (documented CLI, json without --verbose, cap 1, frozen prereg, stop-closed); verdict is proposed, never recorded"
+    },
+    "src/logos_dashboard/control/prereg.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OS-MEASUREMENT-R3: gate chain — prereg build/validate against governance, durable freeze in the lab, zero-inference dry run, gate log"
+    },
+    "src/logos_dashboard/measurement_contract.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OS-MEASUREMENT-R3: measurement contract — deterministic scorers, frozen falsification rules, mechanical verdict derivation; no model call, no LLM judge"
+    },
+    "apps/dashboard/e2e/measurement.spec.ts": {
+      "class": "TOOLING",
+      "note": "research dashboard UI; reads the localhost API only; no model call"
+    },
+    "apps/dashboard/src/app/measurements/[id]/page.tsx": {
+      "class": "TOOLING",
+      "note": "research dashboard UI; reads the localhost API only; no model call"
+    },
+    "apps/dashboard/src/app/measurements/page.tsx": {
+      "class": "TOOLING",
+      "note": "research dashboard UI; reads the localhost API only; no model call"
+    },
+    "apps/dashboard/src/components/ros/gate-chain.tsx": {
+      "class": "TOOLING",
+      "note": "research dashboard UI; reads the localhost API only; no model call"
+    },
+    "apps/dashboard/src/components/ros/measurement-view.tsx": {
+      "class": "TOOLING",
+      "note": "research dashboard UI; reads the localhost API only; no model call"
+    },
+    "apps/dashboard/src/components/ros/notify.tsx": {
+      "class": "TOOLING",
+      "note": "research dashboard UI; reads the localhost API only; no model call"
+    },
+    "05-WORK-ORDERS/NEXT-SESSION-LOGOS1-RESEARCH-OS-MEASUREMENT-R3.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OS-MEASUREMENT-R3: closure / session report; no code, no model call"
+    },
+    "09-SESSIONS/2026-09-19-LOGOS1-RESEARCH-OS-MEASUREMENT-R3/SESSION-REPORT.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OS-MEASUREMENT-R3: closure / session report; no code, no model call"
     }
   },
   "unclassified": 0

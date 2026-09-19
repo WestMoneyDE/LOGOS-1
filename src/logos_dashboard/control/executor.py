@@ -207,16 +207,23 @@ def _cleanup(cfg: ExecutorConfig, wt: Path, branch: str, *, discard: bool) -> No
         pass
 
 
-def run_once(conn, cfg: ExecutorConfig, worker_id: str, kinds: tuple[str, ...] = ("thesis_advance", "prior_art", "radar_process")) -> dict | None:
+def run_once(conn, cfg: ExecutorConfig, worker_id: str, kinds: tuple[str, ...] = ("thesis_advance", "prior_art", "radar_process", "measurement")) -> dict | None:
     """One scheduler tick: governor check, dequeue one job, execute. Returns the final job row or None when idle/blocked."""
-    ok, reason = governor.can_dispatch(conn, "thesis_advance")
-    if not ok:
-        return None
-    job = queue.dequeue(conn, worker_id, kinds)
+    job = None
+    for kind in kinds:                                     # measurement first: it blocks agent jobs while it runs
+        ok, reason = governor.can_dispatch(conn, kind)
+        if not ok:
+            continue
+        job = queue.dequeue(conn, worker_id, (kind,))
+        if job is not None:
+            break
     if job is None:
         return None
     governor.heartbeat(conn, worker_id, "host", platform.node(), list(kinds), job["job_id"])
     try:
+        if job["kind"] == "measurement":
+            from . import measurement as meas
+            return meas.run_measurement(conn, job, cfg)
         return run_job(conn, job, cfg)
     except Exception as e:  # never leave a job stuck in running
         conn.rollback()

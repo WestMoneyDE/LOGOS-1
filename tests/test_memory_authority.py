@@ -573,6 +573,7 @@ READERS = {
     # registered by COGNITIVE-PROVENANCE-ABLATION-R1 (2026-09-18): reads ProviderResult.content (the raw model response string), never a memory record; resolves nothing
     "logos_research/experiments/cognitive_provenance_r1/harness.py": "experiment harness: .content of ProviderResult (model response); ModelOutput != Grant; resolves nothing",
     "logos_dashboard/control/executor.py": "research-OS host executor: .content of ProviderResult (agent drafting output) -> allowlist + state machine; ModelOutput != Grant; resolves nothing",
+    "logos_dashboard/control/measurement.py": "research-OS measurement run: .content of ProviderResult (model answer) -> deterministic scorer -> rate; ModelOutput != Grant; resolves nothing",
 }
 
 

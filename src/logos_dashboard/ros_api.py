@@ -846,3 +846,99 @@ def traces_stats(limit: int = 300):
         lat = _stats.bootstrap_mean(latencies, reps=500, seed=0) if len(latencies) >= 2 else {"value": _stats.NOT_DEFINED, "ci95": None, "n": len(latencies), "method": "bootstrap_percentile"}
         return {"n_runs": len(rs), "per_day": sorted(per_day.values(), key=lambda x: x["day"]), "tokens": tokens[-40:], "phases": sorted(phases, key=lambda x: x["phase"]), "tools": [{"tool": k, "n": v} for k, v in sorted(tools.items(), key=lambda kv: -kv[1])],
                 "per_thesis": sorted(per_thesis.values(), key=lambda x: -x["runs"]), "latency": lat, "version": _stats.VERSION, "note": "counts from ros_runs / ros_run_events; token figures as exposed by the CLI (no decomposition claimed)"}
+
+
+# -- R3: gate chain, measurement runs, verdict ---------------------------------------------------------------------------
+
+from .control import measurement as _meas, prereg as _prereg  # noqa: E402
+
+
+@router.get("/theses/{thesis_id}/gates")
+def thesis_gates(thesis_id: str):
+    with _conn() as c:
+        return _prereg.chain_status(c, thesis_id)
+
+
+@router.get("/theses/{thesis_id}/gate-log")
+def thesis_gate_log(thesis_id: str, limit: int = 100):
+    with _conn() as c:
+        return {"log": _prereg.gate_log(c, thesis_id, limit), "gates": list(_prereg.GATES)}
+
+
+@router.post("/theses/{thesis_id}/prereg/validate")
+def prereg_validate(thesis_id: str, x_logos_actor: str | None = Header(default=None)):
+    with _conn() as c:
+        v = _prereg.validate(c, thesis_id, _actor(x_logos_actor))
+        return {k: v[k] for k in v if k != "payload"} | {"payload_preview": {kk: (v.get("payload") or {}).get(kk) for kk in ("experiment_id", "question", "hypothesis", "falsification_criterion", "privacy_class", "dataset_hash", "prompt_bundle_hash")}}
+
+
+@router.post("/theses/{thesis_id}/prereg/freeze")
+def prereg_freeze(thesis_id: str, x_logos_actor: str | None = Header(default=None)):
+    with _conn() as c:
+        return _prereg.freeze(c, thesis_id, _actor(x_logos_actor))
+
+
+@router.post("/theses/{thesis_id}/dry-run")
+def thesis_dry_run(thesis_id: str, x_logos_actor: str | None = Header(default=None)):
+    with _conn() as c:
+        return _prereg.run_dry_run(c, thesis_id, _actor(x_logos_actor))
+
+
+@router.post("/theses/{thesis_id}/measurement/enqueue")
+def measurement_enqueue(thesis_id: str, x_logos_actor: str | None = Header(default=None)):
+    """Founder: queue the measurement job (waits for the host executor). Requires READY_TO_RUN."""
+    actor = _actor(x_logos_actor)
+    with _conn() as c:
+        d = service.thesis_detail(c, thesis_id)
+        if d is None:
+            raise HTTPException(404, thesis_id)
+        if d["thesis"]["state"] != "READY_TO_RUN":
+            raise HTTPException(409, {"detail": f"thesis is {d['thesis']['state']}, measurement needs READY_TO_RUN"})
+        p = _meas.prepare(c, thesis_id, 0)
+        if not p["ok"]:
+            raise HTTPException(400, {"detail": p["reason"]})
+        n = sum(1 for j in queue.list_jobs(c, 10000) if j["kind"] == "measurement" and j["thesis_id"] == thesis_id)
+        job = queue.enqueue(c, "measurement", thesis_id=thesis_id, work_order_id=p["work_order_id"], payload={"prereg_hash": p["prereg_hash"], "planned": p["budget"]["planned"]}, attempt_group=n, actor=actor)
+        gate = _gate_for(c, job)
+        if gate["passed"] and actor == "founder":
+            job = queue.start(c, job["job_id"], actor, gate)
+            service.advance(c, thesis_id, "start_run", "founder", reason=f"measurement job #{job['job_id']} started", source_record=str(job["job_id"]))
+        _prereg.log_gate(c, thesis_id, "ready_to_run", actor, gate["passed"], {"job_id": job["job_id"], "gate": gate["checks"]})
+        return {"job": job, "gate": gate, "planned": p["budget"]["planned"]}
+
+
+@router.get("/measurements")
+def measurements_list(thesis_id: str | None = None, limit: int = 100):
+    with _conn() as c:
+        return {"measurements": _meas.list_measurements(c, thesis_id, limit)}
+
+
+@router.get("/measurements/{measurement_id}")
+def measurement_get(measurement_id: str):
+    with _conn() as c:
+        d = _meas.get(c, measurement_id)
+        if d is None:
+            raise HTTPException(404, measurement_id)
+        return d
+
+
+class VerdictIn(BaseModel):
+    verdict: str
+    reason: str = ""
+
+
+@router.post("/measurements/{measurement_id}/verdict")
+def measurement_verdict(measurement_id: str, v: VerdictIn, x_logos_actor: str | None = Header(default=None)):
+    with _conn() as c:
+        return _meas.decide_verdict(c, measurement_id, v.verdict, _actor(x_logos_actor), v.reason)
+
+
+class AgentSessionsIn(BaseModel):
+    n: int
+
+
+@router.post("/governor/agent-sessions")
+def governor_agent_sessions(a: AgentSessionsIn, x_logos_actor: str | None = Header(default=None)):
+    """Founder amendment INFERENCE-GOVERNANCE-CONCURRENCY-AMENDMENT-R1: parallel AGENT jobs (1..5). Measurement stays at 1."""
+    with _conn() as c:
+        return {"amendment": governor.set_agent_sessions(c, a.n, _actor(x_logos_actor)), "caps": governor.caps(c).__dict__}

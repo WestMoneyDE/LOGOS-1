@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { rosGet } from "@/lib/ros";
+import { rosGet, rosGetMaybe } from "@/lib/ros";
 import { getT } from "@/i18n";
 import { Shell, Section, Table } from "@/components/shell";
 import { Waterfall, Rescore, MlflowFetch } from "@/components/ros/trace-view";
@@ -8,9 +8,9 @@ import { RecordsOnly } from "@/components/ros/records-only";
 
 export default async function TracePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params; const { t } = await getT();
-  const d = await rosGet(`/api/ros/runs/${id}/trace`);
+  const d = await rosGetMaybe(`/api/ros/runs/${id}/trace`);
   if (d === null) return <Shell title={id}><RecordsOnly text={t("ros_records_only")} /></Shell>;
-  if (!d.run) notFound();
+  if (d === "NOT_FOUND" || !(d as any)?.run) notFound();
   const r = d.run; const inv = d.invocations[0];
   return (
     <Shell title={`Trace — ${r.run_id}`} subtitle={`${r.kind} · ${r.thesis_id ?? "—"} · ${r.state} · ${d.n_events} events`}>
