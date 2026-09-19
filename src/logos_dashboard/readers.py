@@ -31,7 +31,7 @@ def read_closure(path: Path) -> dict:
     oid = path.name[len("NEXT-SESSION-"):-3]
     verdict = _first(r"\*\*[^*\n]*[Vv]erdict[^*\n]*:\*\*\s*`([^`]+)`", s)
     closure = _first(r"## Closure\s*```text\n(.*?)```", s, re.S)
-    successor = _first(r"## Successor[^\n]*\n\n`([A-Z0-9\-]+)`", s)
+    successor = _first(r"## Successor[^\n]*\n+\s*`([A-Z0-9\-]+)`", s)
     findings = re.findall(r"`?([A-Z]{2,5}-F\d+)`?\s+(CRITICAL|HIGH|MEDIUM|LOW|INFO)", s)
     hashes = re.findall(r"`([0-9a-f]{8,64})…?`", s)
     unparsed = [k for k, v in (("verdict", verdict), ("closure", closure), ("successor", successor), ("closed", _first(r"\*\*Closed:\*\*\s*([^\n]+)", s))) if v is None]

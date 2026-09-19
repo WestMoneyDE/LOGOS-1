@@ -373,6 +373,22 @@
     "tests/test_inference_governance.py": {
       "class": "EXPERIMENTAL_DETERMINISTIC",
       "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: diff scope registers the repair and dashboard records (registration, no weakening)"
+    },
+    "docs/research/COGNITIVE-PROVENANCE-SOURCE-CLASSIFICATION.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: living record extended"
+    },
+    "docs/research/CPA-INSTRUMENT-REPAIR-SOURCE-CLASSIFICATION.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: living record extended"
+    },
+    "docs/research/INFERENCE-GOVERNANCE-AMENDMENT-SOURCE-CLASSIFICATION.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: living record extended"
+    },
+    "docs/research/PRE-INFERENCE-SOURCE-CLASSIFICATION.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: living record extended"
     }
   },
   "unclassified": 0
