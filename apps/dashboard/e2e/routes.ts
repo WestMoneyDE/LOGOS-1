@@ -8,7 +8,7 @@ export const ROUTES: { path: string; expect: string }[] = [
   { path: "/tracks/measurement", expect: "Measurement Governance" },
   { path: "/tracks/memory", expect: "Memory, State" },
   { path: "/tracks/trajectory", expect: "Trajectory Safety" },
-  { path: "/claims", expect: "Claim registry" },
+  { path: "/claims", expect: "Claim-Register" },
   { path: "/claims/LOGOS-CP-001", expect: "ReasoningContent" },
   { path: "/experiments", expect: "Experiment registry" },
   { path: "/experiments/EXP-CPA-RERUN", expect: "EXP-CPA-RERUN" },
