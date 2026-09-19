@@ -18,7 +18,7 @@ from typing import Callable
 
 from logos_research.measurement.claude_code import ActivationToken, ClaudeCodeMaxProvider, Limits, ProviderPolicyError, contamination
 
-from . import governor, packet as pk, queue, runs, service, telemetry, worktree
+from . import governor, packet as pk, queue, radar, runs, service, telemetry, worktree
 from .state_machines import AGENT_CEILING, THESIS_STATES, IllegalTransition
 
 DEFAULT_LIMITS = {"max_turns": 25, "max_output_bytes": 400_000, "timeout_s": 1800.0}
@@ -51,27 +51,32 @@ def run_job(conn, job: dict, cfg: ExecutorConfig) -> dict:
     if not gate["passed"]:
         tel.finish("failed", None)
         return _job_fail(conn, job_id, "PRE_RUN_GATE_FAILED", run_id, {"failed": [k for k, v in gate["checks"].items() if not v]})
-    if kind not in ("thesis_advance", "prior_art") or detail is None:
+    radar_item = radar.get_radar(conn, int(job.get("payload", {}).get("radar_id"))) if kind == "radar_process" and job.get("payload", {}).get("radar_id") else None
+    if kind not in ("thesis_advance", "prior_art", "radar_process") or (kind != "radar_process" and detail is None) or (kind == "radar_process" and radar_item is None):
         tel.finish("failed", None)
         return _job_fail(conn, job_id, f"UNSUPPORTED_JOB_KIND:{kind}", run_id)
+    scope_id = thesis_id or f"radar-{radar_item['radar_id']}"
     caps = governor.caps(conn)
     # -- worktree -------------------------------------------------------------------------------------------------
     runs.emit(conn, run_id, "phase", {"phase": "worktree"}); tel.span("phase.worktree", {"phase": "worktree"})
     try:
-        wt = worktree.create(cfg.repo, cfg.worktrees_root, thesis_id, run_id)
+        wt = worktree.create(cfg.repo, cfg.worktrees_root, scope_id, run_id)
     except RuntimeError as e:
         tel.finish("failed", None)
         return _job_fail(conn, job_id, "WORKTREE_FAILED", run_id, {"error": str(e)[:300]})
-    branch = worktree.branch_name(thesis_id, run_id)
+    branch = worktree.branch_name(scope_id, run_id)
     with conn.cursor() as cur:
         cur.execute("UPDATE ros_runs SET branch = %s, worktree = %s WHERE run_id = %s", (branch, str(wt), run_id))
     conn.commit()
     runs.emit(conn, run_id, "worktree", {"path": str(wt), "branch": branch, "base": worktree.head(cfg.repo)})
     # -- packet ---------------------------------------------------------------------------------------------------
     runs.emit(conn, run_id, "phase", {"phase": "packet"}); tel.span("phase.packet", {"phase": "packet"})
-    regs = cfg.regs_loader(); notes = service.unconsumed_notes(conn, thesis_id)
-    prior_n = sum(1 for c in regs["prior_art"]["citations"] if c["research_track"] == detail["thesis"]["track"])
-    packet = pk.build_thesis_packet(detail, regs, notes, prior_n, kind=kind, brief_task=job.get("payload", {}).get("brief_task"))
+    regs = cfg.regs_loader(); notes = service.unconsumed_notes(conn, thesis_id) if thesis_id else []
+    if kind == "radar_process":
+        packet = pk.build_radar_packet(radar_item, regs)
+    else:
+        prior_n = sum(1 for c in regs["prior_art"]["citations"] if c["research_track"] == detail["thesis"]["track"])
+        packet = pk.build_thesis_packet(detail, regs, notes, prior_n, kind=kind, brief_task=job.get("payload", {}).get("brief_task"))
     prompt_hash = sha256(packet["prompt"].encode()).hexdigest()
     runs.emit(conn, run_id, "packet", {"prompt_sha256": prompt_hash, "prompt_bytes": len(packet["prompt"]), "notes_consumed": [n["note_id"] for n in notes], "allowed_prefixes": packet["allowed_prefixes"], "allowed_events": packet["allowed_events"], "state": packet["state"]})
     tel.params({"thesis_state": packet["state"], "allowed_events": ",".join(packet["allowed_events"]), "allowed_tools": ",".join(packet["allowed_tools"]), "prompt_bytes": len(packet["prompt"]), "branch": branch, "contract": "ros-agent-result/1"})
@@ -124,10 +129,20 @@ def run_job(conn, job: dict, cfg: ExecutorConfig) -> dict:
     for f in changed:
         p = wt / f
         runs.emit(conn, run_id, "artifact", {"path": f, "sha256": sha256(p.read_bytes()).hexdigest() if p.exists() else None, "bytes": p.stat().st_size if p.exists() else 0})
-    sha = worktree.commit(wt, f"ros({thesis_id}): {kind} {run_id}\n\n{result.summary[:500]}")
+    sha = worktree.commit(wt, f"ros({scope_id}): {kind} {run_id}\n\n{result.summary[:500]}")
     runs.emit(conn, run_id, "commit", {"sha": sha, "branch": branch, "files": changed})
     # -- lifecycle event (agent; gates enforced by the state machine) ----------------------------------------------
     applied = None
+    if kind == "radar_process":
+        prop_path = wt / pk.RADAR_DIR / str(radar_item["radar_id"]) / "PROPOSAL.json"
+        try:
+            proposal = json.loads(prop_path.read_text(encoding="utf-8")) if prop_path.exists() else None
+        except ValueError:
+            proposal = None
+        with conn.cursor() as cur:
+            cur.execute("UPDATE ros_radar_items SET proposal = %s, updated_at = now() WHERE radar_id = %s", (json.dumps({"schema": "AI_PROPOSAL", "run_id": run_id, "branch": branch, "commit": sha, "prompt_sha256": prompt_hash, "input_sha256": sha256(json.dumps(radar_item["payload"], sort_keys=True, default=str).encode()).hexdigest(),
+                                                                                                                  "model_requested": res.requested_model, "model_resolved": res.reported_model, "evidence_class": evidence, "trace_ids": tel.trace_ids, "proposal": proposal, "valid": proposal is not None}), radar_item["radar_id"]))
+        conn.commit(); runs.emit(conn, run_id, "artifact", {"radar_id": radar_item["radar_id"], "ai_proposal": proposal is not None})
     if result.proposed_event:
         if result.proposed_event not in packet["allowed_events"]:
             runs.emit(conn, run_id, "thesis.event", {"proposed": result.proposed_event, "applied": False, "reason": "not in allowed_events"})
@@ -168,7 +183,7 @@ def _cleanup(cfg: ExecutorConfig, wt: Path, branch: str, *, discard: bool) -> No
         pass
 
 
-def run_once(conn, cfg: ExecutorConfig, worker_id: str, kinds: tuple[str, ...] = ("thesis_advance", "prior_art")) -> dict | None:
+def run_once(conn, cfg: ExecutorConfig, worker_id: str, kinds: tuple[str, ...] = ("thesis_advance", "prior_art", "radar_process")) -> dict | None:
     """One scheduler tick: governor check, dequeue one job, execute. Returns the final job row or None when idle/blocked."""
     ok, reason = governor.can_dispatch(conn, "thesis_advance")
     if not ok:

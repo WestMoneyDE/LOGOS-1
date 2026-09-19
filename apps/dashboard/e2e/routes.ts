@@ -27,7 +27,7 @@ export const ROUTES: { path: string; expect: string }[] = [
   { path: "/p7", expect: "Functional Evidence Boundary" },
   { path: "/theses", expect: "Thesen-Arbeit" }, { path: "/board", expect: "Thesen-Board" },
   { path: "/work-orders", expect: "Work Orders" }, { path: "/queue", expect: "Warteschlange" }, { path: "/runs", expect: "Live-Läufe" }, { path: "/decisions", expect: "Entscheidungen" },
-  { path: "/inbox", expect: "Phase 6" }, { path: "/radar", expect: "Phase 6" }, { path: "/traces", expect: "Traces" }, { path: "/benchmarks", expect: "Benchmark-Labor" },
+  { path: "/inbox", expect: "Eingang" }, { path: "/radar", expect: "Radar" }, { path: "/notes", expect: "Notizbuch" }, { path: "/traces", expect: "Traces" }, { path: "/benchmarks", expect: "Benchmark-Labor" },
   { path: "/progress", expect: "Monatsfortschritt" }, { path: "/statistics", expect: "Statistik" }, { path: "/system/health", expect: "Systemzustand" }, { path: "/system/qa", expect: "Playwright-QA" }, { path: "/system/claude", expect: "Claude-Auth" }, { path: "/system/workers", expect: "Worker" }, { path: "/system/quotas", expect: "Quoten" },
   { path: "/system/governance", expect: "Governance" },
 ];

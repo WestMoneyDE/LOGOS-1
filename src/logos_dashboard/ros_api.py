@@ -575,3 +575,96 @@ def progress_freeze(month: str | None = None, x_logos_actor: str | None = Header
             if "duplicate key" in str(e):
                 c.rollback(); raise HTTPException(409, f"month {payload['month']} already frozen (immutable)")
             raise
+
+
+
+# -- Phase 6: inbox, radar, attention queue -------------------------------------------------------------------------------
+
+from .control import radar as _radar  # noqa: E402
+
+
+class InboxIn(BaseModel):
+    kind: str
+    text: str
+    source_ref: str | None = None      # origin of the capture (paper, review, note); named `source_ref` so it is not mistaken for a memory-authority reader
+    process: bool = True
+
+
+@router.get("/inbox")
+def inbox_list():
+    with _conn() as c:
+        return {"items": _radar.list_inbox(c), "kinds": list(_radar.INBOX_KINDS)}
+
+
+@router.post("/inbox")
+def inbox_add(i: InboxIn, x_logos_actor: str | None = Header(default=None)):
+    with _conn() as c:
+        row = _radar.add_inbox(c, i.kind, i.text, i.source_ref, _actor(x_logos_actor))
+        if i.process:
+            _radar.process(c, row["radar_id"], _registries.load_all(), "system")
+        return {**row, "radar": _radar.get_radar(c, row["radar_id"])}
+
+
+@router.get("/radar")
+def radar_list(state: str | None = None):
+    with _conn() as c:
+        return {"items": _radar.list_radar(c, state), "pipeline": list(_radar.PIPELINE), "terminal": list(_radar.TERMINAL), "delta_kinds": list(_radar.DELTA_KINDS)}
+
+
+@router.get("/radar/{radar_id}")
+def radar_get(radar_id: int):
+    with _conn() as c:
+        r = _radar.get_radar(c, radar_id)
+        if r is None:
+            raise HTTPException(404, str(radar_id))
+        return r
+
+
+@router.post("/radar/{radar_id}/process")
+def radar_process(radar_id: int, x_logos_actor: str | None = Header(default=None)):
+    with _conn() as c:
+        return _radar.process(c, radar_id, _registries.load_all(), _actor(x_logos_actor))
+
+
+class ReviewIn(BaseModel):
+    verdict: str
+    reason: str = ""
+
+
+@router.post("/radar/{radar_id}/review")
+def radar_review(radar_id: int, r: ReviewIn, x_logos_actor: str | None = Header(default=None)):
+    with _conn() as c:
+        return _radar.review(c, radar_id, r.verdict, _actor(x_logos_actor), r.reason)
+
+
+@router.post("/radar/{radar_id}/ai-proposal")
+def radar_ai(radar_id: int, x_logos_actor: str | None = Header(default=None)):
+    """Enqueue the optional AI_PROPOSAL Claude job (waits for founder Start like every Claude job)."""
+    with _conn() as c:
+        if _radar.get_radar(c, radar_id) is None:
+            raise HTTPException(404, str(radar_id))
+        n = sum(1 for j in queue.list_jobs(c, 10000) if j["kind"] == "radar_process" and (j.get("payload") or {}).get("radar_id") == radar_id)
+        return queue.enqueue(c, "radar_process", payload={"radar_id": radar_id}, attempt_group=n, actor=_actor(x_logos_actor))
+
+
+@router.delete("/radar/test-items")
+def radar_delete_test():
+    with _conn() as c:
+        return {"deleted": _radar.delete_test_items(c)}
+
+
+@router.get("/attention")
+def attention():
+    with _conn() as c:
+        items = _radar.attention(c)
+        a = governor.attestation(c)
+        if not a["fresh"]:
+            items.append({"kind": "auth_evidence", "id": "claude_auth", "text": "Claude-Auth-Nachweis fehlt oder ist älter als 24 h — Preflight ausführen", "href": "/system/claude"})
+        return {"items": items, "n": len(items)}
+
+
+@router.get("/notes")
+def notes_list(limit: int = 200):
+    with _conn() as c:
+        with c.cursor(row_factory=__import__("psycopg.rows", fromlist=["dict_row"]).dict_row) as cur:
+            cur.execute("SELECT * FROM ros_notes ORDER BY note_id DESC LIMIT %s", (limit,)); return {"notes": cur.fetchall()}

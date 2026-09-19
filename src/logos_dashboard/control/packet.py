@@ -93,3 +93,15 @@ def parse_agent_result(text: str | None) -> AgentResult | None:
     if not isinstance(files, list) or not all(isinstance(f, str) for f in files):
         return None
     return AgentResult(ev, tuple(files), bool(d.get("needs_prior_art")), str(d.get("summary", "")), tuple(str(u) for u in (d.get("uncertainties") or [])), d)
+
+
+RADAR_DIR = "docs/research/dashboard/radar"
+
+
+def build_radar_packet(item: dict, regs: dict) -> dict:
+    """AI_PROPOSAL for a radar item (§40): the agent writes exactly one PROPOSAL.json under the radar directory; the founder still reviews."""
+    p = item["payload"]; rid = item["radar_id"]; allowed_dir = f"{RADAR_DIR}/{rid}"
+    lines = [f"# LOGOS-1 radar packet — item {rid} ({p['kind']})", "", "## Input", p["text"], f"Source: {p.get('source') or '—'}", "", "## Deterministic analysis (already done)", json.dumps({k: p.get(k) for k in ("parsed", "dedup", "source", "track_map", "claim_impact", "evidence", "action")}, indent=1, default=str)[:6000], "",
+             "## Task", f"Write `{allowed_dir}/PROPOSAL.json` with schema `logos.radar-ai-proposal/1`: {{delta_kind (work_order|prior_art|open_question|claim_note|invariant_note|none), BEFORE, PROPOSED, EVIDENCE, WHY, WHAT_WOULD_FALSIFY_IT, impacted_claims, track, confidence (low|medium|high), caveats}}.",
+             "Cite registry records by path. Never edit registries. Never claim a verdict or change a status/strength.", "", "## Result (mandatory, last)", "```json", json.dumps({"schema": RESULT_SCHEMA, "proposed_event": None, "files": [f"{allowed_dir}/PROPOSAL.json"], "needs_prior_art": False, "summary": "one paragraph", "uncertainties": []}, indent=1), "```"]
+    return {"prompt": "\n".join(lines), "system": "You are a research-radar analyst inside LOGOS-1. You propose deltas; the founder decides.", "allowed_tools": ALLOWED_TOOLS_ADVANCE, "disallowed_tools": DISALLOWED_TOOLS, "allowed_prefixes": (allowed_dir + "/",), "allowed_events": [], "state": item["state"], "thesis_id": None, "radar_id": rid}

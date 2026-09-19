@@ -169,6 +169,8 @@ def pre_run_gate(conn, job: dict, thesis_state: str | None, agent_ceiling: str, 
     c = caps(conn); q = quota_state(conn); a = attestation(conn)
     checks = {"db_ok": True, "governance_lifted": c.governance_status in ("LIFTED_WITH_CONDITIONS", "LIFTED"), "quota_ok": q.get("state") == "OK", "auth_evidence_fresh": a["fresh"], "auth_class_max": a.get("auth_class") == "MAX_SUBSCRIPTION",
               "contamination_clean": not any(contamination().values()), "model_pin_present": bool(c.model_pin), "job_is_claude_kind": job["kind"] in CLAUDE_KINDS, "job_waiting_or_queued": job["state"] in ("waiting_governance", "queued")}
+    if job["kind"] == "radar_process":
+        checks["radar_item_known"] = bool((job.get("payload") or {}).get("radar_id"))
     if job["kind"] == "thesis_advance":
         checks["thesis_known"] = thesis_state is not None
         checks["thesis_below_agent_ceiling"] = thesis_state is not None and thesis_state in thesis_states and thesis_states.index(thesis_state) < thesis_states.index(agent_ceiling)

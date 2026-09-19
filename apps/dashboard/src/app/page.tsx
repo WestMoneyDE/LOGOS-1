@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { api } from "@/lib/api";
+import { rosGet } from "@/lib/ros";
 import { getT } from "@/i18n";
 import { Shell, Section } from "@/components/shell";
 import { StatCards } from "@/components/stat-cards";
@@ -8,7 +9,7 @@ import { StatusBadge, StrengthBadge, VerdictBadge } from "@/components/badges";
 
 export default async function CommandCenter() {
   const { t, locale } = await getT();
-  const cc = await api("/api/command-center"); const o = await api("/api/overview");
+  const cc = await api("/api/command-center"); const o = await api("/api/overview"); const att = await rosGet("/api/attention".replace("/api/", "/api/ros/"));
   const s = cc.stats; const de = locale === "de";
   const items = [
     { label: de ? "Aktive Thesen" : "Active theses", value: s.active_theses, href: "/theses" }, { label: de ? "Work Orders in Warteschlange" : "Queued work orders", value: s.queued_work_orders, sub: de ? `${s.ros.queued_jobs ?? 0} Jobs · ${s.ros.waiting_governance ?? 0} warten auf Governance` : `${s.ros.queued_jobs ?? 0} jobs · ${s.ros.waiting_governance ?? 0} waiting governance`, href: "/queue" },
@@ -28,6 +29,7 @@ export default async function CommandCenter() {
           {cc.active_research.length ? <div className="grid gap-2">{cc.active_research.map((a: any) => <Link key={a.claim_id} href={`/claims/${a.claim_id}`} className="border border-border p-3 text-sm hover:bg-muted/30"><div className="font-mono text-xs text-muted-foreground">{a.claim_id} · {a.track}</div><div className="font-medium">{a.title}</div><div className="mt-1 flex flex-wrap gap-2"><StatusBadge status={a.status} /><StrengthBadge strength={a.strength} /></div><div className="mt-1 text-xs text-muted-foreground">{de ? "nächster Test" : "next test"}: {a.next_test || "—"} · {de ? "Risiko" : "risk"}: {a.risk || "—"}</div></Link>)}</div> : <p className="text-sm text-muted-foreground">{de ? "Keine These ausgewählt —" : "No thesis selected —"} <Link href="/theses" className="underline">{t("nav_theses")}</Link></p>}
         </Section>
       </div>
+      {att && att.n > 0 && <Section title={de ? "Aufmerksamkeit (nur Founder)" : "Attention (founder only)"} hint={`${att.n}`}><ul className="grid gap-1 text-sm">{att.items.map((a: any) => <li key={a.kind + a.id} className="border border-border border-l-4 border-l-amber-500 px-3 py-1.5"><span className="mr-2 font-mono text-[0.6rem] uppercase tracking-widest text-muted-foreground">{a.kind}</span><Link href={a.href} className="hover:underline">{a.text}</Link></li>)}</ul></Section>}
       <Section title={de ? "Forschungs-Alerts" : "Research alerts"}>{cc.alerts.length ? <ul className="grid gap-1 text-sm">{cc.alerts.map((a: any, i: number) => <li key={i} className="border border-border px-3 py-1.5"><span className="mr-2 font-mono text-[0.6rem] uppercase tracking-widest text-muted-foreground">{a.kind}</span><Link href={a.href} className="hover:underline">{a.text}</Link></li>)}</ul> : <p className="text-sm text-muted-foreground">{de ? "keine" : "none"}</p>}</Section>
       <Section title={de ? "Wissenschaftlicher Fortschritt" : "Scientific progress"}><VerdictMix data={cc.verdict_mix} n={cc.n_closures} /></Section>
       <Section title={de ? "Forschungsprinzipien" : "Research principles"}><p className="text-sm">{o.principles.join(" · ")}</p></Section>

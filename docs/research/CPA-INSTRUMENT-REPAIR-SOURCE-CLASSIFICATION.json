@@ -1193,6 +1193,34 @@
     "src/logos_dashboard/stats.py": {
       "class": "TOOLING",
       "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 5 statistics module / benchmark lab definitions (DRAFT until founder approval; agent modes NO_DATA) / immutable snapshots; no model call"
+    },
+    "apps/dashboard/e2e/radar.spec.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/app/notes/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/inbox-form.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/notes-book.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/radar-card.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "docs/research/PRODUCTION-BRIDGE-SOURCE-CLASSIFICATION.json": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 support file; no model call"
+    },
+    "src/logos_dashboard/control/radar.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 6 inbox/radar pipeline (deterministic heuristics -> proposal; founder review -> DRAFT, never a registry edit); no model call"
     }
   },
   "unclassified": 0

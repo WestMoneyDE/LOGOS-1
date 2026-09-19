@@ -558,3 +558,79 @@ def test_ros_api_benchmarks_statistics_progress(conn):
     assert "mcnemar_exact" in client.get("/api/ros/statistics/methods").json()["methods"]
     p = client.get("/api/ros/progress?month=2026-09").json(); assert p["current"]["month"] == "2026-09" and p["series"] and "NOT_COMPARABLE" in p["comparability"]
     assert client.post("/api/ros/progress/freeze?month=2026-09", headers={"X-Logos-Actor": "agent"}).status_code == 403
+
+
+
+# -- Phase 6: inbox / radar pipeline / drafts / attention / AI_PROPOSAL job --------------------------------------------
+
+
+@pytest.fixture
+def radar_clean(conn):
+    from logos_dashboard.control import radar
+    yield
+    conn.rollback(); radar.delete_test_items(conn)
+    import glob, os
+    for f in glob.glob(str(_Path(__file__).resolve().parents[1] / "docs/research/dashboard/radar-drafts/radar-*-*.json")):
+        if "TEST-ROS" in open(f, encoding="utf-8").read():
+            os.remove(f)
+
+
+def test_radar_pipeline_deterministic_and_founder_review(conn, radar_clean):
+    from logos_dashboard.control import radar
+    from logos_dashboard.registries import load_all
+    from logos_dashboard.control.state_machines import IllegalTransition
+    regs = load_all()
+    with pytest.raises(ValueError):
+        radar.add_inbox(conn, "rant", "TEST-ROS x", None, "founder")
+    it = radar.add_inbox(conn, "paper", "TEST-ROS Authority delegation paper on canonical grant binding, see https://example.org/p1 doi 10.1234/abcd.5678 — relevant to LOGOS-AUTH-001", "founder note", "founder")
+    row = radar.process(conn, it["radar_id"], regs)
+    p = row["payload"]
+    assert row["state"] == "ACTION_PROPOSED" and [h["state"] for h in p["history"]] == ["RAW", "PARSED", "DEDUPLICATED", "SOURCE_CHECKED", "TRACK_MAPPED", "CLAIM_IMPACT_ANALYZED", "EVIDENCE_STRENGTH_ASSIGNED", "ACTION_PROPOSED"]
+    assert p["parsed"]["urls"] == ["https://example.org/p1"] and p["parsed"]["dois"] == ["10.1234/abcd.5678"] and p["parsed"]["claim_ids"] == ["LOGOS-AUTH-001"]
+    assert p["source"]["source_class"] == "doi" and p["track_map"]["track"] == "authority" and any(c["claim_id"] == "LOGOS-AUTH-001" and c["match"] == "id" for c in p["claim_impact"]["impacted_claims"])
+    assert p["evidence"]["proposed_evidence_strength"].startswith("MEDIUM (proposed") and p["action"]["delta_kind"] == "prior_art" and set(p["action"]["delta"]) == {"BEFORE", "PROPOSED", "EVIDENCE", "WHY", "WHAT_WOULD_FALSIFY_IT"}
+    dup = radar.add_inbox(conn, "paper", "TEST-ROS Authority delegation paper on canonical grant binding, see https://example.org/p1 doi 10.1234/abcd.5678 — relevant to LOGOS-AUTH-001", None, "founder")
+    d = radar.process(conn, dup["radar_id"], regs)["payload"]; assert d["dedup"]["is_duplicate"] and d["action"]["delta_kind"] == "none"
+    with pytest.raises(IllegalTransition):
+        radar.review(conn, it["radar_id"], "ACCEPTED", "agent")
+    conn.rollback()
+    with pytest.raises(ValueError):
+        radar.review(conn, it["radar_id"], "MAYBE", "founder")
+    acc = radar.review(conn, it["radar_id"], "ACCEPTED", "founder", "good source")
+    assert acc["state"] == "ACCEPTED" and acc["decided_by"] == "founder" and acc["payload"]["drafts"][0]["kind"] == "prior_art" and acc["payload"]["drafts"][0]["path"].startswith("docs/research/dashboard/radar-drafts/")
+    draft = _json.loads((_Path(__file__).resolve().parents[1] / acc["payload"]["drafts"][0]["path"]).read_text(encoding="utf-8")); assert draft["registry_change"].startswith("NONE") and draft["impacted_claims"][0]["claim_id"] == "LOGOS-AUTH-001"
+    with pytest.raises(ValueError):
+        radar.process(conn, it["radar_id"], regs)          # terminal
+    ex = radar.add_inbox(conn, "experiment_idea", "TEST-ROS Test whether memory consolidation leaks authority under reconsolidation", None, "founder")
+    radar.process(conn, ex["radar_id"], regs); wo = radar.review(conn, ex["radar_id"], "ACCEPTED", "founder")
+    assert wo["payload"]["action"]["delta_kind"] == "work_order" and wo["payload"]["drafts"][0]["id"] == f"WO-RADAR-{ex['radar_id']}" and wo["payload"]["drafts"][0]["state"] == "DRAFT"
+    q = radar.add_inbox(conn, "idea", "TEST-ROS What if provenance graphs were compressed?", None, "founder"); radar.process(conn, q["radar_id"], regs)
+    assert radar.review(conn, q["radar_id"], "DEFERRED", "founder")["state"] == "DEFERRED" and radar.review(conn, q["radar_id"], "REJECTED", "founder")["state"] == "REJECTED"
+    att = radar.attention(conn); assert isinstance(att, list) and all({"kind", "id", "text", "href"} <= set(a) for a in att)
+
+
+def test_radar_ai_proposal_job_and_api(conn, radar_clean, repo, tmp_path, attested):
+    from fastapi.testclient import TestClient
+    from logos_dashboard.api import app
+    from logos_dashboard.control import radar
+    client = TestClient(app)
+    r = client.post("/api/ros/inbox", json={"kind": "critique", "text": "TEST-ROS The authority claim ignores delegation chains longer than two hops", "source_ref": "review"}).json()
+    assert r["radar"]["state"] == "ACTION_PROPOSED" and r["radar"]["payload"]["track_map"]["track"] == "authority"
+    rid = r["radar_id"]
+    assert client.post("/api/ros/inbox", json={"kind": "spam", "text": "TEST-ROS x"}).status_code == 400
+    lst = client.get("/api/ros/radar?state=ACTION_PROPOSED").json(); assert any(x["radar_id"] == rid for x in lst["items"]) and lst["pipeline"][0] == "RAW"
+    assert client.post(f"/api/ros/radar/{rid}/review", json={"verdict": "ACCEPTED"}, headers={"X-Logos-Actor": "agent"}).status_code == 409
+    j = client.post(f"/api/ros/radar/{rid}/ai-proposal").json(); assert j["kind"] == "radar_process" and j["state"] == "waiting_governance" and j["payload"]["radar_id"] == rid
+    gate = client.get(f"/api/ros/queue/{j['job_id']}/gate").json(); assert gate["passed"] is True and gate["checks"]["radar_item_known"] is True
+    assert client.post(f"/api/ros/queue/{j['job_id']}/start").json()["state"] == "queued"
+    rel = f"docs/research/dashboard/radar/{rid}/PROPOSAL.json"
+    prop = {"delta_kind": "claim_note", "BEFORE": {}, "PROPOSED": "note", "EVIDENCE": {}, "WHY": "w", "WHAT_WOULD_FALSIFY_IT": "f", "impacted_claims": ["LOGOS-AUTH-001"], "track": "authority", "confidence": "low", "caveats": []}
+    out = executor.run_once(conn, _cfg(repo, tmp_path, _fake_claude(_result_doc(_agent_block(None, [rel])), write={rel: _json.dumps(prop)})), "w-test", kinds=("radar_process",))
+    assert out["state"] == "done" and out["kind"] == "radar_process"
+    item = radar.get_radar(conn, rid); assert item["proposal"]["schema"] == "AI_PROPOSAL" and item["proposal"]["valid"] is True and item["proposal"]["proposal"]["delta_kind"] == "claim_note" and item["proposal"]["model_resolved"] == "claude-opus-5" and len(item["proposal"]["prompt_sha256"]) == 64
+    assert item["state"] == "ACTION_PROPOSED"                       # the AI proposal never moves the pipeline; the founder does
+    att = client.get("/api/ros/attention").json(); assert any(a["kind"] == "radar" and a["id"] == str(rid) for a in att["items"])
+    acc = client.post(f"/api/ros/radar/{rid}/review", json={"verdict": "ACCEPTED", "reason": "ok"}).json(); assert acc["state"] == "ACCEPTED" and acc["payload"]["drafts"][0]["kind"] == "claim_note"
+    with conn.cursor() as cur:
+        cur.execute("DELETE FROM ros_runs WHERE run_id = %s", (runs.list_runs(conn, 5)[0]["run_id"],)); cur.execute("DELETE FROM ros_jobs WHERE job_id = %s", (j["job_id"],))
+    conn.commit()
