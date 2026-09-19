@@ -634,3 +634,28 @@ def test_radar_ai_proposal_job_and_api(conn, radar_clean, repo, tmp_path, attest
     with conn.cursor() as cur:
         cur.execute("DELETE FROM ros_runs WHERE run_id = %s", (runs.list_runs(conn, 5)[0]["run_id"],)); cur.execute("DELETE FROM ros_jobs WHERE job_id = %s", (j["job_id"],))
     conn.commit()
+
+
+
+# -- Phase 7: evidence debt, paper readiness, monthly report ------------------------------------------------------------
+
+
+def test_evidence_debt_paper_readiness_and_monthly_report(conn):
+    from fastapi.testclient import TestClient
+    from logos_dashboard import reports, registries, readers
+    from logos_dashboard.api import app
+    regs = registries.load_all(); cl = readers.closures()
+    d = reports.evidence_debt(regs, cl)
+    assert d["n"] == sum(d["by_severity"].values()) and all({"severity", "kind", "subject", "record", "text"} <= set(i) for i in d["items"]) and all(i["severity"] in ("HIGH", "MEDIUM", "LOW") for i in d["items"])
+    assert d["n"] == 24 and d["by_severity"] == {"HIGH": 0, "MEDIUM": 18, "LOW": 6}            # exact for the current registries (2026-09-19); a registry change must update this count consciously
+    fake = {**regs, "claims": {**regs["claims"], "claims": [{**regs["claims"]["claims"][0], "claim_id": "X-1", "status": "SUPPORTED", "evidence_strength": "PRELIMINARY", "supporting_artifacts": [], "next_falsification_test": "", "external_replication": "none", "counterevidence": ["c"]}]}}
+    kinds = [i["kind"] for i in reports.evidence_debt(fake, [])["items"]]
+    assert kinds[:5] == ["status_exceeds_evidence", "no_next_falsification_test", "no_external_replication", "no_artifact", "unaddressed_counterevidence"]
+    pr = reports.paper_readiness(regs)
+    assert [p["paper_id"] for p in pr] == [p["paper_id"] for p in regs["publications"]["papers"]] and all(p["of"] == 8 and 0 <= p["met"] <= 8 and "founder decision" in p["verdict"] for p in pr)
+    client = TestClient(app)
+    r = client.get("/api/ros/reports/2026-09").json(); doc = r["doc"]
+    assert doc["month"] == "2026-09" and len(doc["sha256"]) == 64 and doc["closures"] and "no readiness verdict" in doc["does_not_claim"] and r["markdown"].startswith("# LOGOS-1 Monthly Report") and "Wilson" in r["markdown"]
+    assert client.get("/api/ros/reports/2026-09").json()["doc"]["sha256"] == doc["sha256"]        # deterministic (generated_at excluded from the hash)
+    assert client.post("/api/ros/reports/2026-09/freeze", headers={"X-Logos-Actor": "agent"}).status_code == 403 and client.post("/api/ros/reports/TEST-ROS-1/freeze").status_code == 400
+    assert client.get("/api/ros/evidence-debt").json()["n"] == d["n"] and len(client.get("/api/ros/paper-readiness").json()["papers"]) == len(pr) and "reports" in client.get("/api/ros/reports").json()

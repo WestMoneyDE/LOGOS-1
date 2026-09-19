@@ -6,7 +6,7 @@ import * as fs from "fs";
 // Smoke + layout QA for every core route (§58-63). Results are also written as a JSON inventory for /system/qa (§93).
 const results: any[] = [];
 // Live control-plane pages change while the behaviour specs (control-plane/executor) create TEST-ROS rows in parallel; they keep every layout gate but no pixel baseline.
-const DYNAMIC = new Set(["/system/qa", "/queue", "/runs", "/theses", "/board", "/work-orders", "/decisions", "/system/workers", "/system/quotas", "/system/claude", "/traces", "/benchmarks", "/progress", "/inbox", "/radar", "/notes"]);
+const DYNAMIC = new Set(["/system/qa", "/queue", "/runs", "/theses", "/board", "/work-orders", "/decisions", "/system/workers", "/system/quotas", "/system/claude", "/traces", "/benchmarks", "/progress", "/inbox", "/radar", "/notes", "/reports"]);
 
 for (const r of ROUTES) {
   test(`route ${r.path} renders, no overflow, no clipping, no console errors`, async ({ page }, testInfo) => {

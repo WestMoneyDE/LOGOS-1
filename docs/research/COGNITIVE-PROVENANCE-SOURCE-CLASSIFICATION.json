@@ -1265,6 +1265,34 @@
     "src/logos_dashboard/control/radar.py": {
       "class": "TOOLING",
       "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 6 inbox/radar pipeline (deterministic heuristics -> proposal; founder review -> DRAFT, never a registry edit); no model call"
+    },
+    "apps/dashboard/e2e/reports.spec.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-evidence-debt-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-evidence-debt-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/app/evidence-debt/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/app/reports/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/report-freeze.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "src/logos_dashboard/reports.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 7 evidence debt / paper readiness / monthly report (counts and criteria from records; no verdict, no status change); no model call"
     }
   },
   "unclassified": 0

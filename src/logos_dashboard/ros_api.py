@@ -668,3 +668,60 @@ def notes_list(limit: int = 200):
     with _conn() as c:
         with c.cursor(row_factory=__import__("psycopg.rows", fromlist=["dict_row"]).dict_row) as cur:
             cur.execute("SELECT * FROM ros_notes ORDER BY note_id DESC LIMIT %s", (limit,)); return {"notes": cur.fetchall()}
+
+
+
+# -- Phase 7: evidence debt, paper readiness, monthly report ----------------------------------------------------------
+
+from . import reports as _reports  # noqa: E402
+
+REPORTS_DIR = _registries.DASH / "reports"
+
+
+@router.get("/evidence-debt")
+def evidence_debt():
+    return _reports.evidence_debt(_registries.load_all(), _readers.closures())
+
+
+@router.get("/paper-readiness")
+def paper_readiness():
+    return {"papers": _reports.paper_readiness(_registries.load_all())}
+
+
+@router.get("/reports")
+def reports_list():
+    files = sorted(REPORTS_DIR.glob("*.md")) if REPORTS_DIR.exists() else []
+    with _conn() as c:
+        frozen = {m["month"]: m for m in _bl.months(c)}
+    return {"reports": [{"month": f.stem, "path": str(f.relative_to(_registries.DASH.parents[2])).replace("\\", "/"), "frozen": f.stem in frozen, "sha256": (frozen.get(f.stem) or {}).get("sha256")} for f in files], "frozen_months": list(frozen)}
+
+
+@router.get("/reports/{month}")
+def report_get(month: str):
+    with _conn() as c:
+        regs = _registries.load_all(); cl = _readers.closures()
+        doc = _reports.monthly_report(c, regs, cl, _bl.monthly_progress(c, cl, regs, month), month)
+        return {"doc": doc, "markdown": _reports.render_markdown(doc), "frozen": month in {m["month"] for m in _bl.months(c)}}
+
+
+@router.post("/reports/{month}/freeze")
+def report_freeze(month: str, x_logos_actor: str | None = Header(default=None)):
+    """Founder: write docs/research/dashboard/reports/<month>.md + .json and freeze the month (immutable ros_monthly_snapshots row carrying the report sha)."""
+    actor = _actor(x_logos_actor)
+    if actor != "founder":
+        raise HTTPException(403, {"governance": "only the founder freezes a monthly report"})
+    if month.startswith("TEST-ROS"):
+        raise HTTPException(400, "test months are not frozen")
+    with _conn() as c:
+        regs = _registries.load_all(); cl = _readers.closures()
+        progress = _bl.monthly_progress(c, cl, regs, month)
+        doc = _reports.monthly_report(c, regs, cl, progress, month); md = _reports.render_markdown(doc)
+        REPORTS_DIR.mkdir(exist_ok=True)
+        (REPORTS_DIR / f"{month}.md").write_text(md, encoding="utf-8"); (REPORTS_DIR / f"{month}.json").write_text(json.dumps(doc, indent=2, default=str, ensure_ascii=False) + "\n", encoding="utf-8")
+        try:
+            row = _bl.freeze_month(c, {**progress, "report_sha256": doc["sha256"], "report_path": f"docs/research/dashboard/reports/{month}.md"}, actor)
+        except Exception as e:
+            if "duplicate key" in str(e):
+                c.rollback(); raise HTTPException(409, f"month {month} already frozen (immutable); report files rewritten? no — remove is not allowed")
+            raise
+        return {"month": month, "sha256": doc["sha256"], "path": f"docs/research/dashboard/reports/{month}.md", "snapshot": row}
