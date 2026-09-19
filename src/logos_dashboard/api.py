@@ -228,3 +228,36 @@ class BriefIn(BaseModel):
 @app.post("/api/research-briefs/validate")
 def validate_brief(b: BriefIn):
     return {"issues": research_intake.validate_brief(b.brief)}
+
+
+@app.get("/api/governance-record")
+def governance_record():
+    """Active provider/billing gates, caps, flag whitelist and superseded blocks from INFERENCE-GOVERNANCE.json (read-only)."""
+    from .registries import ROOT as _root
+    g = json.loads((_root / "docs/research/INFERENCE-GOVERNANCE.json").read_text(encoding="utf-8"))
+    gates = [{"id": k, "decision": g[k].get("decision"), "summary": {"G1": g[k].get("conditions", [""])[0] if isinstance(g[k].get("conditions"), list) and g[k].get("conditions") else "LIFTED_WITH_CONDITIONS",
+              "G2": f"{g[k].get('provider')} · {g[k].get('access_path')} · {g[k].get('auth_mode')} · model {g[k].get('model_id')} · region {g[k].get('region')}",
+              "G3": ", ".join(g[k].get("allowed_data_classes", [])), "G4": f"{g[k].get('billing_mode')} · API budget {g[k].get('incremental_api_budget_usd')} USD · fallback {g[k].get('api_credit_fallback')}"}.get(k, "")} for k in ("G1", "G2", "G3", "G4") if k in g]
+    g4 = g.get("G4", {})
+    caps = {k: g4.get(k) for k in ("max_wall_clock_hours", "max_repeats", "max_claude_code_invocations", "max_concurrent_sessions", "max_total_spend", "max_per_run_spend")}
+    sup = [{"id": k, "status": v.get("status"), "superseded_by": v.get("superseded_by")} for k, v in g.get("superseded", {}).items() if isinstance(v, dict)]
+    open_q = [t for c in readers.closures() for t in c["open_decisions"]]
+    return {"status": g.get("status"), "gates": gates, "caps": caps, "allowed_flags": ["-p", "--output-format json|stream-json", "--model", "--max-turns", "--system-prompt", "--append-system-prompt", "--allowedTools", "--disallowedTools"],
+            "forbidden_flags": ["--dangerously-skip-permissions", "--allow-dangerously-skip-permissions", "--fallback-model", "--resume", "--continue", "--mcp-config", "--verbose (not approved)", "--bare (needs API key)"], "superseded": sup, "open": open_q}
+
+
+# -- Playwright QA inventory (order §93-94) ----------------------------------------------------
+
+from .registries import ROOT as _ROOT  # noqa: E402
+QA_DIR = _ROOT / "apps/dashboard/e2e/results"
+
+
+@app.get("/api/qa/last-run")
+def qa_last_run():
+    inv = QA_DIR / "route-inventory.json"; last = QA_DIR / "last-run.json"
+    routes = json.loads(inv.read_text(encoding="utf-8")) if inv.exists() else []
+    stats = json.loads(last.read_text(encoding="utf-8")).get("stats", {}) if last.exists() else {}
+    shots = sorted(str(p.relative_to(QA_DIR)).replace("\\", "/") for p in (QA_DIR / "screenshots").rglob("*.png")) if (QA_DIR / "screenshots").exists() else []
+    violations = [r for r in routes if (r.get("overflow") or {}).get("overflow") or r.get("clipped") or r.get("consoleErrors") or r.get("failedRequests")]
+    return {"last_run": stats, "routes": routes, "screenshots": shots, "projects": sorted({r["project"] for r in routes}), "violations": violations,
+            "routes_passed": sum(1 for r in routes if r not in violations and r.get("status") == 200), "routes_failed": len(violations) + sum(1 for r in routes if r.get("status") != 200)}

@@ -12,13 +12,15 @@ for (const r of ROUTES) {
     page.on("console", (m) => { if (m.type() === "error") consoleErrors.push(m.text().slice(0, 200)); });
     page.on("requestfailed", (q) => { const err = q.failure()?.errorText ?? ""; if (err === "net::ERR_ABORTED" && q.url().includes("_rsc=")) return; /* Next.js link prefetch cancelled on navigation */ failedRequests.push(`${q.method()} ${q.url()} ${err}`); });
     const t0 = Date.now();
-    const resp = await page.goto(r.path, { waitUntil: "networkidle" });
+    const resp = await page.goto(r.path, { waitUntil: "load" });
+    await page.locator("main h1").first().waitFor();
     expect(resp?.status(), `HTTP status for ${r.path}`).toBe(200);
     await expect(page.locator("main").getByText(r.expect, { exact: false }).first()).toBeVisible();
     const ov = await pageOverflow(page);
     const clipped = await clippedElements(page);
     results.push({ route: r.path, project: testInfo.project.name, viewport: testInfo.project.use.viewport, status: resp?.status(), overflow: ov, clipped, consoleErrors, failedRequests, durationMs: Date.now() - t0 });
     await page.screenshot({ path: `e2e/results/screenshots/${testInfo.project.name}${r.path === "/" ? "/index" : r.path}.png`, fullPage: true });
+    if (["desktop-1440", "mobile-390"].includes(testInfo.project.name) && r.path !== "/system/qa") await expect(page).toHaveScreenshot({ fullPage: true, mask: [page.locator("time")] });
     expect(ov.overflow, `page-level horizontal overflow on ${r.path} (${ov.scrollWidth} > ${ov.innerWidth})`).toBe(false);
     expect(clipped, `clipped key content on ${r.path}`).toEqual([]);
     expect(consoleErrors, `console errors on ${r.path}`).toEqual([]);

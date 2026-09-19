@@ -193,3 +193,11 @@ def test_dashboard_source_classification_complete():
     assert files - set(sites) == set(), files - set(sites)
     from logos_research import experiments
     assert "logos_dashboard" not in experiments.PRODUCTION_PACKAGES
+
+
+def test_qa_and_governance_endpoints():
+    r = client.get("/api/qa/last-run"); assert r.status_code == 200
+    body = r.json(); assert "routes" in body and "last_run" in body and isinstance(body["routes"], list) and "violations" in body
+    g = client.get("/api/governance-record").json()
+    assert g["status"].endswith("INFERENCE_GOVERNANCE_PROVIDER_AMENDED_R1") and [x["id"] for x in g["gates"]] == ["G1", "G2", "G3", "G4"]
+    assert g["caps"]["max_concurrent_sessions"] == 1 and "--fallback-model" in g["forbidden_flags"] and any(s["status"] == "SUPERSEDED_BY_FOUNDER_AMENDMENT" for s in g["superseded"])

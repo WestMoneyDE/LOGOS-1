@@ -26,4 +26,7 @@ export const ROUTES: { path: string; expect: string }[] = [
   { path: "/reproducibility", expect: "Reproducibility" },
   { path: "/p7", expect: "Functional Evidence Boundary" },
   { path: "/theses", expect: "Work on theses" },
+  { path: "/work-orders", expect: "Phase 2" }, { path: "/queue", expect: "Phase 2" }, { path: "/runs", expect: "Phase 3" }, { path: "/decisions", expect: "Phase 2" },
+  { path: "/inbox", expect: "Phase 6" }, { path: "/radar", expect: "Phase 6" }, { path: "/traces", expect: "Phase 4" }, { path: "/benchmarks", expect: "Phase 5" },
+  { path: "/progress", expect: "Phase 5" }, { path: "/statistics", expect: "Phase 5" }, { path: "/system/health", expect: "Systemzustand" }, { path: "/system/qa", expect: "Playwright-QA" }, { path: "/system/governance", expect: "Governance" },
 ];

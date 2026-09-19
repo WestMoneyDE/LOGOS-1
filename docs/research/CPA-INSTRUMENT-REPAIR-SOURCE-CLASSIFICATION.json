@@ -56,7 +56,7 @@
     },
     "docs/research/CPA-INSTRUMENT-REPAIR-SOURCE-CLASSIFICATION.json": {
       "class": "GOVERNANCE_ONLY",
-      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: living classification extended"
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: living classification extended"
     },
     "docs/research/PRE-INFERENCE-SOURCE-CLASSIFICATION.json": {
       "class": "GOVERNANCE_ONLY",
@@ -352,7 +352,7 @@
     },
     "docs/research/dashboard/ACTIVE-THESES.json": {
       "class": "GOVERNANCE_ONLY",
-      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase-0 inventory / architecture"
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: record"
     },
     "docs/research/dashboard/CLAIM-REGISTRY.json": {
       "class": "GOVERNANCE_ONLY",
@@ -404,7 +404,7 @@
     },
     "src/logos_dashboard/api.py": {
       "class": "TOOLING",
-      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: read-mostly FastAPI service (registries, readers, research intake); single write = ACTIVE-THESES.json; never imported by production packages"
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: service"
     },
     "src/logos_dashboard/readers.py": {
       "class": "TOOLING",
@@ -420,7 +420,7 @@
     },
     "tests/test_dashboard_scientific_core.py": {
       "class": "EXPERIMENTAL_DETERMINISTIC",
-      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: integrity validation layer + API route tests"
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: tests"
     },
     "05-WORK-ORDERS/NEXT-SESSION-LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1.md": {
       "class": "GOVERNANCE_ONLY",
@@ -448,11 +448,11 @@
     },
     "apps/dashboard/e2e/routes.ts": {
       "class": "TOOLING",
-      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Playwright QA (viewport matrix, overflow/clipping/console checks, route inventory) / layout remediation"
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
     },
     "apps/dashboard/e2e/smoke.spec.ts": {
       "class": "TOOLING",
-      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Playwright QA (viewport matrix, overflow/clipping/console checks, route inventory) / layout remediation"
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
     },
     "apps/dashboard/playwright.config.ts": {
       "class": "TOOLING",
@@ -461,6 +461,370 @@
     "docs/research/dashboard/RESEARCH-OS-CURRENT-STATE.md": {
       "class": "GOVERNANCE_ONLY",
       "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase-0 inventory / architecture"
+    },
+    ".agents/skills/logos-prior-art-research/SKILL.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: record"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-benchmarks-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-benchmarks-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-claims-LOGOS-CP-001-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-claims-LOGOS-CP-001-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-claims-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-claims-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-counterexamples-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-counterexamples-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-decisions-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-decisions-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-experiments-EXP-CPA-RERUN-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-experiments-EXP-CPA-RERUN-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-experiments-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-experiments-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-falsification-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-falsification-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-inbox-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-inbox-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-invariants-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-invariants-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-negative-results-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-negative-results-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-open-questions-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-open-questions-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-p7-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-p7-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-prior-art-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-prior-art-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-progress-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-progress-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-publications-PAPER-3-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-publications-PAPER-3-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-publications-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-publications-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-queue-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-queue-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-radar-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-radar-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-replication-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-replication-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-reproducibility-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-reproducibility-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-research-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-research-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-runs-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-runs-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-statistics-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-statistics-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-system-governance-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-system-governance-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-system-health-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-system-health-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-theses-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-theses-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-timeline-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-timeline-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-traces-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-traces-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-tracks-authority-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-tracks-authority-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-tracks-cognitive-provenance-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-tracks-cognitive-provenance-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-tracks-measurement-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-tracks-measurement-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-tracks-memory-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-tracks-memory-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-tracks-provenance-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-tracks-provenance-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-tracks-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-tracks-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-tracks-trajectory-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-tracks-trajectory-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-work-orders-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-work-orders-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/src/app/benchmarks/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/src/app/decisions/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/src/app/inbox/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/src/app/progress/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/src/app/queue/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/src/app/radar/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/src/app/runs/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/src/app/statistics/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/src/app/system/governance/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/src/app/system/health/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/src/app/system/qa/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/src/app/traces/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/src/app/work-orders/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/src/components/phase-placeholder.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
     }
   },
   "unclassified": 0
