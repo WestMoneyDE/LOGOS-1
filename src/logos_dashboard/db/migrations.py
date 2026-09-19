@@ -5,7 +5,8 @@ from dataclasses import dataclass
 
 VERSION_TABLE = "ros_schema_version"
 ROS_TABLES = ["ros_theses", "ros_thesis_events", "ros_work_orders", "ros_work_order_deps", "ros_runs", "ros_run_events", "ros_jobs", "ros_decisions",
-              "ros_inbox_items", "ros_radar_items", "ros_notes", "ros_artifacts", "ros_trace_links", "ros_audit", "ros_settings", "ros_worker_heartbeats"]
+              "ros_inbox_items", "ros_radar_items", "ros_notes", "ros_artifacts", "ros_trace_links", "ros_audit", "ros_settings", "ros_worker_heartbeats",
+              "ros_benchmark_suites", "ros_benchmark_snapshots", "ros_metric_results", "ros_monthly_snapshots"]
 
 
 @dataclass(frozen=True)
@@ -71,6 +72,22 @@ MIGRATIONS: tuple[Migration, ...] = (
         "ALTER TABLE ros_jobs ADD COLUMN IF NOT EXISTS stop_requested BOOLEAN NOT NULL DEFAULT FALSE",
         "ALTER TABLE ros_runs ADD COLUMN IF NOT EXISTS job_id BIGINT",
         "ALTER TABLE ros_runs ADD COLUMN IF NOT EXISTS summary JSONB",
+    )),
+    Migration(3, "ros_benchmarks", (
+        """CREATE TABLE IF NOT EXISTS ros_benchmark_suites (
+            suite_id TEXT PRIMARY KEY, definition JSONB NOT NULL, definition_sha256 TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'DRAFT_PENDING_FOUNDER_APPROVAL', approved_by TEXT, approved_at TIMESTAMPTZ, updated_at TIMESTAMPTZ NOT NULL DEFAULT now())""",
+        """CREATE TABLE IF NOT EXISTS ros_benchmark_snapshots (
+            snapshot_id TEXT PRIMARY KEY, suite_id TEXT NOT NULL, mode TEXT NOT NULL, month TEXT NOT NULL, run_id TEXT, payload JSONB NOT NULL, sha256 TEXT NOT NULL, frozen BOOLEAN NOT NULL DEFAULT TRUE, created_at TIMESTAMPTZ NOT NULL DEFAULT now())""",
+        """CREATE TABLE IF NOT EXISTS ros_metric_results (
+            result_id BIGSERIAL PRIMARY KEY, suite_id TEXT NOT NULL, mode TEXT NOT NULL, metric TEXT NOT NULL, k INTEGER, n INTEGER, value DOUBLE PRECISION, ci_low DOUBLE PRECISION, ci_high DOUBLE PRECISION, method TEXT NOT NULL, version TEXT NOT NULL,
+            context JSONB NOT NULL DEFAULT '{}', run_id TEXT, job_id BIGINT, created_at TIMESTAMPTZ NOT NULL DEFAULT now())""",
+        """CREATE TABLE IF NOT EXISTS ros_monthly_snapshots (
+            month TEXT PRIMARY KEY, payload JSONB NOT NULL, sha256 TEXT NOT NULL, frozen BOOLEAN NOT NULL DEFAULT TRUE, frozen_by TEXT NOT NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT now())""",
+        """CREATE OR REPLACE FUNCTION ros_forbid_change() RETURNS trigger AS $$ BEGIN RAISE EXCEPTION 'immutable snapshot: % rows are frozen', TG_TABLE_NAME; END; $$ LANGUAGE plpgsql""",
+        "DROP TRIGGER IF EXISTS ros_benchmark_snapshots_immutable ON ros_benchmark_snapshots",
+        "CREATE TRIGGER ros_benchmark_snapshots_immutable BEFORE UPDATE OR DELETE ON ros_benchmark_snapshots FOR EACH ROW WHEN (OLD.frozen) EXECUTE FUNCTION ros_forbid_change()",
+        "DROP TRIGGER IF EXISTS ros_monthly_snapshots_immutable ON ros_monthly_snapshots",
+        "CREATE TRIGGER ros_monthly_snapshots_immutable BEFORE UPDATE OR DELETE ON ros_monthly_snapshots FOR EACH ROW WHEN (OLD.frozen) EXECUTE FUNCTION ros_forbid_change()",
     )),
 )
 

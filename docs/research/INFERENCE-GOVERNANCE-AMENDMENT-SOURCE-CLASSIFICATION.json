@@ -1249,6 +1249,34 @@
     "src/logos_dashboard/control/telemetry.py": {
       "class": "TOOLING",
       "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 4 observability mirror (MLflow/OTel/Langfuse, degrade-never-block) / trace explorer; no model call"
+    },
+    "apps/dashboard/e2e/benchmarks.spec.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/benchmarks.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/progress-chart.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/stats-calc.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "src/logos_dashboard/benchmarks.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 5 statistics module / benchmark lab definitions (DRAFT until founder approval; agent modes NO_DATA) / immutable snapshots; no model call"
+    },
+    "src/logos_dashboard/control/benchlab.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 5 statistics module / benchmark lab definitions (DRAFT until founder approval; agent modes NO_DATA) / immutable snapshots; no model call"
+    },
+    "src/logos_dashboard/stats.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 5 statistics module / benchmark lab definitions (DRAFT until founder approval; agent modes NO_DATA) / immutable snapshots; no model call"
     }
   },
   "unclassified": 0

@@ -20,7 +20,7 @@ from . import governor, queue, runs
 
 ROOT = Path(__file__).resolve().parents[3]
 TEST_ALLOWLIST = ("tests/",)
-NOT_IMPLEMENTED = {"dataset": "Phase 4", "dry_run": "Phase 4", "rescore": "Phase 4", "playwright_qa": "Phase 5", }
+NOT_IMPLEMENTED = {"dataset": "needs a governed experiment order (dataset builds are experiment-specific)", "dry_run": "needs a governed experiment order (dry runs are prereg-specific)", "rescore": "use POST /api/ros/runs/{id}/rescore (no worker job)", "playwright_qa": "run from apps/dashboard (pnpm e2e); results feed /system/qa"}
 
 
 def handle(conn, job: dict) -> dict:
@@ -36,6 +36,24 @@ def handle(conn, job: dict) -> dict:
         res = {"exit_code": cp.returncode, "tail": tail, "stdout_sha256": sha256((cp.stdout or "").encode()).hexdigest()}
         runs.emit(conn, run_id, "artifact", {"kind": "pytest", **res}); runs.finish_run(conn, run_id, "done" if cp.returncode == 0 else "failed", None if cp.returncode == 0 else "TESTS_FAILED", res)
         return queue.complete(conn, job["job_id"], res) if cp.returncode == 0 else queue.fail(conn, job["job_id"], "TESTS_FAILED")
+    if job["kind"] == "benchmark":
+        from .. import benchmarks as bm
+        from . import benchlab
+        suite = str(job.get("payload", {}).get("suite") or "")
+        spec = bm.SUITES.get(suite)
+        if spec is None:
+            runs.finish_run(conn, run_id, "failed", "UNKNOWN_SUITE"); return queue.fail(conn, job["job_id"], "UNKNOWN_SUITE")
+        runs.emit(conn, run_id, "phase", {"phase": "pytest", "suite": suite, "fixtures": spec["fixtures"]})
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            xml = Path(d) / "junit.xml"
+            cp = subprocess.run([sys.executable, "-m", "pytest", *spec["fixtures"], "-q", "-p", "no:warnings", "--tb=line", f"--junitxml={xml}"], cwd=str(ROOT), capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=3600)
+            parsed = bm.parse_junit(xml.read_text(encoding="utf-8")) if xml.exists() else {"tests": 0, "passed": 0, "failed": 0, "skipped": 0, "cases": []}
+        ctx = {"repo_sha": os.environ.get("LOGOS_REPO_SHA", "host"), "fixtures": spec["fixtures"], "definition_sha256": bm.definitions()["sha256"], "python": sys.version.split()[0], "mode": "DETERMINISTIC", "tool_boundary": "pytest", "model_pin": None, "dataset_hash": None, "prompt_bundle_hash": None}
+        row = benchlab.record_metric(conn, suite, "DETERMINISTIC", "fixture_regression", parsed["passed"], parsed["tests"], ctx, run_id, job["job_id"])
+        res = {"suite": suite, "tests": parsed["tests"], "passed": parsed["passed"], "failed": parsed["failed"], "skipped": parsed["skipped"], "exit_code": cp.returncode, "result_id": row["result_id"], "value": row["value"], "ci": [row["ci_low"], row["ci_high"]], "failed_cases": [c["name"] for c in parsed["cases"] if not c["ok"]][:50]}
+        runs.emit(conn, run_id, "artifact", {"kind": "junit", **{k: v for k, v in res.items() if k != "failed_cases"}}); runs.finish_run(conn, run_id, "done", None, res)
+        return queue.complete(conn, job["job_id"], res)
     if job["kind"] == "snapshot":
         regs = registries.load_all(); blob = json.dumps(regs, sort_keys=True, default=str).encode(); h = sha256(blob).hexdigest()
         out = ROOT / "docs" / "research" / "dashboard" / "snapshots"; out.mkdir(exist_ok=True)

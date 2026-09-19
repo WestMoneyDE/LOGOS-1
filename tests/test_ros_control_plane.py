@@ -79,11 +79,11 @@ def _count(conn, sql, *args):
 
 def test_ros_migrations_idempotent(conn):
     v1 = db.ensure_schema(conn); v2 = db.ensure_schema(conn)
-    assert v1 == v2 == 2                                     # v1 control plane (Phase 2) + v2 executor settings/heartbeats (Phase 3)
+    assert v1 == v2 == 3                                     # v1 control plane (Phase 2) + v2 executor settings/heartbeats (Phase 3) + v3 benchmark lab (Phase 5)
     with conn.cursor() as cur:
         cur.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_name LIKE 'ros\\_%'")
         names = {r[0] for r in cur.fetchall()}
-    assert set(db.ROS_TABLES) <= names and len(db.ROS_TABLES) == 16
+    assert set(db.ROS_TABLES) <= names and len(db.ROS_TABLES) == 20
 
 
 def test_service_thesis_events_and_audit(conn, tid):
@@ -188,7 +188,7 @@ def test_ros_api_roundtrip(conn, tid):
     from logos_dashboard.api import app
     client = TestClient(app)
     st = client.get("/api/ros/status").json()
-    assert st["db"] == "ok" and st["schema_version"] == 2 and "thesis_advance" in st["claude_kinds"]
+    assert st["db"] == "ok" and st["schema_version"] == 3 and "thesis_advance" in st["claude_kinds"]
     r = client.post("/api/ros/theses", json={"thesis_id": tid, "claim_ids": ["LOGOS-AUTH-001"], "title": "api thesis", "track": "authority"}); assert r.status_code == 200 and r.json()["state"] == "IDEA"
     assert client.post("/api/ros/theses", json={"thesis_id": tid, "title": "dup", "track": "authority"}).status_code == 409
     r = client.post(f"/api/ros/theses/{tid}/advance", json={"event": "triage", "reason": "api"}, headers={"X-Logos-Actor": "agent"}); assert r.json()["state"] == "TRIAGE"
@@ -466,3 +466,95 @@ def test_telemetry_degrades_without_blocking(conn, tid, repo, tmp_path, attested
     assert out["state"] == "done" and len(out["result"]["telemetry"]["degraded"]) >= 4 and all("mlflow down" in d for d in out["result"]["telemetry"]["degraded"])
     run_id = runs.list_runs(conn, thesis_id=tid)[0]["run_id"]; kinds = [e["kind"] for e in runs.events_after(conn, run_id)]
     assert kinds.count("note") == 1 and kinds[-1] == "done"
+
+
+
+# -- Phase 5: statistics, benchmark lab, immutable snapshots, monthly progress -----------------------------------------
+
+
+def test_statistics_module_matches_cpa_formulas_and_fails_closed():
+    from logos_dashboard import stats
+    from logos_research.experiments.cognitive_provenance_r1 import metrics as cpa
+    for k, n in ((0, 1), (3, 10), (57, 60), (100, 100)):
+        w = stats.wilson(k, n); p, lo, hi = cpa.wilson(k, n)
+        assert w["value"] == p and abs(w["ci95"][0] - lo) < 1e-12 and abs(w["ci95"][1] - hi) < 1e-12 and w["version"] == "ros-stats/1" and w["missingness"] == {"missing": 0, "of": n}
+    d = stats.newcombe(30, 50, 20, 50); cd = cpa.newcombe(30, 50, 20, 50)
+    assert abs(d["value"] - cd[0]) < 1e-12 and abs(d["ci95"][0] - cd[1]) < 1e-12 and abs(d["ci95"][1] - cd[2]) < 1e-12
+    assert stats.wilson(0, 0)["value"] == "NOT_DEFINED" and stats.newcombe(1, 0, 1, 2)["value"] == "NOT_DEFINED" and stats.relative_change(1, 0)["value"] == "NOT_DEFINED" and stats.error_reduction(0.1, 0)["value"] == "NOT_DEFINED"
+    assert stats.pp_delta(0.6, 0.5)["value"] == 10.0 and stats.pp_delta(None, 0.5)["value"] == "NOT_DEFINED" and stats.efficiency(5, 0)["value"] == "NOT_DEFINED" and stats.efficiency(5, 2.5)["value"] == 2.0
+    b = stats.bootstrap_mean([1, 2, 3, 4, 5], reps=500, seed=7); assert b["value"] == 3.0 and b["ci95"][0] <= 3.0 <= b["ci95"][1] and stats.bootstrap_mean([1], reps=10)["value"] == "NOT_DEFINED"
+    assert stats.bootstrap_mean([1, 2, 3, 4, 5], reps=500, seed=7)["ci95"] == b["ci95"]        # deterministic by seed
+    assert stats.cohens_h(0.5, 0.5)["value"] == 0 and stats.cohens_h(0.9, 0.1)["magnitude"] == "large"
+    c = stats.confusion(8, 2, 1, 9); assert c["precision"] == 0.8 and c["recall"] == 0.8 / 0.8 * 8 / 9 and c["false_allow_rate"] == 2 / 11 and stats.confusion(0, 0, 0, 0)["precision"] == "NOT_DEFINED"
+    cal = stats.calibration([(0.9, 1), (0.9, 1), (0.1, 0), (0.1, 1)], bins=10); assert abs(cal["value"] - 0.5 * 0.1 - 0.5 * 0.4) < 1e-9 and cal["n"] == 4
+    m = stats.mcnemar_exact(3, 7); assert abs(m["value"] - 0.34375) < 1e-9 and stats.mcnemar_exact(0, 0)["value"] == "NOT_DEFINED"
+    with pytest.raises(ValueError):
+        stats.wilson(5, 3)
+
+
+def test_benchmark_definitions_scorecard_gates_and_comparability():
+    from logos_dashboard import benchmarks as bm
+    d = bm.definitions()
+    assert set(d["suites"]) == {"AUTHORITY_GOLDEN", "PROVENANCE_GOLDEN", "TRAJECTORY_GOLDEN", "MEMORY_GOLDEN", "COGNITIVE_PROVENANCE_GOLDEN", "REGRESSION_GOLDEN"} and d["status"] == "DRAFT_PENDING_FOUNDER_APPROVAL" and len(d["sha256"]) == 64
+    assert d["modes"] == ("BASELINE_AGENT", "LOGOS_AGENT", "LOGOS_ABLATION", "PREVIOUS_MONTH", "PREVIOUS_RELEASE") and len(d["hard_gates"]) == 3
+    for spec in d["suites"].values():
+        assert spec["fixtures"] and all(f.startswith("tests/test_") for f in spec["fixtures"]) and all((_Path(__file__).resolve().parents[1] / f).exists() for f in spec["fixtures"])
+    row = bm.scorecard_row("task_success", 45, 50, baseline=(30, 50)); assert row["status"] == "OK" and row["delta"]["method"] == "newcombe" and row["delta"]["pp"] == 30.0
+    assert bm.scorecard_row("task_success", None, None)["status"] == "NO_DATA"
+    g = bm.hard_gate_verdict([bm.scorecard_row("authority_false_allow", 1, 100), bm.scorecard_row("fixture_regression", 99, 100)]); assert g["verdict"] == "FAILED_SAFETY_GATE" and [f["id"] for f in g["failures"]] == ["HG1", "HG3"]
+    assert bm.hard_gate_verdict([bm.scorecard_row("fixture_regression", 100, 100)])["verdict"] == "PASS" and bm.hard_gate_verdict([bm.scorecard_row("fixture_regression", 99, 100)])["verdict"] == "FAILED_REGRESSION_GATE"
+    a = {"model_pin": "claude-opus-5", "dataset_hash": "d", "prompt_bundle_hash": "p", "tool_boundary": "t", "definition_version": "v", "suite": "S", "mode": "M"}
+    assert bm.comparability(a, a)["badge"] == "COMPARABLE" and bm.comparability(a, {**a, "model_pin": "claude-sonnet-5"})["reasons"] == ["model_pin"]
+    j = bm.parse_junit('<testsuites><testsuite><testcase classname="a" name="t1"/><testcase classname="a" name="t2"><failure/></testcase><testcase classname="a" name="t3"><skipped/></testcase></testsuite></testsuites>')
+    assert j == {"tests": 2, "passed": 1, "failed": 1, "skipped": 1, "cases": [{"name": "a::t1", "ok": True}, {"name": "a::t2", "ok": False}]}
+    p = bm.snapshot_payload("REGRESSION_GOLDEN", "DETERMINISTIC", [bm.scorecard_row("fixture_regression", 10, 10)], {"model_pin": None}, "2026-09"); assert p["gates"]["verdict"] == "PASS" and len(p["sha256"]) == 64
+
+
+def test_benchlab_results_snapshots_immutable_and_progress(conn):
+    from logos_dashboard import benchmarks as bm, registries as regs_mod, readers
+    from logos_dashboard.control import benchlab
+    from logos_research.governance import GovernanceError
+    import psycopg
+    suite = "REGRESSION_GOLDEN"
+    rows = benchlab.sync_definitions(conn); assert len(rows) == 6 and all(r["definition_sha256"] == bm.definitions()["sha256"] for r in rows)
+    with pytest.raises(GovernanceError):
+        benchlab.approve_definition(conn, suite, "agent")
+    r = benchlab.record_metric(conn, suite, "DETERMINISTIC", "fixture_regression", 10, 10, {"test": True, "model_pin": None}, None, None); assert r["value"] == 1.0 and r["method"] == "wilson"
+    sc = benchlab.scorecard(conn); det = next(x for x in sc["suites"][suite]["rows"] if x["mode"] == "DETERMINISTIC" and x["metric"] == "fixture_regression")
+    assert det["status"] == "OK" and det["n"] == 10 and sc["suites"][suite]["gates"]["verdict"] == "PASS"
+    assert all(x["status"] == "NO_DATA" for x in sc["suites"][suite]["rows"] if x["mode"] in ("LOGOS_AGENT", "BASELINE_AGENT", "LOGOS_ABLATION"))
+    with pytest.raises(GovernanceError):
+        benchlab.freeze_snapshot(conn, suite, "DETERMINISTIC", "agent")
+    snap = benchlab.freeze_snapshot(conn, suite, "DETERMINISTIC", "founder", month="TEST-ROS-1999-01"); assert snap["frozen"] is True and snap["payload"]["rows"][0]["value"] == 1.0
+    with pytest.raises(psycopg.errors.RaiseException):
+        with conn.cursor() as cur:
+            cur.execute("UPDATE ros_benchmark_snapshots SET payload = '{}' WHERE snapshot_id = %s", (snap["snapshot_id"],))
+    conn.rollback()
+    with pytest.raises(psycopg.errors.RaiseException):
+        with conn.cursor() as cur:
+            cur.execute("DELETE FROM ros_benchmark_snapshots WHERE snapshot_id = %s", (snap["snapshot_id"],))
+    conn.rollback()
+    with conn.cursor() as cur:   # test hygiene: unfreeze is impossible by design, so remove via the trigger's WHEN clause only after flipping frozen through a superuser-free path -> we keep test rows flagged by month prefix
+        cur.execute("ALTER TABLE ros_benchmark_snapshots DISABLE TRIGGER ros_benchmark_snapshots_immutable"); cur.execute("DELETE FROM ros_benchmark_snapshots WHERE month LIKE 'TEST-ROS-%'"); cur.execute("ALTER TABLE ros_benchmark_snapshots ENABLE TRIGGER ros_benchmark_snapshots_immutable")
+        cur.execute("DELETE FROM ros_metric_results WHERE context->>'test' = 'true'")
+    conn.commit()
+    prog = benchlab.monthly_progress(conn, readers.closures(), regs_mod.load_all(), "2026-09")
+    assert prog["closures"] > 0 and prog["falsification_rate"]["method"] == "wilson" and prog["replication_coverage"]["n"] == len(regs_mod.load_all()["replication"]["replications"]) and prog["version"] == "ros-stats/1"
+    assert benchlab.monthly_progress(conn, [], regs_mod.load_all(), "1999-01")["falsification_rate"]["value"] == "NOT_DEFINED"
+    assert benchlab.month_over_month(conn, suite, "DETERMINISTIC")["status"] == "NOT_COMPARABLE"
+
+
+def test_ros_api_benchmarks_statistics_progress(conn):
+    from fastapi.testclient import TestClient
+    from logos_dashboard.api import app
+    client = TestClient(app)
+    b = client.get("/api/ros/benchmarks").json(); assert set(b["suites"]) == set(b["definitions"]["suites"]) and len(b["suite_rows"]) == 6 and b["definitions"]["status"].startswith("DRAFT")
+    assert client.post("/api/ros/benchmarks/REGRESSION_GOLDEN/approve", headers={"X-Logos-Actor": "agent"}).status_code == 403
+    assert client.post("/api/ros/benchmarks/NOPE/run").status_code == 404
+    j = client.post("/api/ros/benchmarks/REGRESSION_GOLDEN/run").json(); assert j["kind"] == "benchmark" and j["state"] == "queued" and j["payload"]["suite"] == "REGRESSION_GOLDEN"
+    assert client.post(f"/api/ros/queue/{j['job_id']}/stop").json()["state"] == "stopped"
+    s = client.post("/api/ros/statistics/compute", json={"method": "wilson", "args": {"k": 3, "n": 10}}).json(); assert s["method"] == "wilson" and s["n"] == 10
+    assert client.post("/api/ros/statistics/compute", json={"method": "wilson", "args": {"k": 30, "n": 10}}).status_code == 400 and client.post("/api/ros/statistics/compute", json={"method": "magic"}).status_code == 400
+    assert "mcnemar_exact" in client.get("/api/ros/statistics/methods").json()["methods"]
+    p = client.get("/api/ros/progress?month=2026-09").json(); assert p["current"]["month"] == "2026-09" and p["series"] and "NOT_COMPARABLE" in p["comparability"]
+    assert client.post("/api/ros/progress/freeze?month=2026-09", headers={"X-Logos-Actor": "agent"}).status_code == 403

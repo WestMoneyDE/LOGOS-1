@@ -488,3 +488,90 @@ def run_rescore(run_id: str):
         parsed = _pk.parse_agent_result(doc.get("content") or "")
         return {"run_id": run_id, "artifact_sha256": a["sha256"], "content_sha256": hashlib.sha256(json.dumps(doc, sort_keys=True).encode()).hexdigest(), "contract": _pk.RESULT_SCHEMA, "valid": parsed is not None,
                 "parsed": parsed.raw if parsed else None, "status": doc.get("status"), "resolved_model": doc.get("resolved_model"), "evidence_class": doc.get("evidence_class"), "inference": "none (re-score only)"}
+
+
+
+# -- Phase 5: benchmark lab, statistics, snapshots, monthly progress -----------------------------------------------------
+
+from . import benchmarks as _bm, readers as _readers, registries as _registries, stats as _stats  # noqa: E402
+from .control import benchlab as _bl  # noqa: E402
+
+
+@router.get("/benchmarks")
+def benchmarks_get():
+    with _conn() as c:
+        suites = _bl.sync_definitions(c)
+        sc = _bl.scorecard(c)
+        return {**sc, "suite_rows": suites, "snapshots": _bl.snapshots(c)[:50], "mom": {sid: _bl.month_over_month(c, sid, "DETERMINISTIC") for sid in _bm.SUITES}}
+
+
+@router.post("/benchmarks/{suite_id}/approve")
+def benchmarks_approve(suite_id: str, x_logos_actor: str | None = Header(default=None)):
+    with _conn() as c:
+        _bl.sync_definitions(c); return _bl.approve_definition(c, suite_id, _actor(x_logos_actor))
+
+
+@router.post("/benchmarks/{suite_id}/run")
+def benchmarks_run(suite_id: str, x_logos_actor: str | None = Header(default=None)):
+    """Enqueue the deterministic fixture run for a suite (worker job `benchmark`). Never an inference."""
+    if suite_id not in _bm.SUITES:
+        raise HTTPException(404, suite_id)
+    with _conn() as c:
+        n = sum(1 for j in queue.list_jobs(c, 10000) if j["kind"] == "benchmark" and (j.get("payload") or {}).get("suite") == suite_id)
+        return queue.enqueue(c, "benchmark", payload={"suite": suite_id}, attempt_group=n, actor=_actor(x_logos_actor))
+
+
+class SnapshotIn(BaseModel):
+    mode: str = "DETERMINISTIC"
+    month: str | None = None
+
+
+@router.post("/benchmarks/{suite_id}/snapshot")
+def benchmarks_snapshot(suite_id: str, s: SnapshotIn, x_logos_actor: str | None = Header(default=None)):
+    with _conn() as c:
+        return _bl.freeze_snapshot(c, suite_id, s.mode, _actor(x_logos_actor), month=s.month)
+
+
+class StatsIn(BaseModel):
+    method: str
+    args: dict[str, Any] = {}
+
+
+@router.post("/statistics/compute")
+def statistics_compute(s: StatsIn):
+    fn = {"wilson": _stats.wilson, "newcombe": _stats.newcombe, "bootstrap_mean": _stats.bootstrap_mean, "cohens_h": _stats.cohens_h, "pp_delta": _stats.pp_delta, "relative_change": _stats.relative_change,
+          "error_reduction": _stats.error_reduction, "efficiency": _stats.efficiency, "confusion": _stats.confusion, "calibration": _stats.calibration, "mcnemar_exact": _stats.mcnemar_exact}.get(s.method)
+    if fn is None:
+        raise HTTPException(400, f"unknown method {s.method}")
+    try:
+        return fn(**s.args)
+    except (TypeError, ValueError) as e:
+        raise HTTPException(400, str(e))
+
+
+@router.get("/statistics/methods")
+def statistics_methods():
+    return {"version": _stats.VERSION, "methods": {"wilson": ["k", "n"], "newcombe": ["k1", "n1", "k2", "n2"], "bootstrap_mean": ["xs", "reps", "seed"], "cohens_h": ["p1", "p2"], "pp_delta": ["p_new", "p_old"], "relative_change": ["new", "old"], "error_reduction": ["err_new", "err_old"], "efficiency": ["successes", "cost"], "confusion": ["tp", "fp", "fn", "tn"], "calibration": ["pairs", "bins"], "mcnemar_exact": ["b", "c"]},
+            "rule": "every result carries method, assumptions, n, missingness, version; zero denominators -> NOT_DEFINED"}
+
+
+@router.get("/progress")
+def progress(month: str | None = None):
+    with _conn() as c:
+        cl = _readers.closures(); regs = _registries.load_all()
+        cur = _bl.monthly_progress(c, cl, regs, month)
+        months = sorted({(x.get("closed") or "")[:7] for x in cl if x.get("closed")})
+        series = [_bl.monthly_progress(c, cl, regs, m) for m in months]
+        return {"current": cur, "series": series, "frozen": _bl.months(c), "comparability": "MoM deltas only between frozen months with identical definitions; otherwise NOT_COMPARABLE"}
+
+
+@router.post("/progress/freeze")
+def progress_freeze(month: str | None = None, x_logos_actor: str | None = Header(default=None)):
+    with _conn() as c:
+        payload = _bl.monthly_progress(c, _readers.closures(), _registries.load_all(), month)
+        try:
+            return _bl.freeze_month(c, payload, _actor(x_logos_actor))
+        except Exception as e:
+            if "duplicate key" in str(e):
+                c.rollback(); raise HTTPException(409, f"month {payload['month']} already frozen (immutable)")
+            raise
