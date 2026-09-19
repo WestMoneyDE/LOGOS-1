@@ -942,3 +942,92 @@ def governor_agent_sessions(a: AgentSessionsIn, x_logos_actor: str | None = Head
     """Founder amendment INFERENCE-GOVERNANCE-CONCURRENCY-AMENDMENT-R1: parallel AGENT jobs (1..5). Measurement stays at 1."""
     with _conn() as c:
         return {"amendment": governor.set_agent_sessions(c, a.n, _actor(x_logos_actor)), "caps": governor.caps(c).__dict__}
+
+
+# -- R4: Beobachtung, Erkenntnisse, Registerpflege ------------------------------------------------------------------------
+
+from . import insights as _insights  # noqa: E402
+from .control import observe as _observe, registry_edit as _redit  # noqa: E402
+
+
+@router.get("/observability")
+def observability(limit: int = 30):
+    with _conn() as c:
+        return _observe.overview(c, limit)
+
+
+@router.get("/observability/systems")
+def observability_systems():
+    c = db.connect()
+    try:
+        return {"systems": _observe.systems(c)}
+    finally:
+        if c:
+            c.close()
+
+
+@router.get("/runs/{run_id}/all-traces")
+def run_all_traces(run_id: str):
+    with _conn() as c:
+        d = _observe.all_traces(c, run_id)
+        if not d["found"]:
+            raise HTTPException(404, run_id)
+        return d
+
+
+@router.get("/insights")
+def insights(days: int = 30):
+    c = db.connect()
+    try:
+        return _insights.build(c, days=days)
+    finally:
+        if c:
+            c.close()
+
+
+@router.get("/registry/proposals")
+def registry_proposals():
+    c = db.connect()
+    try:
+        return _redit.proposals(c)
+    finally:
+        if c:
+            c.close()
+
+
+class RegistryEditIn(BaseModel):
+    registry: str
+    entity_id: str
+    field: str
+    value: Any
+    reason: str = ""
+    origin: dict[str, Any] = {}      # where the proposal came from (verdict draft, radar, revert) — named `origin` so it is not a memory-authority reader
+
+
+@router.post("/registry/preview")
+def registry_preview(e: RegistryEditIn):
+    try:
+        return _redit.preview(e.registry, e.entity_id, e.field, e.value, e.reason)
+    except KeyError as ex:
+        raise HTTPException(404, str(ex))
+    except ValueError as ex:
+        raise HTTPException(400, str(ex))
+
+
+@router.post("/registry/apply")
+def registry_apply(e: RegistryEditIn, x_logos_actor: str | None = Header(default=None)):
+    with _conn() as c:
+        return _redit.apply(c, e.registry, e.entity_id, e.field, e.value, _actor(x_logos_actor), e.reason, e.origin)
+
+
+@router.get("/registry/changelog")
+def registry_changelog(limit: int = 200):
+    return {"changes": _redit.changelog(limit), "file": "docs/research/dashboard/registry-changelog.jsonl"}
+
+
+@router.post("/registry/revert-proposal")
+def registry_revert(index: int = 0):
+    try:
+        return _redit.revert_proposal(index)
+    except KeyError as ex:
+        raise HTTPException(404, str(ex))

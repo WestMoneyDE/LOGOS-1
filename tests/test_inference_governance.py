@@ -206,6 +206,8 @@ def test_GOV_P12_P13_P14_gamma_p7_predecessors_unchanged():
                            # LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 / -AUTOPILOT-R2: their own closure + session records (tooling orders; no Γ/P7/experiment/measurement file touched)
                            ":(exclude)05-WORK-ORDERS/NEXT-SESSION-LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1.md", ":(exclude)09-SESSIONS/2026-09-19-LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1",
                            ":(exclude)05-WORK-ORDERS/NEXT-SESSION-LOGOS1-RESEARCH-OS-AUTOPILOT-R2.md", ":(exclude)09-SESSIONS/2026-09-19-LOGOS1-RESEARCH-OS-AUTOPILOT-R2",
+                           ":(exclude)05-WORK-ORDERS/NEXT-SESSION-LOGOS1-RESEARCH-OS-MEASUREMENT-R3.md", ":(exclude)09-SESSIONS/2026-09-19-LOGOS1-RESEARCH-OS-MEASUREMENT-R3",
+                           ":(exclude)05-WORK-ORDERS/NEXT-SESSION-LOGOS1-RESEARCH-OS-OBSERVE-INSIGHTS-REGISTRY-R4.md", ":(exclude)09-SESSIONS/2026-09-19-LOGOS1-RESEARCH-OS-OBSERVE-INSIGHTS-REGISTRY-R4",
                            ":(exclude)src/logos_research/measurement/result_model.py", ":(exclude)src/logos_research/measurement/claude_code.py",   # COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: resolver + repaired adapter (hash-recorded in the repair prereg/artifact)
                            ":(exclude)src/logos_research/experiments/cognitive_provenance_r1", ":(exclude)09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1", ":(exclude)05-WORK-ORDERS/NEXT-SESSION-COGNITIVE-PROVENANCE-ABLATION-R1.md"],   # COGNITIVE-PROVENANCE-ABLATION-R1: its own EXPERIMENTAL_INFERENCE package and records
 
@@ -238,7 +240,10 @@ def test_ZERO_inference_proof():
         txt = py.read_text(encoding="utf-8")
         for tok in ("import openai", "from openai", "import anthropic", "from anthropic", "api.openai.com", "api.anthropic.com"):
             assert tok not in txt, (py, tok)                                                     # no model-provider client anywhere in src
-        if "logos_research/infra" not in str(py).replace("\\", "/"):                            # lab infra (Postgres/MinIO/OTel health) is the only network user
+        rel_py = str(py).replace("\\", "/")
+        # lab infra (Postgres/MinIO/OTel health) and the dashboard's observability reader are the only network users; both talk to loopback telemetry only,
+        # and the model-provider checks above (openai/anthropic clients, api.* hosts) still apply to them.
+        if "logos_research/infra" not in rel_py and "logos_dashboard/control/observe.py" not in rel_py:
             for tok in ("import requests", "import httpx", "import urllib.request", "import socket"):
                 assert tok not in txt, (py, tok)
         tree = ast.parse(txt)

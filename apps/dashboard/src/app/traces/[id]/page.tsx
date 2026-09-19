@@ -8,12 +8,22 @@ import { RecordsOnly } from "@/components/ros/records-only";
 
 export default async function TracePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params; const { t } = await getT();
-  const d = await rosGetMaybe(`/api/ros/runs/${id}/trace`);
+  const d = await rosGetMaybe(`/api/ros/runs/${id}/trace`); const at = await rosGet(`/api/ros/runs/${id}/all-traces`).catch(() => null);
   if (d === null) return <Shell title={id}><RecordsOnly text={t("ros_records_only")} /></Shell>;
   if (d === "NOT_FOUND" || !(d as any)?.run) notFound();
   const r = d.run; const inv = d.invocations[0];
   return (
     <Shell title={`Trace — ${r.run_id}`} subtitle={`${r.kind} · ${r.thesis_id ?? "—"} · ${r.state} · ${d.n_events} events`}>
+      {at && <Section title={t("obs_all_traces")}>
+        <ul className="grid gap-1 text-xs md:grid-cols-2">
+          <li>MLflow: <span className="font-mono">{at.mlflow?.run_id ?? "—"}</span> {at.mlflow?.reachable ? <a className="underline" href={at.mlflow.ui} target="_blank" rel="noreferrer">öffnen</a> : <span className="text-muted-foreground">({JSON.stringify(at.mlflow?.detail ?? {}).slice(0, 80)})</span>}</li>
+          <li>Langfuse: <span className="font-mono">{at.langfuse?.trace_id ?? "—"}</span> {at.langfuse?.reachable ? <a className="underline" href={at.langfuse.ui} target="_blank" rel="noreferrer">öffnen</a> : <span className="text-muted-foreground">nicht verknüpft</span>}</li>
+          <li>OTel: <span className="font-mono">{(at.otel?.trace_ids ?? []).length} Spans</span> · <a className="underline" href={at.otel?.zpages} target="_blank" rel="noreferrer">zPages</a></li>
+          <li>Branch: <span className="break-all font-mono">{at.branch ?? "—"}</span> @ {String(at.commit ?? "").slice(0, 10)}</li>
+          <li className="md:col-span-2 break-all">Artefakte: <span className="font-mono">{(at.artifacts ?? []).map((a: any) => a.artifact_id.split(":").pop()).join(" · ") || "—"}</span></li>
+          {at.telemetry_degraded?.length > 0 && <li className="md:col-span-2 text-amber-700">Telemetrie degradiert: {at.telemetry_degraded.join(" · ")}</li>}
+        </ul>
+      </Section>}
       <Section title={t("ros_waterfall")}><Waterfall bars={d.waterfall} /></Section>
       <div className="grid gap-8 xl:grid-cols-2">
         <Section title={t("ros_invocation")}>

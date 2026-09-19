@@ -792,11 +792,11 @@ def test_autopilot_runs_stages_until_ceiling_and_pauses_on_gate(conn, tid, repo,
 def test_repository_orders_import_idempotent_and_chained(conn):
     from logos_dashboard.control import repo_orders
     docs = repo_orders.parse_documents()
-    assert len(docs) == 41 and sum(1 for d in docs if d["kind"] == "closure") == 37 and {d["state"] for d in docs} == {"VALIDATED", "FALSIFIED", "DRAFT"}     # 42 files, 41 orders (one generated master order has its own closure) — exact for 05-WORK-ORDERS on 2026-09-19
+    assert len(docs) == 42 and sum(1 for d in docs if d["kind"] == "closure") == 38 and {d["state"] for d in docs} == {"VALIDATED", "FALSIFIED", "DRAFT"}     # 43 files, 42 orders (one generated master order has its own closure) — exact for 05-WORK-ORDERS on 2026-09-19
     falsified = sorted(d["order_id"] for d in docs if d["state"] == "FALSIFIED"); assert falsified == ["COGNITIVE-PROVENANCE-ABLATION-R1", "RISK-AWARENESS-DECOMPOSITION-R1"]
     r1 = repo_orders.import_orders(conn); r2 = repo_orders.import_orders(conn)
-    assert r1["documents"] == r2["documents"] == 41 and r2["new"] == 0 and r2["updated"] == 41 and r2["edges_added"] == 0 and r1["states"]["FALSIFIED"] == 2
-    ch = repo_orders.chain(conn); assert len(ch) == 41 and all(x["work_order_id"].startswith("REPO:") for x in ch) and all(x["origin"]["repository"] for x in ch)
+    assert r1["documents"] == r2["documents"] == 42 and r2["new"] == 0 and r2["updated"] == 42 and r2["edges_added"] == 0 and r1["states"]["FALSIFIED"] == 2
+    ch = repo_orders.chain(conn); assert len(ch) == 42 and all(x["work_order_id"].startswith("REPO:") for x in ch) and all(x["origin"]["repository"] for x in ch)
     with conn.cursor() as cur:
         cur.execute("SELECT count(*) FROM ros_work_order_deps WHERE child LIKE 'REPO:%%' AND parent LIKE 'REPO:%%'"); n_edges = cur.fetchone()[0]
         cur.execute("SELECT parent FROM ros_work_order_deps WHERE child = 'REPO:COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1'"); parents = [r[0] for r in cur.fetchall()]
@@ -820,8 +820,8 @@ def test_r2_api_autopilot_workers_repo_orders_leitstand(conn, tid, attested, aut
             queue.request_stop(conn, j["job_id"], "founder")
     wc = client.get("/api/ros/workers/control").json(); assert {"host", "docker", "autopilot"} <= set(wc) and "alive" in wc["host"]
     assert client.post("/api/ros/workers/host/start", headers={"X-Logos-Actor": "agent"}).status_code == 403 and client.post("/api/ros/workers/nope/start").status_code == 400
-    ro = client.post("/api/ros/repo-orders/import").json(); assert ro["documents"] == 41
-    lst = client.get("/api/ros/repo-orders").json(); assert len(lst["orders"]) == 41 and len(lst["documents"]) == 41
+    ro = client.post("/api/ros/repo-orders/import").json(); assert ro["documents"] == 42
+    lst = client.get("/api/ros/repo-orders").json(); assert len(lst["orders"]) == 42 and len(lst["documents"]) == 42
     ls = client.get("/api/ros/leitstand").json()
     assert {"host", "docker", "autopilot", "theses", "attention", "governor", "first_steps", "states"} <= set(ls) and ls["ceiling"] == "PREREG_DRAFT"
     mine = next(t for t in ls["theses"] if t["thesis_id"] == tid); assert mine["autopilot"]["enabled"] is True and mine["stage_index"] == 0
@@ -1132,3 +1132,120 @@ def test_r3_api_gates_measurement_and_verdict(conn, tid, repo, tmp_path, atteste
     (_Path(__file__).resolve().parents[1] / dec["draft"]["path"]).unlink()
     log = client.get(f"/api/ros/theses/{tid}/gate-log").json(); assert {l["gate"] for l in log["log"]} >= {"prereg_validate", "prereg_freeze", "dry_run", "ready_to_run", "measurement", "verdict"}
     assert client.post("/api/ros/governor/agent-sessions", json={"n": 3}, headers={"X-Logos-Actor": "agent"}).status_code == 403
+
+
+
+# -- R4: Beobachtung, Erkenntnisse, Registerpflege --------------------------------------------------------------------
+
+
+def test_observability_systems_are_truthful_and_leak_no_keys(conn):
+    from logos_dashboard.control import observe
+    sys_rows = observe.systems(conn)
+    names = [s["system"] for s in sys_rows]
+    assert names == ["MLflow", "Langfuse", "OTel-Collector", "Postgres (Labor)", "MinIO", "Host-Executor", "Docker-Worker", "Claude-Auth"]
+    assert all(s["state"] in ("reachable", "unreachable") for s in sys_rows) and all(s["criticality"] in ("OBSERVABILITY", "CANONICAL", "EXECUTION", "GOVERNANCE") for s in sys_rows)
+    blob = _json.dumps(observe.overview(conn, 3), default=str)
+    assert "sk-lf" not in blob and "Authorization" not in blob and "Basic " not in blob        # keys stay on the server
+    # an unreachable endpoint is reported as unreachable, never as ok
+    import logos_dashboard.control.observe as O
+    old = O.MLFLOW; O.MLFLOW = "http://127.0.0.1:9"                      # nothing listens there
+    try:
+        row = next(s for s in O.systems(None) if s["system"] == "MLflow")
+        assert row["state"] == "unreachable" and "error" in (row["detail"] or {})
+        assert O.mlflow_experiment(2)["reachable"] is False
+    finally:
+        O.MLFLOW = old
+
+    mf = observe.mlflow_experiment(5)
+    assert mf["reachable"] is True and mf["experiment"] == "logos-research-os" and isinstance(mf["runs"], list)
+    lf = observe.langfuse_traces(3)
+    assert lf["reachable"] is True and all({"trace_id", "name", "ui"} <= set(t) for t in lf["traces"])
+
+
+def test_all_traces_of_one_run(conn, tid, attested, repo, tmp_path):
+    from logos_dashboard.control import observe
+    service.create_thesis(conn, tid, ["LOGOS-AUTH-001"], "traces", "authority", "founder")
+    j = queue.enqueue(conn, "thesis_advance", thesis_id=tid); queue.start(conn, j["job_id"], "founder", governor.pre_run_gate(conn, j, "IDEA", "PREREG_DRAFT", ("IDEA", "PREREG_DRAFT")))
+    rel = f"docs/research/dashboard/theses/{tid}/TRIAGE.md"
+    out = executor.run_once(conn, _cfg(repo, tmp_path, _fake_claude(_result_doc(_agent_block("triage", [rel])), write={rel: "x"})), "w-test")
+    run_id = runs.list_runs(conn, thesis_id=tid)[0]["run_id"]
+    t = observe.all_traces(conn, run_id)
+    assert t["found"] is True and t["n_events"] > 5 and t["branch"] == f"ros/{tid}/{run_id}" and len(t["artifacts"]) == 3
+    assert t["mlflow"]["run_id"] == f"null-{run_id}" and t["mlflow"]["reachable"] is False       # null telemetry stack in tests — said plainly
+    assert t["otel"]["trace_ids"] and "collector" in t["otel"]["note"] and t["langfuse"]["trace_id"] == f"lf-{run_id}"
+    assert observe.all_traces(conn, "RUN-nope")["found"] is False
+
+
+def test_insights_sentences_are_mechanical_and_grouped(conn):
+    from logos_dashboard import insights, registries
+    d = insights.build(conn)
+    regs = registries.load_all()
+    assert d["n_claims"] == len(regs["claims"]["claims"]) == sum(d["counts"].values()) and d["version"] == "ros-insights/1"
+    assert set(d["groups"]) == {"gestuetzt", "widerlegt", "offen", "blockiert"} and d["counts"]["widerlegt"] >= 1
+    auth = next(e for e in d["groups"]["gestuetzt"] if e["claim_id"] == "LOGOS-AUTH-001")
+    assert auth["sentence"].startswith("Authority derives only") and "Status VALIDATED_IN_FIXTURE" in auth["sentence"] and "Evidenz mittel bis stark" in auth["sentence"]
+    assert "geprüft in 11 Experimenten" in auth["sentence"] and "Replikation 1/5" in auth["sentence"] and "Widerlegen würde:" in auth["sentence"]
+    assert "Vorsicht:" in auth["certainty"] and "Fixture" in auth["certainty"]
+    falsified = [e for e in d["groups"]["widerlegt"]]
+    assert all(e["status"] in ("FALSIFIED", "INVALID_MEASUREMENT", "INCONCLUSIVE") for e in falsified) and all("Negativbefund" in e["certainty"] for e in falsified)
+    p7 = next(e for e in d["groups"]["gestuetzt"] if e["claim_id"] == "LOGOS-P7-001")
+    assert "noch in keinem registrierten Experiment geprüft" in p7["sentence"]                    # honest: no experiment linked
+    assert any("Status ist nicht Evidenzstärke" in r for r in d["rules"]) and any("P7" in r for r in d["rules"])
+    assert all({"kind", "id", "text", "at"} <= set(x) for x in d["learned"])
+
+
+def test_registry_edit_preview_guards_and_founder_apply(conn):
+    from logos_dashboard.control import registry_edit as redit
+    from logos_research.governance import GovernanceError
+    with pytest.raises(ValueError):
+        redit.preview("claims", "LOGOS-AUTH-001", "statement", "x", "eine ausreichend lange Begründung hier")
+    with pytest.raises(KeyError):
+        redit.preview("claims", "NOPE-999", "status", "SUPPORTED", "eine ausreichend lange Begründung hier")
+    short = redit.preview("claims", "LOGOS-AUTH-001", "next_falsification_test", "X", "kurz")
+    assert short["ok"] is False and any("Begründung" in i for i in short["issues"])
+    weak = redit.preview("claims", "LOGOS-CP-002", "status", "SUPPORTED", "Begründung mit Verweis auf Messlauf M-1 und Artefakt")
+    assert weak["ok"] is False and any("verlangt mindestens Evidenzstärke MEDIUM" in i for i in weak["issues"])
+    jump = redit.preview("claims", "LOGOS-AUTH-001", "evidence_strength", "INDEPENDENTLY_REPLICATED", "Begründung mit Verweis auf einen Record hier")
+    assert jump["ok"] is False and any("höchstens eine Stufe" in i for i in jump["issues"])
+    bad_vocab = redit.preview("claims", "LOGOS-AUTH-001", "status", "TOTALLY_PROVEN", "Begründung mit Verweis auf einen Record hier")
+    assert bad_vocab["ok"] is False and any("Vokabular" in i for i in bad_vocab["issues"])
+    app = redit.preview("claims", "LOGOS-AUTH-001", "known_limitations", ["TEST-ROS: Prüfzeile der Registerpflege"], "Begründung mit Verweis auf einen Record hier")
+    assert app["ok"] is True and app["after"][-1] == "TEST-ROS: Prüfzeile der Registerpflege" and app["before"] == app["after"][:-1]      # append-only
+    with pytest.raises(GovernanceError):
+        redit.apply(conn, "claims", "LOGOS-AUTH-001", "known_limitations", ["TEST-ROS: x"], "agent", "Begründung mit Verweis auf einen Record hier")
+    n_before = len(redit.changelog())
+    reg_path = _Path(__file__).resolve().parents[1] / "docs/research/dashboard/CLAIM-REGISTRY.json"
+    cl_path = _Path(__file__).resolve().parents[1] / "docs/research/dashboard/registry-changelog.jsonl"
+    reg_before = reg_path.read_bytes(); cl_before = cl_path.read_bytes() if cl_path.exists() else None
+    rec = redit.apply(conn, "claims", "LOGOS-AUTH-001", "known_limitations", ["TEST-ROS: Prüfzeile der Registerpflege"], "founder", "Begründung mit Verweis auf einen Record hier", {"kind": "test"})
+    try:
+        assert rec["applied"] is True and rec["file_sha256_before"] != rec["file_sha256_after"] and len(rec["file_sha256_after"]) == 64
+        log = redit.changelog(); assert len(log) == n_before + 1 and log[0]["field"] == "known_limitations" and log[0]["actor"] == "founder"
+        import json as J
+        doc = J.loads((_Path(__file__).resolve().parents[1] / "docs/research/dashboard/CLAIM-REGISTRY.json").read_text(encoding="utf-8"))
+        entry = next(c for c in doc["claims"] if c["claim_id"] == "LOGOS-AUTH-001")
+        assert "TEST-ROS: Prüfzeile der Registerpflege" in entry["known_limitations"] and entry["last_updated"]
+        rev = redit.revert_proposal(0)
+        assert rev["field"] == "known_limitations" and "TEST-ROS: Prüfzeile der Registerpflege" not in rev["value"] and rev["source"]["kind"] == "revert" and "Rücknahme" in rev["reason"]
+    finally:                                                                 # Hygiene: beide Dateien byte-genau wie vorher
+        reg_path.write_bytes(reg_before)
+        if cl_before is None:
+            cl_path.unlink(missing_ok=True)
+        else:
+            cl_path.write_bytes(cl_before)
+
+
+def test_r4_api_observability_insights_registry(conn):
+    from fastapi.testclient import TestClient
+    from logos_dashboard.api import app
+    client = TestClient(app)
+    o = client.get("/api/ros/observability/systems").json(); assert len(o["systems"]) == 8
+    ov = client.get("/api/ros/observability?limit=5").json(); assert {"systems", "mlflow", "langfuse", "runs", "otel"} <= set(ov) and "Schlüssel" in ov["note"]
+    ins = client.get("/api/ros/insights").json(); assert ins["counts"]["gestuetzt"] >= 10 and ins["version"] == "ros-insights/1"
+    pr = client.get("/api/ros/registry/proposals").json(); assert {"proposals", "editable", "append_only"} <= set(pr) and "claims.supporting_artifacts" in pr["append_only"]
+    pv = client.post("/api/ros/registry/preview", json={"registry": "claims", "entity_id": "LOGOS-AUTH-001", "field": "status", "value": "SUPPORTED", "reason": "zu kurz"}).json()
+    assert pv["ok"] is False and pv["before"] == "VALIDATED_IN_FIXTURE"
+    assert client.post("/api/ros/registry/preview", json={"registry": "claims", "entity_id": "LOGOS-AUTH-001", "field": "statement", "value": "x", "reason": "lange genug begründet hier"}).status_code == 400
+    assert client.post("/api/ros/registry/apply", json={"registry": "claims", "entity_id": "LOGOS-AUTH-001", "field": "known_limitations", "value": ["TEST-ROS x"], "reason": "lange genug begründet hier"}, headers={"X-Logos-Actor": "agent"}).status_code == 403
+    assert client.get("/api/ros/registry/changelog").json()["file"].endswith("registry-changelog.jsonl")
+    assert client.get("/api/ros/runs/RUN-nope/all-traces").status_code == 404

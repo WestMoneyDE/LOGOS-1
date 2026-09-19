@@ -39,7 +39,7 @@ export default async function Leitstand() {
         <Section title={de ? "Stand der Forschung (Zählung)" : "State of research (counts)"}>
           <StatCards items={[{ label: de ? "Aktive Thesen" : "Active theses", value: ls.theses.length, href: "/theses" }, { label: de ? "Läufe gesamt" : "Runs total", value: s.ros.running_jobs ?? 0, sub: de ? "gerade laufend" : "running now", href: "/runs" }, { label: de ? "Experimente diesen Monat" : "Experiments this month", value: s.experiments_this_month, href: "/experiments" }, { label: de ? "Negativergebnisse" : "Negative results", value: s.negative_results_this_month, href: "/negative-results" }, { label: de ? "Offene Gates" : "Open gates", value: s.blocked_gates, href: "/decisions" }]} />
           <div className="mt-3"><VerdictMix data={cc.verdict_mix} n={cc.n_closures} /></div>
-          <p className="mt-2 text-xs text-muted-foreground">{de ? "Kette:" : "Chain:"} <span className="font-mono">{cc.latest_closure?.id}</span> → <span className="font-mono">{cc.next_work_order}</span> · <Link className="underline" href="/work-orders">Work Orders</Link> · <Link className="underline" href="/traces">Traces</Link></p>
+          <p className="mt-2 text-xs text-muted-foreground">{de ? "Kette:" : "Chain:"} <span className="font-mono">{cc.latest_closure?.id}</span> → <span className="font-mono">{cc.next_work_order}</span> · <Link className="underline" href="/insights">{de ? "Was wissen wir jetzt?" : "What do we know?"}</Link> · <Link className="underline" href="/work-orders">Work Orders</Link> · <Link className="underline" href="/observability">{de ? "Beobachtung" : "Observability"}</Link></p>
         </Section>
       </>)}
     </Shell>

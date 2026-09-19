@@ -1453,6 +1453,62 @@
     "09-SESSIONS/2026-09-19-LOGOS1-RESEARCH-OS-MEASUREMENT-R3/SESSION-REPORT.md": {
       "class": "GOVERNANCE_ONLY",
       "note": "LOGOS1-RESEARCH-OS-MEASUREMENT-R3: closure / session report; no code, no model call"
+    },
+    "apps/dashboard/e2e/insights-registry.spec.ts": {
+      "class": "TOOLING",
+      "note": "Dashboard-UI; liest nur die lokale API; kein Modellaufruf"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-insights-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "Dashboard-UI; liest nur die lokale API; kein Modellaufruf"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-insights-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "Dashboard-UI; liest nur die lokale API; kein Modellaufruf"
+    },
+    "apps/dashboard/src/app/insights/page.tsx": {
+      "class": "TOOLING",
+      "note": "Dashboard-UI; liest nur die lokale API; kein Modellaufruf"
+    },
+    "apps/dashboard/src/app/observability/page.tsx": {
+      "class": "TOOLING",
+      "note": "Dashboard-UI; liest nur die lokale API; kein Modellaufruf"
+    },
+    "apps/dashboard/src/app/registry/page.tsx": {
+      "class": "TOOLING",
+      "note": "Dashboard-UI; liest nur die lokale API; kein Modellaufruf"
+    },
+    "apps/dashboard/src/components/ros/registry-edit.tsx": {
+      "class": "TOOLING",
+      "note": "Dashboard-UI; liest nur die lokale API; kein Modellaufruf"
+    },
+    "docs/superpowers/plans/2026-09-19-research-os-r4-observability-insights-registry.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OS-OBSERVE-INSIGHTS-REGISTRY-R4: Spec / Plan; kein Code, kein Modellaufruf"
+    },
+    "docs/superpowers/specs/2026-09-19-research-os-phase3-4-design.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OS-OBSERVE-INSIGHTS-REGISTRY-R4: Spec / Plan; kein Code, kein Modellaufruf"
+    },
+    "src/logos_dashboard/control/observe.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OS-OBSERVE-INSIGHTS-REGISTRY-R4: Beobachtung — Systemzustände, MLflow/Langfuse/OTel-Leser (Schlüssel bleiben serverseitig); read-only, kein Modellaufruf"
+    },
+    "src/logos_dashboard/control/registry_edit.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OS-OBSERVE-INSIGHTS-REGISTRY-R4: Registerpflege-Werkzeug — schreibt ausschliesslich auf Founder-Aktion (Agent wird abgelehnt), nach Integritaetspruefung, mit Changelog + Audit; kein Modellaufruf"
+    },
+    "src/logos_dashboard/insights.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OS-OBSERVE-INSIGHTS-REGISTRY-R4: Erkenntnissätze als Schablonen über Register-Records; kein generierter Text, keine Statusänderung"
+    },
+    "05-WORK-ORDERS/NEXT-SESSION-LOGOS1-RESEARCH-OS-OBSERVE-INSIGHTS-REGISTRY-R4.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OS-OBSERVE-INSIGHTS-REGISTRY-R4: Closure / Sitzungsbericht"
+    },
+    "09-SESSIONS/2026-09-19-LOGOS1-RESEARCH-OS-OBSERVE-INSIGHTS-REGISTRY-R4/SESSION-REPORT.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OS-OBSERVE-INSIGHTS-REGISTRY-R4: Closure / Sitzungsbericht"
     }
   },
   "unclassified": 0
