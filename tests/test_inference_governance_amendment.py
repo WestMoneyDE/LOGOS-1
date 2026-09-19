@@ -201,7 +201,8 @@ def test_ZERO_inference_proof_amendment():
             if isinstance(n, ast.ClassDef) and any(isinstance(b, ast.FunctionDef) and b.name in ("complete", "invoke") for b in n.body):
                 adapters.add(f"{str(py.relative_to(SRC)).replace(chr(92), '/')}::{n.name}")
     assert adapters == {"logos_research/measurement/gateway.py::ProviderGateway", "logos_research/measurement/gateway.py::ForbiddenProvider", "logos_research/measurement/gateway.py::DryRunProvider",
-                        "logos_research/measurement/claude_code.py::ClaudeCodeMaxProvider"}
+                        "logos_research/measurement/claude_code.py::ClaudeCodeMaxProvider",
+                        "logos_dashboard/control/agent_provider.py::AgentProvider"}          # R2 agent-job adapter; measurement path unchanged
     p = cc.ClaudeCodeMaxProvider()                                                  # no runner injected -> invoke refuses before any process
     with pytest.raises(cc.ProviderPolicyError):
         p.invoke("q", "claude-x", {"run_id": "r"}, cc.Limits(1, 100, 1.0), token=cc.ActivationToken("r", "claude-x", 1, 1), env=CLEAN_ENV)

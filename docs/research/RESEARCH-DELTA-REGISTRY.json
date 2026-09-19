@@ -753,6 +753,21 @@
       "priority_score": 0.0,
       "rank": 0,
       "note": "result-model resolver (documented evidence, never modelUsage key order); CPA_INSTRUMENT_REPAIR_VALIDATED_R1"
+    },
+    {
+      "id": "RESEARCH-DASHBOARD-SCIENTIFIC-CORE",
+      "track": "tooling",
+      "status": "EXECUTED_R1",
+      "record": "09-SESSIONS/2026-09-19-LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1/SESSION-REPORT.md",
+      "falsification_power": 1,
+      "expected_information_gain": 3,
+      "dependency_readiness": 5,
+      "implementation_cost": 3,
+      "compute_cost": 0,
+      "measurement_quality": 4,
+      "priority_score": 0.0,
+      "rank": 0,
+      "note": "structured claim/experiment/invariant/prior-art/publication/replication/open-question registries + integrity validation + Next.js dashboard; no scientific status changed"
     }
   ]
 }

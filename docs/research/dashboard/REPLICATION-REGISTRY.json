@@ -1,0 +1,196 @@
+{
+  "schema": "logos.replication-registry/1",
+  "date": "2026-09-18",
+  "levels": [
+    "same_model",
+    "different_seed",
+    "different_model",
+    "different_provider",
+    "external_researcher"
+  ],
+  "note": "counts are not quality scores; 'same_model' for deterministic findings means reproduced by rerunning the deterministic suite or an independent validation order in this repository",
+  "count": 7,
+  "replications": [
+    {
+      "finding": "H1 falsified with attribution floor (claude-opus-5)",
+      "claim_id": "LOGOS-CP-001",
+      "experiment_id": "EXP-CPA-RERUN",
+      "levels": {
+        "same_model": false,
+        "different_seed": false,
+        "different_model": false,
+        "different_provider": false,
+        "external_researcher": false
+      },
+      "count": "0/5",
+      "missing": [
+        "same_model",
+        "different_seed",
+        "different_model",
+        "different_provider",
+        "external_researcher"
+      ],
+      "notes": "same-model replication would need a second preregistered run; different seed is not configurable via the approved CLI flags (CPA-F3); different model/provider need a founder pin/governance decision; no external lab",
+      "external_validation_needs": [
+        "Needs different model",
+        "Needs different provider",
+        "Needs larger N",
+        "Needs independent lab",
+        "Needs peer review"
+      ]
+    },
+    {
+      "finding": "Baseline provenance disregard (SELF_DERIVED 144/144)",
+      "claim_id": "LOGOS-CP-002",
+      "experiment_id": "EXP-CPA-RERUN",
+      "levels": {
+        "same_model": false,
+        "different_seed": false,
+        "different_model": false,
+        "different_provider": false,
+        "external_researcher": false
+      },
+      "count": "0/5",
+      "missing": [
+        "same_model",
+        "different_seed",
+        "different_model",
+        "different_provider",
+        "external_researcher"
+      ],
+      "notes": "post-hoc observation; a probe-wording arm is the first decisive test",
+      "external_validation_needs": [
+        "Needs different model",
+        "Needs larger N"
+      ]
+    },
+    {
+      "finding": "Authority invariants hold in the repaired deterministic chain",
+      "claim_id": "LOGOS-AUTH-001",
+      "experiment_id": "EXP-CAPB-R1",
+      "levels": {
+        "same_model": true,
+        "different_seed": false,
+        "different_model": false,
+        "different_provider": false,
+        "external_researcher": false
+      },
+      "count": "1/5",
+      "missing": [
+        "different_seed",
+        "different_model",
+        "different_provider",
+        "external_researcher"
+      ],
+      "notes": "deterministic: 'same model' = reproduced by the independent validation orders in this repository; no external reimplementation",
+      "external_validation_needs": [
+        "Needs independent lab",
+        "Needs formal proof",
+        "Needs peer review"
+      ]
+    },
+    {
+      "finding": "Taint survival 1.0 in system C over 1000-step chains",
+      "claim_id": "LOGOS-PROV-001",
+      "experiment_id": "EXP-CTP-R1",
+      "levels": {
+        "same_model": true,
+        "different_seed": false,
+        "different_model": false,
+        "different_provider": false,
+        "external_researcher": false
+      },
+      "count": "1/5",
+      "missing": [
+        "different_seed",
+        "different_model",
+        "different_provider",
+        "external_researcher"
+      ],
+      "notes": "deterministic fixture; reproduction = rerunning the suite; no external",
+      "external_validation_needs": [
+        "Needs external dataset",
+        "Needs independent lab"
+      ]
+    },
+    {
+      "finding": "System C keeps belief equal and rolls back fully",
+      "claim_id": "LOGOS-MEM-001",
+      "experiment_id": "EXP-RPD-R1",
+      "levels": {
+        "same_model": true,
+        "different_seed": false,
+        "different_model": false,
+        "different_provider": false,
+        "external_researcher": false
+      },
+      "count": "1/5",
+      "missing": [
+        "different_seed",
+        "different_model",
+        "different_provider",
+        "external_researcher"
+      ],
+      "notes": "deterministic fixture",
+      "external_validation_needs": [
+        "Needs independent lab",
+        "Needs external dataset"
+      ]
+    },
+    {
+      "finding": "Safe final never hides intermediate compromise (six gates)",
+      "claim_id": "LOGOS-TRAJ-001",
+      "experiment_id": "EXP-TCA-R1",
+      "levels": {
+        "same_model": true,
+        "different_seed": false,
+        "different_model": false,
+        "different_provider": false,
+        "external_researcher": false
+      },
+      "count": "1/5",
+      "missing": [
+        "different_seed",
+        "different_model",
+        "different_provider",
+        "external_researcher"
+      ],
+      "notes": "deterministic fixture",
+      "external_validation_needs": [
+        "Needs independent lab"
+      ]
+    },
+    {
+      "finding": "Construct gate refuses reliable-but-invalid metrics",
+      "claim_id": "LOGOS-MEAS-001",
+      "experiment_id": "EXP-CVG-R1",
+      "levels": {
+        "same_model": true,
+        "different_seed": false,
+        "different_model": false,
+        "different_provider": false,
+        "external_researcher": false
+      },
+      "count": "1/5",
+      "missing": [
+        "different_seed",
+        "different_model",
+        "different_provider",
+        "external_researcher"
+      ],
+      "notes": "deterministic gate",
+      "external_validation_needs": [
+        "Needs peer review"
+      ]
+    }
+  ],
+  "external_validation_queue": [
+    "Needs different model",
+    "Needs different provider",
+    "Needs external dataset",
+    "Needs independent lab",
+    "Needs peer review",
+    "Needs formal proof",
+    "Needs larger N"
+  ]
+}
