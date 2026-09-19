@@ -218,6 +218,7 @@ def test_ros_api_roundtrip(conn, tid):
     n = client.post("/api/ros/notes", json={"thesis_id": tid, "text": "note", "decision_flag": True}).json(); assert n["author"] == "founder"
     assert len(client.get(f"/api/ros/events?thesis_id={tid}").json()["events"]) == 7
     assert client.get("/api/ros/dag").json()["nodes"] and client.get("/api/ros/audit?limit=5").json()["audit"][0]["action"] == "note.add"
+    from logos_dashboard.api import _cache; _cache.pop("ros_stats", None)          # 2 s stats cache may hold a value from an earlier test
     cc = client.get("/api/command-center").json()["stats"]; assert cc["ros"]["ros_records_only"] is False and cc["queued_work_orders"] >= 1
     assert client.delete("/api/ros/theses/LOGOS-REAL").status_code == 400
 

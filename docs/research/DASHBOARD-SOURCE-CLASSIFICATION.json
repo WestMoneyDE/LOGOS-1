@@ -1201,6 +1201,14 @@
     "src/logos_dashboard/reports.py": {
       "class": "TOOLING",
       "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 7 evidence debt / paper readiness / monthly report (counts and criteria from records; no verdict, no status change); no model call"
+    },
+    "05-WORK-ORDERS/NEXT-SESSION-LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: closure / session report; no code, no model call"
+    },
+    "09-SESSIONS/2026-09-19-LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1/SESSION-REPORT.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: closure / session report; no code, no model call"
     }
   },
   "unclassified": 0
