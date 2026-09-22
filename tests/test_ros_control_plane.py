@@ -227,6 +227,7 @@ def test_ros_api_roundtrip(conn, tid):
 
 
 import json as _json
+import os
 import subprocess as _sp
 from pathlib import Path as _Path
 
@@ -1167,8 +1168,16 @@ def test_observability_systems_are_truthful_and_leak_no_keys(conn):
 
     mf = observe.mlflow_experiment(5)
     assert mf["reachable"] is True and mf["experiment"] == "logos-research-os" and isinstance(mf["runs"], list)
+    # Langfuse needs credentials, and there is deliberately no default for a secret.
+    # Both branches are asserted, so the test no longer passes only because a
+    # hard-coded placeholder happened to match the local development key.
     lf = observe.langfuse_traces(3)
-    assert lf["reachable"] is True and all({"trace_id", "name", "ui"} <= set(t) for t in lf["traces"])
+    if os.environ.get("LANGFUSE_PUBLIC_KEY") and os.environ.get("LANGFUSE_SECRET_KEY"):
+        assert lf["reachable"] is True and all({"trace_id", "name", "ui"} <= set(t) for t in lf["traces"])
+    else:
+        assert lf["reachable"] is False and "not set" in lf["detail"] and lf["traces"] == []
+        assert "sk-" not in _json.dumps(lf) and "Basic " not in _json.dumps(lf)
+    assert observe.langfuse_observations("whatever")["reachable"] in (True, False)
 
 
 def test_all_traces_of_one_run(conn, tid, attested, repo, tmp_path):

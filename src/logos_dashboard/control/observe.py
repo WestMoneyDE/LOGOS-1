@@ -43,9 +43,23 @@ def _get_json(url: str, *, headers: dict | None = None, data: bytes | None = Non
         return False, {"error": f"{type(e).__name__}: {str(e)[:160]}"}
 
 
-def _lf_auth() -> dict:
-    pk = os.environ.get("LANGFUSE_PUBLIC_KEY", "pk-lf-logos-local-dev"); sk = os.environ.get("LANGFUSE_SECRET_KEY", "sk-lf-logos-local-dev")
-    return {"Authorization": "Basic " + base64.b64encode(f"{pk}:{sk}".encode()).decode()}      # stays server-side
+def _lf_auth() -> dict | None:
+    """Basic auth for Langfuse, or `None` when the keys are not configured.
+
+    There is deliberately no default. A default for a secret is a silent fallback: the
+    code would proceed with a credential that cannot work and report a failure that
+    looks like an unreachable service instead of a missing configuration. It is also a
+    literal named `sk-...` in a public repository, which every scanner flags and should.
+
+    The header is built here and never leaves the server.
+    """
+    pk, sk = os.environ.get("LANGFUSE_PUBLIC_KEY"), os.environ.get("LANGFUSE_SECRET_KEY")
+    if not pk or not sk:
+        return None
+    return {"Authorization": "Basic " + base64.b64encode(f"{pk}:{sk}".encode()).decode()}
+
+
+NOT_CONFIGURED = "LANGFUSE_PUBLIC_KEY / LANGFUSE_SECRET_KEY are not set; see .env.example"
 
 
 # -- health ---------------------------------------------------------------------------------------------------------
@@ -118,8 +132,11 @@ def mlflow_run(mlflow_run_id: str) -> dict:
 # -- Langfuse -------------------------------------------------------------------------------------------------------
 
 def langfuse_traces(limit: int = 30, session_id: str | None = None) -> dict:
+    auth = _lf_auth()
+    if auth is None:
+        return {"reachable": False, "detail": NOT_CONFIGURED, "traces": [], "ui": LANGFUSE}
     q = f"?limit={limit}" + (f"&sessionId={session_id}" if session_id else "")
-    ok, d = _get_json(f"{LANGFUSE}/api/public/traces{q}", headers=_lf_auth())
+    ok, d = _get_json(f"{LANGFUSE}/api/public/traces{q}", headers=auth)
     if not ok:
         return {"reachable": False, "detail": d, "traces": [], "ui": LANGFUSE}
     traces = []
@@ -132,7 +149,10 @@ def langfuse_traces(limit: int = 30, session_id: str | None = None) -> dict:
 
 
 def langfuse_observations(trace_id: str) -> dict:
-    ok, d = _get_json(f"{LANGFUSE}/api/public/observations?traceId={trace_id}&limit=50", headers=_lf_auth())
+    auth = _lf_auth()
+    if auth is None:
+        return {"reachable": False, "detail": NOT_CONFIGURED, "observations": []}
+    ok, d = _get_json(f"{LANGFUSE}/api/public/observations?traceId={trace_id}&limit=50", headers=auth)
     if not ok:
         return {"reachable": False, "detail": d, "observations": []}
     out = []
