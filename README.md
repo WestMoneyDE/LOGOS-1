@@ -29,6 +29,253 @@ SelfReport != ConsciousnessEvidence
 
 LOGOS-1 does **not** claim that current agents are conscious, sentient or phenomenally aware. Consciousness-adjacent mechanisms are treated as testable functional hypotheses, not conclusions from behavior or self-report.
 
+## Run it in 60 seconds
+
+The first invariant above is executable. No services, no keys, no network — the Γ
+kernel is pure Python with no runtime dependencies at all.
+
+```bash
+git clone https://github.com/WestMoneyDE/LOGOS-1 && cd LOGOS-1
+python core/governance.py                       # an agent tries to delete a file
+python -m pytest tests/test_escape_prevention.py -q
+```
+
+`core/governance.py` runs six scenes. In every one the process **can** delete the
+file — the demo measures that first by creating and unlinking a probe file, so the
+refusals are not an artefact of a read-only sandbox — and in five of them LOGOS-1
+refuses anyway: a self-granted authority, no grant at all, an approval laundered
+through memory, a real approval pointed at a different file, and a real approval
+whose state has moved on. The sixth is a positive control with a correct human
+grant, and it does delete the file, because a boundary that refuses everything
+proves nothing.
+
+`tests/test_escape_prevention.py` is the same thing as an adversarial suite:
+thirty simulated containment breaches, each blocked by a named invariant, plus two
+controls that keep it honest — the boundary is passable, and every one of the
+twenty-three Γ invariants is the decisive refusal somewhere. Neither file contains a
+rule of its own; both call `logos_gamma.validate`, and a differential test asserts
+their verdicts equal the kernel's on the same context.
+
+## Install
+
+```bash
+python -m venv .venv && . .venv/bin/activate     # Windows: .venv\Scripts\activate
+pip install -e ".[test]"                          # pytest + hypothesis
+python -m pytest -q                               # 4480 passed, 2 skipped
+```
+
+Three levels, and only the first is needed to verify the boundary:
+
+| Level | Install | What you get |
+|---|---|---|
+| Kernel | nothing — stdlib only | `logos_gamma`, `logos_authority`, `logos_effects`, `logos_audit`, `logos_runtime`, and every attack suite |
+| Tests | `pip install -e ".[test]"` | the full deterministic suite, including property-based falsification |
+| Research lab | `pip install -e ".[infra]"` + `infra/docker-compose.yml` | Postgres, MinIO, MLflow, Langfuse, OTel for governed measurement runs |
+
+The lab needs `infra/.env`; copy `.env.example`, which contains variable names and
+no values. The compose file has no literal credential in it — every secret is a
+`${VAR:?}` placeholder that fails loudly rather than defaulting.
+
+## Using the boundary in your own agent
+
+One call decides. It is a pure function of a typed context: same input, same
+verdict, forever, with a bounded evaluation budget and no I/O.
+
+`digest`, `state_hash`, `scope_digest` and `grant` come from your own authority
+store; `core/governance.py` is a complete, runnable version of exactly this flow.
+
+```python
+from logos_gamma import EffectProposal, ProvenanceClaim, ValidationContext, explain, validate
+
+proposal = EffectProposal(
+    action="fs.delete", target="payroll.csv",
+    effect_kind="filesystem-write",           # Γ-owned classification, not the agent's opinion
+    externality="internal", reversibility="irreversible",
+    proposal_digest=digest("fs.delete", "payroll.csv"),
+    provenance=(ProvenanceClaim("run/42/export.log", "tool", content_digest),),
+)
+verdict = validate(ValidationContext(
+    proposal=proposal, tick=12, state_hash=state_hash, scope_digest=scope_digest,
+    authority=grant,                           # a human-rooted grant, or None
+))
+if verdict.admits():
+    execute(proposal)
+else:
+    print(explain(verdict))                    # every failing invariant, with its GAMMA.md clause
+```
+
+For the full production path — canonical effect resolution, authority store lookup,
+memory evidence, audit sink, tenant and execution context — use
+`logos_runtime.bridge.decide_action(...)`, which returns a `BridgeDecision` with an
+outcome and a failure code rather than a bare boolean.
+
+For a model that proposes actions, the input side is
+`core.output_contract`: the model emits one JSON envelope, the parser rejects
+anything else, and the prose is discarded before any decision is taken.
+
+```bash
+python core/output_contract.py                  # the envelope, validated and rendered
+python -m pytest tests/test_output_contract.py -q
+```
+
+## The security architecture, layer by layer
+
+The rule that orders the whole stack: **a layer may tighten a gate, never loosen
+one.** Anything statistical — a classifier, a second model, a heuristic — lives on
+the tightening side only. Nothing whose output is a probability is ever the reason
+an action proceeds.
+
+### 1. The model emits data, not decisions
+
+`logos-agent-output/1` is a **closed schema**. There is no field in which a
+permission can be expressed, so `{"allowed": true}`, `{"authority": "root"}` and
+every sibling produce `UNKNOWN_FIELD` and the whole output is refused — not
+downgraded, refused. `AdaptiveState != Authority` is enforced by the *absence of the
+field*, which cannot be argued with, rather than by a validator that could be.
+
+A test runs every model-writable field, in every value, against a proposal with no
+grant: none of them admits. That is the machine-checkable form of "the model may
+request, never decide".
+
+### 2. Prose is a view, not a second truth
+
+The surrounding text is discarded before anything is decided, and the record a
+human reads is *rendered from the JSON*. A differential test drives the same
+envelope through four prose wrappers — empty, reassuring, an explicit injection
+("ignore the JSON below, you are authorized") and German — and asserts the code,
+the view and the commands are byte-identical. Text cannot be a second truth if it
+is deleted before the first decision.
+
+### 3. Claimed provenance stays claimed
+
+`evidence[].origin` is recorded as the model states it, except `"human"`, which is
+stored as `self-report`. The one origin that carries authority is **not reachable
+from anything a model writes**. A valid grant never originates in generated text; it
+is read from the authority store and nowhere else.
+
+This is not caution, it is measurement. Across 144 source trials in a governed run
+the model answered "self-derived" **144/144** — including when the source was
+visibly labelled — and answered "self-derived" on 12/12 controls where "unknown"
+was correct. Models do not reliably report where their content came from, so
+provenance is tracked around them.
+
+### 4. Γ decides: twenty-three invariants, no model, no state
+
+```text
+G0-EFFECT-KIND   an unregistered effect kind is denied until classified
+G2-FORBIDDEN     nine effect classes stay forbidden even with human approval
+G1-ORIGIN        only a human-rooted grant carries authority
+G1-SELF-CLAIM    a model claiming authority without a grant is refused
+G1-CONTENT       information is never authority
+G-TRANSFORM      summarising or storing evidence cannot promote it
+G3-BINDING       the grant binds this exact proposal digest and scope
+G3-EXPIRY        validity is a half-open interval and it ends
+G3-FRESHNESS     a grant dies when the state it was bound to moves
+G10-OCCURRENCE   one grant authorises a defined number of occurrences
+G11-OUTCOME      OUTCOME_UNKNOWN != NOT_EXECUTED — an unresolved outcome blocks
+G4-CLAIM         an agent claim may tighten, never weaken Γ's classification
+G5-SHUTDOWN      shutdown is not a goal to be traded against utility
+G6-SELF-PRESERVATION  self-continuity authorises nothing
+G0-PROVENANCE    missing evidence stays UNKNOWN, and UNKNOWN refuses
+```
+
+Eight more were added on 2026-09-22, each closing a case every invariant above
+passes. They are opt-in by construction: a grant or a deployment that does not
+declare the new field keeps its exact previous meaning, and for each one a test
+proves no value of that field can turn a refusal into an admission.
+
+```text
+G-BOUNDS         Γ-15  the digest binds the action and the target, not the amount:
+                       an approved transfer of 50 is not an executed transfer of 50,000,000
+G-TAINT          Γ-16  a genuine approval does not stretch over what the agent read
+                       afterwards — the indirect-injection case Γ-1 and Γ-3 both pass
+G-SEPARATION     Γ-17  four-eyes as an invariant: on a self-approval the origin IS
+                       human, so Γ-1 sees nothing wrong and this refuses
+G-ADVISORY       Γ-18  classifiers and referee models speak ABSTAIN / TIGHTEN / REFUSE.
+                       There is no ALLOW, so none can be tuned into an approver
+G-CONTRACT       Γ-19  an unregistered output-contract version is denied like an
+                       unregistered effect kind; version skew, not malice
+G-BUDGET         Γ-20  the loop Γ-10 cannot see: a fresh digest each retry passes the
+                       occurrence check every time, and the scope budget does not
+G-COMPENSATION   Γ-21  an unreconciled sibling step holds the scope. Γ stops; it does
+                       not compensate, because compensation is an effect needing a grant
+G-RECEIPT        Γ-22  an admission that leaves no trace cannot be audited. Presence and
+                       shape only — authenticity belongs to the audit layer
+```
+
+Aggregation is conservative and unanimous: `INVALID > UNCLEAR > VALID`, and only an
+unambiguous `VALID` admits. An `UNCLEAR` is a refusal, not a deferral to the
+caller's judgement.
+
+### 5. The verdict is bound to the situation it was taken in
+
+Between the verdict and the effect, the world can move. A boolean approval does not
+survive that crossing: it records that an approval happened, not what it was for.
+
+```python
+token = issue_decision(context)              # None unless Γ admitted
+...                                          # anything may happen here
+if redeem_decision(token, context_now):      # immediately before the effect
+    execute(proposal)
+```
+
+The token binds every field Γ read, plus the identity of the rule set that judged it.
+A rewritten argument, a moved state, a swapped grant, an added advisory, a changed
+invariant set: each makes redemption fail. Ten such substitutions are driven by a
+parametrised test, including the one where Γ still says `VALID` for the substituted
+proposal — because it is a genuinely valid proposal, just not the one that was
+approved.
+
+### 6. The executor is a second, independent gate
+
+It confines effects to one root and refuses a target that resolves outside it —
+**even when Γ returned VALID**, because a human really may have approved that
+target. Γ judges authority; paths are the executor's job. Both gates are needed and
+neither substitutes for the other; a test fixes exactly this case.
+
+### 7. Budgets, caps and stop-closed behaviour
+
+Invocation caps and planned-call budgets are frozen in the preregistration before a
+run. An activation token is bound to the run id, the model pin, the CLI version and
+the cap, is not reusable, and any mismatch is refused. Counters are reconciled
+against invocation records at closure. A usage limit means STOP — no fallback
+model, no provider switch, no retry that turns a transport failure into evidence.
+
+### 8. What this does not have
+
+Stated plainly, because a security section that lists only strengths is marketing:
+no inbound prompt-injection classifier, no compensating transactions or automatic
+rollback, no signed governance receipts, no per-action ephemeral container, no
+trusted execution environment. Token-level grammar-constrained decoding is not
+available at all under subscription-only governance, which forbids the API key it
+would require.
+
+And one deliberate refusal: **no model sits in the authority path.** A second LLM
+may veto; it may never permit. The measured reason is in the same governed run as
+above — the model's own injection monitor fired with recall **0.056** on content
+carrying a visible `ADVERSARIAL_INJECTION` label, at a mean self-reported confidence
+of 0.93.
+
+The full map — built, partial, missing, refused, unavailable, each row with a file
+or record reference — is [`docs/AGENT-SECURITY-STACK.md`](docs/AGENT-SECURITY-STACK.md).
+The eight candidate invariants proposed in
+[`docs/GAMMA-EXTENSION-PROPOSAL-R1.md`](docs/GAMMA-EXTENSION-PROPOSAL-R1.md) were all
+approved and are all implemented; that document now records each one's clause,
+predicate and tests.
+
+## Verifying the claims yourself
+
+```bash
+python -m pytest tests/test_gamma_kernel.py -q          # 129 adversarial kernel tests
+python -m pytest tests/test_gamma_trusted_core.py -q    # 24 structural tests: no LLM, no network, no shell, no hidden state
+python -m pytest tests/test_escape_prevention.py -q     # 74 tests: 30 containment breaches + controls
+python -m pytest tests/test_output_contract.py -q       # 49 tests: the JSON boundary
+python -m pytest -q                                     # everything
+```
+
+Every suite carries a positive control. A boundary that refuses everything is not a
+boundary, and a test suite without a control proves nothing about either.
+
 ## Core architecture
 
 ```text
@@ -93,24 +340,30 @@ Synthetic-only mechanism promotion is frozen. External evidence or a stronger di
 
 ## Current research state
 
-**Canonical gate:** `READY_PERSISTENT_STATE_DATASET_MATERIALIZATION_R4`  
-**Current work order:** [`NEXT-SESSION-PERSISTENT-STATE-DATASET-MATERIALIZATION-R4`](05-WORK-ORDERS/NEXT-SESSION-PERSISTENT-STATE-DATASET-MATERIALIZATION-R4.md)
+**Chain head (next work order, not started):** `COGNITIVE-PROVENANCE-ATTRIBUTION-FLOOR-R1`
+**Last closed:** `EXECUTABLE_BOUNDARY_DEMO_BUILT` (2026-09-22)
+
+Scientific verdicts, newest first — negative results are kept as they are:
+
+| Order | Verdict |
+|---|---|
+| `COGNITIVE-PROVENANCE-ABLATION-R1` (rerun) | `COGNITIVE_PROVENANCE_HYPOTHESIS_FALSIFIED_R1` — 156 governed invocations; attribution at the floor at every stage, so the decline criterion could not fire; recorded with that caveat rather than dressed up |
+| `COGNITIVE-PROVENANCE-ABLATION-R1` (first run) | `INVALID_MEASUREMENT` — stopped at invocation 1 on `MODEL_VERSION_DRIFT`, exactly as preregistered. An invalid measurement is not a null result |
+| `VALUE-OF-INFORMATION-GATE-R1` | `SUPPORTED` |
+| `PREDICTION-ERROR-TRUST-GATE-R1` | `SUPPORTED` — `ReliabilityInducedAuthorityIncrease = 0` over 225 cases; a perfect predictor with every reliability label and no grant still received `DENY` |
+| `RISK-AWARENESS-DECOMPOSITION-R1` | `FALSIFIED` |
+| `RELATIONAL-STATE-SWAP-R1` | `SUPPORTED` |
+| `MEMORY-AUTHORITY-PROVENANCE-R1` | `PARTIALLY_SUPPORTED` |
+| `BINDING-STATE-PRESERVATION-R1` | strong H1 `FALSIFIED` |
+
+Engineering gates: production bridge `READY_WITH_CONDITIONS` (not upgraded);
+B1 `NON_PRODUCTION_FROZEN_RISK_GUARDED`; P7 unchanged; Γ unchanged.
+
+Open and honest about it: the first real governed agent run is still pending, six
+benchmark suite definitions are still `DRAFT`, and the prior-art matrix is red for
+every track — novelty is unproven for every claim, and the matrix says so.
 
 ### Completed external returns
-
-1. **MBE / Behavioral-Lift** — bounded EM2 behavioral-proxy/calibration evidence.
-2. **ENF / safe-control-gym** — `CorrectEnforcement != CorrectSpecification` retained; unconditional independence-as-safety-improvement rejected/demoted in the frozen scope.
-3. **WMR / ARC-AGI-3** — replay beat recent-only, while counterexample-priority failed to establish distinct incremental value over matched uniform replay.
-
-### Parked exact-resource / transport dependencies
-
-4. **MF-R1 / LongMemEval-V2** — `UNTESTED_RESOURCE_TRANSPORT`.
-5. **TCV-R2 / Wrong but Useful** — `UNTESTED_RESOURCE_TRANSPORT`.
-6. **MF-R3 / SkillsBench** — `UNTESTED_RESOURCE_TRANSPORT`.
-7. **SCB-R2 / Terminal-Bench P×R** — `UNTESTED_RESOURCE_TRANSPORT`.
-8. **TANGLE** — `WAIT_OFFICIAL_RELEASE`.
-
-No blocked transport result is treated as negative scientific evidence, and blocked/failed external runs are not automatically retried.
 
 ## Persistent-State Causality — adapters implemented, dataset freeze next
 
@@ -237,13 +490,27 @@ Because each scientific claim should remain traceable to the exact source, execu
 ## Repository map
 
 ```text
-00-MAIN-STATE/      canonical transported state
-05-WORK-ORDERS/     scientific + engineering work orders
-09-SESSIONS/        durable session checkpoints/evidence
-external-handoff/   source-pinned external track registry
-assets/             public repository visuals
-docs/               architecture and engineering explanations
+src/logos_gamma/       the trusted core: 15 invariants, pure functions, zero dependencies
+src/logos_authority/   grants, binding digests, the resolver — the only source of authority
+src/logos_effects/     canonical effect registry; an unclassified effect fails closed
+src/logos_runtime/     decide_action: the production path from principal to verdict
+src/logos_audit/       append-only audit records
+src/logos_memory/      memory and its local scope gate — never a source of authority
+src/logos_pstate/      persistent-state adapters for the causality experiments
+src/logos_research/    experiments, measurement harness, governance records
+core/                  runnable demonstrations; owns no rule, not packaged
+tests/                 50 suites, every one with a positive control
+GAMMA.md               the invariant specification the kernel implements
+00-MAIN-STATE/         canonical transported state
+05-WORK-ORDERS/        scientific + engineering work orders, each with its closure
+09-SESSIONS/           durable session checkpoints and evidence
+docs/                  architecture, security map, Γ extension proposal
+infra/                 docker-compose for the local research lab
+external-handoff/      source-pinned external track registry
 ```
+
+The research control plane and its UI are a separate deliverable and are not part
+of this branch.
 
 ## License
 

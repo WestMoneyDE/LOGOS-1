@@ -9,6 +9,8 @@ import hashlib
 import json
 import os
 import subprocess
+
+import _gamma_freeze
 import tempfile
 from dataclasses import replace
 from pathlib import Path
@@ -129,17 +131,24 @@ def test_AMD_P11_P12_privacy_and_experiment_unchanged():
 
 
 def test_AMD_P13_P14_P15_P16_bridge_R1R3_gamma_p7_unchanged():
-    diff = subprocess.run(["git", "diff", "--stat", "60e3703", "HEAD", "--", "GAMMA.md", "src/logos_gamma", "src/logos_authority", "src/logos_runtime", "src/logos_audit", "src/logos_effects", "src/logos_memory",
+    diff = subprocess.run(["git", "diff", "--stat", "60e3703", "HEAD", "--", 
+                           # Γ and GAMMA.md are pinned by _gamma_freeze.assert_gamma_pinned() below, not by this diff:
+                           # one recorded hash with an auditable supersede chain, checked on disk rather than between commits
+                           ":(exclude)GAMMA.md", ":(exclude)src/logos_gamma",
+                           "src/logos_authority", "src/logos_runtime", "src/logos_audit", "src/logos_effects", "src/logos_memory",
                            "src/logos_research/experiments", "docs/research/2026-08-20-PERSISTENT-STATE-PRIOR-ART-DELTA.md", "docs/adr/ADR-CANONICAL-AUTHORITY-PRODUCTION-BRIDGE.md",
                            ":(exclude)src/logos_research/experiments/cognitive_provenance_r1", ":(exclude)09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1", ":(exclude)05-WORK-ORDERS/NEXT-SESSION-COGNITIVE-PROVENANCE-ABLATION-R1.md"],   # COGNITIVE-PROVENANCE-ABLATION-R1: its own EXPERIMENTAL_INFERENCE package and records
                           capture_output=True, text=True, cwd=ROOT).stdout.strip()
+    _gamma_freeze.assert_gamma_pinned()
     assert diff == "", diff
     ceo = json.loads((ROOT / "docs/research/CANONICAL-EFFECT-OWNER.json").read_text(encoding="utf-8"))
     assert all(d["value"] != "PRODUCTION_BRIDGE_READY" for d in ceo["governance_decisions"] if d["id"].startswith("PRODUCTION-BRIDGE-READINESS"))
     assert "R1-R3 remain OPEN" in " ".join(REG["conditions"])
     frozen = json.loads((ROOT / "docs/research/DETERMINISTIC-CHAIN-FROZEN-HASHES.json").read_text(encoding="utf-8"))
-    p7 = (ROOT / "docs/research/2026-08-20-PERSISTENT-STATE-PRIOR-ART-DELTA.md").read_bytes()
-    assert hashlib.sha256(p7[p7.index(b"## Consciousness / P7 boundary"):]).hexdigest() == frozen["p7_boundary_sha256"]
+    # one implementation of the P7 hash, line-ending normalized: a second copy here
+    # would have to be kept in step by hand, and a pin that depends on the checkout
+    # is not a pin (git rewrites LF to CRLF on Windows).
+    assert _gamma_freeze.p7_boundary_hash() == frozen["p7_boundary_sha256"]
 
 
 def test_AMD_P17_zero_calls_and_P18_header_matches():
@@ -200,8 +209,14 @@ def test_ZERO_inference_proof_amendment():
         for n in ast.walk(ast.parse(py.read_text(encoding="utf-8"))):
             if isinstance(n, ast.ClassDef) and any(isinstance(b, ast.FunctionDef) and b.name in ("complete", "invoke") for b in n.body):
                 adapters.add(f"{str(py.relative_to(SRC)).replace(chr(92), '/')}::{n.name}")
-    assert adapters == {"logos_research/measurement/gateway.py::ProviderGateway", "logos_research/measurement/gateway.py::ForbiddenProvider", "logos_research/measurement/gateway.py::DryRunProvider",
-                        "logos_research/measurement/claude_code.py::ClaudeCodeMaxProvider"}
+    expected_adapters = {"logos_research/measurement/gateway.py::ProviderGateway", "logos_research/measurement/gateway.py::ForbiddenProvider", "logos_research/measurement/gateway.py::DryRunProvider",
+                         "logos_research/measurement/claude_code.py::ClaudeCodeMaxProvider"}
+    # The dashboard is a separate deliverable and is not part of every checkout (founder decision,
+    # 2026-09-22: the control plane stays out of the public default branch). The inventory stays EXACT
+    # in both trees rather than becoming a subset check: any adapter this list does not name still fails.
+    if (SRC / "logos_dashboard/control/agent_provider.py").exists():        # the file, not the directory: stale __pycache__ leaves empty dirs behind
+        expected_adapters |= {"logos_dashboard/control/agent_provider.py::AgentProvider"}     # R2 agent-job adapter; measurement path unchanged
+    assert adapters == expected_adapters
     p = cc.ClaudeCodeMaxProvider()                                                  # no runner injected -> invoke refuses before any process
     with pytest.raises(cc.ProviderPolicyError):
         p.invoke("q", "claude-x", {"run_id": "r"}, cc.Limits(1, 100, 1.0), token=cc.ActivationToken("r", "claude-x", 1, 1), env=CLEAN_ENV)
@@ -235,8 +250,7 @@ def _battery():
     assert g.max_total_spend == 0.0 and not gv.cost_activation(g, run_cost_cap=30.0), "M11"
     assert g.region == "NOT_ASSUMED" and "NOT ASSUMED" in g.raw["G2"]["region_guarantee"], "M12"
     assert all(d["value"] != "PRODUCTION_BRIDGE_READY" for d in json.loads((ROOT / "docs/research/CANONICAL-EFFECT-OWNER.json").read_text(encoding="utf-8"))["governance_decisions"]), "M14"
-    p7 = (ROOT / "docs/research/2026-08-20-PERSISTENT-STATE-PRIOR-ART-DELTA.md").read_bytes()
-    assert hashlib.sha256(p7[p7.index(b"## Consciousness / P7 boundary"):]).hexdigest() == P7_HASH, "M15"
+    assert _gamma_freeze.p7_boundary_hash() == P7_HASH, "M15"
     CALLS["claude_code_inference_invocations"] = 0; ms.reset_counters()
 
 

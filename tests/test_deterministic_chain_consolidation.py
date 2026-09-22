@@ -11,6 +11,8 @@ from __future__ import annotations
 import ast
 import copy
 import hashlib
+
+import _gamma_freeze
 import importlib
 import inspect
 import json
@@ -123,12 +125,11 @@ def check_package(d: dict) -> list[str]:
 
 
 def gamma_bundle_hash() -> str:
-    return hashlib.sha256(b"".join((ROOT / p).read_bytes() for p in sorted(PKG["gamma_bundle_files"]))).hexdigest()
+    return _gamma_freeze.gamma_bundle_hash()          # one implementation, line-ending normalized
 
 
 def p7_hash() -> str:
-    t = (ROOT / PKG["p7_boundary_file"]).read_bytes()
-    return hashlib.sha256(t[t.index(b"## Consciousness / P7 boundary"):]).hexdigest()
+    return _gamma_freeze.p7_boundary_hash()           # one implementation, line-ending normalized
 
 
 # --------------------------------------------------------------------------

@@ -8,6 +8,8 @@ import hashlib
 import json
 import os
 import subprocess
+
+import _gamma_freeze
 import sys
 from dataclasses import replace
 from pathlib import Path
@@ -129,9 +131,14 @@ def test_no_real_model_calls_and_no_network_in_new_code():
 
 def test_production_bridge_gamma_p7_unchanged():
     frozen = {"src/logos_authority/resolver.py": None, "src/logos_runtime/bridge.py": None, "src/logos_audit/__init__.py": None, "src/logos_memory/reader.py": None, "src/logos_effects/registry.py": None}
-    diff = subprocess.run(["git", "diff", "--stat", "eb1f642", "HEAD", "--", "GAMMA.md", "src/logos_gamma", "src/logos_authority", "src/logos_runtime", "src/logos_audit", "src/logos_effects",
+    diff = subprocess.run(["git", "diff", "--stat", "eb1f642", "HEAD", "--", 
+                           # Γ and GAMMA.md are pinned by _gamma_freeze.assert_gamma_pinned() below, not by this diff:
+                           # one recorded hash with an auditable supersede chain, checked on disk rather than between commits
+                           ":(exclude)GAMMA.md", ":(exclude)src/logos_gamma",
+                           "src/logos_authority", "src/logos_runtime", "src/logos_audit", "src/logos_effects",
                            "src/logos_memory", "docs/research/2026-08-20-PERSISTENT-STATE-PRIOR-ART-DELTA.md", "src/logos_research/experiments/binding_state.py",
                            "src/logos_research/experiments/memory_authority.py", "src/logos_research/experiments/effect_oracle.py"], capture_output=True, text=True, cwd=ROOT).stdout.strip()
+    _gamma_freeze.assert_gamma_pinned()
     assert diff == "", diff
     p7 = (ROOT / "docs/research/2026-08-20-PERSISTENT-STATE-PRIOR-ART-DELTA.md").read_bytes()
     assert b"## Consciousness / P7 boundary" in p7

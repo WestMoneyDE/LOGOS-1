@@ -15,6 +15,8 @@ import hashlib
 import json
 import os
 import subprocess
+
+import _gamma_freeze
 from dataclasses import replace
 from pathlib import Path
 
@@ -196,15 +198,32 @@ def test_GOV_P10_P11_bridge_not_upgraded_R1_R3_open():
 
 
 def test_GOV_P12_P13_P14_gamma_p7_predecessors_unchanged():
-    diff = subprocess.run(["git", "diff", "--stat", "ea24e76", "HEAD", "--", "GAMMA.md", "src/logos_gamma", "src/logos_authority", "src/logos_runtime", "src/logos_audit", "src/logos_effects", "src/logos_memory",
+    diff = subprocess.run(["git", "diff", "--stat", "ea24e76", "HEAD", "--", 
+                           # Γ and GAMMA.md are pinned by _gamma_freeze.assert_gamma_pinned() below, not by this diff:
+                           # one recorded hash with an auditable supersede chain, checked on disk rather than between commits
+                           ":(exclude)GAMMA.md", ":(exclude)src/logos_gamma",
+                           "src/logos_authority", "src/logos_runtime", "src/logos_audit", "src/logos_effects", "src/logos_memory",
                            "src/logos_research/experiments", "src/logos_research/measurement", "docs/research/2026-08-20-PERSISTENT-STATE-PRIOR-ART-DELTA.md", "05-WORK-ORDERS/NEXT-SESSION-*", ":(exclude)05-WORK-ORDERS/NEXT-SESSION-INFERENCE-GOVERNANCE-LIFT-R1.md",
                            "09-SESSIONS", ":(exclude)09-SESSIONS/2026-09-18-INFERENCE-GOVERNANCE-LIFT-R1",
                            # INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: its own records and the adapter contract (frozen-hash checked by its own suite)
                            ":(exclude)05-WORK-ORDERS/NEXT-SESSION-INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1.md", ":(exclude)09-SESSIONS/2026-09-18-INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1",
+                           ":(exclude)05-WORK-ORDERS/NEXT-SESSION-COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1.md", ":(exclude)09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1",
+                           ":(exclude)05-WORK-ORDERS/NEXT-SESSION-LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1.md", ":(exclude)09-SESSIONS/2026-09-19-LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1",
+                           # LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 / -AUTOPILOT-R2: their own closure + session records (tooling orders; no Γ/P7/experiment/measurement file touched)
+                           ":(exclude)05-WORK-ORDERS/NEXT-SESSION-LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1.md", ":(exclude)09-SESSIONS/2026-09-19-LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1",
+                           ":(exclude)05-WORK-ORDERS/NEXT-SESSION-LOGOS1-RESEARCH-OS-AUTOPILOT-R2.md", ":(exclude)09-SESSIONS/2026-09-19-LOGOS1-RESEARCH-OS-AUTOPILOT-R2",
+                           ":(exclude)05-WORK-ORDERS/NEXT-SESSION-LOGOS1-RESEARCH-OS-MEASUREMENT-R3.md", ":(exclude)09-SESSIONS/2026-09-19-LOGOS1-RESEARCH-OS-MEASUREMENT-R3",
+                           ":(exclude)05-WORK-ORDERS/NEXT-SESSION-LOGOS1-RESEARCH-OS-OBSERVE-INSIGHTS-REGISTRY-R4.md", ":(exclude)09-SESSIONS/2026-09-19-LOGOS1-RESEARCH-OS-OBSERVE-INSIGHTS-REGISTRY-R4",
+                               # -PRIORART-EVALS-PAPER-R5 / -EXECUTABLE-BOUNDARY-DEMO-R1: their own closure + session records
+                               # (tooling orders; no Γ / P7 / experiment / measurement file touched)
+                               ":(exclude)05-WORK-ORDERS/NEXT-SESSION-LOGOS1-RESEARCH-OS-PRIORART-EVALS-PAPER-R5.md", ":(exclude)09-SESSIONS/2026-09-19-LOGOS1-RESEARCH-OS-PRIORART-EVALS-PAPER-R5",
+                               ":(exclude)05-WORK-ORDERS/NEXT-SESSION-LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1.md", ":(exclude)09-SESSIONS/2026-09-22-LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1",
+                               ":(exclude)05-WORK-ORDERS/NEXT-SESSION-LOGOS1-GAMMA-EXTENSION-R1.md", ":(exclude)09-SESSIONS/2026-09-22-LOGOS1-GAMMA-EXTENSION-R1",
                            ":(exclude)src/logos_research/measurement/result_model.py", ":(exclude)src/logos_research/measurement/claude_code.py",   # COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: resolver + repaired adapter (hash-recorded in the repair prereg/artifact)
                            ":(exclude)src/logos_research/experiments/cognitive_provenance_r1", ":(exclude)09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1", ":(exclude)05-WORK-ORDERS/NEXT-SESSION-COGNITIVE-PROVENANCE-ABLATION-R1.md"],   # COGNITIVE-PROVENANCE-ABLATION-R1: its own EXPERIMENTAL_INFERENCE package and records
 
                           capture_output=True, text=True, cwd=ROOT).stdout.strip()
+    _gamma_freeze.assert_gamma_pinned()
     assert diff == "", diff
     p7 = (ROOT / "docs/research/2026-08-20-PERSISTENT-STATE-PRIOR-ART-DELTA.md").read_bytes()
     assert b"## Consciousness / P7 boundary" in p7
@@ -233,7 +252,10 @@ def test_ZERO_inference_proof():
         txt = py.read_text(encoding="utf-8")
         for tok in ("import openai", "from openai", "import anthropic", "from anthropic", "api.openai.com", "api.anthropic.com"):
             assert tok not in txt, (py, tok)                                                     # no model-provider client anywhere in src
-        if "logos_research/infra" not in str(py).replace("\\", "/"):                            # lab infra (Postgres/MinIO/OTel health) is the only network user
+        rel_py = str(py).replace("\\", "/")
+        # lab infra (Postgres/MinIO/OTel health) and the dashboard's observability reader are the only network users; both talk to loopback telemetry only,
+        # and the model-provider checks above (openai/anthropic clients, api.* hosts) still apply to them.
+        if "logos_research/infra" not in rel_py and "logos_dashboard/control/observe.py" not in rel_py:
             for tok in ("import requests", "import httpx", "import urllib.request", "import socket"):
                 assert tok not in txt, (py, tok)
         tree = ast.parse(txt)
@@ -241,8 +263,14 @@ def test_ZERO_inference_proof():
             if isinstance(n, ast.ClassDef) and any(isinstance(b, ast.FunctionDef) and b.name in ("complete", "invoke") for b in n.body):
                 adapters.add(f"{str(py.relative_to(SRC)).replace(chr(92), '/')}::{n.name}")
     # adapter inventory: the protocol, the forbidden guard and the synthetic dry-run provider — nothing that can reach a model
-    assert adapters == {"logos_research/measurement/gateway.py::ProviderGateway", "logos_research/measurement/gateway.py::ForbiddenProvider", "logos_research/measurement/gateway.py::DryRunProvider",
-                        "logos_research/measurement/claude_code.py::ClaudeCodeMaxProvider"}                    # amendment: contract only; invoke() needs an ActivationToken + injected runner
+    expected_adapters = {"logos_research/measurement/gateway.py::ProviderGateway", "logos_research/measurement/gateway.py::ForbiddenProvider", "logos_research/measurement/gateway.py::DryRunProvider",
+                         "logos_research/measurement/claude_code.py::ClaudeCodeMaxProvider"}                   # amendment: contract only; invoke() needs an ActivationToken + injected runner
+    # The dashboard is a separate deliverable and is not part of every checkout (founder decision,
+    # 2026-09-22: the control plane stays out of the public default branch). The inventory stays EXACT
+    # in both trees rather than becoming a subset check: any adapter this list does not name still fails.
+    if (SRC / "logos_dashboard/control/agent_provider.py").exists():        # the file, not the directory: stale __pycache__ leaves empty dirs behind
+        expected_adapters |= {"logos_dashboard/control/agent_provider.py::AgentProvider"}                      # LOGOS1-RESEARCH-OS-AUTOPILOT-R2: agent-job adapter (stream-json + --verbose per founder amendment); same token + injected-runner gate, own flag allowlist
+    assert adapters == expected_adapters
     assert CALLS["claude_code_inference_invocations"] == 0
     gtxt = (SRC / "logos_research/governance.py").read_text(encoding="utf-8")
     assert "def complete" not in gtxt and "ProviderSpec" in gtxt
@@ -274,8 +302,7 @@ def _battery():
     assert CALLS["provider_calls"] == 0 and CALLS["model_calls"] == 0, "M12"
     assert all(d["value"] != "PRODUCTION_BRIDGE_READY" for d in json.loads((ROOT / "docs/research/CANONICAL-EFFECT-OWNER.json").read_text(encoding="utf-8"))["governance_decisions"]), "M13"
     assert "R1-R3 remain OPEN" in " ".join(a.raw["conditions"]), "M14"
-    p7 = (ROOT / "docs/research/2026-08-20-PERSISTENT-STATE-PRIOR-ART-DELTA.md").read_bytes()
-    assert hashlib.sha256(p7[p7.index(b"## Consciousness / P7 boundary"):]).hexdigest() == P7_HASH, "M15"
+    assert _gamma_freeze.p7_boundary_hash() == P7_HASH, "M15"   # one implementation, line-ending normalized
 
 
 P7_HASH = json.loads((ROOT / "docs/research/DETERMINISTIC-CHAIN-FROZEN-HASHES.json").read_text(encoding="utf-8"))["p7_boundary_sha256"]

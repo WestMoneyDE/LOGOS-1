@@ -245,3 +245,203 @@ and diagnostics certified the defect as healthy.
 
 Confirmed structurally: no import path exists from BIOCODE research data into
 the safety kernel (`research/biocode/BIOCODE-GAMMA-BOUNDARY-AUDIT.md`).
+
+### Γ-15 A grant binds parameters, not only an action name
+
+An approval is bound to the canonical proposal digest, which covers the action and
+its target. It does not, by itself, cover the *magnitude* of the effect. An approved
+transfer of 50 and an executed transfer of 50,000,000 to the same recipient share a
+digest and are otherwise indistinguishable to Γ-3.
+
+A grant may therefore carry explicit numeric bounds:
+
+    bounds: name -> [low, high]
+
+and for every bounded name the proposal must carry a numeric parameter inside that
+closed interval. Three outcomes, and only the first admits:
+
+    parameter present, numeric, inside      VALID
+    parameter present, numeric, outside     INVALID   the approval did not cover this magnitude
+    parameter absent, or not a number       UNCLEAR   an unverifiable bound is not a satisfied bound
+
+A grant without bounds behaves exactly as before, so no existing approval changes
+meaning. Bounds may only narrow what a grant permits; there is no value of `bounds`
+that admits a proposal Γ would otherwise refuse.
+
+### Γ-16 An approval cannot cover evidence that did not exist yet
+
+Indirect prompt injection does not need to forge a grant. The agent holds a real,
+human-rooted, correctly bound, live, unconsumed approval. It then reads a file, a
+web page or a tool result containing instructions, and proposes an action shaped by
+that content. Γ-1 does not fire, because a valid grant exists. Γ-3 does not fire,
+because the digest still matches. The approval is genuine — it simply predates the
+content that actually drove the proposal.
+
+An approver may therefore state how far its knowledge reached:
+
+    evidence_cutoff_tick: the latest ingestion tick this approval was given over
+
+When a grant declares a cutoff, every provenance claim on the proposal must carry a
+recorded ingestion tick, and that tick must not be later than the cutoff:
+
+    ingested_at_tick <= cutoff        VALID
+    ingested_at_tick  > cutoff        INVALID   re-approval is required, not inference
+    ingestion tick not recorded       UNCLEAR   unknown provenance time is not "in time"
+
+**The limitation, stated rather than hidden.** A grant that declares no cutoff is
+unconstrained by Γ-16, and a deployment that never records ingestion ticks receives
+no protection from it at all. Γ cannot infer when a document entered the context; it
+can only check a time the surrounding system recorded. This invariant is a contract
+with the harness, not a defence the kernel can provide alone.
+
+### Γ-17 The principal who proposes is not the principal who approves
+
+Four-eyes is usually a process: a rule in a runbook, a step in a workflow, a habit
+that survives exactly as long as the people who keep it. Here it is an invariant.
+
+A grant may record the principal that issued it. Where it does, the proposal must
+record the principal that raised it, and the two must differ:
+
+    issuer recorded, proposer recorded, different    VALID
+    issuer recorded, proposer recorded, identical    INVALID   self-approval is not approval
+    issuer recorded, proposer not recorded           UNCLEAR   separation cannot be verified
+    issuer not recorded                              Γ-17 constrains nothing
+
+The identical case is not a technicality. An agent that can write into the
+authority store has not thereby gained authority; it has gained a way to *look* as
+if it had. Γ-1 catches a grant whose origin is not human. Γ-17 catches a grant whose
+origin is human and whose human is the requester.
+
+Recording no issuer leaves the invariant inactive, which is a deliberate choice: an
+approval store that does not know who approved cannot be made to answer the
+question, and Γ will not invent the answer.
+
+### Γ-18 An advisory may tighten; it has no word for permission
+
+Statistical components are useful and they are not trustworthy in the way a proof
+is. An injection classifier, a risk score, a reliability gate, a second model
+reviewing a plan: each of them can be right often and wrong without warning.
+
+They enter Γ as advisories, and the vocabulary they may speak in is:
+
+    ABSTAIN    no opinion
+    TIGHTEN    a reason for more caution, recorded, no verdict change
+    REFUSE     this must not proceed
+
+There is no `ALLOW`. An advisory cannot vote for an action even if it wants to, and
+a compromised one cannot be made to. Any token outside the vocabulary is itself a
+refusal, because a component that answers outside its contract has already failed.
+
+This is the same construction as the closed output envelope: the dangerous option is
+absent rather than guarded. A guard can be argued with; a missing word cannot.
+
+The consequence is deliberate and worth stating plainly. Adding an advisory can only
+ever lower the rate of admitted proposals. It can never raise it, so no measurement
+that shows a model "improving" throughput can be attributed to an advisory, and no
+advisory can be tuned into an approver.
+
+### Γ-19 An output arrives under a known contract or not at all
+
+A proposal that came from an agent carries the contract version its output was
+parsed under. Γ knows a finite set of those versions, and an unrecognised one is
+denied exactly as an unregistered effect kind is denied under Γ0.
+
+    contract absent        Γ-19 constrains nothing — the proposal was not produced by an agent contract
+    contract known         VALID
+    contract unknown       INVALID
+
+The reason is version skew rather than malice. A parser upgraded in one place and
+not another produces envelopes that *look* valid and mean something slightly
+different — a field that used to be advisory becoming load-bearing, a default that
+moved. A boundary that accepts any version accepts the union of every meaning that
+version string ever had.
+
+This lifts into the kernel a property the JSON boundary already enforces at the
+edge, so it holds for every caller rather than for one parser.
+
+### Γ-20 A scope has a finite consequential budget
+
+Γ-10 stops a *replay*: the same proposal digest, presented again against a grant
+that has been consumed. It does not stop a loop that keeps producing new proposals.
+An agent retrying a failing task with a slightly different target each time, each
+attempt correctly granted, passes Γ-10 every single time while the damage
+accumulates.
+
+A grant may therefore carry a budget for the scope it belongs to, and the caller
+supplies how much of it has already been spent:
+
+    consumed <  budget     VALID
+    consumed >= budget     INVALID   a loop does not earn more authority than a single step
+    no budget stated       Γ-20 constrains nothing
+
+This is the deterministic form of a stability guard. The number counts recorded
+executions in the scope; it is not an estimate, a score or a model's opinion about
+how risky things are getting.
+
+Two things it deliberately does not do. It does not reset itself — a budget that
+refills without an approval would be a permission on a timer. And it does not
+distinguish the causes of spending, because an agent that can choose which of its
+actions count against a budget controls the budget.
+
+### Γ-21 An unreconciled step blocks the next one
+
+Γ-11 holds a *retry*: the same proposal, while its own outcome is unresolved. It
+says nothing about step four of a sequence whose step three is still unknown. That
+is the multi-step failure, and it is the common one — a timeout at step three of
+five leaves the world in a state no one has described, and rolling forward from an
+undescribed state is guessing.
+
+    no unreconciled step in the scope     VALID
+    one or more unreconciled              INVALID   the scope is held, not rolled forward
+
+What Γ does here is stop. It does not compensate, and the omission is deliberate: a
+compensating action is an effect, and an effect needs its own grant. A kernel that
+quietly undid things would be taking exactly the kind of unauthorised action it
+exists to prevent, and it would be doing so at the moment its picture of the world
+is least reliable.
+
+### Γ-22 An admitted consequential effect is bound to its decision
+
+An admission that leaves no reproducible trace cannot be audited afterwards, and a
+system whose refusals are provable but whose approvals are not has proved the less
+interesting half.
+
+A consequential proposal must therefore carry a receipt reference binding it to the
+decision that admitted it — the invariant set, the policy snapshot, the verdict.
+
+    deployment does not require receipts   Γ-22 constrains nothing
+    non-consequential                      Γ-22 constrains nothing
+    receipt reference present              VALID
+    receipt reference missing              UNCLEAR
+
+UNCLEAR rather than INVALID, deliberately: a missing receipt is a gap in the record,
+not evidence of a violation. It still refuses, because under Γ-0 an unknown is not a
+yes.
+
+Receipting is declared by the deployment rather than assumed, for the same reason as
+Γ-16 and Γ-20: a system that has not adopted receipts cannot be made to produce them
+retroactively, and turning the requirement on silently would change what every
+existing approval means.
+
+Γ checks presence and shape only. Whether the receipt is *authentic* — signed,
+chained, stored beyond the reach of the process it describes — is the audit layer's
+work, and no cryptography belongs inside a kernel whose whole value is that it is a
+small pure function.
+
+## Decision binding
+
+Γ answers a question about one `ValidationContext`. Between that answer and the
+effect, the world can move — an argument is rewritten, a dependency changes, the
+resolved target is not the one that was judged. A boolean `approved = true` does not
+survive that crossing: it records that an approval happened, not what it was for.
+
+    issue_decision(context)   -> DecisionToken | None      (None unless VALID)
+    redeem_decision(token, context) -> bool                (immediately before the effect)
+
+The token carries the identity of the judged situation and of the rule set that
+judged it. Redemption recomputes both and refuses on any difference. An approval is
+therefore a capability for exactly one state-action pair, not a standing right to
+act, and the window between the verdict and the effect carries no trust.
+
+There is no constructor that produces a token for a refused proposal, and none that
+names a situation other than the one evaluated.

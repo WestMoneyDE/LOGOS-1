@@ -34,6 +34,8 @@ infra = [
 where = ["src"]
 
 [tool.pytest.ini_options]
-pythonpath = ["src"]
+# "." makes core/ importable: the runnable demonstrations live at the repository
+# root, outside the audited library tree (see core/__init__.py).
+pythonpath = [".", "src"]
 testpaths = ["tests"]
 addopts = "-q"
