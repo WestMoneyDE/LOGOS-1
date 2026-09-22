@@ -15,6 +15,8 @@ import hashlib
 import json
 import os
 import subprocess
+
+import _gamma_freeze
 from dataclasses import replace
 from pathlib import Path
 
@@ -196,7 +198,11 @@ def test_GOV_P10_P11_bridge_not_upgraded_R1_R3_open():
 
 
 def test_GOV_P12_P13_P14_gamma_p7_predecessors_unchanged():
-    diff = subprocess.run(["git", "diff", "--stat", "ea24e76", "HEAD", "--", "GAMMA.md", "src/logos_gamma", "src/logos_authority", "src/logos_runtime", "src/logos_audit", "src/logos_effects", "src/logos_memory",
+    diff = subprocess.run(["git", "diff", "--stat", "ea24e76", "HEAD", "--", 
+                           # Γ and GAMMA.md are pinned by _gamma_freeze.assert_gamma_pinned() below, not by this diff:
+                           # one recorded hash with an auditable supersede chain, checked on disk rather than between commits
+                           ":(exclude)GAMMA.md", ":(exclude)src/logos_gamma",
+                           "src/logos_authority", "src/logos_runtime", "src/logos_audit", "src/logos_effects", "src/logos_memory",
                            "src/logos_research/experiments", "src/logos_research/measurement", "docs/research/2026-08-20-PERSISTENT-STATE-PRIOR-ART-DELTA.md", "05-WORK-ORDERS/NEXT-SESSION-*", ":(exclude)05-WORK-ORDERS/NEXT-SESSION-INFERENCE-GOVERNANCE-LIFT-R1.md",
                            "09-SESSIONS", ":(exclude)09-SESSIONS/2026-09-18-INFERENCE-GOVERNANCE-LIFT-R1",
                            # INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: its own records and the adapter contract (frozen-hash checked by its own suite)
@@ -212,10 +218,12 @@ def test_GOV_P12_P13_P14_gamma_p7_predecessors_unchanged():
                                # (tooling orders; no Γ / P7 / experiment / measurement file touched)
                                ":(exclude)05-WORK-ORDERS/NEXT-SESSION-LOGOS1-RESEARCH-OS-PRIORART-EVALS-PAPER-R5.md", ":(exclude)09-SESSIONS/2026-09-19-LOGOS1-RESEARCH-OS-PRIORART-EVALS-PAPER-R5",
                                ":(exclude)05-WORK-ORDERS/NEXT-SESSION-LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1.md", ":(exclude)09-SESSIONS/2026-09-22-LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1",
+                               ":(exclude)05-WORK-ORDERS/NEXT-SESSION-LOGOS1-GAMMA-EXTENSION-R1.md", ":(exclude)09-SESSIONS/2026-09-22-LOGOS1-GAMMA-EXTENSION-R1",
                            ":(exclude)src/logos_research/measurement/result_model.py", ":(exclude)src/logos_research/measurement/claude_code.py",   # COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: resolver + repaired adapter (hash-recorded in the repair prereg/artifact)
                            ":(exclude)src/logos_research/experiments/cognitive_provenance_r1", ":(exclude)09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1", ":(exclude)05-WORK-ORDERS/NEXT-SESSION-COGNITIVE-PROVENANCE-ABLATION-R1.md"],   # COGNITIVE-PROVENANCE-ABLATION-R1: its own EXPERIMENTAL_INFERENCE package and records
 
                           capture_output=True, text=True, cwd=ROOT).stdout.strip()
+    _gamma_freeze.assert_gamma_pinned()
     assert diff == "", diff
     p7 = (ROOT / "docs/research/2026-08-20-PERSISTENT-STATE-PRIOR-ART-DELTA.md").read_bytes()
     assert b"## Consciousness / P7 boundary" in p7

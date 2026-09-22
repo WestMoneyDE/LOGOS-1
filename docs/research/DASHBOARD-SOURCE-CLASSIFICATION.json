@@ -1533,6 +1533,66 @@
     "tests/test_production_pipeline_e2e.py": {
       "class": "EXPERIMENTAL_DETERMINISTIC",
       "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: Pruefung baumbewusst gemacht (Dateiprobe + Regel fuer erklaerte Abwesenheit); nichts abgeschwaecht"
+    },
+    "GAMMA.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-GAMMA-BOUNDS-R1: Γ-15 / G-BOUNDS auf Founder-Entscheidung ergaenzt; nur verschaerfend, Bundle neu eingefroren (alter Hash unter 'superseded')"
+    },
+    "docs/research/DETERMINISTIC-CHAIN-FROZEN-HASHES.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-GAMMA-BOUNDS-R1: Neueinfrierung des Γ-Bundles; P7-Hash unveraendert; Vorgaengerwert erhalten"
+    },
+    "src/logos_gamma/invariants.py": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-GAMMA-BOUNDS-R1: Γ-15 / G-BOUNDS auf Founder-Entscheidung ergaenzt; nur verschaerfend, Bundle neu eingefroren (alter Hash unter 'superseded')"
+    },
+    "src/logos_gamma/types.py": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-GAMMA-BOUNDS-R1: Γ-15 / G-BOUNDS auf Founder-Entscheidung ergaenzt; nur verschaerfend, Bundle neu eingefroren (alter Hash unter 'superseded')"
+    },
+    "tests/test_gamma_kernel.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-GAMMA-BOUNDS-R1: Kontrolle + Angriffe fuer Γ-15; kein Modellaufruf"
+    },
+    "tests/_gamma_freeze.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-GAMMA-TAINT-R1: eine auditierbare Γ-Anbindung statt sechs stiller Commit-IDs; prueft die Bytes auf der Platte, nicht einen Diff zwischen Commits"
+    },
+    "tests/test_cognitive_provenance_r1.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-GAMMA-TAINT-R1: Kontrolle + Angriffe; kein Modellaufruf"
+    },
+    "tests/test_cpa_instrument_repair.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-GAMMA-TAINT-R1: Kontrolle + Angriffe; kein Modellaufruf"
+    },
+    "tests/test_pre_inference_readiness.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-GAMMA-TAINT-R1: Kontrolle + Angriffe; kein Modellaufruf"
+    },
+    "src/logos_gamma/__init__.py": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-GAMMA-ADVISORY-R1: Gamma-Erweiterung auf Founder-Entscheidung; nur verschaerfend; Bundle neu eingefroren mit Supersede-Kette"
+    },
+    "tests/test_infra_adapters.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-GAMMA-BUDGET-COMPENSATION-RECEIPT-R1: Kontrolle + Angriffe, deterministisch; kein Modellaufruf"
+    },
+    "tests/test_infra_self_falsification.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-GAMMA-BUDGET-COMPENSATION-RECEIPT-R1: Kontrolle + Angriffe, deterministisch; kein Modellaufruf"
+    },
+    "src/logos_gamma/kernel.py": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-DECISION-BINDING-R1: Gamma-Erweiterung auf Founder-Entscheidung; nur verschaerfend; Bundle neu eingefroren mit Supersede-Kette"
+    },
+    "05-WORK-ORDERS/NEXT-SESSION-LOGOS1-GAMMA-EXTENSION-R1.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-GAMMA-EXTENSION-R1: Record; kein Code, kein Modellaufruf"
+    },
+    "09-SESSIONS/2026-09-22-LOGOS1-GAMMA-EXTENSION-R1/SESSION-REPORT.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-GAMMA-EXTENSION-R1: Record; kein Code, kein Modellaufruf"
     }
   },
   "unclassified": 0

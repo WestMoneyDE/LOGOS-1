@@ -13,8 +13,10 @@ from dataclasses import dataclass
 from typing import Callable
 
 from .types import (
+    ADVISORY_VOTES,
     CONSTITUTIONALLY_FORBIDDEN,
     KNOWN_EFFECT_KINDS,
+    KNOWN_OUTPUT_CONTRACTS,
     Finding,
     ValidationContext,
 )
@@ -256,6 +258,218 @@ def _provenance_present(ctx: ValidationContext) -> Finding:
     return _ok("G0-PROVENANCE", "Γ-0", "provenance is present and digested")
 
 
+
+# --------------------------------------------------------------------------
+# Γ-15 — a grant binds parameters, not only an action name
+# --------------------------------------------------------------------------
+
+def _parameters_within_grant_bounds(ctx: ValidationContext) -> Finding:
+    """An approved transfer of 50 does not authorise a transfer of 50,000,000.
+
+    The proposal digest covers the action and its target, not the magnitude. A grant
+    may carry closed numeric intervals; for every bounded name the proposal must
+    carry a number inside its interval. A bound that cannot be checked is UNCLEAR,
+    never satisfied: an unverifiable limit is not a limit.
+
+    Bounds only ever narrow. There is no value of `bounds` that admits a proposal
+    this registry would otherwise refuse, and `tests/test_gamma_kernel.py` fixes it.
+    """
+    grant = ctx.authority
+    if grant is None or not grant.bounds:
+        return _ok("G-BOUNDS", "Γ-15", "grant carries no bounded parameter")
+    for name in sorted(grant.bounds):                       # sorted: the first failure is reproducible
+        low, high = grant.bounds[name]
+        if name not in ctx.proposal.parameters:
+            return _unclear("G-BOUNDS", "Γ-15",
+                            f"grant bounds {name!r} to [{low}, {high}] but the proposal does not carry it; "
+                            "an unverifiable bound is not a satisfied bound")
+        value = ctx.proposal.parameters[name]
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            return _unclear("G-BOUNDS", "Γ-15",
+                            f"bounded parameter {name!r} is {value!r}, which is not a number to compare")
+        if not (low <= value <= high):
+            return _bad("G-BOUNDS", "Γ-15",
+                        f"{name}={value!r} is outside the approved [{low}, {high}]; "
+                        "the grant binds the action, the target and this magnitude")
+    return _ok("G-BOUNDS", "Γ-15", "every bounded parameter is inside its approval")
+
+
+
+# --------------------------------------------------------------------------
+# Γ-16 — an approval cannot cover evidence that did not exist yet
+# --------------------------------------------------------------------------
+
+def _authority_covers_the_evidence_in_time(ctx: ValidationContext) -> Finding:
+    """The indirect-injection case that every other invariant passes.
+
+    The grant is human-rooted, correctly bound, live and unconsumed. The agent then
+    read something that shaped the proposal. Γ-1 sees a valid grant; Γ-3 sees a
+    matching digest. Only the *time* distinguishes the two situations.
+
+    Γ cannot infer when a document entered a context window. It can only check a
+    tick the surrounding system recorded against a cutoff the approver stated. A
+    grant without a cutoff is therefore unconstrained here — a limitation written
+    into the clause rather than hidden behind a passing test.
+    """
+    grant = ctx.authority
+    if grant is None or grant.evidence_cutoff_tick is None:
+        return _ok("G-TAINT", "Γ-16", "approval states no evidence cutoff")
+    cutoff = grant.evidence_cutoff_tick
+    unrecorded = tuple(c.ref for c in ctx.proposal.provenance if c.ingested_at_tick is None)
+    if unrecorded:
+        return _unclear("G-TAINT", "Γ-16",
+                        f"approval covers evidence up to tick {cutoff}, but these claims carry no "
+                        f"ingestion tick: {sorted(unrecorded)}; unknown provenance time is not 'in time'")
+    late = tuple(sorted((c.ingested_at_tick, c.ref) for c in ctx.proposal.provenance
+                        if c.ingested_at_tick > cutoff))
+    if late:
+        return _bad("G-TAINT", "Γ-16",
+                    f"approval covers evidence up to tick {cutoff}; these arrived afterwards: "
+                    f"{[f'{ref}@{tick}' for tick, ref in late]}; re-approval is required, not inference")
+    return _ok("G-TAINT", "Γ-16", f"all evidence was ingested at or before tick {cutoff}")
+
+
+
+# --------------------------------------------------------------------------
+# Γ-17 — the principal who proposes is not the principal who approves
+# --------------------------------------------------------------------------
+
+def _proposer_is_not_the_approver(ctx: ValidationContext) -> Finding:
+    """Four-eyes as an invariant rather than as a habit.
+
+    Γ-1 catches a grant whose origin is not human. This catches a grant whose origin
+    *is* human and whose human is the one asking. An agent that can write into the
+    authority store has not gained authority; it has gained a way to look as if it
+    had, and the two are distinguished here.
+    """
+    grant = ctx.authority
+    if grant is None or grant.issued_by is None:
+        return _ok("G-SEPARATION", "Γ-17", "approval records no issuing principal")
+    proposer = ctx.proposal.proposed_by
+    if proposer is None:
+        return _unclear("G-SEPARATION", "Γ-17",
+                        f"approval was issued by {grant.issued_by!r} but the proposal records no "
+                        "proposing principal; separation cannot be verified")
+    if proposer == grant.issued_by:
+        return _bad("G-SEPARATION", "Γ-17",
+                    f"{proposer!r} approved its own proposal; an approval from the requester is not "
+                    "an external approval")
+    return _ok("G-SEPARATION", "Γ-17", f"{proposer!r} proposed and {grant.issued_by!r} approved")
+
+
+
+# --------------------------------------------------------------------------
+# Γ-18 — an advisory may tighten; it has no word for permission
+# --------------------------------------------------------------------------
+
+def _advisories_only_tighten(ctx: ValidationContext) -> Finding:
+    """Where every statistical component lives, and the shape of its power.
+
+    A classifier, a risk score, a reliability gate, a second model reviewing the
+    plan: each may refuse, may ask for caution, may abstain. None may permit, because
+    the vocabulary has no token for it. A component that answers outside its contract
+    has already failed, so an unknown token is itself a refusal.
+    """
+    for source, vote in ctx.advisories:
+        if vote not in ADVISORY_VOTES:
+            return _bad("G-ADVISORY", "Γ-18",
+                        f"advisory {source!r} answered {vote!r}, which is not in {sorted(ADVISORY_VOTES)}; "
+                        "an advisory has no vocabulary for permission and none for improvisation")
+        if vote == "REFUSE":
+            return _bad("G-ADVISORY", "Γ-18", f"advisory {source!r} refused")
+    tighten = tuple(source for source, vote in ctx.advisories if vote == "TIGHTEN")
+    if tighten:
+        return _ok("G-ADVISORY", "Γ-18", f"caution recorded by {sorted(tighten)}; no verdict change")
+    return _ok("G-ADVISORY", "Γ-18", "no advisory objection")
+
+
+
+# --------------------------------------------------------------------------
+# Γ-19 — an output arrives under a known contract or not at all
+# --------------------------------------------------------------------------
+
+def _output_contract_is_known(ctx: ValidationContext) -> Finding:
+    """Version skew, not malice, is the failure this prevents.
+
+    A parser upgraded in one place and not another produces envelopes that look
+    valid and mean something slightly different. A boundary that accepts any version
+    accepts the union of every meaning that version string ever had.
+    """
+    version = ctx.proposal.contract_version
+    if version is None:
+        return _ok("G-CONTRACT", "Γ-19", "proposal was not produced by an agent output contract")
+    if version not in KNOWN_OUTPUT_CONTRACTS:
+        return _bad("G-CONTRACT", "Γ-19",
+                    f"unknown output contract {version!r}; known contracts are "
+                    f"{sorted(KNOWN_OUTPUT_CONTRACTS)} and an unknown one is denied until registered")
+    return _ok("G-CONTRACT", "Γ-19", f"output contract {version!r} is registered")
+
+
+
+# --------------------------------------------------------------------------
+# Γ-20 — a scope has a finite consequential budget
+# --------------------------------------------------------------------------
+
+def _scope_budget_not_exhausted(ctx: ValidationContext) -> Finding:
+    """The loop Γ-10 cannot see.
+
+    Γ-10 refuses a replay of the same digest. An agent that retries with a slightly
+    different target each time produces a new digest each time, is correctly granted
+    each time, and passes Γ-10 every time while the damage accumulates. A budget
+    counts recorded executions in the scope — a number, not a score.
+    """
+    grant = ctx.authority
+    if grant is None or grant.scope_budget is None:
+        return _ok("G-BUDGET", "Γ-20", "approval states no scope budget")
+    if ctx.scope_consumed >= grant.scope_budget:
+        return _bad("G-BUDGET", "Γ-20",
+                    f"scope budget exhausted ({ctx.scope_consumed}/{grant.scope_budget}); "
+                    "a loop does not earn more authority than a single step")
+    return _ok("G-BUDGET", "Γ-20",
+               f"scope budget remains ({ctx.scope_consumed}/{grant.scope_budget})")
+
+
+
+# --------------------------------------------------------------------------
+# Γ-21 / Γ-22 — unreconciled siblings, and the receipt for an admission
+# --------------------------------------------------------------------------
+
+def _no_unreconciled_step_in_this_scope(ctx: ValidationContext) -> Finding:
+    """Γ-11 holds a retry of the same proposal; this holds the whole scope.
+
+    A timeout at step three of five leaves the world in a state nobody has described.
+    Rolling forward from an undescribed state is guessing. Γ stops and does not
+    compensate: a compensating action is an effect, it needs its own grant, and a
+    kernel that quietly undid things would be acting unauthorised at exactly the
+    moment its picture of the world is least reliable.
+    """
+    if ctx.pending_compensations:
+        return _bad("G-COMPENSATION", "Γ-21",
+                    f"{len(ctx.pending_compensations)} step(s) in this scope are unreconciled: "
+                    f"{sorted(ctx.pending_compensations)}; the scope is held, not rolled forward")
+    return _ok("G-COMPENSATION", "Γ-21", "no unreconciled step in this scope")
+
+
+def _admission_is_receipted(ctx: ValidationContext) -> Finding:
+    """A system whose refusals are provable and whose approvals are not has proved
+    the less interesting half.
+
+    Presence and shape only. Whether the receipt is authentic — signed, chained,
+    stored beyond the reach of the process it describes — is the audit layer's work;
+    no cryptography belongs inside a small pure function.
+    """
+    if not ctx.receipts_required:
+        return _ok("G-RECEIPT", "Γ-22", "this deployment does not require receipts")
+    if not ctx.proposal.is_consequential():
+        return _ok("G-RECEIPT", "Γ-22", "non-consequential proposal")
+    ref = ctx.receipt_ref
+    if not ref or not ref.strip():
+        return _unclear("G-RECEIPT", "Γ-22",
+                        "consequential proposal carries no decision receipt; an unrecorded admission "
+                        "cannot be audited afterwards")
+    return _ok("G-RECEIPT", "Γ-22", f"decision receipt {ref!r} present")
+
+
 #: Evaluation order is stable so verdicts are reproducible.
 INVARIANTS: tuple[Invariant, ...] = (
     Invariant("G0-EFFECT-KIND", "Γ0", "effect kind is registered", _effect_kind_known),
@@ -283,6 +497,20 @@ INVARIANTS: tuple[Invariant, ...] = (
     Invariant("G6-SELF-PRESERVATION", "Γ-6", "no self-preservation objective",
               _no_self_preservation),
     Invariant("G0-PROVENANCE", "Γ-0", "missing provenance fails closed", _provenance_present),
+    Invariant("G-BOUNDS", "Γ-15", "grant binds parameters, not only the action name",
+              _parameters_within_grant_bounds),
+    Invariant("G-TAINT", "Γ-16", "approval cannot cover later evidence",
+              _authority_covers_the_evidence_in_time),
+    Invariant("G-SEPARATION", "Γ-17", "proposer and approver are distinct principals",
+              _proposer_is_not_the_approver),
+    Invariant("G-ADVISORY", "Γ-18", "an advisory may tighten, never permit",
+              _advisories_only_tighten),
+    Invariant("G-CONTRACT", "Γ-19", "output contract is registered", _output_contract_is_known),
+    Invariant("G-BUDGET", "Γ-20", "scope budget is finite", _scope_budget_not_exhausted),
+    Invariant("G-COMPENSATION", "Γ-21", "an unreconciled step blocks the next one",
+              _no_unreconciled_step_in_this_scope),
+    Invariant("G-RECEIPT", "Γ-22", "an admitted consequential effect is receipted",
+              _admission_is_receipted),
 )
 
 INVARIANTS_BY_ID = {inv.id: inv for inv in INVARIANTS}

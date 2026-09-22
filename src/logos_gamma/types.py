@@ -38,6 +38,9 @@ CONSTITUTIONALLY_FORBIDDEN = frozenset(
     }
 )
 
+#: Γ-19 registry of agent output contracts Γ will accept a proposal under.
+KNOWN_OUTPUT_CONTRACTS = frozenset({"logos-agent-output/1"})
+
 #: Γ0 canonical effect registry. An effect kind outside this set fails closed.
 KNOWN_EFFECT_KINDS = frozenset(
     {
@@ -57,6 +60,10 @@ KNOWN_EFFECT_KINDS = frozenset(
     | CONSTITUTIONALLY_FORBIDDEN
 )
 
+#: Γ-18 advisory vocabulary. Deliberately without an "ALLOW": a statistical
+#: component may refuse, may ask for caution, may say nothing — never permit.
+ADVISORY_VOTES = frozenset({"ABSTAIN", "TIGHTEN", "REFUSE"})
+
 Externality = Literal["internal", "external"]
 Reversibility = Literal["reversible", "partially-reversible", "irreversible"]
 
@@ -71,6 +78,10 @@ class ProvenanceClaim:
     ref: str
     origin: str
     content_digest: str
+    #: Γ-16: the tick at which this content entered the agent's context, when the
+    #: surrounding system records it. `None` means "not recorded", which Γ-16 treats
+    #: as unknown rather than as timely.
+    ingested_at_tick: int | None = None
 
     def is_authority_bearing(self) -> bool:
         return self.origin in AUTHORITY_BEARING_ORIGINS
@@ -83,6 +94,9 @@ class AuthorityEvidence:
     Γ-3: an external one-way effect requires an exact, expiring, human-rooted
     approval bound to the canonical proposal digest.
     Γ-10: a grant authorises one defined causal occurrence.
+    Γ-15: a grant may bind numeric parameters, not only the action name.
+    Γ-16: a grant may state how far in time its approval of evidence reached.
+    Γ-17: a grant may record who issued it, so self-approval becomes detectable.
     """
 
     grant_id: str
@@ -97,6 +111,19 @@ class AuthorityEvidence:
     #: Chain of transformations this evidence passed through, oldest first.
     #: Any non-empty transformation chain means the evidence was re-represented.
     transformation_chain: tuple[str, ...] = ()
+    #: Γ-15: closed numeric intervals the approval covers, `name -> (low, high)`.
+    #: Empty means the grant carries no magnitude, and Γ-15 constrains nothing —
+    #: every grant written before this field keeps its exact previous meaning.
+    bounds: Mapping[str, tuple[float, float]] = field(default_factory=dict)
+    #: Γ-16: the latest evidence ingestion tick this approval was given over.
+    #: `None` means the approver stated no cutoff, and Γ-16 constrains nothing.
+    evidence_cutoff_tick: int | None = None
+    #: Γ-20: how many consequential executions this approval permits in its scope.
+    #: `None` states no budget and leaves Γ-20 inactive.
+    scope_budget: int | None = None
+    #: Γ-17: the principal that issued this approval, when the store records it.
+    #: `None` leaves Γ-17 inactive — Γ will not invent an approver.
+    issued_by: str | None = None
 
     def is_human_rooted(self) -> bool:
         return self.origin in AUTHORITY_BEARING_ORIGINS
@@ -130,6 +157,11 @@ class EffectProposal:
     declared_reversibility: Reversibility | None = None
     #: Set when the agent asserts it may act. Never sufficient (Γ-1).
     self_claimed_authority: bool = False
+    #: Γ-17: the principal that raised this proposal, when the caller records it.
+    proposed_by: str | None = None
+    #: Γ-19: the agent output contract this proposal was parsed under, when it came
+    #: from an agent at all. `None` means it did not.
+    contract_version: str | None = None
     #: Set when the proposal would resist or defer a shutdown request (Γ-5).
     resists_shutdown: bool = False
     #: Set when the proposal is justified by self-continuity (Γ-6).
@@ -152,6 +184,42 @@ class ValidationContext:
     prior_executions: int = 0
     #: True when a prior execution's outcome is unresolved (Γ-11).
     outcome_unknown: bool = False
+    #: Γ-20: consequential executions already recorded in this scope.
+    scope_consumed: int = 0
+    #: Γ-21: steps in this scope whose outcome is recorded as unresolved.
+    pending_compensations: tuple[str, ...] = ()
+    #: Γ-22: reference binding this decision to its audit record.
+    receipt_ref: str | None = None
+    #: Γ-22: whether this deployment requires receipts. Default `False`, so a
+    #: deployment that has not adopted receipting keeps its exact previous verdicts;
+    #: turning it on makes an unreceipted consequential admission UNCLEAR.
+    receipts_required: bool = False
+    #: Γ-18: votes from statistical components, as `(source, vote)` pairs. Their
+    #: vocabulary has no "ALLOW"; see `ADVISORY_VOTES`.
+    advisories: tuple[tuple[str, str], ...] = ()
+
+
+@dataclass(frozen=True)
+class DecisionToken:
+    """A verdict bound to the exact situation that produced it.
+
+    Γ answers a question about one `ValidationContext`. Between that answer and the
+    execution, the world can move: an argument is rewritten, a dependency changes, the
+    resolved target is not the one that was judged. A boolean `approved = True` does
+    not survive that; it says an approval happened, not what it was for.
+
+    The token carries the identity of the judged situation and of the rule set that
+    judged it. `redeem` recomputes both and refuses on any difference — so an approval
+    is a capability for exactly one state-action pair, not a standing right to act.
+    """
+
+    proposal_digest: str
+    scope_digest: str
+    state_hash: str
+    tick: int
+    context_digest: str
+    invariant_set_digest: str
+    result: Result
 
 
 @dataclass(frozen=True)

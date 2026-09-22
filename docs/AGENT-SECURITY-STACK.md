@@ -196,12 +196,26 @@ Which is why the next step is not layer thirteen. It is the first governed agent
 BUILT      closed-schema parsing, prose isolation, deterministic invariants, three-pillar
            aggregation, state-binding against drift, replay and unknown-outcome invariants,
            provenance vocabulary, budgets and caps, executor root confinement
-PARTIAL    sandboxing (root confinement, no ephemeral container), audit (append-only, unsigned,
-           unchained), taint (per proposal, not per context item)
-MISSING    inbound injection detection, compensating transactions, governance receipts,
+BUILT      (2026-09-22) parameter bounds on a grant, evidence-cutoff taint, four-eyes,
+           advisory vocabulary without ALLOW, output-contract registry, scope budget,
+           unreconciled-sibling hold, receipt requirement, and decision binding that
+           closes the window between the verdict and the effect
+PARTIAL    sandboxing (root confinement, no ephemeral container), audit (append-only,
+           unsigned, unchained — Γ-22 requires the receipt, the audit layer must still
+           make it authentic), taint (per proposal, not per context item)
+MISSING    inbound injection detection, automatic compensation (deliberately: Γ-21 stops
+           and does not undo, because compensation is an effect needing its own grant),
            fresh-state prompt rebuild loop, TEE
-REFUSED    a model in the authority path — an LLM arbiter may veto, never permit
+REFUSED    a model in the authority path — an LLM arbiter may veto, never permit, and
+           Γ-18 is the place where it does so
 NOT AVAIL. grammar-guided decoding (no logit access under subscription-only governance)
 ```
+
+**Changes since this map was first written.** Six rows moved out of MISSING or PARTIAL
+because the eight-invariant extension was approved and built. Two rows stayed and were
+sharpened: automatic compensation is now a stated refusal rather than a gap, and
+receipts are required by Γ-22 while their authenticity remains the audit layer's work.
+The refusal of a model in the authority path did not move, and Γ-18 now gives every
+statistical component a place to speak from with no word for permission.
 
 Nothing in this document changes a claim status, a verdict or P7. The `MISSING` rows are the honest backlog; they are not promises, and none of them is scheduled here.

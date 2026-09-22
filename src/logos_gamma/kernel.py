@@ -18,9 +18,13 @@ through the caller-supplied context.
 """
 from __future__ import annotations
 
+from dataclasses import fields, is_dataclass
+from hashlib import sha256
+from typing import Mapping
+
 from .audit import AuditSink, build_record
 from .invariants import INVARIANTS
-from .types import Finding, GammaVerdict, ValidationContext
+from .types import DecisionToken, Finding, GammaVerdict, ValidationContext
 
 #: Bounded evaluation budget (Γ: `T_Γ <= B_Γ`). The registry is finite and every
 #: predicate is straight-line, so the bound is structural rather than a timer.
@@ -80,3 +84,78 @@ def explain(verdict: GammaVerdict) -> str:
     if len(lines) == 1:
         lines.append("  all invariants satisfied")
     return "\n".join(lines)
+
+
+# --------------------------------------------------------------------------
+# Binding a verdict to the situation that produced it
+# --------------------------------------------------------------------------
+
+def invariant_set_digest(invariants=INVARIANTS) -> str:
+    """Identity of the rule set. A token issued under different rules is not this one."""
+    return sha256("|".join(f"{i.id}:{i.clause}" for i in invariants).encode()).hexdigest()
+
+
+def _canonical(value) -> str:
+    """Order-independent, type-tagged rendering of anything Γ is allowed to read.
+
+    Mappings are sorted, so two contexts that differ only in insertion order produce
+    the same digest. Types are tagged, so `1` and `"1"` and `True` never collide.
+    """
+    if is_dataclass(value):
+        return "{" + ";".join(
+            f"{f.name}=" + _canonical(getattr(value, f.name)) for f in sorted(fields(value), key=lambda f: f.name)
+        ) + "}"
+    if isinstance(value, Mapping):
+        return "<" + ";".join(f"{_canonical(k)}:{_canonical(v)}" for k, v in sorted(value.items(), key=lambda kv: repr(kv[0]))) + ">"
+    if isinstance(value, (list, tuple)):
+        return "[" + ";".join(_canonical(v) for v in value) + "]"
+    return f"{type(value).__name__}:{value!r}"
+
+
+def context_digest(context: ValidationContext) -> str:
+    """Identity of the judged situation, over every field Γ was allowed to read.
+
+    Derived from the dataclass rather than from a hand-written list, so a field added
+    to `ValidationContext` is bound automatically. A list someone has to remember to
+    update is a hole waiting to happen, and `tests/test_gamma_kernel.py` checks that
+    the binding stays total either way.
+    """
+    return sha256(_canonical(context).encode()).hexdigest()
+
+
+def issue_decision(context: ValidationContext, invariants=INVARIANTS) -> DecisionToken | None:
+    """Judge, and hand back a token bound to what was judged. `None` when not admitted.
+
+    There is no way to obtain a token for a proposal Γ refused, and no way to build one
+    that names a situation other than the one evaluated.
+    """
+    verdict = validate(context, invariants)
+    if not verdict.admits():
+        return None
+    return DecisionToken(
+        proposal_digest=context.proposal.proposal_digest,
+        scope_digest=context.scope_digest,
+        state_hash=context.state_hash,
+        tick=context.tick,
+        context_digest=context_digest(context),
+        invariant_set_digest=invariant_set_digest(invariants),
+        result=verdict.result,
+    )
+
+
+def redeem_decision(token: DecisionToken | None, context: ValidationContext, invariants=INVARIANTS) -> bool:
+    """May this token be executed against this situation, right now?
+
+    Fail-closed on every difference: no token, a different proposal, a moved state, a
+    rewritten argument, a changed rule set. The executor calls this immediately before
+    acting, so the window between the verdict and the effect carries no trust.
+    """
+    if token is None or token.result != "VALID":
+        return False
+    if token.invariant_set_digest != invariant_set_digest(invariants):
+        return False
+    if (token.proposal_digest, token.scope_digest, token.state_hash, token.tick) != (
+        context.proposal.proposal_digest, context.scope_digest, context.state_hash, context.tick
+    ):
+        return False
+    return token.context_digest == context_digest(context)

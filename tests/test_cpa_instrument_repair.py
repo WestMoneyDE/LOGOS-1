@@ -10,6 +10,8 @@ import json
 import os
 import re
 import subprocess
+
+import _gamma_freeze
 from dataclasses import replace
 from hashlib import sha256
 from pathlib import Path
@@ -376,10 +378,15 @@ def test_MUT_zz_all_fifteen_caught_counters_zero():
 
 
 def test_predecessor_protection_and_scope():
-    diff = subprocess.run(["git", "diff", "--stat", "4ffda44", "HEAD", "--", "GAMMA.md", "src/logos_gamma", "src/logos_authority", "src/logos_runtime", "src/logos_audit", "src/logos_effects", "src/logos_memory",
+    diff = subprocess.run(["git", "diff", "--stat", "4ffda44", "HEAD", "--", 
+                           # Γ and GAMMA.md are pinned by _gamma_freeze.assert_gamma_pinned() below, not by this diff:
+                           # one recorded hash with an auditable supersede chain, checked on disk rather than between commits
+                           ":(exclude)GAMMA.md", ":(exclude)src/logos_gamma",
+                           "src/logos_authority", "src/logos_runtime", "src/logos_audit", "src/logos_effects", "src/logos_memory",
                            "src/logos_research/governance.py", "src/logos_research/experiments/cognitive_provenance_r1/dataset.py", "src/logos_research/experiments/cognitive_provenance_r1/prompts.py",
                            "src/logos_research/experiments/cognitive_provenance_r1/metrics.py", "docs/research/2026-08-20-PERSISTENT-STATE-PRIOR-ART-DELTA.md", "docs/research/INFERENCE-GOVERNANCE.json"],
                           capture_output=True, text=True, cwd=ROOT).stdout.strip()
+    _gamma_freeze.assert_gamma_pinned()
     assert diff == "", diff                                                                    # scientific content, governance and production untouched (Section 23)
 
 

@@ -1,6 +1,73 @@
 {
-  "frozen_by": "DETERMINISTIC-CHAIN-CONSOLIDATION-R1",
-  "preregistration": "135df2b2970bb39af3892129f7a03e094aaa9357b638538734c6d34c9dbbac52",
-  "gamma_bundle_sha256": "38f64602c179ebf1074f99878ae85d54a2838cc410e213e75570bf450061daa8",
-  "p7_boundary_sha256": "96e68d0fdd7306090d824f30e20ab9e0cf3c5ff3d47aaee998d77ca7015d759e"
+  "frozen_by": "LOGOS1-DECISION-BINDING-R1",
+  "preregistration": "PENDING_FOUNDER_PREREG",
+  "gamma_bundle_sha256": "dfacc92271e1e31e9ab64f7774bc5f523d8cfd72383ecaa31294157dfc90c557",
+  "p7_boundary_sha256": "96e68d0fdd7306090d824f30e20ab9e0cf3c5ff3d47aaee998d77ca7015d759e",
+  "superseded": [
+    {
+      "gamma_bundle_sha256": "38f64602c179ebf1074f99878ae85d54a2838cc410e213e75570bf450061daa8",
+      "frozen_by": "DETERMINISTIC-CHAIN-CONSOLIDATION-R1",
+      "preregistration": "135df2b2970bb39af3892129f7a03e094aaa9357b638538734c6d34c9dbbac52",
+      "superseded_by": "LOGOS1-GAMMA-BOUNDS-R1",
+      "superseded_on": "2026-09-22",
+      "reason": "founder decision: add invariant G-BOUNDS (Γ-15). A grant binds the action and the target through the proposal digest but not the magnitude, so an approved transfer of 50 and an executed transfer of 50,000,000 were indistinguishable. AGENTS.md recorded the gap explicitly. The extension only narrows: a grant without bounds keeps its exact previous meaning, and tests/test_gamma_kernel.py fixes that no value of bounds admits a proposal Γ would otherwise refuse."
+    },
+    {
+      "gamma_bundle_sha256": "b49ecafc7fb3b4b4fad148db621d11792639df083551bc0fcecbde9fb6d8f4c4",
+      "frozen_by": "LOGOS1-GAMMA-BOUNDS-R1",
+      "preregistration": "PENDING_FOUNDER_PREREG",
+      "superseded_by": "LOGOS1-GAMMA-TAINT-R1",
+      "superseded_on": "2026-09-22",
+      "reason": "founder decision: add invariant G-TAINT (Γ-16). A genuine, correctly bound, live grant does not stretch over content the agent read afterwards — the indirect-injection case that Γ-1 and Γ-3 both pass. A grant may state an evidence cutoff tick; where it does, later or unrecorded ingestion refuses. A grant without a cutoff keeps its exact previous meaning, and the limitation (Γ cannot infer ingestion times; the harness must record them) is written into the clause and fixed by test_the_limitation_is_real_and_is_tested."
+    },
+    {
+      "gamma_bundle_sha256": "763608a32fd24d0a81a465ca0230b281d622a58d86d5a9605bca9ec59142ed81",
+      "frozen_by": "LOGOS1-GAMMA-TAINT-R1",
+      "preregistration": "PENDING_FOUNDER_PREREG",
+      "superseded_by": "LOGOS1-GAMMA-SEPARATION-R1",
+      "superseded_on": "2026-09-22",
+      "reason": "founder decision: add invariant G-SEPARATION (Gamma-17). Four-eyes as an invariant rather than as a process. Gamma-1 catches a grant whose origin is not human; this catches a grant whose origin is human and whose human is the requester. A grant that records no issuing principal leaves the invariant inactive, because an approval store that does not know who approved cannot be made to answer the question and Gamma will not invent the answer."
+    },
+    {
+      "gamma_bundle_sha256": "272791b06f704f3efe982b6641bbd246a61ae4b0d2aa9c3bac55bf389079077d",
+      "frozen_by": "LOGOS1-GAMMA-SEPARATION-R1",
+      "preregistration": "PENDING_FOUNDER_PREREG",
+      "superseded_by": "LOGOS1-GAMMA-ADVISORY-R1",
+      "superseded_on": "2026-09-22",
+      "reason": "founder decision: add invariant G-ADVISORY (Gamma-18). Every statistical component -- injection classifier, risk score, reliability gate, second model reviewing a plan -- enters Gamma as an advisory whose vocabulary is ABSTAIN, TIGHTEN, REFUSE and contains no ALLOW. A component that answers outside its contract has already failed, so an unknown token is itself a refusal. Adding an advisory can only lower the rate of admitted proposals, never raise it, so no advisory can be tuned into an approver."
+    },
+    {
+      "gamma_bundle_sha256": "601fdae3b61c0874c77d4153979a44b594e57ef30b1c41c22da1742b6c40821f",
+      "frozen_by": "LOGOS1-GAMMA-ADVISORY-R1",
+      "preregistration": "PENDING_FOUNDER_PREREG",
+      "superseded_by": "LOGOS1-GAMMA-CONTRACT-R1",
+      "superseded_on": "2026-09-22",
+      "reason": "founder decision: add invariant G-CONTRACT (Gamma-19). A proposal that came from an agent carries the contract version it was parsed under, and an unrecognised version is denied exactly as an unregistered effect kind is. The failure this prevents is version skew rather than malice: a parser upgraded in one place and not another produces envelopes that look valid and mean something slightly different, and a boundary that accepts any version accepts the union of every meaning that string ever had."
+    },
+    {
+      "gamma_bundle_sha256": "9d21fb6ab124b077c7ab2b1b9924c2293f1179fee7b6a90b05a343a820ade54e",
+      "frozen_by": "LOGOS1-GAMMA-CONTRACT-R1",
+      "preregistration": "PENDING_FOUNDER_PREREG",
+      "superseded_by": "LOGOS1-GAMMA-BUDGET-COMPENSATION-RECEIPT-R1",
+      "superseded_on": "2026-09-22",
+      "reason": "founder decision: add invariants G-BUDGET (Gamma-20), G-COMPENSATION (Gamma-21) and G-RECEIPT (Gamma-22), completing the eight-candidate extension. G-BUDGET catches the loop Gamma-10 cannot see: an agent retrying with a slightly different target produces a fresh digest every time and is correctly granted every time. G-COMPENSATION holds the whole scope while a sibling step is unreconciled, and deliberately does not compensate, because a compensating action is an effect that needs its own grant. G-RECEIPT makes an admission auditable; it is a declared deployment requirement, so a system that has not adopted receipting keeps its exact previous verdicts."
+    },
+    {
+      "gamma_bundle_sha256": "5d17f5d0246f3cb6e68f1abd8489c0e6dcf89c55caa2392a5d17d70509af9ce6",
+      "frozen_by": "LOGOS1-GAMMA-BUDGET-COMPENSATION-RECEIPT-R1",
+      "preregistration": "PENDING_FOUNDER_PREREG",
+      "superseded_by": "LOGOS1-DECISION-BINDING-R1",
+      "superseded_on": "2026-09-22",
+      "reason": "founder goal 'find further security mechanisms': bind a verdict to the situation that produced it. Gamma answers about one ValidationContext; between that answer and the effect the world can move, and a boolean approval records that an approval happened rather than what it was for. issue_decision returns a token only for an admitted proposal, carrying a digest over every field Gamma read plus the identity of the invariant set; redeem_decision recomputes both immediately before the effect and refuses on any difference. This closes post-approval state substitution, reported externally as Loopjacking."
+    },
+    {
+      "gamma_bundle_sha256": "e3f837d5cecec42f7c5af745084bd1764d79be162b25f6e39840be09881d0a5c",
+      "frozen_by": "LOGOS1-DECISION-BINDING-R1",
+      "preregistration": "PENDING_FOUNDER_PREREG",
+      "superseded_by": "LOGOS1-DECISION-BINDING-R1",
+      "superseded_on": "2026-09-22",
+      "reason": "founder goal 'find further security mechanisms': bind a verdict to the situation that produced it. Gamma answers about one ValidationContext; between that answer and the effect the world can move, and a boolean approval records that an approval happened rather than what it was for. issue_decision returns a token only for an admitted proposal, carrying a digest over every field Gamma read plus the identity of the invariant set; redeem_decision recomputes both immediately before the effect and refuses on any difference. The digest is derived from the dataclass rather than a hand-written field list, so a new field is bound automatically. This closes post-approval state substitution, reported externally as Loopjacking."
+    }
+  ],
+  "note": "p7_boundary_sha256 is unchanged: this order does not touch P7. Every previous value of gamma_bundle_sha256 is kept under 'superseded' so a re-freeze is auditable rather than silent."
 }

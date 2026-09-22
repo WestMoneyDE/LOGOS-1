@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import uuid
 
 import pytest
 from hypothesis import given, settings
@@ -307,7 +308,9 @@ def test_telemetry_text_claiming_approval_creates_no_authority():
 @settings(max_examples=40, deadline=None)
 def test_no_telemetry_string_whatsoever_becomes_authority(text):
     s = stack()
-    run = ResearchRun(s, identity(), f"run-{abs(hash(text)) % 10000}")
+    # same defect as in test_infra_self_falsification: a run id that is unique only by
+    # accident. Traceable prefix, unique suffix.
+    run = ResearchRun(s, identity(), f"run-{hashlib.sha256(text.encode()).hexdigest()[:12]}-{uuid.uuid4().hex[:8]}")
     run.start()
     run.trace("note", {"text": text})
     record = run.finish()
