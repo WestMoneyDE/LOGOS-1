@@ -1693,6 +1693,22 @@
     "docs/LANGGRAPH-BLUEPRINT.md": {
       "class": "GOVERNANCE_ONLY",
       "note": "LOGOS1-AUTHORITY-GRAPH-R1: Record; kein Code, kein Modellaufruf"
+    },
+    "experiments/__init__.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-AUTHORITY-BOUNDARY-R1: Hilfsdatei; kein Modellaufruf"
+    },
+    "experiments/authority_boundary/__init__.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-AUTHORITY-BOUNDARY-R1: Hilfsdatei; kein Modellaufruf"
+    },
+    "experiments/authority_boundary/harness.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-AUTHORITY-BOUNDARY-R1: Hilfsdatei; kein Modellaufruf"
+    },
+    "tests/test_authority_boundary_experiment.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-AUTHORITY-BOUNDARY-R1: Kontrolle + Angriffe, deterministisch; kein Modellaufruf"
     }
   },
   "unclassified": 0
