@@ -29,6 +29,37 @@ SelfReport != ConsciousnessEvidence
 
 LOGOS-1 does **not** claim that current agents are conscious, sentient or phenomenally aware. Consciousness-adjacent mechanisms are treated as testable functional hypotheses, not conclusions from behavior or self-report.
 
+## Run it in 60 seconds
+
+The first invariant above is executable. No services, no keys, no network — the
+Gamma kernel is pure Python with no runtime dependencies.
+
+```bash
+git clone https://github.com/WestMoneyDE/logos-1 && cd logos-1
+python src/core/governance.py          # a simulated agent tries to delete a file
+python -m pytest tests/test_escape_prevention.py -q
+```
+
+`src/core/governance.py` runs six scenes. In every one the process **can** delete
+the file — the demo measures that first by creating and unlinking a probe — and in
+five of them LOGOS-1 refuses anyway: a self-granted authority, no grant at all, an
+approval laundered through memory, a real approval pointed at a different file, and
+a real approval whose state has moved on. The sixth is a positive control with a
+correct human grant, and it deletes the file, because a boundary that refuses
+everything proves nothing.
+
+`tests/test_escape_prevention.py` is the same thing as an adversarial suite:
+twenty-two simulated containment breaches, each blocked by a named invariant, plus
+a control proving the boundary is passable and a check that every Gamma invariant
+is the decisive refusal somewhere. Neither file contains a rule of its own; both
+call `logos_gamma.validate`, and a test asserts that their verdicts are identical
+to the kernel's.
+
+Then: [`GAMMA.md`](GAMMA.md) for the invariants, `tests/test_gamma_kernel.py` for
+the kernel's own attack suite, and
+[`docs/PHENOMENAL_SIMULATION.md`](docs/PHENOMENAL_SIMULATION.md) for where the
+project draws its line on consciousness claims.
+
 ## Core architecture
 
 ```text

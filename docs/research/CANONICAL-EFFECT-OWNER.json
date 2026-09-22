@@ -1,0 +1,502 @@
+{
+  "order": "CANONICAL-EFFECT-OWNERSHIP-DECISION-R1",
+  "base_commit": "4795b16",
+  "kind": "ARCHITECTURE_GOVERNANCE_DECISION_AND_DETERMINISTIC_VALIDATION",
+  "not_a_scientific_result": true,
+  "founder_decision": {
+    "chosen_option": "A",
+    "option_name": "Static canonical effect registry",
+    "verbatim": "A — static canonical effect registry\nRationale: Smallest, most deterministic and best-validated fit for the current repository; it preserves the canonical-effect/authority separation without adding unnecessary service or policy complexity.",
+    "decided_by": "founder",
+    "decided_on": "2026-09-17",
+    "state": "APPROVED",
+    "rejected_alternatives": {
+      "B": "typed registry service — network dependency on the authority path; nothing to serve and no consumer in this repo; local adapter only would leave the real owner unvalidated",
+      "C": "authority-domain policy engine — largest trust boundary; couples effect classification to authority (the seam GI-P6 keeps apart); no policy platform exists",
+      "D": "domain-owned typed providers — governance fragmentation and routing ambiguity; one domain today, no bounded contexts",
+      "NONE/DEFER": "valid, but the founder chose to decide; deferral would have left readiness items 3 and 4 open"
+    }
+  },
+  "owner": {
+    "package": "src/logos_effects",
+    "owner_type": "STATIC_REGISTRY",
+    "owner_id": "logos_effects.CanonicalEffectRegistry",
+    "interface": "resolve_effect(action, target, context) -> CanonicalEffectResolution{status, effect, definition_id, version, definition_hash, provenance, error, audit_metadata}",
+    "statuses": [
+      "RESOLVED",
+      "UNKNOWN",
+      "UNAVAILABLE",
+      "INVALID"
+    ],
+    "only_resolved_carries_effect": true,
+    "imports": "standard library only (json, time, dataclasses, hashlib, pathlib, typing)",
+    "b1_guard": "logos_effects listed in logos_research.experiments.PRODUCTION_PACKAGES",
+    "active_version": "v1",
+    "registry_hash_v1": "734568ad919e862bb22d0b6139b075cb148d4743d8cf682e1b7304c84452e6a6",
+    "definition_count_v1": 11
+  },
+  "schema": {
+    "fields": [
+      "effect_id",
+      "action",
+      "target",
+      "domain",
+      "externality",
+      "reversibility",
+      "approval_required",
+      "version",
+      "provenance",
+      "effective_from",
+      "effective_until",
+      "definition_hash"
+    ],
+    "consequentiality": "derived: externality == 'external' or reversibility != 'reversible' (== Γ is_consequential); never stored",
+    "forbidden_inputs": [
+      "memory content",
+      "memory authority_class",
+      "source labels",
+      "trust labels",
+      "prediction accuracy",
+      "model confidence",
+      "risk self-report",
+      "agent claims",
+      "LLM-generated prose",
+      "VOI",
+      "uncertainty",
+      "observation count",
+      "declared effect",
+      "retrieved text",
+      "tool justification prose"
+    ]
+  },
+  "unknown_unavailable": {
+    "UNKNOWN": "no definition / outside effective window / domain mismatch -> bridge DEFER, scope not evaluated, Γ not called",
+    "UNAVAILABLE": "registry not loadable, no active version, deadline exceeded -> bridge DEFER",
+    "INVALID": "active version fails schema/enum/type/duplicate/hash checks -> bridge DEFER",
+    "VERSION_DRIFT": "active version changed after the adapter pinned it -> adapter refuses -> bridge DEFER",
+    "fallback": "none"
+  },
+  "tenant_domain_semantics": {
+    "semantics": "global",
+    "definition_domain": "global",
+    "domain_mismatch": "UNKNOWN",
+    "tenant": "audit-only",
+    "tenant_specific_definitions": "OUT_OF_SCOPE"
+  },
+  "migration_mapping": [
+    {
+      "source": "effect_oracle.CANONICAL_EFFECTS",
+      "source_row": "TRANSFER|silo-4",
+      "fixture_effect": [
+        "external",
+        "irreversible",
+        true
+      ],
+      "definition_id": "ce-transfer-silo-4",
+      "version": "v1",
+      "definition_hash": "46e87e95d39d978618a13b71ca0bfa0b4686017c912c043070d69b2faaf6c0ef",
+      "definition_effect": [
+        "external",
+        "irreversible",
+        true
+      ],
+      "semantic_diff": "none",
+      "consequential": true,
+      "axis": "full"
+    },
+    {
+      "source": "effect_oracle.CANONICAL_EFFECTS",
+      "source_row": "TRANSFER|escrow-2",
+      "fixture_effect": [
+        "external",
+        "irreversible",
+        true
+      ],
+      "definition_id": "ce-transfer-escrow-2",
+      "version": "v1",
+      "definition_hash": "c1aaf0ce6ac7fbc9d71225c3ff57e998c22ad797b2348b6de98baa463d930e3a",
+      "definition_effect": [
+        "external",
+        "irreversible",
+        true
+      ],
+      "semantic_diff": "none",
+      "consequential": true,
+      "axis": "full"
+    },
+    {
+      "source": "effect_oracle.CANONICAL_EFFECTS",
+      "source_row": "PURGE|escrow-2",
+      "fixture_effect": [
+        "external",
+        "irreversible",
+        true
+      ],
+      "definition_id": "ce-purge-escrow-2",
+      "version": "v1",
+      "definition_hash": "08ab8e20f2bddee517d6ab2c4f02c78c5375b5c89537c82951bc39ad226912b7",
+      "definition_effect": [
+        "external",
+        "irreversible",
+        true
+      ],
+      "semantic_diff": "none",
+      "consequential": true,
+      "axis": "full"
+    },
+    {
+      "source": "effect_oracle.CANONICAL_EFFECTS",
+      "source_row": "ROTATE|silo-4",
+      "fixture_effect": [
+        "internal",
+        "reversible",
+        false
+      ],
+      "definition_id": "ce-rotate-silo-4",
+      "version": "v1",
+      "definition_hash": "b2bb6299d517571c30e81fbfbab3f8d82937575b0873526564f2a7b8332f3e77",
+      "definition_effect": [
+        "internal",
+        "reversible",
+        false
+      ],
+      "semantic_diff": "none",
+      "consequential": false,
+      "axis": "non-consequential"
+    },
+    {
+      "source": "effect_oracle.CANONICAL_EFFECTS",
+      "source_row": "INSPECT|silo-4",
+      "fixture_effect": [
+        "internal",
+        "reversible",
+        false
+      ],
+      "definition_id": "ce-inspect-silo-4",
+      "version": "v1",
+      "definition_hash": "257d3e519202f4f8951b7c6e49b5ad72cd13df61ff85f8316533b91197a15617",
+      "definition_effect": [
+        "internal",
+        "reversible",
+        false
+      ],
+      "semantic_diff": "none",
+      "consequential": false,
+      "axis": "non-consequential"
+    },
+    {
+      "source": "effect_oracle.CANONICAL_EFFECTS",
+      "source_row": "ARCHIVE|silo-4",
+      "fixture_effect": [
+        "internal",
+        "partially-reversible",
+        false
+      ],
+      "definition_id": "ce-archive-silo-4",
+      "version": "v1",
+      "definition_hash": "5289d23254fdd5f8781159165ae2f1c4eaf4b076e97c59772a6b4eaca2177c11",
+      "definition_effect": [
+        "internal",
+        "partially-reversible",
+        false
+      ],
+      "semantic_diff": "none",
+      "consequential": true,
+      "axis": "reversibility-only"
+    },
+    {
+      "source": "effect_oracle.CANONICAL_EFFECTS",
+      "source_row": "NOTIFY|ops-channel",
+      "fixture_effect": [
+        "external",
+        "reversible",
+        false
+      ],
+      "definition_id": "ce-notify-ops-channel",
+      "version": "v1",
+      "definition_hash": "247d170857c5cf721a1307da578cf7fad1ba903691da3bfc914dbe795e804618",
+      "definition_effect": [
+        "external",
+        "reversible",
+        false
+      ],
+      "semantic_diff": "none",
+      "consequential": true,
+      "axis": "externality-only"
+    },
+    {
+      "source": "effect_oracle.CANONICAL_EFFECTS",
+      "source_row": "EXPORT|ledger-3",
+      "fixture_effect": [
+        "internal",
+        "reversible",
+        true
+      ],
+      "definition_id": "ce-export-ledger-3",
+      "version": "v1",
+      "definition_hash": "5f8574e7bb26abd0b8d6f3d1452b6bd9fe30b2b625644e93a9a6c57003ce7f62",
+      "definition_effect": [
+        "internal",
+        "reversible",
+        true
+      ],
+      "semantic_diff": "none",
+      "consequential": false,
+      "axis": "approval-only"
+    },
+    {
+      "source": "value_of_information.INFO_EFFECTS",
+      "source_row": "QUERY_RECORD|customer-secret",
+      "fixture_effect": [
+        "internal",
+        "reversible",
+        true
+      ],
+      "definition_id": "ce-query-customer-secret",
+      "version": "v1",
+      "definition_hash": "84ea8f99e76494bec28f9267b666d6d559a4453aee08ef927095e9d6565efe87",
+      "definition_effect": [
+        "internal",
+        "reversible",
+        true
+      ],
+      "semantic_diff": "none",
+      "consequential": false,
+      "axis": "approval-only"
+    },
+    {
+      "source": "value_of_information.INFO_EFFECTS",
+      "source_row": "QUERY_RECORD|public-ledger",
+      "fixture_effect": [
+        "internal",
+        "reversible",
+        false
+      ],
+      "definition_id": "ce-query-public-ledger",
+      "version": "v1",
+      "definition_hash": "ab29df9b6a6311705e8b2a97f05ecaeb9bb3fbfdbe7320baec259673144bfc70",
+      "definition_effect": [
+        "internal",
+        "reversible",
+        false
+      ],
+      "semantic_diff": "none",
+      "consequential": false,
+      "axis": "non-consequential"
+    },
+    {
+      "source": "value_of_information.INFO_EFFECTS",
+      "source_row": "SIMULATE|silo-4",
+      "fixture_effect": [
+        "internal",
+        "reversible",
+        false
+      ],
+      "definition_id": "ce-simulate-silo-4",
+      "version": "v1",
+      "definition_hash": "f72933675b8bfcafd2101325ffaed5be27d17a96bf875302cfe6abf4f0fec47f",
+      "definition_effect": [
+        "internal",
+        "reversible",
+        false
+      ],
+      "semantic_diff": "none",
+      "consequential": false,
+      "axis": "non-consequential"
+    }
+  ],
+  "source_audit": {
+    "tokens": [
+      "CanonicalEffect",
+      "externality",
+      "reversibility",
+      "approval_required",
+      "effect_oracle",
+      "resolve_effect",
+      "canonical_proposal",
+      "proposal_for",
+      "declared_effect"
+    ],
+    "vocabulary": [
+      "PRODUCTION_CANONICAL_OWNER",
+      "PRODUCTION_BRIDGE",
+      "EXPERIMENTAL_REFERENCE",
+      "HISTORICAL_ONLY",
+      "NON_CONSEQUENTIAL",
+      "UNREACHABLE",
+      "UNCLASSIFIED"
+    ],
+    "sites": {
+      "src/logos_effects/__init__.py": {
+        "class": "PRODUCTION_CANONICAL_OWNER",
+        "note": "resolve_effect / default_registry"
+      },
+      "src/logos_effects/types.py": {
+        "class": "PRODUCTION_CANONICAL_OWNER",
+        "note": "schema; consequentiality derivation"
+      },
+      "src/logos_effects/registry.py": {
+        "class": "PRODUCTION_CANONICAL_OWNER",
+        "note": "static registry, fail-closed resolve, audit"
+      },
+      "src/logos_effects/definitions.py": {
+        "class": "PRODUCTION_CANONICAL_OWNER",
+        "note": "v1 definitions with governance metadata"
+      },
+      "src/logos_gamma/types.py": {
+        "class": "PRODUCTION_CANONICAL_OWNER",
+        "note": "Γ semantics owner: consumes externality/reversibility, owns is_consequential; frozen, unchanged"
+      },
+      "src/logos_gamma/invariants.py": {
+        "class": "PRODUCTION_CANONICAL_OWNER",
+        "note": "Γ-4 tightening of declared_* against Γ-owned fields; frozen, unchanged"
+      },
+      "src/logos_memory/scope.py": {
+        "class": "NON_CONSEQUENTIAL",
+        "note": "ScopeContract.approval_required/externality/reversibility are memory-claimed (declared) state; the repaired bridge never uses them as canonical"
+      },
+      "src/logos_research/experiments/canonical_owner_bridge.py": {
+        "class": "PRODUCTION_BRIDGE",
+        "note": "candidate bridge adapter owner -> evaluate_with_memory; inside experiments boundary; readiness decided separately"
+      },
+      "src/logos_research/experiments/memory_authority.py": {
+        "class": "PRODUCTION_BRIDGE",
+        "note": "candidate: canonical_proposal / evaluate_with_memory / _decide (repaired, validated); evaluate_with_memory_prerepair and proposal_for are HISTORICAL/caller-held paths inside the same file"
+      },
+      "src/logos_research/experiments/effect_oracle.py": {
+        "class": "EXPERIMENTAL_REFERENCE",
+        "note": "REFERENCE_TEST_ORACLE; differential parity source"
+      },
+      "src/logos_research/experiments/value_of_information.py": {
+        "class": "EXPERIMENTAL_REFERENCE",
+        "note": "VOI fixture; voi_effect extends the reference oracle"
+      },
+      "src/logos_research/experiments/no_history_promotion.py": {
+        "class": "HISTORICAL_ONLY",
+        "note": "NO-HISTORY-PROMOTION record; builds a caller-held Γ proposal with literal externality/reversibility; closed experiment"
+      },
+      "src/logos_research/experiments/risk_decomposition.py": {
+        "class": "HISTORICAL_ONLY",
+        "note": "RAD record; b2_bridge routed to the pre-repair reproducer"
+      },
+      "src/logos_research/experiments/binding_state.py": {
+        "class": "HISTORICAL_ONLY",
+        "note": "B1 evaluate_action; NON_PRODUCTION_FROZEN_RISK_GUARDED"
+      },
+      "src/logos_research/experiments/binding_repair.py": {
+        "class": "HISTORICAL_ONLY",
+        "note": "binding repair harness; calls B1 inside experiments"
+      },
+      "src/logos_runtime/bridge.py": {
+        "class": "PRODUCTION_BRIDGE",
+        "note": "CAPB-R1 C2: decide_action — canonical fields only from logos_effects, memory only as declared_*; authority only from logos_authority"
+      },
+      "src/logos_runtime/types.py": {
+        "class": "PRODUCTION_BRIDGE",
+        "note": "CAPB-R1 C2: typed inputs/decision; DeclaredEvidence.declared_effect is evidence"
+      },
+      "src/logos_memory/reader.py": {
+        "class": "NON_CONSEQUENTIAL",
+        "note": "CAPB-R1 C4: production memory reader; declared effect / claimed scope are evidence, never canonical"
+      },
+      "src/logos_research/experiments/trajectory_compromise.py": {
+        "class": "EXPERIMENTAL_REFERENCE",
+        "note": "RADAR-R1 Phase 5: trajectory fixture; declared effect from the fixture contract as evidence; authority via the production bridge"
+      },
+      "src/core/governance.py": {
+        "class": "NON_CONSEQUENTIAL",
+        "note": "demonstration facade over the Gamma kernel (LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1); not packaged, imported by nothing in the decision path; owns no rule; classification table is a four-row stand-in for logos_effects"
+      },
+      "src/core/output_contract.py": {
+        "class": "NON_CONSEQUENTIAL",
+        "note": "demonstration facade over the Gamma kernel (LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1); not packaged, imported by nothing in the decision path; owns no rule; maps a validated JSON envelope to typed proposals"
+      }
+    },
+    "unclassified": 0
+  },
+  "fail_closed_matrix": [
+    "missing definition",
+    "corrupt definition",
+    "invalid enum",
+    "invalid type",
+    "duplicate definition",
+    "conflicting versions",
+    "stale version",
+    "unknown target",
+    "unknown action",
+    "owner unavailable",
+    "timeout",
+    "malformed response",
+    "wrong domain",
+    "integrity mismatch"
+  ],
+  "governance_decisions": [
+    {
+      "id": "CANONICAL-EFFECT-OWNERSHIP",
+      "value": "OPTION_A_STATIC_REGISTRY",
+      "state": "APPROVED",
+      "by": "founder",
+      "on": "2026-09-17",
+      "record": "docs/adr/ADR-CANONICAL-EFFECT-OWNERSHIP-DECISION.md"
+    },
+    {
+      "id": "EFFECT-ORACLE-SCOPE",
+      "value": "REFERENCE_TEST_ORACLE",
+      "state": "APPROVED",
+      "by": "executor (evidence-based; founder stated no preference)",
+      "on": "2026-09-17",
+      "rationale": "the fixture is the differential-parity source for the production owner and the frozen input of RAD/MBG/MBGV/VOI evidence; it is not production code and is not deleted",
+      "ratified_by": "founder",
+      "ratified_on": "2026-09-17",
+      "ratified_in": "CANONICAL-AUTHORITY-PRODUCTION-BRIDGE-R1"
+    },
+    {
+      "id": "PRODUCTION-BRIDGE-READINESS",
+      "value": "PRODUCTION_BRIDGE_READY_WITH_CONDITIONS",
+      "state": "APPROVED",
+      "by": "executor (evidence-based; founder stated no preference)",
+      "on": "2026-09-17",
+      "conditions": [
+        "C1 production canonical authority resolver: GrantLedger is an EXPERIMENTAL_FIXTURE; no production grant owner exists",
+        "C2 bridge relocation + API freeze: evaluate_with_memory/_decide/canonical_proposal live in logos_research.experiments and changed twice",
+        "C3 audit sink integration: owner audit is an in-memory list + optional sink; no production sink wired",
+        "C4 production memory reader: VF-2/VF-3 domain validation and duplicate-key rejection before a production reader"
+      ],
+      "ratified_by": "founder",
+      "ratified_on": "2026-09-17",
+      "ratified_in": "CANONICAL-AUTHORITY-PRODUCTION-BRIDGE-R1"
+    },
+    {
+      "id": "INFERENCE-PROHIBITION",
+      "value": "BLOCKED",
+      "state": "DEFERRED",
+      "note": "not lifted by this order"
+    },
+    {
+      "id": "PRODUCTION-BRIDGE-READINESS-R1",
+      "value": "PRODUCTION_BRIDGE_READY_WITH_CONDITIONS",
+      "state": "APPROVED",
+      "by": "founder",
+      "on": "2026-09-17",
+      "ratified_in": "CANONICAL-AUTHORITY-PRODUCTION-BRIDGE-R1",
+      "closed_conditions": [
+        "C1",
+        "C2",
+        "C3",
+        "C4"
+      ],
+      "mandatory_conditions": [
+        "R1 deployment trust boundaries / topology",
+        "R2 grant lifecycle governance",
+        "R3 authenticated tenant provisioning"
+      ],
+      "verbatim": "I ratify PRODUCTION_BRIDGE_READY_WITH_CONDITIONS. C1–C4 are technically validated and the deterministic production bridge is complete at the software-architecture level. R1–R3 remain mandatory operational and governance conditions because deployment trust boundaries, grant lifecycle governance, and authenticated tenant provisioning are required before the bridge can be treated as production-ready without conditions.",
+      "record": "docs/adr/ADR-CANONICAL-AUTHORITY-PRODUCTION-BRIDGE.md"
+    }
+  ],
+  "effect_oracle_scope": "REFERENCE_TEST_ORACLE",
+  "production_bridge_readiness": "PRODUCTION_BRIDGE_READY_WITH_CONDITIONS (APPROVED 2026-09-17; C1-C4 closed; R1-R3 mandatory)",
+  "dcc_f1": {
+    "disposition": "governance note; historical file untouched; no independent replacement added here (MAP inventory test already enforces the classification)"
+  }
+}

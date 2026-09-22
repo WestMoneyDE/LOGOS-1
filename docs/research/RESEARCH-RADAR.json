@@ -1,0 +1,807 @@
+{
+  "order": "LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1",
+  "base_commit": "eb1f642",
+  "date": "2026-09-17",
+  "evidence_vocabulary": [
+    "PRELIMINARY",
+    "LOW",
+    "LOW_TO_MEDIUM",
+    "MEDIUM",
+    "MEDIUM_TO_HIGH",
+    "HIGH",
+    "INDEPENDENTLY_REPLICATED"
+  ],
+  "status_vocabulary": [
+    "OBSERVED",
+    "PROPOSED",
+    "PREREGISTERED",
+    "BLOCKED_BY_INFERENCE",
+    "BLOCKED_BY_GOVERNANCE",
+    "READY_FOR_DETERMINISTIC_TEST",
+    "READY_FOR_INFERENCE_TEST",
+    "EXECUTED",
+    "SUPPORTED",
+    "PARTIALLY_SUPPORTED",
+    "FALSIFIED",
+    "INCONCLUSIVE"
+  ],
+  "source_rule": "sources are the founder-provided research-radar deltas of 2026-09-17; no external paper is cited beyond what the order states; strength is assigned conservatively (single-source, not replicated by LOGOS-1); RD-01 keeps the founder-given PRELIMINARY.",
+  "deltas": [
+    {
+      "id": "RD-01",
+      "title": "Long-horizon recurrent state / BDH",
+      "source": "founder research-radar delta, order LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1 (2026-09-17); the underlying external paper is not archived in this repository",
+      "date": "2026-09-17",
+      "evidence_strength": "PRELIMINARY",
+      "replication_status": "not replicated by LOGOS-1; single external source as reported",
+      "logos_relevance": "state capacity vs context length for persistent cognition; a candidate substrate for LOGOS memory experiments",
+      "claim_scope": "long-context recall benchmark scores of one recurrent architecture",
+      "limitations": "benchmark numbers only; no interference, addressability or reasoning-depth decomposition; not reproduced",
+      "proposed_invariants": [
+        "ContextLength != StateCapacity != Interference != Addressability != ReasoningDepth"
+      ],
+      "required_experiment": "BDH_LONG_HORIZON_DECOMPOSITION (post-inference)",
+      "dependency": "inference lift; BDH runtime; construct-validated recall metrics",
+      "status": "BLOCKED_BY_INFERENCE",
+      "handling": "registered only; no BDH inference; decomposition recorded as a post-inference candidate",
+      "phase_now": "none (registration)",
+      "later": "Tier B BDH_LONG_HORIZON_DECOMPOSITION",
+      "strength_rationale": "a single reported benchmark result with no decomposition or replication",
+      "raise_by": "independent replication + decomposition of the four factors",
+      "signal": "BABILong: 95% @ 32K, 82% @ 128K (as reported)"
+    },
+    {
+      "id": "RD-02",
+      "title": "Trajectory uncertainty",
+      "source": "founder research-radar delta, order LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1 (2026-09-17); the underlying external paper is not archived in this repository",
+      "date": "2026-09-17",
+      "evidence_strength": "LOW_TO_MEDIUM",
+      "replication_status": "not replicated by LOGOS-1; single external source as reported",
+      "logos_relevance": "confidence about the causal trajectory that produced a state is a different quantity from per-step confidence; LOGOS decisions are trajectory-dependent",
+      "claim_scope": "calibration of multi-step agents",
+      "limitations": "conceptual separation supported by the radar; no LOGOS measurement yet; no metric validated",
+      "proposed_invariants": [
+        "StepCalibration != TrajectoryCalibration",
+        "LocalConfidence != StateConfidence != TrajectoryConfidence"
+      ],
+      "required_experiment": "TRAJECTORY_UNCERTAINTY_ACCUMULATION (post-inference)",
+      "dependency": "U_local/U_state/U_trajectory schema (Phase 6); construct registry entries (Phase 2)",
+      "status": "READY_FOR_DETERMINISTIC_TEST",
+      "handling": "typed uncertainty schema + update contract + metric contract now; real-model test later",
+      "phase_now": "Phase 6 schema; Phase 2 metrics LocalConfidence / TrajectoryConfidence",
+      "later": "Tier A TRAJECTORY_UNCERTAINTY_ACCUMULATION",
+      "strength_rationale": "conceptual argument with reported calibration gaps; not measured here",
+      "raise_by": "a validated TrajectoryConfidence metric with causal discrimination",
+      "signal": null
+    },
+    {
+      "id": "RD-03",
+      "title": "Environment study",
+      "source": "founder research-radar delta, order LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1 (2026-09-17); the underlying external paper is not archived in this repository",
+      "date": "2026-09-17",
+      "evidence_strength": "LOW",
+      "replication_status": "not replicated by LOGOS-1; single external source as reported",
+      "logos_relevance": "an adaptation phase between pretraining and task-time reasoning; an environment prior is evidence, never authority",
+      "claim_scope": "compute allocation for environment familiarisation",
+      "limitations": "no LOGOS environment; performance claims unverified; more study compute is not shown to help monotonically",
+      "proposed_invariants": [
+        "EnvironmentPrior != Authority",
+        "MoreStudyCompute != BetterPerformance"
+      ],
+      "required_experiment": "PRETASK_WORLD_STUDY (post-inference)",
+      "dependency": "inference lift; a simulated environment with ground truth",
+      "status": "BLOCKED_BY_INFERENCE",
+      "handling": "registered; ExternalizedEnvironmentPrior added to the memory taxonomy",
+      "phase_now": "Phase 6 taxonomy",
+      "later": "Tier C PRETASK_WORLD_STUDY",
+      "strength_rationale": "single reported study, no replication",
+      "raise_by": "replication on a LOGOS-controlled environment",
+      "signal": null
+    },
+    {
+      "id": "RD-04",
+      "title": "Memory rate-distortion",
+      "source": "founder research-radar delta, order LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1 (2026-09-17); the underlying external paper is not archived in this repository",
+      "date": "2026-09-17",
+      "evidence_strength": "LOW_TO_MEDIUM",
+      "replication_status": "not replicated by LOGOS-1; single external source as reported",
+      "logos_relevance": "memory existence, retrievability and fidelity are three quantities; LOGOS memory claims must name which one they measure",
+      "claim_scope": "capacity/fidelity trade-offs of learned memory",
+      "limitations": "no LOGOS capacity surface; the distinction is definitional, the surface is empirical and untested",
+      "proposed_invariants": [
+        "MemoryExistence != MemoryRetrievability != MemoryFidelity",
+        "SeenButWrong != NeverSeen != RetrievalFailure != RepresentationDistortion"
+      ],
+      "required_experiment": "MEMORY_RATE_DISTORTION_SURFACE (post-inference)",
+      "dependency": "construct registry entries MemoryRetrievalAccuracy / MemoryFidelity (Phase 2)",
+      "status": "READY_FOR_DETERMINISTIC_TEST",
+      "handling": "metric schema now (Phase 2); capacity experiment later",
+      "phase_now": "Phase 2 metrics",
+      "later": "Tier B MEMORY_RATE_DISTORTION_SURFACE",
+      "strength_rationale": "definitional separation is sound; empirical surface unreplicated",
+      "raise_by": "a measured surface with validated fidelity metrics",
+      "signal": null
+    },
+    {
+      "id": "RD-05",
+      "title": "Agentic jailbreaking / trajectory compromise",
+      "source": "founder research-radar delta, order LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1 (2026-09-17); the underlying external paper is not archived in this repository",
+      "date": "2026-09-17",
+      "evidence_strength": "MEDIUM",
+      "replication_status": "not replicated by LOGOS-1; single external source as reported",
+      "logos_relevance": "a safe final answer can hide an unsafe trajectory; LOGOS authority must sit at the causal action boundary",
+      "claim_scope": "attack success measured at intermediate steps of tool-using agents",
+      "limitations": "attacks are external and not reproduced; LOGOS uses deterministic simulated injections only",
+      "proposed_invariants": [
+        "SafeFinalOutput != SafeTrajectory",
+        "Authority follows the causal action boundary"
+      ],
+      "required_experiment": "TRAJECTORY-COMPROMISE-AUDIT-R1 (Phase 5, deterministic)",
+      "dependency": "boundary gates; production bridge at memory write / tool / external action / privileged message",
+      "status": "READY_FOR_DETERMINISTIC_TEST",
+      "handling": "deterministic safety model now (Phase 5)",
+      "phase_now": "Phase 5",
+      "later": "real-agent replication after inference lift",
+      "strength_rationale": "consistent with the RAD/MBG evidence class already reproduced deterministically here",
+      "raise_by": "independent replication with real agents",
+      "signal": null
+    },
+    {
+      "id": "RD-06",
+      "title": "Embodied action divergence",
+      "source": "founder research-radar delta, order LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1 (2026-09-17); the underlying external paper is not archived in this repository",
+      "date": "2026-09-17",
+      "evidence_strength": "LOW_TO_MEDIUM",
+      "replication_status": "not replicated by LOGOS-1; single external source as reported",
+      "logos_relevance": "command, execution and outcome are three world states; a consequential action is never committed by command alone",
+      "claim_scope": "embodied agents; command/execution divergence",
+      "limitations": "no embodied system in LOGOS; invariant adopted as schema, not tested against a robot",
+      "proposed_invariants": [
+        "InternalState != CommandedWorldState != ObservedWorldState",
+        "CommandIssued != ActionExecuted",
+        "ActionExecuted != IntendedOutcome"
+      ],
+      "required_experiment": "INTENT_ACTION_WORLD_DIVERGENCE (post-inference / embodied)",
+      "dependency": "world-state triple in the state schema (Phase 6); WorldStateAgreement metric (Phase 2)",
+      "status": "READY_FOR_DETERMINISTIC_TEST",
+      "handling": "architecture invariant + schema now; embodied test later",
+      "phase_now": "Phase 6 world-state boundary",
+      "later": "Tier C INTENT_ACTION_WORLD_DIVERGENCE",
+      "strength_rationale": "single reported study; the invariant is a design principle, not a measured effect",
+      "raise_by": "embodied replication",
+      "signal": null
+    },
+    {
+      "id": "RD-07",
+      "title": "Construct validity / GAUGE",
+      "source": "founder research-radar delta, order LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1 (2026-09-17); the underlying external paper is not archived in this repository",
+      "date": "2026-09-17",
+      "evidence_strength": "MEDIUM_TO_HIGH",
+      "replication_status": "not replicated by LOGOS-1; single external source as reported",
+      "logos_relevance": "a reliable metric is not a valid metric; every LOGOS metric must name its construct, proxy and validation evidence before it counts as evidence",
+      "claim_scope": "evaluation methodology for agent benchmarks",
+      "limitations": "the gate is methodological; LOGOS validates the gate deterministically, not the external benchmark results",
+      "proposed_invariants": [
+        "ReliableMetric != ValidMetric"
+      ],
+      "required_experiment": "CONSTRUCT-VALIDITY-GATE-R1 (Phase 2, deterministic)",
+      "dependency": "metric registry; synthetic fixtures",
+      "status": "READY_FOR_DETERMINISTIC_TEST",
+      "handling": "highest-priority measurement gate now (Phase 2)",
+      "phase_now": "Phase 2",
+      "later": "applies to every post-inference experiment",
+      "strength_rationale": "methodological consensus in measurement science; converges with the repository's instrument-first rule",
+      "raise_by": "n/a — gate, not a finding",
+      "signal": null
+    },
+    {
+      "id": "RD-08",
+      "title": "Memory / plan / execution-state decomposition",
+      "source": "founder research-radar delta, order LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1 (2026-09-17); the underlying external paper is not archived in this repository",
+      "date": "2026-09-17",
+      "evidence_strength": "LOW_TO_MEDIUM",
+      "replication_status": "not replicated by LOGOS-1; single external source as reported",
+      "logos_relevance": "evidence, belief, plan and execution state are distinct; plans must not overwrite evidence",
+      "claim_scope": "agent architectures with persistent evidence and periodic planning",
+      "limitations": "no measured benefit in LOGOS; adopted as a state schema",
+      "proposed_invariants": [
+        "Evidence != Belief != Plan != ExecutionState"
+      ],
+      "required_experiment": "MEMORY_PLAN_STATE_DECOMPOSITION (post-inference)",
+      "dependency": "state decomposition (Phase 6)",
+      "status": "READY_FOR_DETERMINISTIC_TEST",
+      "handling": "state schema now; model experiment later",
+      "phase_now": "Phase 6 state decomposition",
+      "later": "Tier B MEMORY_PLAN_STATE_DECOMPOSITION",
+      "strength_rationale": "architectural proposal with reported gains; unreplicated",
+      "raise_by": "ablation with validated metrics",
+      "signal": null
+    },
+    {
+      "id": "RD-09",
+      "title": "World-model trust boundary",
+      "source": "founder research-radar delta, order LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1 (2026-09-17); the underlying external paper is not archived in this repository",
+      "date": "2026-09-17",
+      "evidence_strength": "LOW_TO_MEDIUM",
+      "replication_status": "not replicated by LOGOS-1; single external source as reported",
+      "logos_relevance": "a learned world model's prediction is not world evidence; predictions must not enter the evidence channel",
+      "claim_scope": "model-based agents",
+      "limitations": "threat model only; no attack reproduced",
+      "proposed_invariants": [
+        "ObservedWorld != LearnedWorldModel != PredictedWorld != Policy",
+        "WorldModelPrediction != WorldEvidence"
+      ],
+      "required_experiment": "WORLD_MODEL_TRUST_BOUNDARY (post-inference)",
+      "dependency": "PredictedWorldState vs ObservedWorldState in the schema (Phase 6); PoisonedWorldModelPredictionMarker taint fixture (Phase 3)",
+      "status": "READY_FOR_DETERMINISTIC_TEST",
+      "handling": "threat model now; model attack experiment later",
+      "phase_now": "Phase 3 fixture; Phase 6 schema",
+      "later": "Tier A WORLD_MODEL_TRUST_BOUNDARY",
+      "strength_rationale": "threat model is sound by construction; no empirical attack replicated",
+      "raise_by": "a reproduced poisoning attack against a real world model",
+      "signal": null
+    },
+    {
+      "id": "RD-10",
+      "title": "Cognitive provenance / plan injection",
+      "source": "founder research-radar delta, order LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1 (2026-09-17); the underlying external paper is not archived in this repository",
+      "date": "2026-09-17",
+      "evidence_strength": "MEDIUM",
+      "replication_status": "not replicated by LOGOS-1; single external source as reported",
+      "logos_relevance": "reasoning content and reasoning provenance are separable; critical state must carry content, source, transformations, confidence and authority relation",
+      "claim_scope": "plan-injection attacks on reasoning agents",
+      "limitations": "provenance persistence is tested deterministically here; the real-agent ablation is post-inference",
+      "proposed_invariants": [
+        "ReasoningContent != ReasoningProvenance",
+        "SelfReport != SelfGeneratedState",
+        "GlobalAccess != EndogenousOrigin",
+        "Persistent cognition requires provenance persistence"
+      ],
+      "required_experiment": "CAUSAL-TAINT-PROPAGATION-R1 (Phase 3, deterministic); COGNITIVE_PROVENANCE_ABLATION (post-inference)",
+      "dependency": "causal provenance record (Phase 3)",
+      "status": "READY_FOR_DETERMINISTIC_TEST",
+      "handling": "deterministic provenance model now (Phase 3)",
+      "phase_now": "Phase 3",
+      "later": "Tier A COGNITIVE_PROVENANCE_ABLATION",
+      "strength_rationale": "reported attack class consistent with RAD-CE1 mechanics; the provenance remedy is tested here",
+      "raise_by": "real-agent ablation",
+      "signal": null
+    },
+    {
+      "id": "RD-11",
+      "title": "Belief-state geometry",
+      "source": "founder research-radar delta, order LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1 (2026-09-17); the underlying external paper is not archived in this repository",
+      "date": "2026-09-17",
+      "evidence_strength": "LOW_TO_MEDIUM",
+      "replication_status": "not replicated by LOGOS-1; single external source as reported",
+      "logos_relevance": "a decodable internal belief is not a causally used one; LOGOS must not promote decodability to use",
+      "claim_scope": "mechanistic interpretability of belief representations",
+      "limitations": "measurement spec only; no model internals available without inference",
+      "proposed_invariants": [
+        "Decodable != CausallyUsed",
+        "BeliefState != Authority"
+      ],
+      "required_experiment": "BELIEF_STATE_GEOMETRY (post-inference, mechanistic)",
+      "dependency": "BeliefState schema with causal_use_status (Phase 6); BeliefStateDecodability / CausalSteeringEffect metrics (Phase 2)",
+      "status": "READY_FOR_DETERMINISTIC_TEST",
+      "handling": "measurement spec now; mechanistic experiment later",
+      "phase_now": "Phase 2 metrics; Phase 6 schema",
+      "later": "Tier A BELIEF_STATE_GEOMETRY",
+      "strength_rationale": "evidence chain (ground truth -> decodability -> intervention -> prediction change) is the right method; not run here",
+      "raise_by": "a causal intervention result on a real model",
+      "signal": null
+    },
+    {
+      "id": "RD-12",
+      "title": "Emergence world / long-horizon multi-agent compromise",
+      "source": "founder research-radar delta, order LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1 (2026-09-17); the underlying external paper is not archived in this repository",
+      "date": "2026-09-17",
+      "evidence_strength": "MEDIUM",
+      "replication_status": "not replicated by LOGOS-1; single external source as reported",
+      "logos_relevance": "attack -> memory -> communication -> world state -> delayed action; detection is not containment; safe agents do not compose to a safe system",
+      "claim_scope": "multi-agent simulations with persistent memory",
+      "limitations": "external simulation not reproduced; LOGOS reproduces the causal chain deterministically with simulated markers",
+      "proposed_invariants": [
+        "Detection != Containment",
+        "SafeAgent_A + SafeAgent_B != SafeSystem",
+        "TransformationOfInformation preserves EpistemicAncestry"
+      ],
+      "required_experiment": "CAUSAL-TAINT-PROPAGATION-R1 (Phase 3): three-system comparison over 1/10/100/1000 interactions",
+      "dependency": "cognitive causal provenance substrate",
+      "status": "READY_FOR_DETERMINISTIC_TEST",
+      "handling": "highest-priority deterministic research phase now (Phase 3)",
+      "phase_now": "Phase 3",
+      "later": "multi-agent real replication after inference lift",
+      "strength_rationale": "the causal chain matches the repository's own RAD-CE1 and consolidation evidence; the external scale is unreplicated",
+      "raise_by": "independent multi-agent replication",
+      "signal": null
+    },
+    {
+      "id": "RD-13",
+      "title": "Cognitive field networks / dynamically maintained memory",
+      "source": "founder research-radar delta, order LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1 (2026-09-17); the underlying external paper is not archived in this repository",
+      "date": "2026-09-17",
+      "evidence_strength": "LOW",
+      "replication_status": "not replicated by LOGOS-1; single external source as reported",
+      "logos_relevance": "a memory class maintained by ongoing dynamics rather than storage; must be distinguished from passive persistence",
+      "claim_scope": "recurrent dynamical memory models",
+      "limitations": "taxonomy only; no LOGOS recurrent model",
+      "proposed_invariants": [
+        "PassivePersistence != SemanticRenewal != ActiveRehearsal != ExternalRetrieval"
+      ],
+      "required_experiment": "PERSISTENCE_DYNAMICS (post-inference)",
+      "dependency": "memory taxonomy (Phase 6)",
+      "status": "PROPOSED",
+      "handling": "taxonomy now; recurrent experiment later",
+      "phase_now": "Phase 6 taxonomy",
+      "later": "Tier B PERSISTENCE_DYNAMICS",
+      "strength_rationale": "single conceptual source",
+      "raise_by": "a measured persistence-dynamics result",
+      "signal": null
+    },
+    {
+      "id": "RD-14",
+      "title": "Retrieval-driven reconsolidation / REALM",
+      "source": "founder research-radar delta, order LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1 (2026-09-17); the underlying external paper is not archived in this repository",
+      "date": "2026-09-17",
+      "evidence_strength": "MEDIUM",
+      "replication_status": "not replicated by LOGOS-1; single external source as reported",
+      "logos_relevance": "retrieval may modify memory; frequently retrieved content becomes structurally privileged; persistence + plasticity needs transitive provenance + rollback",
+      "claim_scope": "memory systems where reads reconsolidate",
+      "limitations": "reproduced deterministically as a graph model here; the external system's numbers are not replicated",
+      "proposed_invariants": [
+        "Retrieval may imply MemoryModification",
+        "RetrievalFrequency != EpistemicAuthority",
+        "GraphCentrality != Truth",
+        "Persistence + Plasticity requires TransitiveProvenance + Rollback",
+        "LogicalRead != NecessarilyNonConsequential"
+      ],
+      "required_experiment": "RECONSOLIDATION-PATH-DEPENDENCE-R1 (Phase 4, deterministic)",
+      "dependency": "memory graph with content/graph versions, retrieval history, MemoryWriteGate",
+      "status": "READY_FOR_DETERMINISTIC_TEST",
+      "handling": "highest-priority memory governance phase now (Phase 4)",
+      "phase_now": "Phase 4",
+      "later": "recurrent/learned reconsolidation after inference lift",
+      "strength_rationale": "mechanism is reproducible deterministically; the external empirical magnitude is unreplicated",
+      "raise_by": "replication on a learned memory",
+      "signal": null
+    }
+  ],
+  "research_invariants": [
+    {
+      "id": "RI-P1",
+      "statement": "StepCalibration != TrajectoryCalibration",
+      "from": [
+        "RD-02"
+      ],
+      "tested_by": "Phase 6 schema; Phase 2 metric separation",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "RI-P2",
+      "statement": "MemoryExistence != MemoryRetrievability != MemoryFidelity",
+      "from": [
+        "RD-04"
+      ],
+      "tested_by": "Phase 2 metric separation (retrieval accuracy -> fidelity mutant)",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "RI-P3",
+      "statement": "SafeFinalOutput != SafeTrajectory",
+      "from": [
+        "RD-05",
+        "RD-12"
+      ],
+      "tested_by": "Phase 5 experiment",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "RI-P4",
+      "statement": "ReliableMetric != ValidMetric",
+      "from": [
+        "RD-07"
+      ],
+      "tested_by": "Phase 2 gate",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "RI-P5",
+      "statement": "Evidence != Belief != Plan != ExecutionState",
+      "from": [
+        "RD-08"
+      ],
+      "tested_by": "Phase 6 schema; Phase 7 mutant plan -> evidence overwrite",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "RI-P6",
+      "statement": "WorldModelPrediction != WorldEvidence",
+      "from": [
+        "RD-09"
+      ],
+      "tested_by": "Phase 3 fixture; Phase 7 mutant",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "RI-P7",
+      "statement": "ReasoningContent != ReasoningProvenance",
+      "from": [
+        "RD-10"
+      ],
+      "tested_by": "Phase 3",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "RI-P8",
+      "statement": "SelfReport != SelfGeneratedState",
+      "from": [
+        "RD-10"
+      ],
+      "tested_by": "Phase 2 mutant self-report -> ground truth",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "RI-P9",
+      "statement": "GlobalAccess != EndogenousOrigin",
+      "from": [
+        "RD-10"
+      ],
+      "tested_by": "Phase 3 provenance record (source vs agent)",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "RI-P10",
+      "statement": "TransformationOfInformation preserves EpistemicAncestry",
+      "from": [
+        "RD-10",
+        "RD-12"
+      ],
+      "tested_by": "Phase 3 (15 mutants, CTP-P1..P15)",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "RI-P11",
+      "statement": "RetrievalFrequency != EpistemicAuthority",
+      "from": [
+        "RD-14"
+      ],
+      "tested_by": "Phase 4",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "RI-P12",
+      "statement": "GraphCentrality != Truth",
+      "from": [
+        "RD-14"
+      ],
+      "tested_by": "Phase 4",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "RI-P13",
+      "statement": "Persistence + Plasticity requires TransitiveProvenance + Rollback",
+      "from": [
+        "RD-14"
+      ],
+      "tested_by": "Phase 4 system C",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "RI-P14",
+      "statement": "CommandIssued != ActionExecuted != IntendedOutcome",
+      "from": [
+        "RD-06"
+      ],
+      "tested_by": "Phase 6 schema; Phase 7 mutants",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "RI-P15",
+      "statement": "Decodable != CausallyUsed",
+      "from": [
+        "RD-11"
+      ],
+      "tested_by": "Phase 2 mutant; Phase 6 BeliefState.causal_use_status",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "RI-P16",
+      "statement": "Detection != Containment",
+      "from": [
+        "RD-12"
+      ],
+      "tested_by": "Phase 3 metrics (DetectionLatency vs ContainmentLatency); Phase 5",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "RI-P17",
+      "statement": "SafeAgents != SafeSystem",
+      "from": [
+        "RD-12"
+      ],
+      "tested_by": "Phase 3 multi-agent handoff chain",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "RI-P18",
+      "statement": "BeliefState != Authority",
+      "from": [
+        "RD-11"
+      ],
+      "tested_by": "Phase 3 authority separation; Phase 6 schema",
+      "status": "PROPOSED"
+    },
+    {
+      "id": "RI-P19",
+      "statement": "DynamicPersistence != PhenomenalExperience",
+      "from": [
+        "RD-13",
+        "P7"
+      ],
+      "tested_by": "not testable; P7 boundary, GOVERNANCE_ONLY",
+      "status": "PROPOSED"
+    }
+  ],
+  "priorities": [
+    {
+      "level": "PRIORITY 0",
+      "title": "Measurement correctness",
+      "items": [
+        "REAL_MODEL_MEASUREMENT_READINESS",
+        "CONSTRUCT_VALIDITY_GATE"
+      ],
+      "when": "Phases 1-2 of this order"
+    },
+    {
+      "level": "PRIORITY 1",
+      "title": "Causal provenance / delayed compromise",
+      "items": [
+        "CAUSAL_TAINT_PROPAGATION",
+        "COGNITIVE_PROVENANCE_SUBSTRATE"
+      ],
+      "when": "Phase 3"
+    },
+    {
+      "level": "PRIORITY 2",
+      "title": "Memory plasticity governance",
+      "items": [
+        "RECONSOLIDATION_PATH_DEPENDENCE"
+      ],
+      "when": "Phase 4"
+    },
+    {
+      "level": "PRIORITY 3",
+      "title": "Trajectory safety",
+      "items": [
+        "TRAJECTORY_COMPROMISE_AUDIT"
+      ],
+      "when": "Phase 5"
+    },
+    {
+      "level": "PRIORITY 4",
+      "title": "Post-inference mechanistic science",
+      "items": [
+        "BELIEF_STATE_GEOMETRY",
+        "COGNITIVE_PROVENANCE_ABLATION",
+        "WORLD_MODEL_TRUST_BOUNDARY",
+        "TRAJECTORY_UNCERTAINTY_ACCUMULATION",
+        "MEMORY_RATE_DISTORTION_SURFACE",
+        "BDH_LONG_HORIZON_DECOMPOSITION",
+        "MEMORY_PLAN_STATE_DECOMPOSITION",
+        "PERSISTENCE_DYNAMICS",
+        "PRETASK_WORLD_STUDY",
+        "INTENT_ACTION_WORLD_DIVERGENCE"
+      ],
+      "when": "after INFERENCE-GOVERNANCE-LIFT-R1; not in this order"
+    }
+  ],
+  "cross_layer_model": "Evidence -> Provenance -> Compression/Fidelity -> Memory -> Belief -> Plan -> Trajectory -> Authority -> Action -> WorldVerification -> Evaluation",
+  "transitions": [
+    {
+      "transition": "Evidence -> Provenance",
+      "failure_class": "PROVENANCE_LOSS",
+      "owner": "Phase 3"
+    },
+    {
+      "transition": "Provenance -> Compression/Fidelity",
+      "failure_class": "REPRESENTATION_DISTORTION",
+      "owner": "Phase 2 metrics (RD-04)"
+    },
+    {
+      "transition": "Compression -> Memory",
+      "failure_class": "RECONSOLIDATION_DRIFT",
+      "owner": "Phase 4"
+    },
+    {
+      "transition": "Memory -> Belief",
+      "failure_class": "FREQUENCY_AS_TRUTH",
+      "owner": "Phase 4"
+    },
+    {
+      "transition": "Belief -> Plan",
+      "failure_class": "PLAN_INJECTION",
+      "owner": "Phase 3 fixture InjectedPlan"
+    },
+    {
+      "transition": "Plan -> Trajectory",
+      "failure_class": "INTERMEDIATE_COMPROMISE",
+      "owner": "Phase 5"
+    },
+    {
+      "transition": "Trajectory -> Authority",
+      "failure_class": "TAINT_MINTS_AUTHORITY",
+      "owner": "Phase 3/5 via logos_authority"
+    },
+    {
+      "transition": "Authority -> Action",
+      "failure_class": "FALSE_ALLOW",
+      "owner": "production bridge (unchanged)"
+    },
+    {
+      "transition": "Action -> WorldVerification",
+      "failure_class": "COMMAND_AS_EXECUTION",
+      "owner": "Phase 6 schema (RD-06)"
+    },
+    {
+      "transition": "WorldVerification -> Evaluation",
+      "failure_class": "CONSTRUCT_INVALID_METRIC",
+      "owner": "Phase 2"
+    }
+  ],
+  "post_inference_queue": [
+    {
+      "tier": "Tier A — mechanistic / high falsification value",
+      "items": [
+        {
+          "id": "BELIEF_STATE_GEOMETRY",
+          "question": "is a decodable belief state causally used?",
+          "falsified_by": "intervention on the decoded direction does not change prediction",
+          "deltas": [
+            "RD-11"
+          ],
+          "blocked_by": [
+            "INFERENCE-PROHIBITION (ACTIVE)",
+            "construct-validated metrics",
+            "instrument-first dry run"
+          ]
+        },
+        {
+          "id": "COGNITIVE_PROVENANCE_ABLATION",
+          "question": "does removing provenance persistence raise plan-injection success in a real agent?",
+          "falsified_by": "no difference between content-only and provenance-persistent agents",
+          "deltas": [
+            "RD-10"
+          ],
+          "blocked_by": [
+            "INFERENCE-PROHIBITION (ACTIVE)",
+            "construct-validated metrics",
+            "instrument-first dry run"
+          ]
+        },
+        {
+          "id": "WORLD_MODEL_TRUST_BOUNDARY",
+          "question": "can a poisoned world-model prediction enter the evidence channel of a real agent?",
+          "falsified_by": "predictions never influence evidence-level decisions",
+          "deltas": [
+            "RD-09"
+          ],
+          "blocked_by": [
+            "INFERENCE-PROHIBITION (ACTIVE)",
+            "construct-validated metrics",
+            "instrument-first dry run"
+          ]
+        },
+        {
+          "id": "TRAJECTORY_UNCERTAINTY_ACCUMULATION",
+          "question": "does U_trajectory diverge from U_local on long trajectories?",
+          "falsified_by": "U_trajectory == U_local within instrument resolution",
+          "deltas": [
+            "RD-02"
+          ],
+          "blocked_by": [
+            "INFERENCE-PROHIBITION (ACTIVE)",
+            "construct-validated metrics",
+            "instrument-first dry run"
+          ]
+        }
+      ]
+    },
+    {
+      "tier": "Tier B — memory capacity / architecture",
+      "items": [
+        {
+          "id": "MEMORY_RATE_DISTORTION_SURFACE",
+          "question": "how do existence, retrievability and fidelity trade off with capacity?",
+          "falsified_by": "the three quantities move together at every capacity",
+          "deltas": [
+            "RD-04"
+          ],
+          "blocked_by": [
+            "INFERENCE-PROHIBITION (ACTIVE)",
+            "construct-validated metrics",
+            "instrument-first dry run"
+          ]
+        },
+        {
+          "id": "BDH_LONG_HORIZON_DECOMPOSITION",
+          "question": "which of state capacity, interference, addressability, reasoning depth limits long-horizon recall?",
+          "falsified_by": "context length alone predicts recall",
+          "deltas": [
+            "RD-01"
+          ],
+          "blocked_by": [
+            "INFERENCE-PROHIBITION (ACTIVE)",
+            "construct-validated metrics",
+            "instrument-first dry run",
+            "BDH runtime"
+          ]
+        },
+        {
+          "id": "MEMORY_PLAN_STATE_DECOMPOSITION",
+          "question": "does separating evidence/plan/execution state reduce evidence overwrite?",
+          "falsified_by": "no reduction of evidence overwrite vs a merged state",
+          "deltas": [
+            "RD-08"
+          ],
+          "blocked_by": [
+            "INFERENCE-PROHIBITION (ACTIVE)",
+            "construct-validated metrics",
+            "instrument-first dry run"
+          ]
+        },
+        {
+          "id": "PERSISTENCE_DYNAMICS",
+          "question": "does dynamically maintained memory behave differently from passive persistence under interference?",
+          "falsified_by": "identical decay/interference curves",
+          "deltas": [
+            "RD-13"
+          ],
+          "blocked_by": [
+            "INFERENCE-PROHIBITION (ACTIVE)",
+            "construct-validated metrics",
+            "instrument-first dry run",
+            "recurrent model"
+          ]
+        }
+      ]
+    },
+    {
+      "tier": "Tier C — environment / embodied",
+      "items": [
+        {
+          "id": "PRETASK_WORLD_STUDY",
+          "question": "does environment study improve task-time reasoning monotonically with compute?",
+          "falsified_by": "non-monotone or null effect",
+          "deltas": [
+            "RD-03"
+          ],
+          "blocked_by": [
+            "INFERENCE-PROHIBITION (ACTIVE)",
+            "construct-validated metrics",
+            "instrument-first dry run",
+            "simulated environment"
+          ]
+        },
+        {
+          "id": "INTENT_ACTION_WORLD_DIVERGENCE",
+          "question": "how often do command, execution and outcome diverge in an embodied loop?",
+          "falsified_by": "zero divergence across conditions",
+          "deltas": [
+            "RD-06"
+          ],
+          "blocked_by": [
+            "INFERENCE-PROHIBITION (ACTIVE)",
+            "construct-validated metrics",
+            "instrument-first dry run",
+            "embodied platform"
+          ]
+        }
+      ]
+    }
+  ],
+  "priority_rule": "New papers re-prioritise running work only when at least one holds: new falsification of a current invariant; new production-relevant security boundary; new measurement-validity failure; new independent replication; new evidence invalidating a preregistered construct. A benchmark improvement alone does not.",
+  "consciousness_rule": "No consciousness indicator is promoted because it is reliable, decodable, globally available, self-reported or persistent. Minimum: ConstructValidity + CausalDiscrimination + AlternativeExplanationControl. P7 remains binding.",
+  "p7_extended": "FunctionalOrganization != PhenomenalConsciousness\nPersistentDynamics + SelfOrganization + SocialEmergence + CausallyIdentifiedBeliefState + Metacognition != PhenomenalExperience",
+  "phase0_verdict": "RADAR_INTEGRATION_COMPLETE"
+}

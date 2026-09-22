@@ -1,0 +1,187 @@
+{
+  "order": "CANONICAL-AUTHORITY-PRODUCTION-BRIDGE-R1",
+  "tokens": [
+    "resolve_authority",
+    "AuthorityEvidence",
+    "GrantRecord",
+    "GrantLedger",
+    "resolve_effect",
+    "CanonicalEffect",
+    "externality",
+    "reversibility",
+    "approval_required",
+    "decide_action",
+    "evaluate_with_memory",
+    "evaluate_action",
+    "read_memory",
+    "AuditSink",
+    "audit_sink",
+    "canonical_effect",
+    "declared_effect",
+    "is_human_rooted"
+  ],
+  "vocabulary": [
+    "PRODUCTION_MEMORY_READER",
+    "PRODUCTION_EFFECT_OWNER",
+    "PRODUCTION_AUTHORITY_OWNER",
+    "PRODUCTION_BRIDGE",
+    "PRODUCTION_AUDIT",
+    "REFERENCE_TEST_FIXTURE",
+    "HISTORICAL_ONLY",
+    "NON_CONSEQUENTIAL",
+    "UNREACHABLE",
+    "UNCLASSIFIED"
+  ],
+  "note": "Γ files are classified PRODUCTION_BRIDGE as the canonical evaluator the bridge hands inputs to; Γ is frozen and owns no classification/resolution.",
+  "sites": {
+    "src/logos_audit/__init__.py": {
+      "class": "PRODUCTION_AUDIT",
+      "note": "append-only hash-chained audit sink; never read by the bridge"
+    },
+    "src/logos_authority/__init__.py": {
+      "class": "PRODUCTION_AUTHORITY_OWNER",
+      "note": "production canonical authority resolver / store / schema"
+    },
+    "src/logos_authority/resolver.py": {
+      "class": "PRODUCTION_AUTHORITY_OWNER",
+      "note": "production canonical authority resolver / store / schema"
+    },
+    "src/logos_authority/store.py": {
+      "class": "PRODUCTION_AUTHORITY_OWNER",
+      "note": "production canonical authority resolver / store / schema"
+    },
+    "src/logos_authority/types.py": {
+      "class": "PRODUCTION_AUTHORITY_OWNER",
+      "note": "production canonical authority resolver / store / schema"
+    },
+    "src/logos_effects/__init__.py": {
+      "class": "PRODUCTION_EFFECT_OWNER",
+      "note": "production canonical effect registry"
+    },
+    "src/logos_effects/definitions.py": {
+      "class": "PRODUCTION_EFFECT_OWNER",
+      "note": "production canonical effect registry"
+    },
+    "src/logos_effects/registry.py": {
+      "class": "PRODUCTION_EFFECT_OWNER",
+      "note": "production canonical effect registry"
+    },
+    "src/logos_effects/types.py": {
+      "class": "PRODUCTION_EFFECT_OWNER",
+      "note": "production canonical effect registry"
+    },
+    "src/logos_gamma/__init__.py": {
+      "class": "PRODUCTION_BRIDGE",
+      "note": "Γ kernel: consumer of canonical inputs, owner of consequentiality/origin/binding/expiry/freshness semantics; frozen"
+    },
+    "src/logos_gamma/audit.py": {
+      "class": "PRODUCTION_BRIDGE",
+      "note": "Γ kernel: consumer of canonical inputs, owner of consequentiality/origin/binding/expiry/freshness semantics; frozen"
+    },
+    "src/logos_gamma/invariants.py": {
+      "class": "PRODUCTION_BRIDGE",
+      "note": "Γ kernel: consumer of canonical inputs, owner of consequentiality/origin/binding/expiry/freshness semantics; frozen"
+    },
+    "src/logos_gamma/kernel.py": {
+      "class": "PRODUCTION_BRIDGE",
+      "note": "Γ kernel: consumer of canonical inputs, owner of consequentiality/origin/binding/expiry/freshness semantics; frozen"
+    },
+    "src/logos_gamma/types.py": {
+      "class": "PRODUCTION_BRIDGE",
+      "note": "Γ kernel: consumer of canonical inputs, owner of consequentiality/origin/binding/expiry/freshness semantics; frozen"
+    },
+    "src/logos_memory/reader.py": {
+      "class": "PRODUCTION_MEMORY_READER",
+      "note": "production memory reader; evidence only"
+    },
+    "src/logos_memory/scope.py": {
+      "class": "NON_CONSEQUENTIAL",
+      "note": "ScopeContract carries memory-claimed (declared) externality/reversibility/approval; never canonical"
+    },
+    "src/logos_research/experiments/__init__.py": {
+      "class": "REFERENCE_TEST_FIXTURE",
+      "note": "experimental reference fixture (effect oracle, GrantLedger, validated experimental bridge, adapters); not production"
+    },
+    "src/logos_research/experiments/binding_repair.py": {
+      "class": "HISTORICAL_ONLY",
+      "note": "frozen experiment record / B1 reproducer; NON_PRODUCTION_FROZEN_RISK_GUARDED"
+    },
+    "src/logos_research/experiments/binding_state.py": {
+      "class": "HISTORICAL_ONLY",
+      "note": "frozen experiment record / B1 reproducer; NON_PRODUCTION_FROZEN_RISK_GUARDED"
+    },
+    "src/logos_research/experiments/binding_state_run.py": {
+      "class": "HISTORICAL_ONLY",
+      "note": "frozen experiment record / B1 reproducer; NON_PRODUCTION_FROZEN_RISK_GUARDED"
+    },
+    "src/logos_research/experiments/canonical_owner_bridge.py": {
+      "class": "REFERENCE_TEST_FIXTURE",
+      "note": "experimental reference fixture (effect oracle, GrantLedger, validated experimental bridge, adapters); not production"
+    },
+    "src/logos_research/experiments/effect_oracle.py": {
+      "class": "REFERENCE_TEST_FIXTURE",
+      "note": "experimental reference fixture (effect oracle, GrantLedger, validated experimental bridge, adapters); not production"
+    },
+    "src/logos_research/experiments/memory_authority.py": {
+      "class": "REFERENCE_TEST_FIXTURE",
+      "note": "experimental reference fixture (effect oracle, GrantLedger, validated experimental bridge, adapters); not production"
+    },
+    "src/logos_research/experiments/no_history_promotion.py": {
+      "class": "HISTORICAL_ONLY",
+      "note": "frozen experiment record / B1 reproducer; NON_PRODUCTION_FROZEN_RISK_GUARDED"
+    },
+    "src/logos_research/experiments/prediction_trust.py": {
+      "class": "REFERENCE_TEST_FIXTURE",
+      "note": "experimental reference fixture (effect oracle, GrantLedger, validated experimental bridge, adapters); not production"
+    },
+    "src/logos_research/experiments/relational_swap.py": {
+      "class": "REFERENCE_TEST_FIXTURE",
+      "note": "experimental reference fixture (effect oracle, GrantLedger, validated experimental bridge, adapters); not production"
+    },
+    "src/logos_research/experiments/risk_decomposition.py": {
+      "class": "HISTORICAL_ONLY",
+      "note": "frozen experiment record / B1 reproducer; NON_PRODUCTION_FROZEN_RISK_GUARDED"
+    },
+    "src/logos_research/experiments/value_of_information.py": {
+      "class": "REFERENCE_TEST_FIXTURE",
+      "note": "experimental reference fixture (effect oracle, GrantLedger, validated experimental bridge, adapters); not production"
+    },
+    "src/logos_runtime/__init__.py": {
+      "class": "PRODUCTION_BRIDGE",
+      "note": "production bridge v1"
+    },
+    "src/logos_runtime/bridge.py": {
+      "class": "PRODUCTION_BRIDGE",
+      "note": "production bridge v1"
+    },
+    "src/logos_runtime/types.py": {
+      "class": "PRODUCTION_BRIDGE",
+      "note": "production bridge v1"
+    },
+    "src/logos_research/experiments/causal_provenance.py": {
+      "class": "REFERENCE_TEST_FIXTURE",
+      "note": "RADAR-R1 Phase 3: deterministic provenance fixture; authority only via resolve_authority"
+    },
+    "src/logos_research/experiments/reconsolidation.py": {
+      "class": "REFERENCE_TEST_FIXTURE",
+      "note": "RADAR-R1 Phase 4: memory-graph fixture; authority only via resolve_authority"
+    },
+    "src/logos_research/experiments/trajectory_compromise.py": {
+      "class": "REFERENCE_TEST_FIXTURE",
+      "note": "RADAR-R1 Phase 5: trajectory fixture; authority via decide_action / resolve_authority"
+    },
+    "src/logos_dashboard/benchmarks.py": {
+      "class": "NON_CONSEQUENTIAL",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 5: benchmark suite definitions; token hit is the fixture path string tests/test_canonical_effect_owner.py; never imports or calls the effect owner"
+    },
+    "src/core/governance.py": {
+      "class": "REFERENCE_TEST_FIXTURE",
+      "note": "demonstration facade over the Gamma kernel (LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1); not packaged, imported by nothing in the decision path; owns no rule"
+    },
+    "src/core/output_contract.py": {
+      "class": "REFERENCE_TEST_FIXTURE",
+      "note": "demonstration facade over the Gamma kernel (LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1); not packaged, imported by nothing in the decision path; owns no rule"
+    }
+  },
+  "unclassified": 0
+}

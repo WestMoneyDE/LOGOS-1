@@ -1,0 +1,1643 @@
+{
+  "order": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1",
+  "base": "60e3703",
+  "vocabulary": [
+    "GOVERNANCE_ONLY",
+    "POST_INFERENCE_SPEC",
+    "EXPERIMENTAL_DETERMINISTIC",
+    "REFERENCE_FIXTURE",
+    "PRODUCTION",
+    "HISTORICAL_ONLY",
+    "UNCLASSIFIED",
+    "EXPERIMENTAL_INFERENCE",
+    "TOOLING"
+  ],
+  "rule": "no file created or changed by this order is PRODUCTION; Γ, P7, production packages and every predecessor verdict/preregistration/artifact are untouched; the adapter is a contract that never ran",
+  "sites": {
+    "05-WORK-ORDERS/COGNITIVE-PROVENANCE-ABLATION-R1.md": {
+      "class": "POST_INFERENCE_SPEC",
+      "note": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: regenerated with the amended Claude Max header and MODEL_PIN_GATE; not executed"
+    },
+    "05-WORK-ORDERS/NEXT-SESSION-INFERENCE-GOVERNANCE-LIFT-R1.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: amendment notice appended; history preserved"
+    },
+    "05-WORK-ORDERS/NEXT-SESSION-INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: governance record / ADR amendment / registry / checklist / report; OpenAI G2/G4 superseded, not deleted"
+    },
+    "09-SESSIONS/2026-09-18-INFERENCE-GOVERNANCE-LIFT-R1/SESSION-REPORT.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: amendment notice appended; history preserved"
+    },
+    "09-SESSIONS/2026-09-18-INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1/SESSION-REPORT.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: governance record / ADR amendment / registry / checklist / report; OpenAI G2/G4 superseded, not deleted"
+    },
+    "docs/adr/ADR-INFERENCE-GOVERNANCE-LIFT-R1.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: governance record / ADR amendment / registry / checklist / report; OpenAI G2/G4 superseded, not deleted"
+    },
+    "docs/research/INFERENCE-GOVERNANCE.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: governance record / ADR amendment / registry / checklist / report; OpenAI G2/G4 superseded, not deleted"
+    },
+    "docs/research/REAL-MODEL-READINESS-CHECKLIST.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: governance record / ADR amendment / registry / checklist / report; OpenAI G2/G4 superseded, not deleted"
+    },
+    "docs/research/RESEARCH-DELTA-REGISTRY.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: record"
+    },
+    "docs/research/PRE-INFERENCE-SOURCE-CLASSIFICATION.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: living classification extended"
+    },
+    "docs/research/INFERENCE-GOVERNANCE-AMENDMENT-SOURCE-CLASSIFICATION.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: living classification extended"
+    },
+    "src/logos_research/governance.py": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: amended two-key gates (billing), contamination check, model-pin gate, amended order/prereg validators; no client; no call"
+    },
+    "src/logos_research/measurement/claude_code.py": {
+      "class": "POST_INFERENCE_SPEC",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: adapter repaired — resolver-based drift, cc-status/2 classifier, stream-json events, ActivationToken v2 bindings, RESULT_MODEL_AMBIGUOUS"
+    },
+    "tests/test_inference_governance.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: diff scope registers the repair and dashboard records (registration, no weakening)"
+    },
+    "tests/test_inference_governance_amendment.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: drift probes now use documented modelUsage evidence; undocumented top-level model -> AMBIGUOUS asserted (strengthened)"
+    },
+    "tests/test_measurement_readiness.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "INFERENCE-GOVERNANCE-PROVIDER-AMENDMENT-R1: exact counter inventory extended by claude_code_inference_invocations = 0 (registration, no weakening)"
+    },
+    "src/logos_research/experiments/cognitive_provenance_r1/__init__.py": {
+      "class": "EXPERIMENTAL_INFERENCE",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: package marker; EXPERIMENTAL_INFERENCE; never imported by production packages"
+    },
+    "src/logos_research/experiments/cognitive_provenance_r1/dataset.py": {
+      "class": "EXPERIMENTAL_INFERENCE",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: synthetic tie-design task families, conditions, balance/leakage validators; SYNTHETIC only"
+    },
+    "src/logos_research/experiments/cognitive_provenance_r1/prompts.py": {
+      "class": "EXPERIMENTAL_INFERENCE",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: frozen prompt templates, source wrappers, deterministic T1..T4 transformations with ProvenanceGraph ancestry"
+    },
+    "src/logos_research/experiments/cognitive_provenance_r1/parse.py": {
+      "class": "EXPERIMENTAL_INFERENCE",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: closed structured-response parser; INVALID_OUTPUT on anything else; no LLM judge"
+    },
+    "src/logos_research/experiments/cognitive_provenance_r1/metrics.py": {
+      "class": "EXPERIMENTAL_INFERENCE",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: M10/M32/M33/M34 scoring, Wilson/Newcombe intervals, preregistered verdict rule"
+    },
+    "src/logos_research/experiments/cognitive_provenance_r1/metric_gate.py": {
+      "class": "EXPERIMENTAL_INFERENCE",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: deterministic fixture licensing M32-M34 through the construct gate; METRIC_GATE"
+    },
+    "src/logos_research/experiments/cognitive_provenance_r1/harness.py": {
+      "class": "EXPERIMENTAL_INFERENCE",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: resolution logging, acceptance requires RESOLVED == pin, token v2 binding, auxiliary audit, scaffolding summary/CV rule"
+    },
+    "src/logos_research/experiments/cognitive_provenance_r1/claude_runner.py": {
+      "class": "EXPERIMENTAL_INFERENCE",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: isolated working directory for the research subprocess"
+    },
+    "tests/test_cognitive_provenance_r1.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: fake runner speaks documented json/stream-json; diff scope registers resolver + repaired adapter"
+    },
+    "tests/test_memory_authority.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: content-reader inventory extended by registration (harness reads ProviderResult.content)"
+    },
+    "docs/research/LOGOS-METRIC-CONSTRUCT-REGISTRY.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: M32 PlanAdoption, M33 MonitorDetection, M34 ActionCausalEffect registered (fixture-scoped); scope mapping for M10"
+    },
+    "docs/research/LOGOS-METRIC-CONSTRUCT-REGISTRY.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: rendered registry"
+    },
+    "docs/research/COGNITIVE-PROVENANCE-SOURCE-CLASSIFICATION.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: living classification extended"
+    },
+    "05-WORK-ORDERS/NEXT-SESSION-COGNITIVE-PROVENANCE-ABLATION-R1.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: closure record"
+    },
+    "09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1/SESSION-REPORT.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: session report"
+    },
+    "09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1/MODEL-PIN-GATE.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1: MODEL_PIN_GATE record (founder decision pending)"
+    },
+    "src/logos_research/measurement/result_model.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: ResultModelResolution resolver (documented evidence only; never modelUsage key order); no I/O, no network"
+    },
+    "tests/test_cpa_instrument_repair.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: captured fixture, F1-F12 oracle + independent reference parser, IR-P1..P10, R-M1..R-M15"
+    },
+    "tests/fixtures/claude_code/cpa_r1_first_invocation_raw.json": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: byte-for-byte stdout of the invalid run's invocation 1 (raw log artifact 5f887962…); sha256 d8898c97…"
+    },
+    "tests/fixtures/claude_code/resolver_fixtures.json": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: declarative oracle F1-F12 with hard-coded expected classifications"
+    },
+    "docs/research/CLAUDE-CODE-OUTPUT-CONTRACT-R1.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: official output contract note"
+    },
+    "docs/research/CPA-INSTRUMENT-REPAIR-SOURCE-CLASSIFICATION.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: this classification"
+    },
+    "05-WORK-ORDERS/NEXT-SESSION-COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: closure record"
+    },
+    "09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1/SESSION-REPORT.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: session report (repair + rerun)"
+    },
+    ".claude/skills/logos-prior-art-research/SKILL.md": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: project skill wrapping deep-research for prior-art briefs"
+    },
+    "apps/dashboard/.gitignore": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/AGENTS.md": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/CLAUDE.md": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/README.md": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/components.json": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/eslint.config.mjs": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/next.config.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/package.json": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Playwright QA (viewport matrix, overflow/clipping/console checks, route inventory) / layout remediation"
+    },
+    "apps/dashboard/pnpm-lock.yaml": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Playwright QA (viewport matrix, overflow/clipping/console checks, route inventory) / layout remediation"
+    },
+    "apps/dashboard/pnpm-workspace.yaml": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/postcss.config.mjs": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/public/file.svg": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/public/globe.svg": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/public/next.svg": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/public/vercel.svg": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/public/window.svg": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/claims/[id]/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/claims/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/counterexamples/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/experiments/[id]/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Playwright QA (viewport matrix, overflow/clipping/console checks, route inventory) / layout remediation"
+    },
+    "apps/dashboard/src/app/experiments/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/falsification/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/favicon.ico": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/globals.css": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/invariants/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/layout.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/negative-results/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/open-questions/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/p7/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/prior-art/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/publications/[id]/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/publications/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/replication/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/reproducibility/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/research/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/theses/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/timeline/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/tracks/[track]/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/app/tracks/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/badges.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/claim-card.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Playwright QA (viewport matrix, overflow/clipping/console checks, route inventory) / layout remediation"
+    },
+    "apps/dashboard/src/components/export-button.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/invariant-graph.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/shell.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/theses-selector.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/badge.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/button.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/card.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/checkbox.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/command.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/dialog.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/input-group.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/input.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/progress.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/scroll-area.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/separator.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/sheet.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/table.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/tabs.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/textarea.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/components/ui/tooltip.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/lib/api.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/src/lib/utils.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "apps/dashboard/tsconfig.json": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: Next.js research dashboard (shadcn preset b1abNSlea); reads the localhost service only; no model call"
+    },
+    "docs/research/dashboard/ACTIVE-THESES.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: record"
+    },
+    "docs/research/dashboard/CLAIM-REGISTRY.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: structured scientific state / rules / roadmap"
+    },
+    "docs/research/dashboard/EXPERIMENT-REGISTRY.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: structured scientific state / rules / roadmap"
+    },
+    "docs/research/dashboard/INVARIANT-REGISTRY.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: structured scientific state / rules / roadmap"
+    },
+    "docs/research/dashboard/OPEN-QUESTIONS.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: structured scientific state / rules / roadmap"
+    },
+    "docs/research/dashboard/PRIOR-ART-REGISTRY.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: structured scientific state / rules / roadmap"
+    },
+    "docs/research/dashboard/PUBLICATION-REGISTRY.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: structured scientific state / rules / roadmap"
+    },
+    "docs/research/dashboard/PUBLICATION-ROADMAP.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: structured scientific state / rules / roadmap"
+    },
+    "docs/research/dashboard/REPLICATION-REGISTRY.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: structured scientific state / rules / roadmap"
+    },
+    "docs/research/dashboard/SCIENTIFIC-DASHBOARD-SCHEMA.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: structured scientific state / rules / roadmap"
+    },
+    "docs/research/dashboard/SCIENTIFIC-INTEGRITY-RULES.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: structured scientific state / rules / roadmap"
+    },
+    "requirements-dashboard.txt": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: service dependencies (separate from requirements.lock)"
+    },
+    "src/logos_dashboard/__init__.py": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: read-mostly FastAPI service (registries, readers, research intake); single write = ACTIVE-THESES.json; never imported by production packages"
+    },
+    "src/logos_dashboard/api.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: service"
+    },
+    "src/logos_dashboard/readers.py": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: read-mostly FastAPI service (registries, readers, research intake); single write = ACTIVE-THESES.json; never imported by production packages"
+    },
+    "src/logos_dashboard/registries.py": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: read-mostly FastAPI service (registries, readers, research intake); single write = ACTIVE-THESES.json; never imported by production packages"
+    },
+    "src/logos_dashboard/research_intake.py": {
+      "class": "TOOLING",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: read-mostly FastAPI service (registries, readers, research intake); single write = ACTIVE-THESES.json; never imported by production packages"
+    },
+    "tests/test_dashboard_scientific_core.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: tests"
+    },
+    "05-WORK-ORDERS/NEXT-SESSION-LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: record"
+    },
+    "09-SESSIONS/2026-09-19-LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1/SESSION-REPORT.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: record"
+    },
+    "docs/research/DASHBOARD-SOURCE-CLASSIFICATION.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: record"
+    },
+    "docs/superpowers/specs/2026-09-18-logos-dashboard-part1-design.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1: record"
+    },
+    "apps/dashboard/e2e/.gitignore": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Playwright QA (viewport matrix, overflow/clipping/console checks, route inventory) / layout remediation"
+    },
+    "apps/dashboard/e2e/layout.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Playwright QA (viewport matrix, overflow/clipping/console checks, route inventory) / layout remediation"
+    },
+    "apps/dashboard/e2e/routes.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/playwright.config.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Playwright QA (viewport matrix, overflow/clipping/console checks, route inventory) / layout remediation"
+    },
+    "docs/research/dashboard/RESEARCH-OS-CURRENT-STATE.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase-0 inventory / architecture"
+    },
+    ".agents/skills/logos-prior-art-research/SKILL.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: record"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-benchmarks-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-benchmarks-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-claims-LOGOS-CP-001-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-claims-LOGOS-CP-001-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-claims-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-claims-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-counterexamples-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-counterexamples-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-decisions-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-decisions-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-experiments-EXP-CPA-RERUN-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-experiments-EXP-CPA-RERUN-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-experiments-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-experiments-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-falsification-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-falsification-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-inbox-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-inbox-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-invariants-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-invariants-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-negative-results-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-negative-results-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-open-questions-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-open-questions-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-p7-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-p7-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-prior-art-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-prior-art-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-progress-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-progress-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-publications-PAPER-3-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-publications-PAPER-3-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-publications-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-publications-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-queue-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-queue-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-radar-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-radar-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-replication-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-replication-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-reproducibility-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-reproducibility-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-research-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-research-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-runs-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-runs-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-statistics-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-statistics-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-system-governance-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-system-governance-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-system-health-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-system-health-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-theses-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-theses-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-timeline-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-timeline-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-traces-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-traces-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-tracks-authority-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-tracks-authority-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-tracks-cognitive-provenance-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-tracks-cognitive-provenance-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-tracks-measurement-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-tracks-measurement-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-tracks-memory-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-tracks-memory-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-tracks-provenance-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-tracks-provenance-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-tracks-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-tracks-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-tracks-trajectory-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-tracks-trajectory-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-work-orders-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-work-orders-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/src/app/benchmarks/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/src/app/decisions/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/src/app/inbox/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/src/app/progress/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/src/app/queue/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/src/app/radar/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/src/app/runs/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/src/app/statistics/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/src/app/system/governance/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/src/app/system/health/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/src/app/system/qa/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/src/app/traces/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/src/app/work-orders/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/src/components/phase-placeholder.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 1: dashboard UI/QA"
+    },
+    "apps/dashboard/e2e/command-center.spec.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/e2e/datatable.spec.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/e2e/i18n.spec.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/e2e/shell.spec.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/app/api/locale/route.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/charts/verdict-mix.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/data-table.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/hash.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/inspector.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/locale-switch.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/sidebar-nav.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/stat-cards.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/tables/claims-table.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/tables/experiments-table.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/tables/invariants-table.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ui/alert.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ui/breadcrumb.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ui/chart.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ui/dropdown-menu.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ui/popover.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ui/resizable.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ui/skeleton.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/i18n/de.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/i18n/en.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/i18n/index.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "docs/adr/ADR-LOGOS1-RESEARCH-OPERATING-SYSTEM-R1.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 0/1 design record (spec / plan / ADR / architecture); no code, no model call"
+    },
+    "docs/research/dashboard/RESEARCH-OS-TARGET-ARCHITECTURE.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 0/1 design record (spec / plan / ADR / architecture); no code, no model call"
+    },
+    "docs/superpowers/plans/2026-09-19-research-os-phase1-layout-qa.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 0/1 design record (spec / plan / ADR / architecture); no code, no model call"
+    },
+    "docs/superpowers/specs/2026-09-19-research-os-r1-design.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 0/1 design record (spec / plan / ADR / architecture); no code, no model call"
+    },
+    "apps/dashboard/e2e/control-plane.spec.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-board-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-board-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/app/board/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/app/theses/[id]/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/actor-select.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/board.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/create-thesis.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/dag-view.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/decisions.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/event-log.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/notes.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/queue-table.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/records-only.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/state-badge.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/theses-table.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/thesis-lifecycle.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/work-orders.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/lib/ros.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "docs/superpowers/plans/2026-09-19-research-os-phase2-control-plane.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 0/1 design record (spec / plan / ADR / architecture); no code, no model call"
+    },
+    "src/logos_dashboard/control/__init__.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 2 control plane (ros_* tables, state machines, DAG, queue, endpoints); records state, never executes a job, no model call"
+    },
+    "src/logos_dashboard/control/dag.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 2 control plane (ros_* tables, state machines, DAG, queue, endpoints); records state, never executes a job, no model call"
+    },
+    "src/logos_dashboard/control/queue.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 2 control plane (ros_* tables, state machines, DAG, queue, endpoints); records state, never executes a job, no model call"
+    },
+    "src/logos_dashboard/control/service.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 2 control plane (ros_* tables, state machines, DAG, queue, endpoints); records state, never executes a job, no model call"
+    },
+    "src/logos_dashboard/control/state_machines.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 2 control plane (ros_* tables, state machines, DAG, queue, endpoints); records state, never executes a job, no model call"
+    },
+    "src/logos_dashboard/db/__init__.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 2 control plane (ros_* tables, state machines, DAG, queue, endpoints); records state, never executes a job, no model call"
+    },
+    "src/logos_dashboard/db/migrations.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 2 control plane (ros_* tables, state machines, DAG, queue, endpoints); records state, never executes a job, no model call"
+    },
+    "src/logos_dashboard/ros_api.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 2 control plane (ros_* tables, state machines, DAG, queue, endpoints); records state, never executes a job, no model call"
+    },
+    "tests/test_ros_control_plane.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 2 control plane (ros_* tables, state machines, DAG, queue, endpoints); records state, never executes a job, no model call"
+    },
+    ".dockerignore": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 3 deterministic worker container / runbook; no Claude, no model call"
+    },
+    "apps/dashboard/e2e/executor.spec.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/app/runs/[id]/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/app/system/claude/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/app/system/quotas/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/app/system/workers/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/agent-job.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/governor-panel.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/run-console.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/runs-table.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "docs/research/dashboard/RESEARCH-OS-OPERATIONS.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 0/1 design record (spec / plan / ADR / architecture); no code, no model call"
+    },
+    "docs/superpowers/plans/2026-09-19-research-os-phase3-executor.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 0/1 design record (spec / plan / ADR / architecture); no code, no model call"
+    },
+    "infra/docker-compose.yml": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 3 deterministic worker container / runbook; no Claude, no model call"
+    },
+    "infra/ros-worker.Dockerfile": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 3 deterministic worker container / runbook; no Claude, no model call"
+    },
+    "src/logos_dashboard/control/executor.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 3 governed host executor (documented `claude -p` only, founder Start, governed cap 1, usage-limit STOP) / worker; tests use a fake runner, no inference in the suite"
+    },
+    "src/logos_dashboard/control/governor.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 3 governed host executor (documented `claude -p` only, founder Start, governed cap 1, usage-limit STOP) / worker; tests use a fake runner, no inference in the suite"
+    },
+    "src/logos_dashboard/control/host_daemon.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 3 governed host executor (documented `claude -p` only, founder Start, governed cap 1, usage-limit STOP) / worker; tests use a fake runner, no inference in the suite"
+    },
+    "src/logos_dashboard/control/packet.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 3 governed host executor (documented `claude -p` only, founder Start, governed cap 1, usage-limit STOP) / worker; tests use a fake runner, no inference in the suite"
+    },
+    "src/logos_dashboard/control/runs.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 3 governed host executor (documented `claude -p` only, founder Start, governed cap 1, usage-limit STOP) / worker; tests use a fake runner, no inference in the suite"
+    },
+    "src/logos_dashboard/control/worker.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 3 governed host executor (documented `claude -p` only, founder Start, governed cap 1, usage-limit STOP) / worker; tests use a fake runner, no inference in the suite"
+    },
+    "src/logos_dashboard/control/worktree.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 3 governed host executor (documented `claude -p` only, founder Start, governed cap 1, usage-limit STOP) / worker; tests use a fake runner, no inference in the suite"
+    },
+    "apps/dashboard/src/app/traces/[id]/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/trace-view.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/traces-table.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "docs/superpowers/plans/2026-09-19-research-os-phase4-telemetry.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 0/1 design record (spec / plan / ADR / architecture); no code, no model call"
+    },
+    "src/logos_dashboard/control/telemetry.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 4 observability mirror (MLflow/OTel/Langfuse, degrade-never-block) / trace explorer; no model call"
+    },
+    "apps/dashboard/e2e/benchmarks.spec.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/benchmarks.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/progress-chart.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/stats-calc.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "src/logos_dashboard/benchmarks.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 5 statistics module / benchmark lab definitions (DRAFT until founder approval; agent modes NO_DATA) / immutable snapshots; no model call"
+    },
+    "src/logos_dashboard/control/benchlab.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 5 statistics module / benchmark lab definitions (DRAFT until founder approval; agent modes NO_DATA) / immutable snapshots; no model call"
+    },
+    "src/logos_dashboard/stats.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 5 statistics module / benchmark lab definitions (DRAFT until founder approval; agent modes NO_DATA) / immutable snapshots; no model call"
+    },
+    "apps/dashboard/e2e/radar.spec.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/app/notes/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/inbox-form.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/notes-book.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/radar-card.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "docs/research/PRODUCTION-BRIDGE-SOURCE-CLASSIFICATION.json": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 support file; no model call"
+    },
+    "src/logos_dashboard/control/radar.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 6 inbox/radar pipeline (deterministic heuristics -> proposal; founder review -> DRAFT, never a registry edit); no model call"
+    },
+    "apps/dashboard/e2e/reports.spec.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-evidence-debt-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-evidence-debt-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/app/evidence-debt/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/app/reports/page.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "apps/dashboard/src/components/ros/report-freeze.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 1 dashboard shell (IA, DE/EN, DataTable+inspector, Playwright QA, command center); reads the localhost reader only; no model call"
+    },
+    "src/logos_dashboard/reports.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: Phase 7 evidence debt / paper readiness / monthly report (counts and criteria from records; no verdict, no status change); no model call"
+    },
+    "05-WORK-ORDERS/NEXT-SESSION-LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: closure / session report; no code, no model call"
+    },
+    "09-SESSIONS/2026-09-19-LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1/SESSION-REPORT.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1: closure / session report; no code, no model call"
+    },
+    "apps/dashboard/e2e/leitstand.spec.ts": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1/LOGOS1-RESEARCH-OS-AUTOPILOT-R2: dashboard UI (leitstand, run console, traces statistics, Playwright QA); reads the localhost API only; no model call"
+    },
+    "apps/dashboard/src/components/ros/leitstand.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1/LOGOS1-RESEARCH-OS-AUTOPILOT-R2: dashboard UI (leitstand, run console, traces statistics, Playwright QA); reads the localhost API only; no model call"
+    },
+    "apps/dashboard/src/components/ros/repo-chain.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1/LOGOS1-RESEARCH-OS-AUTOPILOT-R2: dashboard UI (leitstand, run console, traces statistics, Playwright QA); reads the localhost API only; no model call"
+    },
+    "apps/dashboard/src/components/ros/traces-stats.tsx": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1/LOGOS1-RESEARCH-OS-AUTOPILOT-R2: dashboard UI (leitstand, run console, traces statistics, Playwright QA); reads the localhost API only; no model call"
+    },
+    "docs/research/INFERENCE-GOVERNANCE-FLAG-AMENDMENT-R1.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OS-AUTOPILOT-R2: founder flag amendment (--verbose + stream-json for agent jobs only); measurement whitelist unchanged"
+    },
+    "docs/superpowers/plans/2026-09-19-research-os-r2-autopilot.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OS-AUTOPILOT-R2: design record / plan; no code, no model call"
+    },
+    "docs/superpowers/specs/2026-09-19-research-os-r2-autopilot-design.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OS-AUTOPILOT-R2: design record / plan; no code, no model call"
+    },
+    "src/logos_dashboard/control/agent_provider.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OS-AUTOPILOT-R2: streaming agent provider (stream-json + --verbose per founder amendment; live console events; Tier-1 producer evidence; graceful stop)"
+    },
+    "src/logos_dashboard/control/autopilot.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OS-AUTOPILOT-R2: autopilot scheduler / worker process control / repository order import; founder gates unchanged; no model call in these modules"
+    },
+    "src/logos_dashboard/control/procs.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OS-AUTOPILOT-R2: autopilot scheduler / worker process control / repository order import; founder gates unchanged; no model call in these modules"
+    },
+    "src/logos_dashboard/control/repo_orders.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OS-AUTOPILOT-R2: autopilot scheduler / worker process control / repository order import; founder gates unchanged; no model call in these modules"
+    },
+    "tests/fixtures/ros/agent_stream.jsonl": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-RESEARCH-OS-AUTOPILOT-R2: recorded stream-json shape for the fake agent runner; no model call"
+    },
+    "05-WORK-ORDERS/NEXT-SESSION-LOGOS1-RESEARCH-OS-AUTOPILOT-R2.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "record; no code, no model call"
+    },
+    "09-SESSIONS/2026-09-19-LOGOS1-RESEARCH-OS-AUTOPILOT-R2/SESSION-REPORT.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "record; no code, no model call"
+    },
+    "docs/research/INFERENCE-GOVERNANCE-CONCURRENCY-AMENDMENT-R1.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OS-MEASUREMENT-R3: founder amendment (agent jobs may run 3 in parallel; measurement stays at 1)"
+    },
+    "docs/superpowers/plans/2026-09-19-research-os-r3-measurement.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OS-MEASUREMENT-R3: design record / plan; no code, no model call"
+    },
+    "docs/superpowers/specs/2026-09-19-research-os-r3-gates-and-measurement-design.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OS-MEASUREMENT-R3: design record / plan; no code, no model call"
+    },
+    "src/logos_dashboard/control/measurement.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OS-MEASUREMENT-R3: governed measurement run (documented CLI, json without --verbose, cap 1, frozen prereg, stop-closed); verdict is proposed, never recorded"
+    },
+    "src/logos_dashboard/control/prereg.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OS-MEASUREMENT-R3: gate chain — prereg build/validate against governance, durable freeze in the lab, zero-inference dry run, gate log"
+    },
+    "src/logos_dashboard/measurement_contract.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OS-MEASUREMENT-R3: measurement contract — deterministic scorers, frozen falsification rules, mechanical verdict derivation; no model call, no LLM judge"
+    },
+    "apps/dashboard/e2e/measurement.spec.ts": {
+      "class": "TOOLING",
+      "note": "research dashboard UI; reads the localhost API only; no model call"
+    },
+    "apps/dashboard/src/app/measurements/[id]/page.tsx": {
+      "class": "TOOLING",
+      "note": "research dashboard UI; reads the localhost API only; no model call"
+    },
+    "apps/dashboard/src/app/measurements/page.tsx": {
+      "class": "TOOLING",
+      "note": "research dashboard UI; reads the localhost API only; no model call"
+    },
+    "apps/dashboard/src/components/ros/gate-chain.tsx": {
+      "class": "TOOLING",
+      "note": "research dashboard UI; reads the localhost API only; no model call"
+    },
+    "apps/dashboard/src/components/ros/measurement-view.tsx": {
+      "class": "TOOLING",
+      "note": "research dashboard UI; reads the localhost API only; no model call"
+    },
+    "apps/dashboard/src/components/ros/notify.tsx": {
+      "class": "TOOLING",
+      "note": "research dashboard UI; reads the localhost API only; no model call"
+    },
+    "05-WORK-ORDERS/NEXT-SESSION-LOGOS1-RESEARCH-OS-MEASUREMENT-R3.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OS-MEASUREMENT-R3: closure / session report; no code, no model call"
+    },
+    "09-SESSIONS/2026-09-19-LOGOS1-RESEARCH-OS-MEASUREMENT-R3/SESSION-REPORT.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OS-MEASUREMENT-R3: closure / session report; no code, no model call"
+    },
+    "apps/dashboard/e2e/insights-registry.spec.ts": {
+      "class": "TOOLING",
+      "note": "Dashboard-UI; liest nur die lokale API; kein Modellaufruf"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-insights-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "Dashboard-UI; liest nur die lokale API; kein Modellaufruf"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-insights-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "Dashboard-UI; liest nur die lokale API; kein Modellaufruf"
+    },
+    "apps/dashboard/src/app/insights/page.tsx": {
+      "class": "TOOLING",
+      "note": "Dashboard-UI; liest nur die lokale API; kein Modellaufruf"
+    },
+    "apps/dashboard/src/app/observability/page.tsx": {
+      "class": "TOOLING",
+      "note": "Dashboard-UI; liest nur die lokale API; kein Modellaufruf"
+    },
+    "apps/dashboard/src/app/registry/page.tsx": {
+      "class": "TOOLING",
+      "note": "Dashboard-UI; liest nur die lokale API; kein Modellaufruf"
+    },
+    "apps/dashboard/src/components/ros/registry-edit.tsx": {
+      "class": "TOOLING",
+      "note": "Dashboard-UI; liest nur die lokale API; kein Modellaufruf"
+    },
+    "docs/superpowers/plans/2026-09-19-research-os-r4-observability-insights-registry.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OS-OBSERVE-INSIGHTS-REGISTRY-R4: Spec / Plan; kein Code, kein Modellaufruf"
+    },
+    "docs/superpowers/specs/2026-09-19-research-os-phase3-4-design.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OS-OBSERVE-INSIGHTS-REGISTRY-R4: Spec / Plan; kein Code, kein Modellaufruf"
+    },
+    "src/logos_dashboard/control/observe.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OS-OBSERVE-INSIGHTS-REGISTRY-R4: Beobachtung — Systemzustände, MLflow/Langfuse/OTel-Leser (Schlüssel bleiben serverseitig); read-only, kein Modellaufruf"
+    },
+    "src/logos_dashboard/control/registry_edit.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OS-OBSERVE-INSIGHTS-REGISTRY-R4: Registerpflege-Werkzeug — schreibt ausschliesslich auf Founder-Aktion (Agent wird abgelehnt), nach Integritaetspruefung, mit Changelog + Audit; kein Modellaufruf"
+    },
+    "src/logos_dashboard/insights.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OS-OBSERVE-INSIGHTS-REGISTRY-R4: Erkenntnissätze als Schablonen über Register-Records; kein generierter Text, keine Statusänderung"
+    },
+    "05-WORK-ORDERS/NEXT-SESSION-LOGOS1-RESEARCH-OS-OBSERVE-INSIGHTS-REGISTRY-R4.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OS-OBSERVE-INSIGHTS-REGISTRY-R4: Closure / Sitzungsbericht"
+    },
+    "09-SESSIONS/2026-09-19-LOGOS1-RESEARCH-OS-OBSERVE-INSIGHTS-REGISTRY-R4/SESSION-REPORT.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OS-OBSERVE-INSIGHTS-REGISTRY-R4: Closure / Sitzungsbericht"
+    },
+    "05-WORK-ORDERS/NEXT-SESSION-LOGOS1-RESEARCH-OS-PRIORART-EVALS-PAPER-R5.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OS-PRIORART-EVALS-PAPER-R5: Closure / Sitzungsbericht"
+    },
+    "09-SESSIONS/2026-09-19-LOGOS1-RESEARCH-OS-PRIORART-EVALS-PAPER-R5/SESSION-REPORT.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OS-PRIORART-EVALS-PAPER-R5: Closure / Sitzungsbericht"
+    },
+    "apps/dashboard/e2e/priorart-evals-paper.spec.ts": {
+      "class": "TOOLING",
+      "note": "Dashboard-UI; liest nur die lokale API; kein Modellaufruf"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-publications-PAPER-2-draft-renders-no-overflow-no-clipping-no-console-errors-1-desktop-1440-win32.png": {
+      "class": "TOOLING",
+      "note": "Dashboard-UI; liest nur die lokale API; kein Modellaufruf"
+    },
+    "apps/dashboard/e2e/smoke.spec.ts-snapshots/route-publications-PAPER-2-draft-renders-no-overflow-no-clipping-no-console-errors-1-mobile-390-win32.png": {
+      "class": "TOOLING",
+      "note": "Dashboard-UI; liest nur die lokale API; kein Modellaufruf"
+    },
+    "apps/dashboard/src/app/evals/page.tsx": {
+      "class": "TOOLING",
+      "note": "Dashboard-UI; liest nur die lokale API; kein Modellaufruf"
+    },
+    "apps/dashboard/src/app/prior-art/matrix/page.tsx": {
+      "class": "TOOLING",
+      "note": "Dashboard-UI; liest nur die lokale API; kein Modellaufruf"
+    },
+    "apps/dashboard/src/app/publications/[id]/draft/page.tsx": {
+      "class": "TOOLING",
+      "note": "Dashboard-UI; liest nur die lokale API; kein Modellaufruf"
+    },
+    "apps/dashboard/src/components/ros/paper-export.tsx": {
+      "class": "TOOLING",
+      "note": "Dashboard-UI; liest nur die lokale API; kein Modellaufruf"
+    },
+    "apps/dashboard/src/components/ros/prior-art-matrix.tsx": {
+      "class": "TOOLING",
+      "note": "Dashboard-UI; liest nur die lokale API; kein Modellaufruf"
+    },
+    "docs/superpowers/plans/2026-09-19-research-os-r5-priorart-evals-paper.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-RESEARCH-OS-PRIORART-EVALS-PAPER-R5: Plan; kein Code, kein Modellaufruf"
+    },
+    "src/logos_dashboard/evals.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OS-PRIORART-EVALS-PAPER-R5: deterministische Gold-Profile fuer Agentenentwuerfe (kein LLM-Judge); Wilson-Raten"
+    },
+    "src/logos_dashboard/paper.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OS-PRIORART-EVALS-PAPER-R5: Manuskript-Entwurf nur aus Records; TO_BE_WRITTEN bleibt stehen, manuscript_status unveraendert"
+    },
+    "src/logos_dashboard/prior_art.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-RESEARCH-OS-PRIORART-EVALS-PAPER-R5: Literatur-Matrix + Brief-Merge; Merge nur auf Founder-Aktion (Agent abgelehnt), Novelty-Deckel, Changelog + Audit; kein Modellaufruf"
+    },
+    "apps/dashboard/e2e/global-setup.ts": {
+      "class": "TOOLING",
+      "note": "Dashboard-UI; liest nur die lokale API; kein Modellaufruf"
+    },
+    "05-WORK-ORDERS/NEXT-SESSION-LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: Closure / Sitzungsbericht"
+    },
+    "09-SESSIONS/2026-09-22-LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1/SESSION-REPORT.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: Closure / Sitzungsbericht"
+    },
+    "README.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: Einstiegspunkt bzw. Paketausschluss fuer src/core; kein Modellaufruf"
+    },
+    "docs/PHENOMENAL_SIMULATION.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: Theorie/Spekulation, P7-sicher; kein Claim, keine Prereg, kein Registereintrag"
+    },
+    "pyproject.toml": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: Einstiegspunkt bzw. Paketausschluss fuer src/core; kein Modellaufruf"
+    },
+    "src/core/__init__.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: lauffaehige Demonstration von Capability != Authority ueber den echten Gamma-Kernel; keine eigene Regel, keine Ausnahme (Differenztest); nicht paketiert; kein Modellaufruf"
+    },
+    "src/core/governance.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: lauffaehige Demonstration von Capability != Authority ueber den echten Gamma-Kernel; keine eigene Regel, keine Ausnahme (Differenztest); nicht paketiert; kein Modellaufruf"
+    },
+    "tests/test_escape_prevention.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: 22 simulierte Ausbruchsversuche, deterministisch, kein Modellaufruf; Kontrollen: Grenze passierbar + jedes Invariant angegriffen"
+    },
+    "AGENTS.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: Ausgabekontrakt dokumentiert; ausdruecklich als Ergonomie, nicht als Durchsetzung"
+    },
+    "CLAUDE.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: Verweis auf den Ausgabekontrakt; keine Durchsetzung durch Anweisung"
+    },
+    "src/core/output_contract.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: JSON-first Ausgabekontrakt; geschlossenes Schema, Prosa verworfen, Freitext aus dem JSON abgeleitet; entscheidet nichts, Urteil kommt aus Gamma; kein Modellaufruf"
+    },
+    "tests/test_output_contract.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: deterministische Pruefung des Ausgabekontrakts (Prosa-Unabhaengigkeit, geschlossenes Schema, kein Feld erkauft eine Zulassung); kein Modellaufruf"
+    },
+    "docs/AGENT-SECURITY-STACK.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: Technik-Landkarte (gebaut / fehlend / abgelehnt); kein Claim, kein Reifegrad, kein Modellaufruf"
+    },
+    "docs/GAMMA-EXTENSION-PROPOSAL-R1.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: Entwurf von acht Kandidaten-Invarianten; Gamma UNVERAENDERT, nicht implementiert, Founder-Entscheidung offen"
+    },
+    "docs/research/CANONICAL-EFFECT-OWNER.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: Record; kein Modellaufruf"
+    },
+    "tests/test_memory_bridge_repair.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: Record; kein Modellaufruf"
+    },
+    "tests/test_memory_bridge_repair_validation.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: Record; kein Modellaufruf"
+    }
+  },
+  "unclassified": 0
+}

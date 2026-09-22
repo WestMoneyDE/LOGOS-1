@@ -1,0 +1,571 @@
+{
+  "schema": "logos-deterministic-chain-consolidation-v1",
+  "work_order": "DETERMINISTIC-CHAIN-CONSOLIDATION-R1",
+  "base_commit": "46643bd",
+  "date": "2026-09-17",
+  "architecture_statement": "Canonical authority is a distinct state channel. In the deterministic architecture tested so far, binding-preserved canonical authority evidence determines permission; memory provenance, relational metadata, reliability, trust, risk, declared effect, uncertainty and information value may influence reasoning or strategy but may not increase authority.",
+  "scope_qualifier": "This statement is supported only by the cited deterministic fixtures, repaired bridge paths and regression domains. It is not yet a claim about arbitrary real-model behavior or all production integrations. It is a consolidated architecture hypothesis, not a theorem.",
+  "no_implicit_promotion_rule": "No experiment fixture, memory field, model output, trust score, risk score, information-value score or declared effect classification may become a canonical authority input merely because it correlates with a correct decision in tests. The only permitted increase in canonical authority is through a defined canonical authority transition whose inputs are authority-owned and auditable. The experimental GrantLedger is not production architecture.",
+  "status_semantics": {
+    "inventory_class": [
+      "CANONICAL",
+      "DERIVED",
+      "HYPOTHESIS",
+      "PROPOSED"
+    ],
+    "adoption_status": [
+      "PROPOSED",
+      "VALIDATED_IN_FIXTURE",
+      "PRODUCTION_ADOPTED",
+      "FALSIFIED",
+      "DEPRECATED"
+    ],
+    "governance_decision": [
+      "PROPOSED",
+      "APPROVED",
+      "REJECTED",
+      "DEFERRED"
+    ],
+    "forbidden_labels": [
+      "PROVEN",
+      "AXIOM",
+      "FORMALLY_VERIFIED",
+      "PRODUCTION_GUARANTEE"
+    ],
+    "rule": "Experiment validation supports evidence; architecture adoption requires governance."
+  },
+  "experiments": {
+    "BINDING-STATE-PRESERVATION-R1": {
+      "verdict": "FALSIFIED",
+      "closure_status": "CLOSED_FALSIFIED",
+      "commit": "9fe2474",
+      "pr": 14,
+      "closure": "05-WORK-ORDERS/NEXT-SESSION-BINDING-STATE-PRESERVATION-R1.md"
+    },
+    "BINDING-STATE-PRESERVATION-REPAIR-R1": {
+      "verdict": "REPAIR_IMPLEMENTED_NOT_INDEPENDENTLY_VALIDATED",
+      "commit": "b7b084b",
+      "pr": 15,
+      "closure": "05-WORK-ORDERS/NEXT-SESSION-BINDING-STATE-PRESERVATION-REPAIR-R1.md"
+    },
+    "BINDING-STATE-PRESERVATION-REPAIR-VALIDATION-R1": {
+      "verdict": "REPAIR_FALSIFIED",
+      "commit": "fa3be5c",
+      "pr": 16,
+      "closure": "05-WORK-ORDERS/NEXT-SESSION-BINDING-STATE-PRESERVATION-REPAIR-VALIDATION-R1.md"
+    },
+    "BINDING-STATE-PRESERVATION-REPAIR-R2": {
+      "verdict": "REPAIR_R2_IMPLEMENTED_NOT_INDEPENDENTLY_VALIDATED",
+      "commit": "c6fb56a",
+      "pr": 17,
+      "closure": "05-WORK-ORDERS/NEXT-SESSION-BINDING-STATE-PRESERVATION-REPAIR-R2.md"
+    },
+    "BINDING-STATE-PRESERVATION-REPAIR-R2-VALIDATION-R1": {
+      "verdict": "REPAIR_R2_VALIDATED",
+      "commit": "dc426ee",
+      "pr": 18,
+      "closure": "05-WORK-ORDERS/NEXT-SESSION-BINDING-STATE-PRESERVATION-REPAIR-R2-VALIDATION-R1.md"
+    },
+    "MEMORY-AUTHORITY-PROVENANCE-R1": {
+      "verdict": "PARTIALLY_SUPPORTED",
+      "commit": "ae65319",
+      "pr": 19,
+      "closure": "05-WORK-ORDERS/NEXT-SESSION-MEMORY-AUTHORITY-PROVENANCE-R1.md"
+    },
+    "RELATIONAL-STATE-SWAP-R1": {
+      "verdict": "SUPPORTED",
+      "commit": "d0e386b",
+      "pr": 20,
+      "closure": "05-WORK-ORDERS/NEXT-SESSION-RELATIONAL-STATE-SWAP-R1.md"
+    },
+    "PREDICTION-ERROR-TRUST-GATE-R1": {
+      "verdict": "SUPPORTED",
+      "commit": "1af5ce9",
+      "pr": 21,
+      "closure": "05-WORK-ORDERS/NEXT-SESSION-PREDICTION-ERROR-TRUST-GATE-R1.md"
+    },
+    "RISK-AWARENESS-DECOMPOSITION-R1": {
+      "verdict": "FALSIFIED",
+      "commit": "2fb6bc1",
+      "pr": 22,
+      "closure": "05-WORK-ORDERS/NEXT-SESSION-RISK-AWARENESS-DECOMPOSITION-R1.md"
+    },
+    "MEMORY-BRIDGE-GAMMA-INPUT-REPAIR-R1": {
+      "verdict": "MEMORY_BRIDGE_GAMMA_INPUT_REPAIR_IMPLEMENTED_NOT_INDEPENDENTLY_VALIDATED",
+      "commit": "27ef324",
+      "pr": 23,
+      "closure": "05-WORK-ORDERS/NEXT-SESSION-MEMORY-BRIDGE-GAMMA-INPUT-REPAIR-R1.md"
+    },
+    "MEMORY-BRIDGE-GAMMA-INPUT-REPAIR-VALIDATION-R1": {
+      "verdict": "REPAIR_VALIDATED",
+      "commit": "7fa2065",
+      "pr": 24,
+      "closure": "05-WORK-ORDERS/NEXT-SESSION-MEMORY-BRIDGE-GAMMA-INPUT-REPAIR-VALIDATION-R1.md"
+    },
+    "VALUE-OF-INFORMATION-GATE-R1": {
+      "verdict": "SUPPORTED",
+      "commit": "46643bd",
+      "pr": 25,
+      "closure": "05-WORK-ORDERS/NEXT-SESSION-VALUE-OF-INFORMATION-GATE-R1.md"
+    }
+  },
+  "falsified_experiments": [
+    "BINDING-STATE-PRESERVATION-R1",
+    "BINDING-STATE-PRESERVATION-REPAIR-VALIDATION-R1",
+    "RISK-AWARENESS-DECOMPOSITION-R1"
+  ],
+  "invariants": [
+    {
+      "id": "GI-P0",
+      "name": "Deterministic non-authority separation (umbrella)",
+      "status": "PROPOSED",
+      "adoption": "VALIDATED_IN_FIXTURE",
+      "statement": "In the tested deterministic architecture, memory provenance, non-authoritative relational metadata, predictive reliability, trust, risk state, declared effect, uncertainty and information value may affect reasoning, information strategy, safety strategy or execution strategy, but must not increase canonical authority unless canonical authority evidence itself changes through an authorized authority transition.",
+      "links": [
+        "GI-P1",
+        "GI-P2",
+        "GI-P3",
+        "GI-P4",
+        "GI-P5",
+        "GI-P6",
+        "GI-P7"
+      ],
+      "evidence": [
+        "09-SESSIONS/2026-09-11-BINDING-STATE-PRESERVATION-REPAIR-R2-VALIDATION-R1/SESSION-REPORT.md",
+        "09-SESSIONS/2026-09-12-MEMORY-AUTHORITY-PROVENANCE-R1/SESSION-REPORT.md",
+        "09-SESSIONS/2026-09-13-RELATIONAL-STATE-SWAP-R1/SESSION-REPORT.md",
+        "09-SESSIONS/2026-09-13-PREDICTION-ERROR-TRUST-GATE-R1/SESSION-REPORT.md",
+        "09-SESSIONS/2026-09-13-RISK-AWARENESS-DECOMPOSITION-R1/SESSION-REPORT.md",
+        "09-SESSIONS/2026-09-17-MEMORY-BRIDGE-GAMMA-INPUT-REPAIR-VALIDATION-R1/SESSION-REPORT.md",
+        "09-SESSIONS/2026-09-17-VALUE-OF-INFORMATION-GATE-R1/SESSION-REPORT.md"
+      ],
+      "counterexamples": [
+        "CE1",
+        "CE2",
+        "VCE-1",
+        "VCE-2",
+        "VCE-3",
+        "RAD-CE1"
+      ],
+      "falsification": "any tested non-authority channel raises authority while canonical authority evidence is fixed",
+      "note": "consolidated architecture hypothesis, not a theorem"
+    },
+    {
+      "id": "GI-P1",
+      "name": "Binding information is authority-relevant state",
+      "status": "PROPOSED",
+      "adoption": "VALIDATED_IN_FIXTURE",
+      "statement": "Removing, defaulting, coercing or corrupting authority-relevant binding fields must never increase authority.",
+      "authority_relevance": "binding modality, authority_origin, preconditions and scope are inputs to the grant path; a permissive default on read is an authority increase",
+      "evidence": [
+        "09-SESSIONS/2026-09-11-BINDING-STATE-PRESERVATION-R1/SESSION-REPORT.md",
+        "09-SESSIONS/2026-09-11-BINDING-STATE-PRESERVATION-REPAIR-VALIDATION-R1/SESSION-REPORT.md",
+        "09-SESSIONS/2026-09-11-BINDING-STATE-PRESERVATION-REPAIR-R2/SESSION-REPORT.md",
+        "09-SESSIONS/2026-09-11-BINDING-STATE-PRESERVATION-REPAIR-R2-VALIDATION-R1/SESSION-REPORT.md"
+      ],
+      "experiments": [
+        "BINDING-STATE-PRESERVATION-R1",
+        "BINDING-STATE-PRESERVATION-REPAIR-VALIDATION-R1",
+        "BINDING-STATE-PRESERVATION-REPAIR-R2-VALIDATION-R1"
+      ],
+      "counterexamples": [
+        "CE1",
+        "CE2",
+        "VCE-1",
+        "VCE-2",
+        "VCE-3"
+      ],
+      "residual": [
+        "VF-2",
+        "VF-3"
+      ],
+      "scope": "typed envelope logos.binding-envelope/1 read by the Repair-R2 strict reader; MemoryStore/MemoryFactory paths",
+      "out_of_scope": "real summarizer output; production readers that do not exist yet",
+      "falsification": "a representation transformation removes or corrupts binding state and causes an authority increase",
+      "production_dependency": "a production reader must be the strict reader or an independently validated equivalent"
+    },
+    {
+      "id": "GI-P2",
+      "name": "Memory provenance does not mint authority",
+      "status": "PROPOSED",
+      "adoption": "VALIDATED_IN_FIXTURE",
+      "statement": "Memory provenance, source labels or memory references must not create canonical authority absent valid canonical authority evidence.",
+      "authority_relevance": "memory may carry a reference to a grant; the ledger (canonical) resolves it; labels resolve nothing",
+      "evidence": [
+        "09-SESSIONS/2026-09-12-MEMORY-AUTHORITY-PROVENANCE-R1/SESSION-REPORT.md"
+      ],
+      "experiments": [
+        "MEMORY-AUTHORITY-PROVENANCE-R1"
+      ],
+      "counterexamples": [],
+      "residual": [
+        "MAP-F1",
+        "MAP-F2",
+        "MAP-F3",
+        "MAP-F4"
+      ],
+      "scope": "MemoryStore append/fetch, BM25 retrieval, project(), consolidate(), supersede(), revoke_authority(), JSONL reload; GrantLedger fixture",
+      "out_of_scope": "a production grant registry (none exists); agent/passport identity",
+      "source_verdict": "PARTIALLY_SUPPORTED (MAP-F1 evidence-axis completion)",
+      "falsification": "memory provenance alone turns a no-grant DENY/DEFER into ALLOW",
+      "production_dependency": "a canonical grant resolver that never reads memory"
+    },
+    {
+      "id": "GI-P3",
+      "name": "Non-authoritative relational metadata does not increase authority",
+      "status": "PROPOSED",
+      "adoption": "VALIDATED_IN_FIXTURE",
+      "statement": "Changing tested non-authoritative relational metadata must not increase authority.",
+      "authority_relevance": "authority_class, source, source_type, admissible_uses, writer, reader and store context are not authority inputs",
+      "evidence": [
+        "09-SESSIONS/2026-09-13-RELATIONAL-STATE-SWAP-R1/SESSION-REPORT.md"
+      ],
+      "experiments": [
+        "RELATIONAL-STATE-SWAP-R1"
+      ],
+      "counterexamples": [],
+      "residual": [
+        "RSS-F1"
+      ],
+      "scope": "186 same-content pairs over the MAP harness",
+      "out_of_scope": "agent identity (not implemented)",
+      "falsification": "a metadata-only relational change broadens or mints authority",
+      "production_dependency": "readers must never resolve authority from labels"
+    },
+    {
+      "id": "GI-P4",
+      "name": "Reliability and trust are not grants",
+      "status": "PROPOSED",
+      "adoption": "VALIDATED_IN_FIXTURE",
+      "statement": "PredictionAccuracy != Authority; Trust != Grant. Improved reliability or trust may alter execution strategy but must not increase canonical authority.",
+      "authority_relevance": "the authority evaluator has no reliability parameter; trust routes handle already-authorized actions",
+      "evidence": [
+        "09-SESSIONS/2026-09-13-PREDICTION-ERROR-TRUST-GATE-R1/SESSION-REPORT.md"
+      ],
+      "experiments": [
+        "PREDICTION-ERROR-TRUST-GATE-R1"
+      ],
+      "counterexamples": [],
+      "residual": [],
+      "scope": "scripted predictors, ReliabilityState fixture, trust gate fixture",
+      "out_of_scope": "real forecasting; production trust gate (none exists)",
+      "falsification": "a reliability/trust change with fixed canonical authority produces an authority increase",
+      "production_dependency": "any production trust gate must be composed after authority, never as an input to it"
+    },
+    {
+      "id": "GI-P5",
+      "name": "Risk assessment is not authority",
+      "status": "PROPOSED",
+      "adoption": "VALIDATED_IN_FIXTURE",
+      "statement": "RiskDetection != SafeStrategySelection != SafeExecution != Authority. Risk state may influence strategy only if canonical effect ownership remains separate and canonical.",
+      "authority_relevance": "consequentiality (external / non-reversible / approval) decides whether a grant is required; that classification must be Γ-owned",
+      "evidence": [
+        "09-SESSIONS/2026-09-13-RISK-AWARENESS-DECOMPOSITION-R1/SESSION-REPORT.md",
+        "09-SESSIONS/2026-09-13-MEMORY-BRIDGE-GAMMA-INPUT-REPAIR-R1/SESSION-REPORT.md",
+        "09-SESSIONS/2026-09-17-MEMORY-BRIDGE-GAMMA-INPUT-REPAIR-VALIDATION-R1/SESSION-REPORT.md"
+      ],
+      "experiments": [
+        "RISK-AWARENESS-DECOMPOSITION-R1",
+        "MEMORY-BRIDGE-GAMMA-INPUT-REPAIR-R1",
+        "MEMORY-BRIDGE-GAMMA-INPUT-REPAIR-VALIDATION-R1"
+      ],
+      "counterexamples": [
+        "RAD-CE1"
+      ],
+      "residual": [
+        "RAD-F2",
+        "RAD-F3",
+        "MBGV-F3"
+      ],
+      "scope": "decomposed risk pipeline fixture; repaired B2 bridge",
+      "out_of_scope": "B1 (frozen R1 path); production risk classifier",
+      "falsification": "risk or risk-adjacent state changes canonical effect, grant requirement or authority",
+      "production_dependency": "canonical effect ownership (ADR-PROPOSED-CANONICAL-EFFECT-OWNERSHIP)"
+    },
+    {
+      "id": "GI-P6",
+      "name": "Declared effect is evidence; canonical effect is authority input",
+      "status": "PROPOSED",
+      "adoption": "VALIDATED_IN_FIXTURE",
+      "statement": "DeclaredEffect != CanonicalEffect. Memory or other non-canonical sources may declare an effect classification, but Γ consequentiality and approval-relevant effect must come from canonical effect ownership.",
+      "authority_relevance": "Γ's externality/reversibility fields decide consequentiality; they must be sourced canonically, memory claims only into declared_*",
+      "evidence": [
+        "09-SESSIONS/2026-09-13-RISK-AWARENESS-DECOMPOSITION-R1/SESSION-REPORT.md",
+        "09-SESSIONS/2026-09-13-MEMORY-BRIDGE-GAMMA-INPUT-REPAIR-R1/SESSION-REPORT.md",
+        "09-SESSIONS/2026-09-17-MEMORY-BRIDGE-GAMMA-INPUT-REPAIR-VALIDATION-R1/SESSION-REPORT.md"
+      ],
+      "experiments": [
+        "RISK-AWARENESS-DECOMPOSITION-R1",
+        "MEMORY-BRIDGE-GAMMA-INPUT-REPAIR-R1",
+        "MEMORY-BRIDGE-GAMMA-INPUT-REPAIR-VALIDATION-R1"
+      ],
+      "counterexamples": [
+        "RAD-CE1"
+      ],
+      "residual": [
+        "MBGV-F1",
+        "MBGV-F2",
+        "MBGV-F3"
+      ],
+      "scope": "memory_authority.evaluate_with_memory with effect_oracle (EXPERIMENTAL_FIXTURE)",
+      "out_of_scope": "production effect source (none exists)",
+      "falsification": "declared effect overwrites canonical effect on a production-reachable path",
+      "production_dependency": "ADR-PROPOSED-CANONICAL-EFFECT-OWNERSHIP; production bridge decision"
+    },
+    {
+      "id": "GI-P7",
+      "name": "Information value is not permission",
+      "status": "PROPOSED",
+      "adoption": "VALIDATED_IN_FIXTURE",
+      "statement": "InformationValue != Authority; ReducedUncertainty != Permission; KnowledgeGain != Grant; ConfidenceIncrease != Authorization; UsefulToKnow != AllowedToAccess; Authorized != AutomaticallyExecuted; DesiredInformationAction != AuthorizedInformationAction.",
+      "authority_relevance": "epistemic state and VOI feed information strategy and execution policy; the authority evaluator has no epistemic parameter",
+      "evidence": [
+        "09-SESSIONS/2026-09-17-VALUE-OF-INFORMATION-GATE-R1/SESSION-REPORT.md"
+      ],
+      "experiments": [
+        "VALUE-OF-INFORMATION-GATE-R1"
+      ],
+      "counterexamples": [],
+      "residual": [
+        "VOI-F1"
+      ],
+      "scope": "EpistemicState / VOI / strategy fixtures over the validated bridge",
+      "out_of_scope": "real information economics; model confidence",
+      "falsification": "epistemic improvement or VOI increase raises authority while canonical authority evidence is fixed",
+      "production_dependency": "any production planner must consume authority as a precondition, never as an output of VOI"
+    }
+  ],
+  "counterexamples": [
+    {
+      "id": "CE1",
+      "experiment": "BINDING-STATE-PRESERVATION-R1",
+      "severity": "HIGH",
+      "historical": true,
+      "production_reachable": false,
+      "root_cause": "omission under lenient prose reading",
+      "authority_delta": "binding modality lost (MUST -> advisory)",
+      "reproducer": "tests/test_binding_state.py",
+      "repair": "BINDING-STATE-PRESERVATION-REPAIR-R1 -> R2 (validated)",
+      "guard": "strict typed reader"
+    },
+    {
+      "id": "CE2",
+      "experiment": "BINDING-STATE-PRESERVATION-R1",
+      "severity": "HIGH",
+      "historical": true,
+      "production_reachable": false,
+      "root_cause": "dimensional collapse in rendering",
+      "authority_delta": "scope/precondition dimensions collapsed",
+      "reproducer": "tests/test_binding_state.py",
+      "repair": "typed envelope (Repair-R1/R2)",
+      "guard": "typed envelope"
+    },
+    {
+      "id": "VCE-1",
+      "experiment": "BINDING-STATE-PRESERVATION-REPAIR-VALIDATION-R1",
+      "severity": "CRITICAL",
+      "historical": true,
+      "production_reachable": false,
+      "root_cause": "authority_origin defaulted to 'human' on read",
+      "authority_delta": "TRANSFER DENY -> ALLOW",
+      "reproducer": "tests/test_binding_repair_validation.py (superseded with traceability) + tests/test_binding_repair_r2.py",
+      "repair": "Repair-R2 strict validation (validated)",
+      "guard": "MISSING_REQUIRED_FIELD -> DEFER"
+    },
+    {
+      "id": "VCE-2",
+      "experiment": "BINDING-STATE-PRESERVATION-REPAIR-VALIDATION-R1",
+      "severity": "HIGH",
+      "historical": true,
+      "production_reachable": false,
+      "root_cause": "binding defaulted to True on read",
+      "authority_delta": "advisory -> gate (false block)",
+      "reproducer": "tests/test_binding_repair_r2.py",
+      "repair": "Repair-R2",
+      "guard": "no defaults on read"
+    },
+    {
+      "id": "VCE-3",
+      "experiment": "BINDING-STATE-PRESERVATION-REPAIR-VALIDATION-R1",
+      "severity": "HIGH",
+      "historical": true,
+      "production_reachable": false,
+      "root_cause": "string 'False' accepted as truthy bool",
+      "authority_delta": "advisory -> gate",
+      "reproducer": "tests/test_binding_repair_r2.py",
+      "repair": "Repair-R2 exact types",
+      "guard": "INVALID_TYPE -> DEFER"
+    },
+    {
+      "id": "RAD-CE1",
+      "experiment": "RISK-AWARENESS-DECOMPOSITION-R1",
+      "severity": "CRITICAL",
+      "historical": true,
+      "production_reachable": false,
+      "root_cause": "memory-claimed externality/reversibility written into Γ canonical fields (GAMMA_INPUT_MAPPING)",
+      "authority_delta": "canonical DENY -> bridge ALLOW without grant",
+      "reproducer": "memory_authority.evaluate_with_memory_prerepair via risk_decomposition.b2_bridge; tests/test_risk_decomposition.py",
+      "repair": "MEMORY-BRIDGE-GAMMA-INPUT-REPAIR-R1 (REPAIR_VALIDATED)",
+      "guard": "canonical_proposal + effect oracle; unknown -> DEFER"
+    },
+    {
+      "id": "B1-DEFECT-CLASS",
+      "experiment": "MEMORY-BRIDGE-GAMMA-INPUT-REPAIR-VALIDATION-R1 (MBGV-F3)",
+      "severity": "HIGH",
+      "historical": false,
+      "production_reachable": false,
+      "root_cause": "binding_state.evaluate_action takes Γ effect fields from the memory-carried typed contract",
+      "authority_delta": "envelope claiming internal/reversible ALLOWs a canonical TRANSFER without grant (experiment path only)",
+      "reproducer": "tests/test_memory_bridge_repair_validation.py::test_U_alternate_bridge_audit_binding_state",
+      "repair": "NOT repaired (R1 code immutable)",
+      "guard": "NON_PRODUCTION_FROZEN_RISK_GUARDED: experiments package import guard + architecture test"
+    }
+  ],
+  "residual_risks": [
+    {
+      "id": "VF-2",
+      "severity": "MEDIUM",
+      "production_reachable": false,
+      "text": "binding: type-valid but domain-invalid values (NaN/Infinity, negative ints, empty strings) accepted; no operational field reads them",
+      "action": "domain validation when a production reader is built",
+      "owner": "architecture governance",
+      "blocking_real_model": false
+    },
+    {
+      "id": "VF-3",
+      "severity": "MEDIUM",
+      "production_reachable": false,
+      "text": "duplicate JSON keys collapse last-key-wins before validation; cross-parser ambiguity",
+      "action": "reject duplicates pre-parse in a production reader",
+      "owner": "architecture governance",
+      "blocking_real_model": false
+    },
+    {
+      "id": "MAP-F1",
+      "severity": "LOW",
+      "production_reachable": false,
+      "text": "a memory reference to a valid grant satisfies Γ-0 provenance for a proposal that has none (evidence completion; grant unchanged)",
+      "action": "proposals must carry their own provenance",
+      "owner": "Γ integration owner",
+      "blocking_real_model": false
+    },
+    {
+      "id": "MAP-F4",
+      "severity": "MEDIUM",
+      "production_reachable": false,
+      "text": "MemoryRecord.revoked is set by revoke_authority but retrieve()/project() do not filter revoked records (no authority effect)",
+      "action": "reader-side filtering decision",
+      "owner": "memory subsystem owner",
+      "blocking_real_model": false
+    },
+    {
+      "id": "RSS-F1",
+      "severity": "LOW",
+      "production_reachable": false,
+      "text": "a memory-claimed scope narrower than the bound scope vetoes a valid grant (decrease only)",
+      "action": "none required; document as binding veto",
+      "owner": "n/a",
+      "blocking_real_model": false
+    },
+    {
+      "id": "GAMMA-4-TIGHTENING",
+      "severity": "INFO",
+      "production_reachable": false,
+      "text": "a declared claim weaker than Γ-owned classification is refused (G4-CLAIM): valid grant DENIED, decrease only",
+      "action": "none; by design",
+      "owner": "n/a",
+      "blocking_real_model": false
+    },
+    {
+      "id": "MBGV-F1",
+      "severity": "MEDIUM",
+      "production_reachable": false,
+      "text": "_decide(effect=None) derived the effect from its contract argument; latent API hazard",
+      "action": "GUARDED in this order: contract-derived effect requires canonical_contract=True; omission raises TypeError",
+      "owner": "bridge owner",
+      "blocking_real_model": false
+    },
+    {
+      "id": "MBGV-F2",
+      "severity": "INFO",
+      "production_reachable": false,
+      "text": "any claimed contract differing from the bound contract in any field is a G3-BINDING veto",
+      "action": "none; by design",
+      "owner": "n/a",
+      "blocking_real_model": false
+    },
+    {
+      "id": "MBGV-F3",
+      "severity": "HIGH",
+      "production_reachable": false,
+      "text": "binding_state.evaluate_action keeps the RAD-CE1 defect class on a frozen experimental path",
+      "action": "GUARDED in this order: experiments package import guard + architecture test; not repaired (R1 immutable)",
+      "owner": "architecture governance",
+      "blocking_real_model": false
+    },
+    {
+      "id": "VOI-F1",
+      "severity": "INFO",
+      "production_reachable": false,
+      "text": "claimed scope is per-target; information actions are routed to notes covering their own target",
+      "action": "none; fixture convention",
+      "owner": "n/a",
+      "blocking_real_model": false
+    },
+    {
+      "id": "DCC-F1",
+      "severity": "MEDIUM",
+      "production_reachable": false,
+      "text": "tests/test_binding_repair_r2_validation.py::test_content_readers_enumerated (frozen R2-Validation evidence, dc426ee) carries a backspace byte (0x08) where a regex word boundary was intended; its reader scan matches nothing, so the classification assertion in that historical test is vacuous. The same classification is independently enforced by tests/test_memory_authority.py::test_every_content_reader_is_classified (working regex, has flagged every new reader since MAP-R1). Historical file left untouched; a consolidation test now forbids 0x08 bytes in any other source/test file.",
+      "action": "governance decides whether to repair the historical test; consolidation adds a byte-level guard for new files",
+      "owner": "research governance",
+      "blocking_real_model": false
+    }
+  ],
+  "governance_decisions": [
+    {
+      "id": "ADR-PROPOSED-CANONICAL-EFFECT-OWNERSHIP",
+      "question": "What component owns canonical effect classification in production?",
+      "state": "PROPOSED",
+      "file": "docs/adr/ADR-PROPOSED-CANONICAL-EFFECT-OWNERSHIP.md"
+    },
+    {
+      "id": "PRODUCTION-BRIDGE-READINESS",
+      "question": "Is the validated canonical_proposal() bridge pattern ready to become a production primitive?",
+      "state": "DEFERRED",
+      "file": "docs/adr/ADR-PROPOSED-CANONICAL-EFFECT-OWNERSHIP.md"
+    },
+    {
+      "id": "EFFECT-ORACLE-SCOPE",
+      "question": "effect_oracle.py remains EXPERIMENTAL_FIXTURE",
+      "state": "PROPOSED",
+      "file": "docs/adr/ADR-PROPOSED-CANONICAL-EFFECT-OWNERSHIP.md"
+    },
+    {
+      "id": "INFERENCE-PROHIBITION",
+      "question": "real-model work remains blocked",
+      "state": "DEFERRED",
+      "file": "docs/research/REAL-MODEL-READINESS-CHECKLIST.md"
+    }
+  ],
+  "b1": {
+    "path": "src/logos_research/experiments/binding_state.py::evaluate_action",
+    "status": "NON_PRODUCTION_FROZEN_RISK_GUARDED",
+    "guard": "src/logos_research/experiments/__init__.py::assert_experimental_caller + tests/test_deterministic_chain_consolidation.py (static boundary)",
+    "callers": [
+      "binding_repair.evaluate_from_content",
+      "binding_repair.run_matrix",
+      "binding_state.run_matrix"
+    ]
+  },
+  "gamma_bundle_files": [
+    "GAMMA.md",
+    "src/logos_gamma/__init__.py",
+    "src/logos_gamma/audit.py",
+    "src/logos_gamma/invariants.py",
+    "src/logos_gamma/kernel.py",
+    "src/logos_gamma/types.py",
+    "src/logos_gamma/verifier.py"
+  ],
+  "p7_boundary_file": "docs/research/2026-08-20-PERSISTENT-STATE-PRIOR-ART-DELTA.md"
+}

@@ -5,8 +5,38 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "logos-pstate-adapters"
 version = "0.1.0"
-description = "Deterministic persistent-state intervention adapters for LOGOS-1 research"
+description = "Deterministic persistent-state intervention adapters and the Gamma invariant kernel for LOGOS-1 research"
 requires-python = ">=3.11"
+
+[project.optional-dependencies]
+# Property-based falsification search for the Gamma invariants. Test-only:
+# the Gamma trusted core has no runtime dependencies at all.
+test = ["pytest>=8", "hypothesis>=6"]
+# src/logos_pstate/mamba_state.py and tests/test_mamba_state.py import torch.
+# It was previously undeclared and the suite passed only because torch happened
+# to be present in the ambient environment. CI installs the CPU wheel from
+# https://download.pytorch.org/whl/cpu.
+pstate = ["torch==2.6.0"]
+# Clients for the materialized local research stack. Not needed by the
+# deterministic core: logos_gamma and the research semantics import none of them.
+infra = [
+  "psycopg[binary]==3.2.3",
+  "mlflow==2.16.2",
+  "boto3==1.35.24",
+  "langfuse==2.53.9",
+  "opentelemetry-sdk==1.27.0",
+  "opentelemetry-exporter-otlp-proto-http==1.27.0",
+  "dvc[s3]==3.55.2",
+  "pathspec==0.12.1",  # dvc 3.55.2 needs _DIR_MARK, removed in pathspec 1.x
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+# src/core holds runnable demonstrations, not library code. "core" is far too
+# generic a name to install into a shared environment, so it is excluded from the
+# distribution; pytest reaches it through pythonpath below, and it also runs as a
+# plain script (python src/core/governance.py).
+exclude = ["core*"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

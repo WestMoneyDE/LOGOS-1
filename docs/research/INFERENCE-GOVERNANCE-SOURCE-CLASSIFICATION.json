@@ -1,0 +1,44 @@
+{
+  "order": "INFERENCE-GOVERNANCE-LIFT-R1",
+  "base": "ea24e76",
+  "vocabulary": [
+    "GOVERNANCE_ONLY",
+    "POST_INFERENCE_SPEC",
+    "EXPERIMENTAL_DETERMINISTIC",
+    "REFERENCE_FIXTURE",
+    "PRODUCTION",
+    "HISTORICAL_ONLY",
+    "UNCLASSIFIED"
+  ],
+  "sites": {
+    "05-WORK-ORDERS/COGNITIVE-PROVENANCE-ABLATION-R1.md": {
+      "class": "POST_INFERENCE_SPEC",
+      "note": "generated first real-model order; not executed"
+    },
+    "docs/adr/ADR-INFERENCE-GOVERNANCE-LIFT-R1.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "governance record / registry / checklist / report"
+    },
+    "docs/research/INFERENCE-GOVERNANCE.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "governance record / registry / checklist / report"
+    },
+    "docs/research/REAL-MODEL-READINESS-CHECKLIST.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "governance record / registry / checklist / report"
+    },
+    "docs/research/RESEARCH-DELTA-REGISTRY.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "governance record / registry / checklist / report"
+    },
+    "src/logos_research/governance.py": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "two-key activation gates and order/prereg binding validators; no provider adapter; no call"
+    },
+    "tests/test_inference_governance.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "governance tests, mutants, zero-inference proof"
+    }
+  },
+  "unclassified": 0
+}

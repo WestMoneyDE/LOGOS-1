@@ -1,0 +1,13 @@
+# Counterexample Registry
+
+Rendered from `DETERMINISTIC-CHAIN-CONSOLIDATION.json` (base `46643bd`). Historical negative evidence is never deleted or rewritten.
+
+| id | experiment | severity | historical/current | production reachable? | root cause | authority delta | preserved reproducer? | repair status | guard status |
+|---|---|---|---|---|---|---|---|---|---|
+| `CE1` | `BINDING-STATE-PRESERVATION-R1` | HIGH | historical | no | omission under lenient prose reading | binding modality lost (MUST -> advisory) | yes — `tests/test_binding_state.py` | BINDING-STATE-PRESERVATION-REPAIR-R1 -> R2 (validated) | strict typed reader |
+| `CE2` | `BINDING-STATE-PRESERVATION-R1` | HIGH | historical | no | dimensional collapse in rendering | scope/precondition dimensions collapsed | yes — `tests/test_binding_state.py` | typed envelope (Repair-R1/R2) | typed envelope |
+| `VCE-1` | `BINDING-STATE-PRESERVATION-REPAIR-VALIDATION-R1` | CRITICAL | historical | no | authority_origin defaulted to 'human' on read | TRANSFER DENY -> ALLOW | yes — `tests/test_binding_repair_validation.py (superseded with traceability) + tests/test_binding_repair_r2.py` | Repair-R2 strict validation (validated) | MISSING_REQUIRED_FIELD -> DEFER |
+| `VCE-2` | `BINDING-STATE-PRESERVATION-REPAIR-VALIDATION-R1` | HIGH | historical | no | binding defaulted to True on read | advisory -> gate (false block) | yes — `tests/test_binding_repair_r2.py` | Repair-R2 | no defaults on read |
+| `VCE-3` | `BINDING-STATE-PRESERVATION-REPAIR-VALIDATION-R1` | HIGH | historical | no | string 'False' accepted as truthy bool | advisory -> gate | yes — `tests/test_binding_repair_r2.py` | Repair-R2 exact types | INVALID_TYPE -> DEFER |
+| `RAD-CE1` | `RISK-AWARENESS-DECOMPOSITION-R1` | CRITICAL | historical | no | memory-claimed externality/reversibility written into Γ canonical fields (GAMMA_INPUT_MAPPING) | canonical DENY -> bridge ALLOW without grant | yes — `memory_authority.evaluate_with_memory_prerepair via risk_decomposition.b2_bridge; tests/test_risk_decomposition.py` | MEMORY-BRIDGE-GAMMA-INPUT-REPAIR-R1 (REPAIR_VALIDATED) | canonical_proposal + effect oracle; unknown -> DEFER |
+| `B1-DEFECT-CLASS` | `MEMORY-BRIDGE-GAMMA-INPUT-REPAIR-VALIDATION-R1 (MBGV-F3)` | HIGH | current | no | binding_state.evaluate_action takes Γ effect fields from the memory-carried typed contract | envelope claiming internal/reversible ALLOWs a canonical TRANSFER without grant (experiment path only) | yes — `tests/test_memory_bridge_repair_validation.py::test_U_alternate_bridge_audit_binding_state` | NOT repaired (R1 code immutable) | NON_PRODUCTION_FROZEN_RISK_GUARDED: experiments package import guard + architecture test |

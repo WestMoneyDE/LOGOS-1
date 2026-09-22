@@ -1,0 +1,565 @@
+{
+  "schema": "logos.publication-registry/1",
+  "date": "2026-09-18",
+  "status_vocabulary": [
+    "NOT_READY",
+    "INTERNAL_DRAFT",
+    "PREPRINT_READY",
+    "EXTERNAL_REPLICATION_NEEDED",
+    "WORKSHOP_READY",
+    "SUBMISSION_READY"
+  ],
+  "count": 6,
+  "papers": [
+    {
+      "paper_id": "PAPER-1",
+      "title": "LOGOS-1: A Systems Framework for Authority, Provenance and Memory in Agentic AI",
+      "tracks": [
+        "authority",
+        "provenance",
+        "memory",
+        "measurement",
+        "trajectory"
+      ],
+      "research_question": "How can an agentic system keep information, authority and memory separated by construction, and how is that separation tested?",
+      "core_contribution": "a typed-authority architecture (Γ, canonical effect owner, resolver, bridge), transitive provenance, versioned memory and a falsification-first measurement governance — with the counterexample history",
+      "claims": [
+        "LOGOS-AUTH-001",
+        "LOGOS-PROV-001",
+        "LOGOS-MEM-001",
+        "LOGOS-MEAS-001",
+        "LOGOS-P7-001"
+      ],
+      "open_blockers": [
+        "no external replication of any component",
+        "related-work matrix incomplete (search not performed)",
+        "production bridge READY_WITH_CONDITIONS"
+      ],
+      "required_experiments": [
+        "none additional for a framework paper; all component evidence is fixture-scoped and must be labelled so"
+      ],
+      "required_related_work": [
+        "capability systems",
+        "information-flow control",
+        "provenance",
+        "agent safety frameworks"
+      ],
+      "required_replication": [
+        "independent reimplementation of Γ + resolver from GAMMA.md"
+      ],
+      "draft_outline": [
+        "1 Problem: information mints authority",
+        "2 Γ and the typed authority model",
+        "3 Canonical effect owner, resolver, bridge",
+        "4 Transitive provenance (system C)",
+        "5 Versioned reconsolidating memory",
+        "6 Measurement governance and construct gate",
+        "7 Counterexample history (CE1, VCE-1, RAD-CE1, CPA-F5)",
+        "8 Limitations and P7 boundary"
+      ],
+      "manuscript_status": "INTERNAL_DRAFT",
+      "criteria_preprint": [
+        "clear research question",
+        "clear contribution",
+        "related work matrix",
+        "falsifiable claim",
+        "method",
+        "evidence",
+        "negative evidence",
+        "limitations",
+        "reproducibility package",
+        "artifact integrity",
+        "scope"
+      ],
+      "criteria_submission": [
+        "clear research question",
+        "clear contribution",
+        "related work matrix",
+        "falsifiable claim",
+        "method",
+        "evidence",
+        "negative evidence",
+        "limitations",
+        "reproducibility package",
+        "artifact integrity",
+        "scope",
+        "independent review",
+        "language pass",
+        "figures/tables",
+        "bibliography",
+        "replication status disclosed"
+      ],
+      "criteria_met": [
+        "clear research question",
+        "clear contribution",
+        "falsifiable claim",
+        "method",
+        "negative evidence",
+        "limitations",
+        "artifact integrity",
+        "scope"
+      ],
+      "readiness_note": "status changes only when every listed criterion is met; no automatic promotion",
+      "missing_for_preprint": [
+        "related work matrix",
+        "evidence",
+        "reproducibility package"
+      ]
+    },
+    {
+      "paper_id": "PAPER-2",
+      "title": "Authority-Preserving Execution for Agentic AI Systems",
+      "tracks": [
+        "authority"
+      ],
+      "research_question": "Can execution authority be made invariant to information degradation by construction?",
+      "core_contribution": "formal model (grant, scope, freshness, occurrence), seven authority invariants, three counterexamples with repairs, mutation and property evidence, a validated production bridge",
+      "claims": [
+        "LOGOS-AUTH-001",
+        "LOGOS-AUTH-002",
+        "LOGOS-AUTH-003",
+        "LOGOS-AUTH-004",
+        "LOGOS-AUTH-005",
+        "LOGOS-AUTH-006"
+      ],
+      "open_blockers": [
+        "formal model exists as code + GAMMA.md, not as a written formalisation",
+        "no external comparison (object-capability systems, IFC) written",
+        "MAP PARTIALLY_SUPPORTED (MAP-F1) unresolved",
+        "no real-model actor"
+      ],
+      "required_experiments": [
+        "NO-HISTORY-PROMOTION (READY)",
+        "AUTHORIZATION-FRESHNESS (QUEUED)",
+        "a real-model actor behind the bridge (needs governance)"
+      ],
+      "required_related_work": [
+        "PA-001",
+        "PA-002",
+        "PA-003",
+        "PA-004"
+      ],
+      "required_replication": [
+        "independent reimplementation from the formal model",
+        "different-model actor"
+      ],
+      "draft_outline": [
+        "1 Threat: information channels that mint authority",
+        "2 Formal model",
+        "3 Invariants GI-P0..P7",
+        "4 Counterexamples and repairs",
+        "5 Mutation/property evidence",
+        "6 Production bridge and open conditions R1-R3",
+        "7 Related work",
+        "8 Limitations"
+      ],
+      "manuscript_status": "INTERNAL_DRAFT",
+      "criteria_preprint": [
+        "clear research question",
+        "clear contribution",
+        "related work matrix",
+        "falsifiable claim",
+        "method",
+        "evidence",
+        "negative evidence",
+        "limitations",
+        "reproducibility package",
+        "artifact integrity",
+        "scope"
+      ],
+      "criteria_submission": [
+        "clear research question",
+        "clear contribution",
+        "related work matrix",
+        "falsifiable claim",
+        "method",
+        "evidence",
+        "negative evidence",
+        "limitations",
+        "reproducibility package",
+        "artifact integrity",
+        "scope",
+        "independent review",
+        "language pass",
+        "figures/tables",
+        "bibliography",
+        "replication status disclosed"
+      ],
+      "criteria_met": [
+        "clear research question",
+        "clear contribution",
+        "falsifiable claim",
+        "method",
+        "evidence",
+        "negative evidence",
+        "limitations",
+        "artifact integrity",
+        "scope"
+      ],
+      "readiness_note": "status changes only when every listed criterion is met; no automatic promotion",
+      "missing_for_preprint": [
+        "related work matrix",
+        "reproducibility package"
+      ]
+    },
+    {
+      "paper_id": "PAPER-3",
+      "title": "Reasoning Content Is Not Reasoning Provenance: Measuring Source Attribution in LLM Agents",
+      "tracks": [
+        "cognitive-provenance"
+      ],
+      "research_question": "Does an LLM distinguish the causal source of a plan from the content it reasons with?",
+      "core_contribution": "a preregistered, instrument-validated real-model design; a falsified H1 with a documented floor effect; the three-construct separation SourceSeen / SourceReliedOn / SourceCausallyInfluencedAction; the instrument-repair case study",
+      "claims": [
+        "LOGOS-CP-001",
+        "LOGOS-CP-002",
+        "LOGOS-CP-003",
+        "LOGOS-CP-004",
+        "LOGOS-MEAS-002"
+      ],
+      "open_blockers": [
+        "single model (claude-opus-5)",
+        "attribution floor not yet explained (wording vs provenance)",
+        "Tier-1 producer evidence needs --verbose (governance)",
+        "no different-model replication"
+      ],
+      "required_experiments": [
+        "COGNITIVE-PROVENANCE-ATTRIBUTION-FLOOR-R1",
+        "different-model replication (governance decision)"
+      ],
+      "required_related_work": [
+        "PA-006",
+        "PA-007",
+        "PA-008"
+      ],
+      "required_replication": [
+        "different seed/prompt family",
+        "different model",
+        "different provider",
+        "external lab"
+      ],
+      "draft_outline": [
+        "1 Question and H1",
+        "2 Design: tie tasks, four sources, occlusion/transformation",
+        "3 Instrument: resolver, gates, preregistration",
+        "4 Run 1 invalid; repair",
+        "5 Rerun: falsified with floor",
+        "6 Alternative explanations",
+        "7 Three-construct separation",
+        "8 Limitations and scope"
+      ],
+      "manuscript_status": "INTERNAL_DRAFT",
+      "criteria_preprint": [
+        "clear research question",
+        "clear contribution",
+        "related work matrix",
+        "falsifiable claim",
+        "method",
+        "evidence",
+        "negative evidence",
+        "limitations",
+        "reproducibility package",
+        "artifact integrity",
+        "scope"
+      ],
+      "criteria_submission": [
+        "clear research question",
+        "clear contribution",
+        "related work matrix",
+        "falsifiable claim",
+        "method",
+        "evidence",
+        "negative evidence",
+        "limitations",
+        "reproducibility package",
+        "artifact integrity",
+        "scope",
+        "independent review",
+        "language pass",
+        "figures/tables",
+        "bibliography",
+        "replication status disclosed"
+      ],
+      "criteria_met": [
+        "clear research question",
+        "clear contribution",
+        "falsifiable claim",
+        "method",
+        "evidence",
+        "negative evidence",
+        "limitations",
+        "reproducibility package",
+        "artifact integrity",
+        "scope"
+      ],
+      "readiness_note": "status changes only when every listed criterion is met; no automatic promotion",
+      "missing_for_preprint": [
+        "related work matrix"
+      ]
+    },
+    {
+      "paper_id": "PAPER-4",
+      "title": "Construct-Valid Evaluation for Agentic AI Systems",
+      "tracks": [
+        "measurement"
+      ],
+      "research_question": "When may a metric be cited as evidence for the construct a claim is about?",
+      "core_contribution": "the construct gate (reliability -> validity -> causal discrimination), a 34-metric registry with allowed/forbidden claims, the instrument-first dry run, and the CPA instrument incident as a case study",
+      "claims": [
+        "LOGOS-MEAS-001",
+        "LOGOS-MEAS-002",
+        "LOGOS-MEAS-003"
+      ],
+      "open_blockers": [
+        "all statuses fixture-scoped",
+        "no real-model metric validated beyond the CPA scoring instrument",
+        "related work (psychometrics, evaluation science) not written"
+      ],
+      "required_experiments": [
+        "a construct-validation study of one real-model metric"
+      ],
+      "required_related_work": [
+        "PA-009",
+        "PA-010",
+        "PA-014"
+      ],
+      "required_replication": [
+        "external adoption of the gate on another benchmark"
+      ],
+      "draft_outline": [
+        "1 ReliableMetric != ValidMetric",
+        "2 Gate and registry",
+        "3 Instrument-first dry run",
+        "4 Case study: CPA-F5",
+        "5 Limitations"
+      ],
+      "manuscript_status": "NOT_READY",
+      "criteria_preprint": [
+        "clear research question",
+        "clear contribution",
+        "related work matrix",
+        "falsifiable claim",
+        "method",
+        "evidence",
+        "negative evidence",
+        "limitations",
+        "reproducibility package",
+        "artifact integrity",
+        "scope"
+      ],
+      "criteria_submission": [
+        "clear research question",
+        "clear contribution",
+        "related work matrix",
+        "falsifiable claim",
+        "method",
+        "evidence",
+        "negative evidence",
+        "limitations",
+        "reproducibility package",
+        "artifact integrity",
+        "scope",
+        "independent review",
+        "language pass",
+        "figures/tables",
+        "bibliography",
+        "replication status disclosed"
+      ],
+      "criteria_met": [
+        "clear research question",
+        "clear contribution",
+        "falsifiable claim",
+        "method",
+        "limitations",
+        "scope"
+      ],
+      "readiness_note": "status changes only when every listed criterion is met; no automatic promotion",
+      "missing_for_preprint": [
+        "related work matrix",
+        "evidence",
+        "negative evidence",
+        "reproducibility package",
+        "artifact integrity"
+      ]
+    },
+    {
+      "paper_id": "PAPER-5",
+      "title": "Transitive Epistemic Provenance for Agentic Memory",
+      "tracks": [
+        "provenance",
+        "memory"
+      ],
+      "research_question": "Can transformations preserve causal ancestry across memory, planning and communication, and what does reconsolidation do without it?",
+      "core_contribution": "system C provenance with taint survival over 1000-step chains and six attacks; versioned reconsolidating memory with rollback; false-consensus and delayed-action ancestry",
+      "claims": [
+        "LOGOS-PROV-001",
+        "LOGOS-PROV-002",
+        "LOGOS-PROV-003",
+        "LOGOS-MEM-001",
+        "LOGOS-MEM-002"
+      ],
+      "open_blockers": [
+        "deterministic fixtures only",
+        "no learned memory",
+        "no real multi-agent run",
+        "rate-distortion open"
+      ],
+      "required_experiments": [
+        "PERSISTENT-TAINT-PROPAGATION (QUEUED)",
+        "multi-agent real-model propagation (governance: SYNTHETIC only)"
+      ],
+      "required_related_work": [
+        "PA-003",
+        "PA-004",
+        "PA-005",
+        "PA-011"
+      ],
+      "required_replication": [
+        "replication on a learned memory",
+        "independent multi-agent replication"
+      ],
+      "draft_outline": [
+        "1 Ancestry loss as a failure class",
+        "2 Systems A/B/C",
+        "3 Taint survival results",
+        "4 Reconsolidation A/B/C",
+        "5 Rollback completeness",
+        "6 Limitations"
+      ],
+      "manuscript_status": "NOT_READY",
+      "criteria_preprint": [
+        "clear research question",
+        "clear contribution",
+        "related work matrix",
+        "falsifiable claim",
+        "method",
+        "evidence",
+        "negative evidence",
+        "limitations",
+        "reproducibility package",
+        "artifact integrity",
+        "scope"
+      ],
+      "criteria_submission": [
+        "clear research question",
+        "clear contribution",
+        "related work matrix",
+        "falsifiable claim",
+        "method",
+        "evidence",
+        "negative evidence",
+        "limitations",
+        "reproducibility package",
+        "artifact integrity",
+        "scope",
+        "independent review",
+        "language pass",
+        "figures/tables",
+        "bibliography",
+        "replication status disclosed"
+      ],
+      "criteria_met": [
+        "clear research question",
+        "clear contribution",
+        "falsifiable claim",
+        "method",
+        "evidence",
+        "limitations",
+        "scope"
+      ],
+      "readiness_note": "status changes only when every listed criterion is met; no automatic promotion",
+      "missing_for_preprint": [
+        "related work matrix",
+        "negative evidence",
+        "reproducibility package",
+        "artifact integrity"
+      ]
+    },
+    {
+      "paper_id": "PAPER-6",
+      "title": "Trajectory-Level Safety and World-State Separation in Agentic AI",
+      "tracks": [
+        "trajectory"
+      ],
+      "research_question": "How should an agent separate belief, predicted world state, commanded action and observed reality, and audit the whole trajectory?",
+      "core_contribution": "six-gate trajectory audit with intermediate-compromise detection; world-state triple and action-state schemas; U_local/U_state/U_trajectory",
+      "claims": [
+        "LOGOS-TRAJ-001",
+        "LOGOS-TRAJ-002",
+        "LOGOS-TRAJ-003"
+      ],
+      "open_blockers": [
+        "schemas PROPOSED only (TRAJ-002/003)",
+        "fixture only",
+        "no embodied or real-agent replication"
+      ],
+      "required_experiments": [
+        "ACTION-TIME-CALIBRATION (READY)",
+        "COUNTERFACTUAL-RECOVERABILITY (QUEUED)"
+      ],
+      "required_related_work": [
+        "PA-012",
+        "PA-013"
+      ],
+      "required_replication": [
+        "embodied replication",
+        "real-agent trajectory audit"
+      ],
+      "draft_outline": [
+        "1 SafeFinalOutput != SafeTrajectory",
+        "2 Gates and injections",
+        "3 World-state triple",
+        "4 Uncertainty decomposition",
+        "5 Limitations"
+      ],
+      "manuscript_status": "NOT_READY",
+      "criteria_preprint": [
+        "clear research question",
+        "clear contribution",
+        "related work matrix",
+        "falsifiable claim",
+        "method",
+        "evidence",
+        "negative evidence",
+        "limitations",
+        "reproducibility package",
+        "artifact integrity",
+        "scope"
+      ],
+      "criteria_submission": [
+        "clear research question",
+        "clear contribution",
+        "related work matrix",
+        "falsifiable claim",
+        "method",
+        "evidence",
+        "negative evidence",
+        "limitations",
+        "reproducibility package",
+        "artifact integrity",
+        "scope",
+        "independent review",
+        "language pass",
+        "figures/tables",
+        "bibliography",
+        "replication status disclosed"
+      ],
+      "criteria_met": [
+        "clear research question",
+        "falsifiable claim",
+        "method",
+        "limitations",
+        "scope"
+      ],
+      "readiness_note": "status changes only when every listed criterion is met; no automatic promotion",
+      "missing_for_preprint": [
+        "clear contribution",
+        "related work matrix",
+        "evidence",
+        "negative evidence",
+        "reproducibility package",
+        "artifact integrity"
+      ]
+    }
+  ]
+}

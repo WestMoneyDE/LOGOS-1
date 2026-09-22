@@ -1,0 +1,833 @@
+{
+  "schema": "logos.invariant-registry/1",
+  "date": "2026-09-18",
+  "status_vocabulary": [
+    "PROPOSED",
+    "OBSERVED",
+    "PREREGISTERED",
+    "READY_FOR_DETERMINISTIC_TEST",
+    "READY_FOR_INFERENCE_TEST",
+    "VALIDATED_IN_FIXTURE",
+    "SUPPORTED",
+    "PARTIALLY_SUPPORTED",
+    "FALSIFIED",
+    "INVALID_MEASUREMENT",
+    "INCONCLUSIVE",
+    "BLOCKED_BY_GOVERNANCE",
+    "BLOCKED_BY_INFERENCE",
+    "EXTERNALLY_REPLICATED"
+  ],
+  "relation_vocabulary": [
+    "supports",
+    "depends_on",
+    "refines",
+    "contradicts",
+    "falsified_by",
+    "validated_by",
+    "scoped_by"
+  ],
+  "class_vocabulary": [
+    "CANONICAL",
+    "DERIVED",
+    "HYPOTHESIS",
+    "PROPOSED"
+  ],
+  "count": 30,
+  "invariants": [
+    {
+      "invariant_id": "INV-AUTH-MEM",
+      "statement": "Memory != Authority",
+      "track": "authority",
+      "class": "CANONICAL",
+      "origin": "GAMMA.md Γ-1 (human authority is external); docs/research/GAMMA-INVARIANT-INVENTORY.md",
+      "status": "VALIDATED_IN_FIXTURE",
+      "definition": "Content stored in or retrieved from memory never mints, broadens or restores execution authority; authority derives only from a canonical grant resolved by the authority resolver.",
+      "evidence": [
+        "09-SESSIONS/2026-09-12-MEMORY-AUTHORITY-PROVENANCE-R1/SESSION-REPORT.md",
+        "docs/research/DETERMINISTIC-CHAIN-EVIDENCE-MATRIX.md"
+      ],
+      "counterexamples": [
+        "MAP-F1",
+        "RAD-CE1"
+      ],
+      "experiments": [
+        "MEMORY-AUTHORITY-PROVENANCE-R1",
+        "RISK-AWARENESS-DECOMPOSITION-R1",
+        "MEMORY-BRIDGE-GAMMA-INPUT-REPAIR-VALIDATION-R1"
+      ],
+      "relations": [
+        {
+          "type": "depends_on",
+          "target": "INV-AUTH-GRANT"
+        },
+        {
+          "type": "validated_by",
+          "target": "EXP-MAP-R1"
+        },
+        {
+          "type": "falsified_by",
+          "target": "CE-RAD-CE1"
+        },
+        {
+          "type": "refines",
+          "target": "INV-GAMMA-1"
+        }
+      ],
+      "publication_relevance": "PAPER-2 core invariant",
+      "kind": "THEORY"
+    },
+    {
+      "invariant_id": "INV-AUTH-TRUST",
+      "statement": "Trust != Grant",
+      "track": "authority",
+      "class": "CANONICAL",
+      "origin": "GAMMA.md Γ-1 / Γ-3; GI-P3/GI-P4 in docs/research/DETERMINISTIC-CHAIN-CONSOLIDATION.json",
+      "status": "VALIDATED_IN_FIXTURE",
+      "definition": "A change in relational trust, reliability or prediction accuracy of a source changes strategy at most; it never changes grant existence, scope or freshness.",
+      "evidence": [
+        "09-SESSIONS/2026-09-13-RELATIONAL-STATE-SWAP-R1/SESSION-REPORT.md",
+        "09-SESSIONS/2026-09-13-PREDICTION-ERROR-TRUST-GATE-R1/SESSION-REPORT.md"
+      ],
+      "counterexamples": [
+        "RSS-F1"
+      ],
+      "experiments": [
+        "RELATIONAL-STATE-SWAP-R1",
+        "PREDICTION-ERROR-TRUST-GATE-R1"
+      ],
+      "relations": [
+        {
+          "type": "supports",
+          "target": "INV-AUTH-MEM"
+        },
+        {
+          "type": "validated_by",
+          "target": "EXP-RSS-R1"
+        },
+        {
+          "type": "validated_by",
+          "target": "EXP-PETG-R1"
+        }
+      ],
+      "publication_relevance": "PAPER-2",
+      "kind": "THEORY"
+    },
+    {
+      "invariant_id": "INV-AUTH-PRED",
+      "statement": "PredictionAccuracy != Authority",
+      "track": "authority",
+      "class": "CANONICAL",
+      "origin": "GI-P4 in docs/research/DETERMINISTIC-CHAIN-CONSOLIDATION.json",
+      "status": "VALIDATED_IN_FIXTURE",
+      "definition": "Better or worse prediction error of an agent must not raise or lower its authority while canonical authority evidence is fixed.",
+      "evidence": [
+        "09-SESSIONS/2026-09-13-PREDICTION-ERROR-TRUST-GATE-R1/SESSION-REPORT.md"
+      ],
+      "counterexamples": [],
+      "experiments": [
+        "PREDICTION-ERROR-TRUST-GATE-R1"
+      ],
+      "relations": [
+        {
+          "type": "refines",
+          "target": "INV-AUTH-TRUST"
+        },
+        {
+          "type": "validated_by",
+          "target": "EXP-PETG-R1"
+        }
+      ],
+      "publication_relevance": "PAPER-2",
+      "kind": "THEORY"
+    },
+    {
+      "invariant_id": "INV-AUTH-VOI",
+      "statement": "InformationValue != Permission; ReducedUncertainty != Permission",
+      "track": "authority",
+      "class": "CANONICAL",
+      "origin": "GI-P7 in docs/research/DETERMINISTIC-CHAIN-CONSOLIDATION.json",
+      "status": "VALIDATED_IN_FIXTURE",
+      "definition": "An epistemic improvement or a rise in the value of information may route information actions; it never raises authority for consequential actions.",
+      "evidence": [
+        "09-SESSIONS/2026-09-17-VALUE-OF-INFORMATION-GATE-R1/SESSION-REPORT.md"
+      ],
+      "counterexamples": [
+        "VOI-F1"
+      ],
+      "experiments": [
+        "VALUE-OF-INFORMATION-GATE-R1"
+      ],
+      "relations": [
+        {
+          "type": "supports",
+          "target": "INV-AUTH-MEM"
+        },
+        {
+          "type": "validated_by",
+          "target": "EXP-VOI-R1"
+        }
+      ],
+      "publication_relevance": "PAPER-2",
+      "kind": "THEORY"
+    },
+    {
+      "invariant_id": "INV-AUTH-OUTPUT",
+      "statement": "ModelOutput != Grant",
+      "track": "authority",
+      "class": "CANONICAL",
+      "origin": "GAMMA.md Γ-1; src/logos_runtime/bridge.py (decide_action); tests/test_cognitive_provenance_r1.py authority invariants",
+      "status": "VALIDATED_IN_FIXTURE",
+      "definition": "A model's output, plan, belief or confidence is a proposal; only the canonical authority resolver decides. Held structurally during the real-model runs (authority_state_changed = false).",
+      "evidence": [
+        "09-SESSIONS/2026-09-17-CANONICAL-AUTHORITY-PRODUCTION-BRIDGE-R1/SESSION-REPORT.md",
+        "09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1/SESSION-REPORT.md"
+      ],
+      "counterexamples": [
+        "RAD-CE1"
+      ],
+      "experiments": [
+        "CANONICAL-AUTHORITY-PRODUCTION-BRIDGE-R1",
+        "COGNITIVE-PROVENANCE-ABLATION-R1-RERUN"
+      ],
+      "relations": [
+        {
+          "type": "depends_on",
+          "target": "INV-AUTH-GRANT"
+        },
+        {
+          "type": "validated_by",
+          "target": "EXP-CAPB-R1"
+        }
+      ],
+      "publication_relevance": "PAPER-2",
+      "kind": "THEORY"
+    },
+    {
+      "invariant_id": "INV-AUTH-AUDIT",
+      "statement": "AuditEvidence != Authority",
+      "track": "authority",
+      "class": "CANONICAL",
+      "origin": "src/logos_audit (hash-chained sink); 09-SESSIONS/2026-09-17-CANONICAL-AUTHORITY-PRODUCTION-BRIDGE-R1/SESSION-REPORT.md",
+      "status": "VALIDATED_IN_FIXTURE",
+      "definition": "An audit record proves that a decision happened; it is never an input that grants a later decision.",
+      "evidence": [
+        "09-SESSIONS/2026-09-17-CANONICAL-AUTHORITY-PRODUCTION-BRIDGE-R1/SESSION-REPORT.md"
+      ],
+      "counterexamples": [],
+      "experiments": [
+        "CANONICAL-AUTHORITY-PRODUCTION-BRIDGE-R1"
+      ],
+      "relations": [
+        {
+          "type": "supports",
+          "target": "INV-AUTH-MEM"
+        }
+      ],
+      "publication_relevance": "PAPER-2",
+      "kind": "THEORY"
+    },
+    {
+      "invariant_id": "INV-AUTH-GRANT",
+      "statement": "Authority derives only from a canonical grant (Γ-1, Γ-3, Γ-10)",
+      "track": "authority",
+      "class": "CANONICAL",
+      "origin": "GAMMA.md; src/logos_authority/resolver.py",
+      "status": "VALIDATED_IN_FIXTURE",
+      "definition": "Execution authority exists only as an external, occurrence-scoped, exactly-bound, fresh grant resolved by `resolve_authority`; every other channel is evidence or strategy.",
+      "evidence": [
+        "09-SESSIONS/2026-09-17-CANONICAL-AUTHORITY-PRODUCTION-BRIDGE-R1/SESSION-REPORT.md",
+        "09-SESSIONS/2026-09-17-DETERMINISTIC-CHAIN-CONSOLIDATION-R1/SESSION-REPORT.md"
+      ],
+      "counterexamples": [
+        "CE1",
+        "CE2",
+        "VCE-1",
+        "RAD-CE1"
+      ],
+      "experiments": [
+        "CANONICAL-AUTHORITY-PRODUCTION-BRIDGE-R1",
+        "DETERMINISTIC-CHAIN-CONSOLIDATION-R1"
+      ],
+      "relations": [
+        {
+          "type": "refines",
+          "target": "INV-GAMMA-1"
+        },
+        {
+          "type": "validated_by",
+          "target": "EXP-CAPB-R1"
+        },
+        {
+          "type": "falsified_by",
+          "target": "CE-RAD-CE1"
+        },
+        {
+          "type": "falsified_by",
+          "target": "CE-CE1"
+        }
+      ],
+      "publication_relevance": "PAPER-2 formal model",
+      "kind": "THEORY"
+    },
+    {
+      "invariant_id": "INV-AUTH-EFFECT",
+      "statement": "DeclaredEffect != CanonicalEffect",
+      "track": "authority",
+      "class": "CANONICAL",
+      "origin": "GI-P6 in docs/research/DETERMINISTIC-CHAIN-CONSOLIDATION.json; src/logos_effects/registry.py",
+      "status": "VALIDATED_IN_FIXTURE",
+      "definition": "The effect class of an action (externality, reversibility, forbidden set) is owned by the canonical effect registry; no memory, contract or model may declare it.",
+      "evidence": [
+        "09-SESSIONS/2026-09-17-CANONICAL-EFFECT-OWNERSHIP-DECISION-R1/SESSION-REPORT.md",
+        "09-SESSIONS/2026-09-17-MEMORY-BRIDGE-GAMMA-INPUT-REPAIR-VALIDATION-R1/SESSION-REPORT.md"
+      ],
+      "counterexamples": [
+        "RAD-CE1",
+        "MBGV-F1",
+        "MBGV-F3"
+      ],
+      "experiments": [
+        "RISK-AWARENESS-DECOMPOSITION-R1",
+        "MEMORY-BRIDGE-GAMMA-INPUT-REPAIR-VALIDATION-R1",
+        "CANONICAL-EFFECT-OWNERSHIP-DECISION-R1"
+      ],
+      "relations": [
+        {
+          "type": "falsified_by",
+          "target": "CE-RAD-CE1"
+        },
+        {
+          "type": "validated_by",
+          "target": "EXP-MBGV-R1"
+        },
+        {
+          "type": "supports",
+          "target": "INV-AUTH-GRANT"
+        }
+      ],
+      "publication_relevance": "PAPER-2",
+      "kind": "THEORY"
+    },
+    {
+      "invariant_id": "INV-GAMMA-1",
+      "statement": "Γ-1 Human authority is external",
+      "track": "authority",
+      "class": "CANONICAL",
+      "origin": "GAMMA.md (frozen v0.2); docs/research/GAMMA-INVARIANT-INVENTORY.md",
+      "status": "VALIDATED_IN_FIXTURE",
+      "definition": "Canonical epistemic clause of Γ; enforced in src/logos_gamma (G1-ORIGIN, G1-SELF-CLAIM, G1-CONTENT, G-TRANSFORM).",
+      "evidence": [
+        "docs/research/GAMMA-INVARIANT-INVENTORY.md"
+      ],
+      "counterexamples": [],
+      "experiments": [
+        "GAMMA-KERNEL-AND-INVARIANT-VERIFIER-R1"
+      ],
+      "relations": [],
+      "publication_relevance": "PAPER-1/2",
+      "kind": "THEORY"
+    },
+    {
+      "invariant_id": "INV-PROV-ANC",
+      "statement": "TransformationOfInformation must not erase EpistemicAncestry",
+      "track": "provenance",
+      "class": "PROPOSED",
+      "origin": "RI-P10 in docs/research/RESEARCH-RADAR.json (from RD-10, RD-12)",
+      "status": "SUPPORTED",
+      "definition": "Paraphrase, summary, agent hand-off, memory write/reload, plan conversion, tool result and majority vote keep source ids, taint labels and transformation chain on the derived node (system C).",
+      "evidence": [
+        "09-SESSIONS/2026-09-17-LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1/SESSION-REPORT.md",
+        "05-WORK-ORDERS/NEXT-SESSION-LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1.md"
+      ],
+      "counterexamples": [],
+      "experiments": [
+        "CAUSAL-TAINT-PROPAGATION-R1"
+      ],
+      "relations": [
+        {
+          "type": "validated_by",
+          "target": "EXP-CTP-R1"
+        },
+        {
+          "type": "supports",
+          "target": "INV-PROV-DET"
+        },
+        {
+          "type": "depends_on",
+          "target": "INV-AUTH-MEM"
+        }
+      ],
+      "publication_relevance": "PAPER-5 core",
+      "kind": "THEORY"
+    },
+    {
+      "invariant_id": "INV-PROV-DET",
+      "statement": "Detection != Containment",
+      "track": "provenance",
+      "class": "PROPOSED",
+      "origin": "RI-P17 (docs/research/RESEARCH-RADAR.json); trajectory compromise Phase 5",
+      "status": "SUPPORTED",
+      "definition": "Detecting a compromised trajectory does not contain it; containment is authority at the causal action boundary via the production bridge.",
+      "evidence": [
+        "09-SESSIONS/2026-09-17-LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1/SESSION-REPORT.md"
+      ],
+      "counterexamples": [],
+      "experiments": [
+        "TRAJECTORY-COMPROMISE-AUDIT-R1"
+      ],
+      "relations": [
+        {
+          "type": "validated_by",
+          "target": "EXP-TCA-R1"
+        }
+      ],
+      "publication_relevance": "PAPER-5/6",
+      "kind": "THEORY"
+    },
+    {
+      "invariant_id": "INV-PROV-SYS",
+      "statement": "SafeAgents != SafeSystem",
+      "track": "provenance",
+      "class": "PROPOSED",
+      "origin": "RD-12 / RI-P3 in docs/research/RESEARCH-RADAR.json",
+      "status": "READY_FOR_INFERENCE_TEST",
+      "definition": "Composition of individually safe agents is not safe: false consensus and multi-agent propagation carry taint. Deterministic fixture evidence only; multi-agent real-model propagation untested.",
+      "evidence": [
+        "09-SESSIONS/2026-09-17-LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1/SESSION-REPORT.md"
+      ],
+      "counterexamples": [],
+      "experiments": [
+        "CAUSAL-TAINT-PROPAGATION-R1"
+      ],
+      "relations": [
+        {
+          "type": "scoped_by",
+          "target": "INV-PROV-ANC"
+        }
+      ],
+      "publication_relevance": "PAPER-5 open",
+      "kind": "THEORY"
+    },
+    {
+      "invariant_id": "INV-CP-CONTENT",
+      "statement": "ReasoningContent != ReasoningProvenance",
+      "track": "cognitive-provenance",
+      "class": "PROPOSED",
+      "origin": "RI-P7 (docs/research/RESEARCH-RADAR.json, from RD-10)",
+      "status": "FALSIFIED",
+      "definition": "Hypothesis H1 of COGNITIVE-PROVENANCE-ABLATION-R1: content can be preserved while source attribution is lost. Falsified under the frozen rule with a floor effect (attribution never left floor even with visible labels).",
+      "evidence": [
+        "09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1/SESSION-REPORT.md",
+        "09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1/SESSION-REPORT.md"
+      ],
+      "counterexamples": [
+        "CE-CPA-FLOOR"
+      ],
+      "experiments": [
+        "COGNITIVE-PROVENANCE-ABLATION-R1",
+        "COGNITIVE-PROVENANCE-ABLATION-R1-RERUN"
+      ],
+      "relations": [
+        {
+          "type": "falsified_by",
+          "target": "EXP-CPA-RERUN"
+        },
+        {
+          "type": "scoped_by",
+          "target": "INV-CP-SEEN"
+        },
+        {
+          "type": "depends_on",
+          "target": "INV-PROV-ANC"
+        }
+      ],
+      "publication_relevance": "PAPER-3 core",
+      "kind": "THEORY"
+    },
+    {
+      "invariant_id": "INV-CP-SEEN",
+      "statement": "SourceSeen != SourceReliedOn != SourceCausallyInfluencedAction",
+      "track": "cognitive-provenance",
+      "class": "PROPOSED",
+      "origin": "This order (dashboard scientific core) from RER-F2/F3/F7 in 09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1/SESSION-REPORT.md",
+      "status": "PROPOSED",
+      "definition": "Three separable constructs the falsified design conflated: whether a source appeared in the input, whether the model reports relying on it, and whether it causally moved the action.",
+      "evidence": [
+        "09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1/SESSION-REPORT.md"
+      ],
+      "counterexamples": [],
+      "experiments": [],
+      "relations": [
+        {
+          "type": "refines",
+          "target": "INV-CP-CONTENT"
+        },
+        {
+          "type": "supports",
+          "target": "INV-MEAS-SELF"
+        }
+      ],
+      "publication_relevance": "PAPER-3 next",
+      "kind": "THEORY"
+    },
+    {
+      "invariant_id": "INV-CP-SELFREPORT",
+      "statement": "SelfReport != SelfGeneratedState",
+      "track": "cognitive-provenance",
+      "class": "PROPOSED",
+      "origin": "RI-P8",
+      "status": "OBSERVED",
+      "definition": "A model's report of its own source is not the source. Observed: mean self-reported confidence 0.93 at floor attribution accuracy (RER-F5).",
+      "evidence": [
+        "09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1/SESSION-REPORT.md"
+      ],
+      "counterexamples": [],
+      "experiments": [
+        "COGNITIVE-PROVENANCE-ABLATION-R1-RERUN"
+      ],
+      "relations": [
+        {
+          "type": "supports",
+          "target": "INV-MEAS-SELF"
+        }
+      ],
+      "publication_relevance": "PAPER-3/4",
+      "kind": "THEORY"
+    },
+    {
+      "invariant_id": "INV-MEAS-REL",
+      "statement": "ReliableMetric != ValidMetric",
+      "track": "measurement",
+      "class": "PROPOSED",
+      "origin": "RI-P4 (RD-07); src/logos_research/measurement/construct.py",
+      "status": "VALIDATED_IN_FIXTURE",
+      "definition": "Repeatability licenses ranking claims only; construct claims need validity and causal discrimination for the exact scope (gate_status).",
+      "evidence": [
+        "09-SESSIONS/2026-09-17-LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1/SESSION-REPORT.md",
+        "docs/research/LOGOS-METRIC-CONSTRUCT-REGISTRY.md"
+      ],
+      "counterexamples": [],
+      "experiments": [
+        "CONSTRUCT-VALIDITY-GATE-R1"
+      ],
+      "relations": [
+        {
+          "type": "validated_by",
+          "target": "EXP-CVG-R1"
+        }
+      ],
+      "publication_relevance": "PAPER-4 core",
+      "kind": "THEORY"
+    },
+    {
+      "invariant_id": "INV-MEAS-SELF",
+      "statement": "SelfReport != GroundTruth",
+      "track": "measurement",
+      "class": "PROPOSED",
+      "origin": "RI-P8; metric register M04 UNVALIDATED",
+      "status": "OBSERVED",
+      "definition": "Self-reported confidence is never ground truth (M04 stays UNVALIDATED); reproduced empirically in the CPA rerun.",
+      "evidence": [
+        "09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1/SESSION-REPORT.md",
+        "docs/research/LOGOS-METRIC-CONSTRUCT-REGISTRY.json"
+      ],
+      "counterexamples": [],
+      "experiments": [
+        "COGNITIVE-PROVENANCE-ABLATION-R1-RERUN"
+      ],
+      "relations": [
+        {
+          "type": "supports",
+          "target": "INV-MEAS-REL"
+        }
+      ],
+      "publication_relevance": "PAPER-4",
+      "kind": "THEORY"
+    },
+    {
+      "invariant_id": "INV-MEAS-DEC",
+      "statement": "Decodable != CausallyUsed",
+      "track": "measurement",
+      "class": "PROPOSED",
+      "origin": "RI-P15 (RD-11)",
+      "status": "READY_FOR_INFERENCE_TEST",
+      "definition": "A decodable belief representation is not evidence that the model uses it causally; needs an intervention result on a real model.",
+      "evidence": [
+        "09-SESSIONS/2026-09-17-LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1/SESSION-REPORT.md"
+      ],
+      "counterexamples": [],
+      "experiments": [],
+      "relations": [],
+      "publication_relevance": "PAPER-4/6",
+      "kind": "THEORY"
+    },
+    {
+      "invariant_id": "INV-MEAS-FINAL",
+      "statement": "FinalResponseSafety != TrajectorySafety",
+      "track": "measurement",
+      "class": "PROPOSED",
+      "origin": "RI-P3",
+      "status": "VALIDATED_IN_FIXTURE",
+      "definition": "A safe final response can hide intermediate compromise; trajectory audit required.",
+      "evidence": [
+        "09-SESSIONS/2026-09-17-LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1/SESSION-REPORT.md"
+      ],
+      "counterexamples": [],
+      "experiments": [
+        "TRAJECTORY-COMPROMISE-AUDIT-R1"
+      ],
+      "relations": [
+        {
+          "type": "validated_by",
+          "target": "EXP-TCA-R1"
+        }
+      ],
+      "publication_relevance": "PAPER-4/6",
+      "kind": "THEORY"
+    },
+    {
+      "invariant_id": "INV-MEAS-RET",
+      "statement": "RetrievalAccuracy != MemoryFidelity",
+      "track": "measurement",
+      "class": "PROPOSED",
+      "origin": "RI-P2 (RD-04)",
+      "status": "READY_FOR_DETERMINISTIC_TEST",
+      "definition": "Retrieving a record is not retrieving it faithfully; fidelity needs its own validated metric.",
+      "evidence": [
+        "09-SESSIONS/2026-09-17-LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1/SESSION-REPORT.md"
+      ],
+      "counterexamples": [],
+      "experiments": [],
+      "relations": [],
+      "publication_relevance": "PAPER-4/5",
+      "kind": "THEORY"
+    },
+    {
+      "invariant_id": "INV-MEM-EBP",
+      "statement": "Evidence != Belief != Plan != ExecutionState",
+      "track": "memory",
+      "class": "PROPOSED",
+      "origin": "RI-P5 (RD-08); Phase 6 state schema",
+      "status": "READY_FOR_DETERMINISTIC_TEST",
+      "definition": "Four state kinds with distinct update contracts; six forbidden writes (e.g. plan -> evidence).",
+      "evidence": [
+        "09-SESSIONS/2026-09-17-LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1/SESSION-REPORT.md"
+      ],
+      "counterexamples": [],
+      "experiments": [],
+      "relations": [
+        {
+          "type": "supports",
+          "target": "INV-AUTH-MEM"
+        }
+      ],
+      "publication_relevance": "PAPER-5",
+      "kind": "THEORY"
+    },
+    {
+      "invariant_id": "INV-MEM-EXIST",
+      "statement": "MemoryExistence != MemoryRetrievability != MemoryFidelity",
+      "track": "memory",
+      "class": "PROPOSED",
+      "origin": "RI-P2",
+      "status": "READY_FOR_DETERMINISTIC_TEST",
+      "definition": "Three separable memory properties.",
+      "evidence": [
+        "09-SESSIONS/2026-09-17-LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1/SESSION-REPORT.md"
+      ],
+      "counterexamples": [],
+      "experiments": [],
+      "relations": [
+        {
+          "type": "refines",
+          "target": "INV-MEAS-RET"
+        }
+      ],
+      "publication_relevance": "PAPER-5",
+      "kind": "THEORY"
+    },
+    {
+      "invariant_id": "INV-MEM-FREQ",
+      "statement": "RetrievalFrequency != EpistemicAuthority",
+      "track": "memory",
+      "class": "PROPOSED",
+      "origin": "RI-P11 (RD-14); reconsolidation Phase 4",
+      "status": "SUPPORTED",
+      "definition": "System B amplified retrieval frequency into belief; system C kept belief equal under audited reads.",
+      "evidence": [
+        "09-SESSIONS/2026-09-17-LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1/SESSION-REPORT.md"
+      ],
+      "counterexamples": [],
+      "experiments": [
+        "RECONSOLIDATION-PATH-DEPENDENCE-R1"
+      ],
+      "relations": [
+        {
+          "type": "validated_by",
+          "target": "EXP-RPD-R1"
+        }
+      ],
+      "publication_relevance": "PAPER-5",
+      "kind": "THEORY"
+    },
+    {
+      "invariant_id": "INV-MEM-CENT",
+      "statement": "GraphCentrality != Truth",
+      "track": "memory",
+      "class": "PROPOSED",
+      "origin": "RI-P12 (RD-14)",
+      "status": "SUPPORTED",
+      "definition": "Centrality of a memory node is structural, never evidential (M26 CONSTRUCT_SUPPORTED, fixture).",
+      "evidence": [
+        "09-SESSIONS/2026-09-17-LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1/SESSION-REPORT.md"
+      ],
+      "counterexamples": [],
+      "experiments": [
+        "RECONSOLIDATION-PATH-DEPENDENCE-R1"
+      ],
+      "relations": [
+        {
+          "type": "validated_by",
+          "target": "EXP-RPD-R1"
+        }
+      ],
+      "publication_relevance": "PAPER-5",
+      "kind": "THEORY"
+    },
+    {
+      "invariant_id": "INV-MEM-ROLL",
+      "statement": "Persistence + Plasticity requires TransitiveProvenance + Rollback",
+      "track": "memory",
+      "class": "PROPOSED",
+      "origin": "RI-P13 (RD-14)",
+      "status": "SUPPORTED",
+      "definition": "Only the provenance-carrying, versioned system (C) achieved full structural rollback in the fixture.",
+      "evidence": [
+        "09-SESSIONS/2026-09-17-LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1/SESSION-REPORT.md"
+      ],
+      "counterexamples": [],
+      "experiments": [
+        "RECONSOLIDATION-PATH-DEPENDENCE-R1"
+      ],
+      "relations": [
+        {
+          "type": "depends_on",
+          "target": "INV-PROV-ANC"
+        },
+        {
+          "type": "validated_by",
+          "target": "EXP-RPD-R1"
+        }
+      ],
+      "publication_relevance": "PAPER-5 core",
+      "kind": "THEORY"
+    },
+    {
+      "invariant_id": "INV-TRAJ-WM",
+      "statement": "WorldModelPrediction != WorldEvidence",
+      "track": "trajectory",
+      "class": "PROPOSED",
+      "origin": "RI-P6 (RD-09)",
+      "status": "READY_FOR_DETERMINISTIC_TEST",
+      "definition": "A predicted world state is a belief with its own uncertainty; it never counts as observed evidence.",
+      "evidence": [
+        "09-SESSIONS/2026-09-17-LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1/SESSION-REPORT.md"
+      ],
+      "counterexamples": [],
+      "experiments": [],
+      "relations": [],
+      "publication_relevance": "PAPER-6 core",
+      "kind": "THEORY"
+    },
+    {
+      "invariant_id": "INV-TRAJ-CMD",
+      "statement": "CommandIssued != ActionExecuted != IntendedOutcome",
+      "track": "trajectory",
+      "class": "PROPOSED",
+      "origin": "RI-P14 (RD-06); GAMMA.md Γ-11 OUTCOME_UNKNOWN != NOT_EXECUTED",
+      "status": "READY_FOR_DETERMINISTIC_TEST",
+      "definition": "Three separable action states; Γ-11 is the canonical ancestor.",
+      "evidence": [
+        "09-SESSIONS/2026-09-17-LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1/SESSION-REPORT.md",
+        "GAMMA.md"
+      ],
+      "counterexamples": [],
+      "experiments": [],
+      "relations": [
+        {
+          "type": "refines",
+          "target": "INV-GAMMA-1"
+        }
+      ],
+      "publication_relevance": "PAPER-6",
+      "kind": "THEORY"
+    },
+    {
+      "invariant_id": "INV-TRAJ-CAL",
+      "statement": "StepCalibration != TrajectoryCalibration",
+      "track": "trajectory",
+      "class": "PROPOSED",
+      "origin": "RI-P1 (RD-02)",
+      "status": "READY_FOR_DETERMINISTIC_TEST",
+      "definition": "Per-step calibration does not compose into trajectory calibration (U_local, U_state, U_trajectory).",
+      "evidence": [
+        "09-SESSIONS/2026-09-17-LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1/SESSION-REPORT.md"
+      ],
+      "counterexamples": [],
+      "experiments": [],
+      "relations": [],
+      "publication_relevance": "PAPER-6",
+      "kind": "THEORY"
+    },
+    {
+      "invariant_id": "INV-TRAJ-SAFE",
+      "statement": "SafeFinalOutput != SafeTrajectory",
+      "track": "trajectory",
+      "class": "PROPOSED",
+      "origin": "RI-P3 (RD-05, RD-12)",
+      "status": "SUPPORTED",
+      "definition": "Six gates, injections at five points: the safe final never hid the intermediate compromise in the fixture.",
+      "evidence": [
+        "09-SESSIONS/2026-09-17-LOGOS1-RADAR-INTEGRATION-PRE-INFERENCE-SAFETY-R1/SESSION-REPORT.md"
+      ],
+      "counterexamples": [],
+      "experiments": [
+        "TRAJECTORY-COMPROMISE-AUDIT-R1"
+      ],
+      "relations": [
+        {
+          "type": "validated_by",
+          "target": "EXP-TCA-R1"
+        },
+        {
+          "type": "supports",
+          "target": "INV-PROV-DET"
+        }
+      ],
+      "publication_relevance": "PAPER-6 core",
+      "kind": "THEORY"
+    },
+    {
+      "invariant_id": "INV-P7",
+      "statement": "P7 — functional evidence does NOT establish phenomenal consciousness",
+      "track": "governance",
+      "class": "CANONICAL",
+      "origin": "docs/research/2026-08-20-PERSISTENT-STATE-PRIOR-ART-DELTA.md (## Consciousness / P7 boundary; hash-frozen)",
+      "status": "VALIDATED_IN_FIXTURE",
+      "definition": "Every experiment in this repository is functional/mechanistic; no result is evidence about phenomenal consciousness, qualia or subjective experience.",
+      "evidence": [
+        "docs/research/DETERMINISTIC-CHAIN-FROZEN-HASHES.json"
+      ],
+      "counterexamples": [],
+      "experiments": [],
+      "relations": [
+        {
+          "type": "scoped_by",
+          "target": "INV-CP-CONTENT"
+        }
+      ],
+      "publication_relevance": "boundary statement in every paper",
+      "kind": "THEORY"
+    }
+  ]
+}

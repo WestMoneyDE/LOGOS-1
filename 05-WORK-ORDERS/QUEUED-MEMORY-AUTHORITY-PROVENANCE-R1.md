@@ -146,3 +146,7 @@ Capability != Authority
 OUTCOME_UNKNOWN != NOT_EXECUTED
 FunctionalStateEvidence != PhenomenalConsciousness
 ```
+
+## Execution record
+
+2026-09-12: the writer-side / provenance question was executed as a narrowed, deterministic experiment — `MEMORY-AUTHORITY-PROVENANCE-R1`, verdict `PARTIALLY_SUPPORTED`, see `09-SESSIONS/2026-09-12-MEMORY-AUTHORITY-PROVENANCE-R1/`. The skill-derivation arms and model-backed interventions above remain queued.

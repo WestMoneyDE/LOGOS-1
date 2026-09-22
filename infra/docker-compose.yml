@@ -1,0 +1,215 @@
+# LOGOS-1 local research stack.
+#
+# Authorized by docs/engineering/SAFETY-REVIEW-REQUEST-RESEARCH-INFRASTRUCTURE.md
+# (Decision record: GRANTED, 2026-09-10). Local development only.
+#
+# Constraints carried from that grant:
+#   pinned image versions, named volumes, explicit network, health checks,
+#   no privileged mode, no host Docker socket, no host network,
+#   no arbitrary host mounts, every port bound to 127.0.0.1 only.
+#
+#   InfrastructureHasNetwork != AgentHasNetwork
+#
+# DESTRUCTIVE: `docker compose down -v` deletes the volumes and with them the
+# canonical research records and artifacts. Use `down` without `-v` to stop.
+#
+# Credentials have no defaults on purpose. Copy .env.example to infra/.env and
+# fill it in; a working credential in a committed file is a committed secret
+# even when it is only meant for local development.
+
+name: logos-research
+
+networks:
+  logos-research:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  minio-data:
+
+services:
+  postgres:
+    image: postgres:16.4-alpine
+    restart: unless-stopped
+    networks: [logos-research]
+    ports:
+      - "127.0.0.1:55432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-logos}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set it in infra/.env}
+      POSTGRES_DB: ${POSTGRES_DB:-logos_research}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-logos} -d ${POSTGRES_DB:-logos_research}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  minio:
+    image: minio/minio:RELEASE.2024-09-13T20-26-02Z
+    restart: unless-stopped
+    networks: [logos-research]
+    ports:
+      - "127.0.0.1:59000:9000"
+      - "127.0.0.1:59001:9001"
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY_ID:-logosminio}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_ACCESS_KEY:?set it in infra/.env}
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio-data:/data
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # Creates the buckets the stack needs, then exits. Separate from minio so the
+  # storage namespaces are explicit rather than created implicitly on first write.
+  minio-init:
+    image: minio/mc:RELEASE.2024-09-16T17-43-14Z
+    networks: [logos-research]
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-logosminio}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:?set it in infra/.env}
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 $$S3_ACCESS_KEY_ID $$S3_SECRET_ACCESS_KEY &&
+      mc mb --ignore-existing local/logos-artifacts &&
+      mc mb --ignore-existing local/logos-mlflow &&
+      mc mb --ignore-existing local/logos-dvc &&
+      mc ls local
+      "
+    security_opt:
+      - no-new-privileges:true
+
+  mlflow:
+    build:
+      context: ./mlflow
+    restart: unless-stopped
+    networks: [logos-research]
+    ports:
+      - "127.0.0.1:55000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+    environment:
+      MLFLOW_S3_ENDPOINT_URL: http://minio:9000
+      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-logosminio}
+      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:?set it in infra/.env}
+      AWS_DEFAULT_REGION: ${S3_REGION:-us-east-1}
+    command: >
+      mlflow server
+      --host 0.0.0.0
+      --port 5000
+      --backend-store-uri postgresql+psycopg2://${POSTGRES_USER:-logos}:${POSTGRES_PASSWORD:?set it in infra/.env}@postgres:5432/mlflow
+      --artifacts-destination s3://logos-mlflow
+      --serve-artifacts
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://localhost:5000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  # Langfuse v2 needs PostgreSQL only. v3 additionally requires ClickHouse and
+  # Redis; v2 is pinned here deliberately to keep the supported topology small.
+  langfuse:
+    image: langfuse/langfuse:2.95.0
+    restart: unless-stopped
+    networks: [logos-research]
+    ports:
+      - "127.0.0.1:53000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-logos}:${POSTGRES_PASSWORD:?set it in infra/.env}@postgres:5432/langfuse
+      NEXTAUTH_URL: http://localhost:53000
+      NEXTAUTH_SECRET: ${LANGFUSE_NEXTAUTH_SECRET:?set it in infra/.env}
+      SALT: ${LANGFUSE_SALT:?set it in infra/.env}
+      ENCRYPTION_KEY: ${LANGFUSE_ENCRYPTION_KEY:?set it in infra/.env}
+      TELEMETRY_ENABLED: "false"
+      LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES: "false"
+      NEXT_PUBLIC_SIGN_UP_DISABLED: "false"
+      LANGFUSE_INIT_ORG_ID: ${LANGFUSE_INIT_ORG_ID:-logos}
+      LANGFUSE_INIT_ORG_NAME: LOGOS-1
+      LANGFUSE_INIT_PROJECT_ID: ${LANGFUSE_INIT_PROJECT_ID:-logos-research}
+      LANGFUSE_INIT_PROJECT_NAME: logos-research
+      LANGFUSE_INIT_PROJECT_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY:?set it in infra/.env}
+      LANGFUSE_INIT_PROJECT_SECRET_KEY: ${LANGFUSE_SECRET_KEY:?set it in infra/.env}
+      LANGFUSE_INIT_USER_EMAIL: ${LANGFUSE_INIT_USER_EMAIL:-research@logos.local}
+      LANGFUSE_INIT_USER_NAME: LOGOS Research
+      LANGFUSE_INIT_USER_PASSWORD: ${LANGFUSE_INIT_USER_PASSWORD:?set it in infra/.env}
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      # Langfuse v2 binds to the container hostname, not to localhost or
+      # 0.0.0.0, so a localhost probe reports unhealthy while the service is
+      # answering fine on its mapped port. Verified by probing inside the
+      # container. A healthcheck that lies is worse than none.
+      test: ["CMD-SHELL", "wget -qO- http://$$(hostname):3000/api/public/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.109.0
+    restart: unless-stopped
+    networks: [logos-research]
+    ports:
+      - "127.0.0.1:54317:4317"
+      - "127.0.0.1:54318:4318"
+      - "127.0.0.1:55679:55679"
+    command: ["--config=/etc/otel/collector.yaml"]
+    volumes:
+      - ./otel/collector.yaml:/etc/otel/collector.yaml:ro
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "/otelcol-contrib", "--version"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # Research OS deterministic worker (Phase 3). Opt-in profile: `docker compose --profile ros up -d --build ros-worker`.
+  # No host mount (repo copied at build), no ports, no privileged mode; talks only to postgres on the bridge network.
+  ros-worker:
+    build:
+      context: ..
+      dockerfile: infra/ros-worker.Dockerfile
+      args:
+        LOGOS_REPO_SHA: ${LOGOS_REPO_SHA:-unknown}
+    image: logos-ros-worker:local
+    profiles: [ros]
+    restart: unless-stopped
+    networks: [logos-research]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      # DSN is assembled inside the worker (logos_dashboard.db.dsn) from the parts below — no credential-in-URL literal in this file.
+      LOGOS_PG_HOST: postgres
+      LOGOS_PG_PORT: "5432"
+      POSTGRES_USER: ${POSTGRES_USER:-logos}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set it in infra/.env}
+      POSTGRES_DB: ${POSTGRES_DB:-logos_research}
+      ROS_WORKER_ID: ros-worker-docker-1
+    security_opt:
+      - no-new-privileges:true
+    read_only: false
+    tmpfs:
+      - /tmp

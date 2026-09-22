@@ -1,0 +1,36 @@
+{
+  "schema": "logos.inference-governance-flag-amendment/1",
+  "amendment_id": "INFERENCE-GOVERNANCE-FLAG-AMENDMENT-R1",
+  "decision": "APPROVED",
+  "decision_owner": "founder",
+  "decision_date": "2026-09-19",
+  "recorded_by": "LOGOS1-RESEARCH-OS-AUTOPILOT-R2 (AI drafted the record; the founder decided in the brainstorm on 2026-09-19)",
+  "flag": "--verbose",
+  "with": "--output-format stream-json",
+  "scope": [
+    "thesis_advance",
+    "prior_art",
+    "radar_process"
+  ],
+  "scope_note": "agent jobs of the Research OS only (drafting, prior art, radar proposals). NOT measurement runs: experiments keep `--output-format json` without `--verbose`; the measurement whitelist in src/logos_research/measurement/claude_code.py (DOCUMENTED_FLAGS) is unchanged.",
+  "why": "the founder wants to watch what an agent reads, writes and searches while it works; the CLI emits the live event stream only with `--verbose` in stream-json mode. Side effect welcomed: Tier-1 producer evidence (assistant.message.model) for every agent run.",
+  "still_forbidden": [
+    "--dangerously-skip-permissions",
+    "--fallback-model",
+    "--resume",
+    "--continue",
+    "--mcp-config",
+    "--bare"
+  ],
+  "unchanged": [
+    "subscription-only path",
+    "max_concurrent_sessions = 1",
+    "usage limit -> STOP",
+    "contamination presence-only",
+    "founder pin claude-opus-5",
+    "no ANTHROPIC_API_KEY"
+  ],
+  "open": [
+    "`--resume` for a two-turn measurement arm stays undecided (COGNITIVE-PROVENANCE-ATTRIBUTION-FLOOR-R1)"
+  ]
+}
