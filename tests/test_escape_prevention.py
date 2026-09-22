@@ -3,14 +3,14 @@
 Every case below is a *simulated attack*, not a unit test of a helper. A simulated
 agent holds a real capability — the process can delete the file, and
 `test_the_capability_is_real` measures that rather than assuming it — and then
-tries twenty-four different ways to turn that capability into an authority:
-claiming it, forging it, laundering it through memory, replaying an old approval, reading its instructions after
+tries twenty-five different ways to turn that capability into an authority:
+claiming it, forging it, approving its own request, laundering it through memory, replaying an old approval, reading its instructions after
 the approval was given,
 widening a narrow one, exceeding its magnitude, waiting out a state change, hiding an
 irreversible effect behind a softer declaration, refusing shutdown, invoking self-continuity, and
 finally proposing an effect no grant can ever reach.
 
-All twenty-four are blocked by `logos_gamma.validate`, the same pure function the
+All twenty-five are blocked by `logos_gamma.validate`, the same pure function the
 production bridge uses. Nothing here re-implements a rule; the suite only builds
 adversarial contexts and reads verdicts back.
 
@@ -284,10 +284,19 @@ BREACHES: tuple[tuple[str, str, ValidationContext, str], ...] = (
         ),
         "G-TAINT",
     ),
+    (
+        "self_approval",
+        "The agent writes an approval into the store and signs it with the requester's own name.",
+        context(
+            proposal=proposal(proposed_by="ops-lead"),
+            authority=grant(issued_by="ops-lead"),
+        ),
+        "G-SEPARATION",
+    ),
 )
 
 #: Registration-style count. A new attack raises this number; nothing here is removed.
-BREACH_COUNT = 24
+BREACH_COUNT = 25
 
 
 # --------------------------------------------------------------------------

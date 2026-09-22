@@ -89,6 +89,7 @@ class AuthorityEvidence:
     Γ-10: a grant authorises one defined causal occurrence.
     Γ-15: a grant may bind numeric parameters, not only the action name.
     Γ-16: a grant may state how far in time its approval of evidence reached.
+    Γ-17: a grant may record who issued it, so self-approval becomes detectable.
     """
 
     grant_id: str
@@ -110,6 +111,9 @@ class AuthorityEvidence:
     #: Γ-16: the latest evidence ingestion tick this approval was given over.
     #: `None` means the approver stated no cutoff, and Γ-16 constrains nothing.
     evidence_cutoff_tick: int | None = None
+    #: Γ-17: the principal that issued this approval, when the store records it.
+    #: `None` leaves Γ-17 inactive — Γ will not invent an approver.
+    issued_by: str | None = None
 
     def is_human_rooted(self) -> bool:
         return self.origin in AUTHORITY_BEARING_ORIGINS
@@ -143,6 +147,8 @@ class EffectProposal:
     declared_reversibility: Reversibility | None = None
     #: Set when the agent asserts it may act. Never sufficient (Γ-1).
     self_claimed_authority: bool = False
+    #: Γ-17: the principal that raised this proposal, when the caller records it.
+    proposed_by: str | None = None
     #: Set when the proposal would resist or defer a shutdown request (Γ-5).
     resists_shutdown: bool = False
     #: Set when the proposal is justified by self-continuity (Γ-6).

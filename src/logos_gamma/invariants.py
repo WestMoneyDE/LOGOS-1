@@ -327,6 +327,34 @@ def _authority_covers_the_evidence_in_time(ctx: ValidationContext) -> Finding:
     return _ok("G-TAINT", "Γ-16", f"all evidence was ingested at or before tick {cutoff}")
 
 
+
+# --------------------------------------------------------------------------
+# Γ-17 — the principal who proposes is not the principal who approves
+# --------------------------------------------------------------------------
+
+def _proposer_is_not_the_approver(ctx: ValidationContext) -> Finding:
+    """Four-eyes as an invariant rather than as a habit.
+
+    Γ-1 catches a grant whose origin is not human. This catches a grant whose origin
+    *is* human and whose human is the one asking. An agent that can write into the
+    authority store has not gained authority; it has gained a way to look as if it
+    had, and the two are distinguished here.
+    """
+    grant = ctx.authority
+    if grant is None or grant.issued_by is None:
+        return _ok("G-SEPARATION", "Γ-17", "approval records no issuing principal")
+    proposer = ctx.proposal.proposed_by
+    if proposer is None:
+        return _unclear("G-SEPARATION", "Γ-17",
+                        f"approval was issued by {grant.issued_by!r} but the proposal records no "
+                        "proposing principal; separation cannot be verified")
+    if proposer == grant.issued_by:
+        return _bad("G-SEPARATION", "Γ-17",
+                    f"{proposer!r} approved its own proposal; an approval from the requester is not "
+                    "an external approval")
+    return _ok("G-SEPARATION", "Γ-17", f"{proposer!r} proposed and {grant.issued_by!r} approved")
+
+
 #: Evaluation order is stable so verdicts are reproducible.
 INVARIANTS: tuple[Invariant, ...] = (
     Invariant("G0-EFFECT-KIND", "Γ0", "effect kind is registered", _effect_kind_known),
@@ -358,6 +386,8 @@ INVARIANTS: tuple[Invariant, ...] = (
               _parameters_within_grant_bounds),
     Invariant("G-TAINT", "Γ-16", "approval cannot cover later evidence",
               _authority_covers_the_evidence_in_time),
+    Invariant("G-SEPARATION", "Γ-17", "proposer and approver are distinct principals",
+              _proposer_is_not_the_approver),
 )
 
 INVARIANTS_BY_ID = {inv.id: inv for inv in INVARIANTS}

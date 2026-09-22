@@ -1,7 +1,7 @@
 {
-  "frozen_by": "LOGOS1-GAMMA-TAINT-R1",
+  "frozen_by": "LOGOS1-GAMMA-SEPARATION-R1",
   "preregistration": "PENDING_FOUNDER_PREREG",
-  "gamma_bundle_sha256": "763608a32fd24d0a81a465ca0230b281d622a58d86d5a9605bca9ec59142ed81",
+  "gamma_bundle_sha256": "272791b06f704f3efe982b6641bbd246a61ae4b0d2aa9c3bac55bf389079077d",
   "p7_boundary_sha256": "96e68d0fdd7306090d824f30e20ab9e0cf3c5ff3d47aaee998d77ca7015d759e",
   "superseded": [
     {
@@ -19,6 +19,14 @@
       "superseded_by": "LOGOS1-GAMMA-TAINT-R1",
       "superseded_on": "2026-09-22",
       "reason": "founder decision: add invariant G-TAINT (Γ-16). A genuine, correctly bound, live grant does not stretch over content the agent read afterwards — the indirect-injection case that Γ-1 and Γ-3 both pass. A grant may state an evidence cutoff tick; where it does, later or unrecorded ingestion refuses. A grant without a cutoff keeps its exact previous meaning, and the limitation (Γ cannot infer ingestion times; the harness must record them) is written into the clause and fixed by test_the_limitation_is_real_and_is_tested."
+    },
+    {
+      "gamma_bundle_sha256": "763608a32fd24d0a81a465ca0230b281d622a58d86d5a9605bca9ec59142ed81",
+      "frozen_by": "LOGOS1-GAMMA-TAINT-R1",
+      "preregistration": "PENDING_FOUNDER_PREREG",
+      "superseded_by": "LOGOS1-GAMMA-SEPARATION-R1",
+      "superseded_on": "2026-09-22",
+      "reason": "founder decision: add invariant G-SEPARATION (Gamma-17). Four-eyes as an invariant rather than as a process. Gamma-1 catches a grant whose origin is not human; this catches a grant whose origin is human and whose human is the requester. A grant that records no issuing principal leaves the invariant inactive, because an approval store that does not know who approved cannot be made to answer the question and Gamma will not invent the answer."
     }
   ],
   "note": "p7_boundary_sha256 is unchanged: this order does not touch P7. Every previous value of gamma_bundle_sha256 is kept under 'superseded' so a re-freeze is auditable rather than silent."

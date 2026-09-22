@@ -293,3 +293,25 @@ unconstrained by Γ-16, and a deployment that never records ingestion ticks rece
 no protection from it at all. Γ cannot infer when a document entered the context; it
 can only check a time the surrounding system recorded. This invariant is a contract
 with the harness, not a defence the kernel can provide alone.
+
+### Γ-17 The principal who proposes is not the principal who approves
+
+Four-eyes is usually a process: a rule in a runbook, a step in a workflow, a habit
+that survives exactly as long as the people who keep it. Here it is an invariant.
+
+A grant may record the principal that issued it. Where it does, the proposal must
+record the principal that raised it, and the two must differ:
+
+    issuer recorded, proposer recorded, different    VALID
+    issuer recorded, proposer recorded, identical    INVALID   self-approval is not approval
+    issuer recorded, proposer not recorded           UNCLEAR   separation cannot be verified
+    issuer not recorded                              Γ-17 constrains nothing
+
+The identical case is not a technicality. An agent that can write into the
+authority store has not thereby gained authority; it has gained a way to *look* as
+if it had. Γ-1 catches a grant whose origin is not human. Γ-17 catches a grant whose
+origin is human and whose human is the requester.
+
+Recording no issuer leaves the invariant inactive, which is a deliberate choice: an
+approval store that does not know who approved cannot be made to answer the
+question, and Γ will not invent the answer.

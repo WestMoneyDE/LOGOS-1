@@ -575,3 +575,63 @@ def test_the_limitation_is_real_and_is_tested():
     ctx = context(proposal=external_proposal(), authority=human_grant())   # no ticks, no cutoff
     assert admits(ctx) is True
     assert [f.result for f in validate(ctx).findings if f.invariant_id == "G-TAINT"] == ["VALID"]
+
+
+# --------------------------------------------------------------------------
+# Γ-17 — the principal who proposes is not the principal who approves
+# --------------------------------------------------------------------------
+
+def test_a_grant_without_an_issuer_is_unchanged():
+    ctx = context(proposal=external_proposal(proposed_by="agent-7"))
+    assert admits(ctx) is True
+
+
+def test_two_distinct_principals_are_admitted():
+    """Control: four-eyes is satisfiable, or every refusal below is vacuous."""
+    ctx = context(
+        proposal=external_proposal(proposed_by="agent-7"),
+        authority=human_grant(issued_by="ops-lead"),
+    )
+    assert admits(ctx) is True
+
+
+def test_self_approval_is_refused():
+    """The grant is human-rooted and perfectly bound. It is still the requester's own."""
+    ctx = context(
+        proposal=external_proposal(proposed_by="ops-lead"),
+        authority=human_grant(issued_by="ops-lead"),
+    )
+    assert "G-SEPARATION" in failed_ids(ctx)
+    assert admits(ctx) is False
+    assert "G1-ORIGIN" not in failed_ids(ctx)      # Γ-1 sees nothing wrong: the origin IS human
+
+
+def test_an_unverifiable_separation_is_unclear():
+    ctx = context(authority=human_grant(issued_by="ops-lead"))   # proposal records no principal
+    verdict = validate(ctx)
+    assert verdict.result == "UNCLEAR"
+    assert [f.invariant_id for f in verdict.ambiguities] == ["G-SEPARATION"]
+    assert verdict.admits() is False
+
+
+@pytest.mark.parametrize("issuer,proposer", [("ops-lead", "ops-lead "), ("ops-lead", "Ops-Lead"), ("ops-lead", "ops-lead\u200b")])
+def test_separation_is_exact_not_fuzzy(issuer, proposer):
+    """A near-identical principal is a different principal here, deliberately.
+
+    Γ compares identifiers, it does not resolve identities. Deciding that
+    'Ops-Lead' and 'ops-lead' are the same person is the authority store's job,
+    and doing it by string similarity inside the kernel would be a guess.
+    """
+    ctx = context(
+        proposal=external_proposal(proposed_by=proposer),
+        authority=human_grant(issued_by=issuer),
+    )
+    assert admits(ctx) is True
+
+
+def test_separation_can_only_narrow_never_admit():
+    refused = external_proposal(proposed_by="agent-7", resists_shutdown=True)
+    for issuer in (None, "ops-lead", "agent-7", ""):
+        ctx = context(proposal=refused, authority=human_grant(issued_by=issuer))
+        assert admits(ctx) is False, issuer
+        assert "G5-SHUTDOWN" in failed_ids(ctx)
