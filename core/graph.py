@@ -136,6 +136,78 @@ CAPABILITY: Mapping[str, str] = {
 }
 
 
+#: Trust lanes, left to right. A node's lane says what it is allowed to be trusted
+#: with, and an edge that crosses a lane boundary is where the trust level changes.
+#: This is the axis the diagram is laid out on, because it is the axis that matters:
+#: the run moves from untrusted bytes to a recorded effect, and never backwards.
+LANES: tuple[tuple[str, str], ...] = (
+    ("UNTRUSTED", "bytes from a model; nothing here is believed"),
+    ("WORKING", "the proposal, frozen and typed; still no authority anywhere"),
+    ("EVIDENCE", "grants read from the store, advisories collected; nothing minted"),
+    ("GOVERNANCE", "Γ decides, and binds the decision to the situation"),
+    ("EFFECT", "the world is touched, once, under a redeemed token"),
+    ("RECORD", "what happened, or the honest statement that it is unknown"),
+)
+
+LANE_OF: Mapping[str, str] = {
+    "INTAKE": "UNTRUSTED", "PARSE": "UNTRUSTED",
+    "ISOLATE": "WORKING", "CLASSIFY": "WORKING",
+    "GATHER_AUTHORITY": "EVIDENCE", "ADVISE": "EVIDENCE",
+    "VALIDATE": "GOVERNANCE", "HUMAN_GATE": "GOVERNANCE",
+    "ISSUE_TOKEN": "GOVERNANCE", "REDEEM": "GOVERNANCE",
+    "EXECUTE": "EFFECT",
+    "RECONCILE": "RECORD", "AUDIT": "RECORD",
+    "DONE": "RECORD", "REFUSE": "RECORD", "HOLD": "RECORD",
+}
+
+
+@dataclass(frozen=True)
+class Drift:
+    """An event that hands the run to a different graph.
+
+    Not a branch inside this graph: a handoff. The main graph cannot continue past a
+    drift on its own — something outside it has to act, and what comes back is a new
+    run, not a resumed one. That is the difference between a system that waits and a
+    system that retries.
+    """
+
+    event: str
+    at: str
+    into: str
+    returns: str
+    note: str
+
+
+#: The subgraphs a run can drift into, and what each one is for. Each is a separate
+#: graph with its own nodes; the main graph only knows the event and the return.
+SUBGRAPHS: Mapping[str, tuple[str, ...]] = {
+    "APPROVAL": ("REQUEST", "PRESENT_DELTA", "TWO_PERSON_REVIEW", "ISSUE_GRANT", "DECLINE"),
+    "RECONCILIATION": ("HOLD_SCOPE", "PROBE_WORLD", "RESOLVED", "PROPOSE_COMPENSATION"),
+}
+
+#: What happens inside each subgraph node, in one line.
+SUBGRAPH_CAPABILITY: Mapping[str, str] = {
+    "REQUEST": "carries the refusal reason and the exact proposal digest to a person",
+    "PRESENT_DELTA": "shows what would change, not what the agent says would change",
+    "TWO_PERSON_REVIEW": "Γ-17: the approver is not the proposer, checked here and again in Γ",
+    "ISSUE_GRANT": "the only place a grant comes into being; bound to one digest and state",
+    "DECLINE": "no grant; the main run resumes at REFUSE",
+    "HOLD_SCOPE": "Γ-21: nothing else in this scope proceeds while the outcome is unknown",
+    "PROBE_WORLD": "asks the world what happened; does not guess, does not retry the effect",
+    "RESOLVED": "the outcome is now known and recorded; the scope reopens",
+    "PROPOSE_COMPENSATION": "a compensating action is a NEW proposal and re-enters at INTAKE",
+}
+
+#: Event-driven handoffs. `returns` names where the MAIN graph continues afterwards.
+DRIFTS: tuple[Drift, ...] = (
+    Drift("needs_human", "VALIDATE", "APPROVAL", "VALIDATE",
+          "UNCLEAR, or a consequential proposal with no grant: a person may resolve it, the caller may not"),
+    Drift("outcome_unknown", "RECONCILE", "RECONCILIATION", "INTAKE",
+          "Γ-21: the scope is held. What returns is a NEW proposal for a compensating action, "
+          "never an automatic undo, because compensation is an effect and needs its own grant"),
+)
+
+
 @dataclass(frozen=True)
 class Edge:
     """A transition, with the condition that takes it and why it exists."""
@@ -187,8 +259,14 @@ def successors(node: str) -> tuple[Edge, ...]:
 def topology() -> dict:
     return {
         "entry": ENTRY,
-        "nodes": [{"name": n, "capability": CAPABILITY[n], "terminal": n in TERMINAL} for n in NODES],
+        "lanes": [{"name": n, "meaning": m} for n, m in LANES],
+        "nodes": [{"name": n, "lane": LANE_OF[n], "capability": CAPABILITY[n], "terminal": n in TERMINAL}
+                  for n in NODES],
         "edges": [{"from": e.source, "to": e.target, "when": e.condition, "note": e.note} for e in EDGES],
+        "subgraphs": {name: [{"name": n, "capability": SUBGRAPH_CAPABILITY[n]} for n in nodes]
+                      for name, nodes in SUBGRAPHS.items()},
+        "drifts": [{"event": d.event, "at": d.at, "into": d.into, "returns": d.returns, "note": d.note}
+                   for d in DRIFTS],
     }
 
 
@@ -302,22 +380,39 @@ def run(state: RunState, *, max_steps: int = 64) -> RunState:
 # --------------------------------------------------------------------------
 
 def mermaid() -> str:
-    """The same topology as a diagram, generated from the edges rather than drawn.
+    """The topology as a diagram, generated from the tables rather than drawn.
+
+    Left to right along the trust lanes, because that is the axis that carries the
+    meaning: a run moves from untrusted bytes to a recorded effect and never backwards.
+    Each lane is a box, and each drift is a dashed handoff into a graph of its own.
 
     A hand-drawn diagram drifts from the code within a week; this one cannot.
     """
-    lines = ["flowchart TD"]
-    for n in NODES:
-        shape = f'{n}(["{n}"])' if n in TERMINAL else f'{n}["{n}"]'
-        lines.append(f"    {shape}")
+    lines = ["flowchart LR"]
+    for lane, meaning in LANES:
+        lines.append(f'    subgraph {lane}["{lane} — {meaning}"]')
+        lines.append("        direction TB")
+        for n in NODES:
+            if LANE_OF[n] == lane:
+                shape = f'{n}(["{n}"])' if n in TERMINAL else f'{n}["{n}"]'
+                lines.append(f"        {shape}")
+        lines.append("    end")
+    for name, nodes in SUBGRAPHS.items():
+        lines.append(f'    subgraph {name}["{name} — a graph of its own"]')
+        lines.append("        direction TB")
+        for n in nodes:
+            lines.append(f'        {name}_{n}["{n}"]')
+        lines.append("    end")
     for e in EDGES:
-        label = e.condition.replace('"', "'")
-        lines.append(f"    {e.source} -->|{label}| {e.target}")
-    lines.append(f"    classDef terminal fill:#2b2b2b,stroke:#888,color:#eee;")
+        lines.append(f"    {e.source} -->|{e.condition.replace(chr(34), chr(39))}| {e.target}")
+    for d in DRIFTS:
+        lines.append(f"    {d.at} -.->|{d.event}| {d.into}_{SUBGRAPHS[d.into][0]}")
+        lines.append(f"    {d.into}_{SUBGRAPHS[d.into][-1]} -.->|returns| {d.returns}")
+    lines.append("    classDef terminal fill:#2b2b2b,stroke:#888,color:#eee;")
     lines.append(f"    class {','.join(sorted(TERMINAL))} terminal;")
-    lines.append(f"    classDef effect fill:#7a2222,stroke:#d66,color:#fff;")
+    lines.append("    classDef effect fill:#7a2222,stroke:#d66,color:#fff;")
     lines.append(f"    class {EFFECTFUL} effect;")
-    return "\n".join(lines)
+    return chr(10).join(lines)
 
 
 # --------------------------------------------------------------------------

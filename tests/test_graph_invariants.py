@@ -273,3 +273,122 @@ def _cycles() -> list[tuple[str, ...]]:
 
     walk(ENTRY, [ENTRY])
     return sorted(found)
+
+
+# --------------------------------------------------------------------------
+# Lanes: the axis the graph is laid out on, and the one that carries the meaning
+# --------------------------------------------------------------------------
+
+def test_every_node_is_in_exactly_one_lane():
+    from core.graph import LANES, LANE_OF
+
+    names = [n for n, _ in LANES]
+    assert set(LANE_OF) == set(NODES)
+    assert len(set(LANE_OF.values()) - set(names)) == 0
+    assert len(names) == len(set(names))
+
+
+def test_a_run_never_moves_backwards_through_the_lanes():
+    """The trust level only ever advances, except for the one human loop.
+
+    An edge that moves a run back to a less-trusted lane would mean data that had been
+    validated re-entering a stage that treats it as untrusted, or worse, the reverse.
+    The single exception is HUMAN_GATE -> VALIDATE, which stays inside GOVERNANCE.
+    """
+    from core.graph import LANES, LANE_OF
+
+    order = {name: i for i, (name, _) in enumerate(LANES)}
+    for e in EDGES:
+        assert order[LANE_OF[e.target]] >= order[LANE_OF[e.source]], (
+            f"{e.source} ({LANE_OF[e.source]}) -> {e.target} ({LANE_OF[e.target]}) moves backwards"
+        )
+
+
+def test_the_effect_lane_holds_exactly_one_node():
+    from core.graph import LANE_OF
+
+    assert [n for n in NODES if LANE_OF[n] == "EFFECT"] == [EFFECTFUL]
+
+
+def test_only_the_governance_lane_can_reach_the_effect_lane():
+    from core.graph import LANE_OF
+
+    into_effect = {LANE_OF[e.source] for e in EDGES if LANE_OF[e.target] == "EFFECT"}
+    assert into_effect == {"GOVERNANCE"}
+
+
+# --------------------------------------------------------------------------
+# Drift: an event hands the run to a different graph
+# --------------------------------------------------------------------------
+
+def test_every_drift_names_a_real_node_and_a_real_subgraph():
+    from core.graph import DRIFTS, SUBGRAPHS, SUBGRAPH_CAPABILITY
+
+    for d in DRIFTS:
+        assert d.at in NODES and d.returns in NODES
+        assert d.into in SUBGRAPHS and SUBGRAPHS[d.into]
+        assert d.event and d.note
+    for name, nodes in SUBGRAPHS.items():
+        for n in nodes:
+            assert n in SUBGRAPH_CAPABILITY, f"{name}.{n} has no description"
+        assert len(set(nodes)) == len(nodes)
+
+
+def test_a_subgraph_node_is_never_a_main_graph_node():
+    """A handoff, not a branch: the two graphs share no node and no edge."""
+    from core.graph import SUBGRAPHS
+
+    for nodes in SUBGRAPHS.values():
+        assert not (set(nodes) & set(NODES))
+
+
+def test_the_unknown_outcome_drift_returns_as_a_new_proposal():
+    """Γ-21 as topology: compensation re-enters at the beginning, not where it left off.
+
+    A compensating action is an effect and needs its own grant. Returning to RECONCILE
+    or EXECUTE would be the kernel undoing something on its own authority, at the
+    moment its picture of the world is least reliable.
+    """
+    from core.graph import DRIFTS
+
+    drift = next(d for d in DRIFTS if d.event == "outcome_unknown")
+    assert drift.at == "RECONCILE"
+    assert drift.returns == ENTRY, "a compensation must re-enter as a new run"
+    assert "NEW proposal" in drift.note and "never an automatic undo" in drift.note
+
+
+def test_the_human_drift_returns_to_the_decision_not_past_it():
+    """An approval sends the run back through Γ; it does not skip it."""
+    from core.graph import DRIFTS
+
+    drift = next(d for d in DRIFTS if d.event == "needs_human")
+    assert drift.at == "VALIDATE" and drift.returns == "VALIDATE"
+
+
+def test_the_approval_subgraph_carries_the_two_person_rule():
+    from core.graph import SUBGRAPHS, SUBGRAPH_CAPABILITY
+
+    assert "TWO_PERSON_REVIEW" in SUBGRAPHS["APPROVAL"]
+    assert "Γ-17" in SUBGRAPH_CAPABILITY["TWO_PERSON_REVIEW"]
+    issuing = [n for n in SUBGRAPHS["APPROVAL"] if "grant comes into being" in SUBGRAPH_CAPABILITY[n]]
+    assert issuing == ["ISSUE_GRANT"], "exactly one place may mint a grant"
+
+
+def test_the_diagram_runs_left_to_right_and_shows_the_drifts():
+    from core.graph import DRIFTS, LANES
+
+    text = mermaid()
+    assert text.splitlines()[0] == "flowchart LR"
+    for lane, _ in LANES:
+        assert f"subgraph {lane}[" in text
+    for d in DRIFTS:
+        assert f"-.->|{d.event}|" in text
+    assert "-.->|returns|" in text
+
+
+def test_the_topology_export_carries_lanes_subgraphs_and_drifts():
+    data = topology()
+    assert [lane["name"] for lane in data["lanes"]]
+    assert set(data["subgraphs"]) == {"APPROVAL", "RECONCILIATION"}
+    assert {d["event"] for d in data["drifts"]} == {"needs_human", "outcome_unknown"}
+    assert all("lane" in n for n in data["nodes"])

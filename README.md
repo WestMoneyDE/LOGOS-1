@@ -277,17 +277,44 @@ python core/graph.py --mermaid    # the diagram, generated from the edges
 python -m pytest tests/test_graph_invariants.py -q
 ```
 
-Sixteen nodes, nineteen edges, one effectful node, one loop. The loop passes through
-`HUMAN_GATE`, and the grant it produces is consumed on use, so the graph cannot iterate
-without a person deciding that it should. Twenty-seven tests check the topology the way
-the kernel tests check the predicates — reachability rather than verdicts:
+It runs left to right across six trust lanes, because that is the axis that carries
+the meaning — a run moves from untrusted bytes to a recorded effect and never
+backwards:
 
 ```text
+UNTRUSTED    bytes from a model; nothing here is believed
+WORKING      the proposal, frozen and typed; still no authority anywhere
+EVIDENCE     grants read from the store, advisories collected; nothing minted
+GOVERNANCE   Γ decides, and binds the decision to the situation
+EFFECT       the world is touched, once, under a redeemed token
+RECORD       what happened, or the honest statement that it is unknown
+```
+
+Sixteen nodes, nineteen edges, one effectful node, one loop — and **two events that
+hand the run to a different graph** rather than branching inside this one:
+
+```text
+needs_human      at VALIDATE   -> APPROVAL        returns at VALIDATE
+outcome_unknown  at RECONCILE  -> RECONCILIATION  returns at INTAKE
+```
+
+That second return address is the interesting one. A reconciliation does not resume
+where it left off; what comes back is a **new proposal** for a compensating action,
+because a compensating action is an effect and needs its own grant. The two graphs
+share no node, and a test asserts it.
+
+Thirty-eight tests check the topology the way the kernel tests check the predicates —
+reachability rather than verdicts:
+
+```text
+the lanes only advance                         no edge moves a run back to a
+                                               less-trusted lane
 EXECUTE is reachable only through the token    every path to the effect passes
                                                VALIDATE -> ISSUE_TOKEN -> REDEEM
 the only loop passes through a human           nothing here can spin on its own
 terminal nodes are terminal                    a refusal cannot be walked back
 an advisory can only route to a refusal        ADVISE feeds VALIDATE and nothing else
+a drift is a handoff, not a branch             the two graphs share no node
 ```
 
 `core/graph.py` is the reference implementation and is dependency-free.
@@ -303,7 +330,7 @@ python -m pytest tests/test_gamma_kernel.py -q          # 188 adversarial kernel
 python -m pytest tests/test_gamma_trusted_core.py -q    # 24 structural tests: no LLM, no network, no shell, no hidden state
 python -m pytest tests/test_escape_prevention.py -q     # 80 tests: 32 containment breaches + controls
 python -m pytest tests/test_output_contract.py -q       # 49 tests: the JSON boundary
-python -m pytest tests/test_graph_invariants.py -q      # 27 tests: the topology itself
+python -m pytest tests/test_graph_invariants.py -q      # 38 tests: the topology itself
 python -m pytest -q                                     # everything
 ```
 
@@ -533,7 +560,7 @@ src/logos_memory/      memory and its local scope gate — never a source of aut
 src/logos_pstate/      persistent-state adapters for the causality experiments
 src/logos_research/    experiments, measurement harness, governance records
 core/                  runnable demonstrations; owns no rule, not packaged
-core/graph.py          the same boundary as a topology; 16 nodes, 19 edges, 1 loop
+core/graph.py          the same boundary as a topology; 6 lanes, 16 nodes, 2 subgraphs
 tests/                 51 suites, every one with a positive control
 GAMMA.md               the invariant specification the kernel implements
 00-MAIN-STATE/         canonical transported state
