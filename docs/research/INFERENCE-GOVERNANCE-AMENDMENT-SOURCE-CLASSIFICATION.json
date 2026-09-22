@@ -1657,6 +1657,10 @@
     "LICENSE": {
       "class": "GOVERNANCE_ONLY",
       "note": "Relizenzierung MIT -> BSL 1.1 (Founder, 2026-08-19); kein Code, kein Modellaufruf"
+    },
+    "tests/test_production_pipeline_e2e.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: Pruefung baumbewusst gemacht (Dateiprobe + Regel fuer erklaerte Abwesenheit); nichts abgeschwaecht"
     }
   },
   "unclassified": 0
