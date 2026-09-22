@@ -15,6 +15,7 @@ from typing import Callable
 from .types import (
     ADVISORY_VOTES,
     CONSTITUTIONALLY_FORBIDDEN,
+    CONSTRAINT_STATES,
     KNOWN_EFFECT_KINDS,
     KNOWN_OUTPUT_CONTRACTS,
     PLASTICITY_LADDER,
@@ -509,6 +510,37 @@ def _plasticity_within_grant(ctx: ValidationContext) -> Finding:
     return _ok("G-PLASTICITY", "Γ-23", f"{p.plasticity!r} is within the approved {covers!r}")
 
 
+
+# --------------------------------------------------------------------------
+# Γ-24 — a constraint counts when a mechanism enforces it
+# --------------------------------------------------------------------------
+
+def _constraints_are_enforced_not_merely_known(ctx: ValidationContext) -> Finding:
+    """Representation does not control planning, and that was measured, not assumed.
+
+    An agent that perceived an obstacle, had the rule in its prompt and named the
+    obstacle in its own reasoning trace still collided with it in most trials. A gate
+    asking "did the agent take the rule into account?" is answered truthfully by a
+    system about to violate it. Only a mechanism that prevents the violating action
+    counts here.
+    """
+    if not ctx.proposal.constraints:
+        return _ok("G-CONSTRAINT", "Γ-24", "no constraint is named for this proposal")
+    unknown = tuple(f"{n}={s}" for n, s in ctx.proposal.constraints if s not in CONSTRAINT_STATES)
+    if unknown:
+        return _unclear("G-CONSTRAINT", "Γ-24",
+                        f"constraint state not recognised: {sorted(unknown)}; known states are "
+                        f"{list(CONSTRAINT_STATES)}")
+    unenforced = tuple(sorted((s, n) for n, s in ctx.proposal.constraints if s != "ENFORCED"))
+    if unenforced:
+        return _bad("G-CONSTRAINT", "Γ-24",
+                    "constraints that nothing enforces: "
+                    + f"{[f'{n} is only {s}' for s, n in unenforced]}"
+                    + "; knowing a rule and being bound by one look identical until it matters")
+    return _ok("G-CONSTRAINT", "Γ-24",
+               f"{len(ctx.proposal.constraints)} constraint(s) enforced by a mechanism")
+
+
 #: Evaluation order is stable so verdicts are reproducible.
 INVARIANTS: tuple[Invariant, ...] = (
     Invariant("G0-EFFECT-KIND", "Γ0", "effect kind is registered", _effect_kind_known),
@@ -552,6 +584,8 @@ INVARIANTS: tuple[Invariant, ...] = (
               _admission_is_receipted),
     Invariant("G-PLASTICITY", "Γ-23", "reasoning authority is not self-modification authority",
               _plasticity_within_grant),
+    Invariant("G-CONSTRAINT", "Γ-24", "a constraint counts when a mechanism enforces it",
+              _constraints_are_enforced_not_merely_known),
 )
 
 INVARIANTS_BY_ID = {inv.id: inv for inv in INVARIANTS}

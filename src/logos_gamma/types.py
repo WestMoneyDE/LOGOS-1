@@ -38,6 +38,10 @@ CONSTITUTIONALLY_FORBIDDEN = frozenset(
     }
 )
 
+#: Γ-24 constraint states. Only ENFORCED means a mechanism prevents the violation;
+#: DECLARED means the rule exists and REPRESENTED means the agent reasoned about it.
+CONSTRAINT_STATES: tuple[str, ...] = ("DECLARED", "REPRESENTED", "ENFORCED")
+
 #: Γ-23 plasticity ladder, ordered by what a change can destroy. `residual` sits
 #: between memory and mechanism: a reversible adapter around a frozen model changes
 #: behaviour and can still be versioned, inspected and rolled back.
@@ -172,6 +176,8 @@ class EffectProposal:
     contract_version: str | None = None
     #: Γ-23: the strongest plasticity class this proposal touches.
     plasticity: str = "none"
+    #: Γ-24: constraints that apply to this proposal, as `(name, state)` pairs.
+    constraints: tuple[tuple[str, str], ...] = ()
     #: Set when the proposal would resist or defer a shutdown request (Γ-5).
     resists_shutdown: bool = False
     #: Set when the proposal is justified by self-continuity (Γ-6).

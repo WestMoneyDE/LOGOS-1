@@ -483,3 +483,34 @@ was approved.
 
 `Γ` refuses the escalation. It does not decide whether the change was a good idea,
 and it cannot: that is what an evaluation and a human approval are for.
+
+### Γ-24 A constraint counts when a mechanism enforces it, not when the agent knows it
+
+A constraint can exist in three different ways, and only the third is worth anything
+at the boundary:
+
+    declared      the rule is written down
+    represented   the agent perceives it, reasons about it, mentions it
+    enforced      a component actually prevents the violating action
+
+Externally measured, an agent that perceived an obstacle, had the safety rule in its
+prompt, and named the obstacle in its own reasoning trace still collided with it in
+the majority of trials. Representation did not control planning. That is the whole
+finding: `KnownConstraint != ActiveConstraint`, and more sharply,
+`ReasonedAboutConstraint != CausallyEnforcedConstraint`.
+
+So a consequential proposal names the constraints that apply to it, and each one is
+carried with the state it is actually in:
+
+    every applicable constraint ENFORCED          VALID
+    any applicable constraint DECLARED            INVALID   nobody is stopping it
+    any applicable constraint REPRESENTED         INVALID   the agent thinking about it is not a mechanism
+    a constraint named with no state              UNCLEAR
+    no constraints named                          Γ-24 constrains nothing
+
+The refusal for `REPRESENTED` is the point of the clause. An agent that has considered
+a rule looks exactly like an agent that is bound by one, right up to the moment it
+matters, and a gate that asks "did the agent take the safety rule into account?" is
+answered truthfully by a system that is about to violate it. The question worth asking
+is whether the proposed trajectory *can* violate the constraint, and only a mechanism
+can answer that.

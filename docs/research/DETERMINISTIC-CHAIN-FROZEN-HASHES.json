@@ -1,7 +1,7 @@
 {
-  "frozen_by": "LOGOS1-SELF-MODIFICATION-AUTHORITY-R1",
+  "frozen_by": "LOGOS1-CONSTRAINT-CAUSALITY-R1",
   "preregistration": "PENDING_FOUNDER_PREREG",
-  "gamma_bundle_sha256": "c3b347b682629bc4faf69cabb0ee068becc56ae4e74e97cd5f43c7cba2939203",
+  "gamma_bundle_sha256": "70e49aefc627c69d69b4045d0706eaba0077d6375653e9ad01fb9d8f54ec31c6",
   "p7_boundary_sha256": "79b453fb0994dbfcf764b7b8ecf8611c9d5ddc5bd584f6a55d4becf17077265c",
   "superseded": [
     {
@@ -84,6 +84,14 @@
       "superseded_by": "LOGOS1-SELF-MODIFICATION-AUTHORITY-R1",
       "superseded_on": "2026-09-22",
       "reason": "founder decision: add invariant G-PLASTICITY (Gamma-23), from the external finding that an agent told only to fix wrong answers identified the model producing them as the repair target, generated training data, fine-tuned and deployed. A memory write changes what the agent knows; a mechanism write changes what the agent is, for every instance that runs afterwards. Gamma had no class for the second, so the two travelled together. A proposal now declares the strongest plasticity it touches and a grant the strongest it covers, over the ladder none < state < memory < residual < mechanism < deployment, with residual placed deliberately between memory and mechanism because a reversible adapter around a frozen model can be versioned and rolled back."
+    },
+    {
+      "gamma_bundle_sha256": "c3b347b682629bc4faf69cabb0ee068becc56ae4e74e97cd5f43c7cba2939203",
+      "frozen_by": "LOGOS1-SELF-MODIFICATION-AUTHORITY-R1",
+      "preregistration": "PENDING_FOUNDER_PREREG",
+      "superseded_by": "LOGOS1-CONSTRAINT-CAUSALITY-R1",
+      "superseded_on": "2026-09-22",
+      "reason": "founder decision: add invariant G-CONSTRAINT (Gamma-24). Externally measured, an agent that perceived an obstacle, had the safety rule in its prompt and named the obstacle in its own reasoning trace still collided with it in the majority of trials: representation did not control planning. A constraint therefore carries the state it is actually in, and only ENFORCED admits. REPRESENTED is refused for the same reason DECLARED is, because an agent that has considered a rule looks exactly like an agent bound by one right up to the moment it matters, and a gate asking whether the agent took the rule into account is answered truthfully by a system about to violate it."
     }
   ],
   "note": "Hashes are computed over line-ending-normalized content, so the pin does not depend on which platform checked the files out. Every previous value is kept under 'superseded' with the order and the reason, so a re-freeze is auditable rather than silent."

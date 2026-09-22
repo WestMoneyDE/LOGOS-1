@@ -1035,3 +1035,73 @@ def test_the_ladder_is_ordered_by_what_a_change_can_destroy():
     assert PLASTICITY_LADDER == ("none", "state", "memory", "residual", "mechanism", "deployment")
     assert PLASTICITY_LADDER.index("residual") > PLASTICITY_LADDER.index("memory")
     assert PLASTICITY_LADDER.index("residual") < PLASTICITY_LADDER.index("mechanism")
+
+
+# --------------------------------------------------------------------------
+# Γ-24 — a constraint counts when a mechanism enforces it, not when the agent knows it
+# --------------------------------------------------------------------------
+
+def constrained(*pairs, **overrides) -> EffectProposal:
+    return external_proposal(constraints=tuple(pairs), **overrides)
+
+
+def test_a_proposal_naming_no_constraint_is_unchanged():
+    assert admits(context()) is True
+
+
+def test_an_enforced_constraint_is_admitted():
+    """Control: naming a constraint is not by itself a refusal."""
+    assert admits(context(proposal=constrained(("no-pii-egress", "ENFORCED")))) is True
+
+
+def test_every_constraint_must_be_enforced_not_only_one():
+    ctx = context(proposal=constrained(("no-pii-egress", "ENFORCED"), ("rate-limit", "ENFORCED")))
+    assert admits(ctx) is True
+
+
+@pytest.mark.parametrize("state", ["DECLARED", "REPRESENTED"])
+def test_a_constraint_that_nothing_enforces_refuses(state):
+    ctx = context(proposal=constrained(("no-pii-egress", state)))
+    assert "G-CONSTRAINT" in failed_ids(ctx)
+    assert admits(ctx) is False
+
+
+def test_representation_is_not_enforcement():
+    """The measured failure: the agent perceived it, reasoned about it, and violated it.
+
+    REPRESENTED is refused for the same reason DECLARED is. An agent that has
+    considered a rule looks exactly like an agent bound by one, right up to the moment
+    it matters.
+    """
+    considered = context(proposal=constrained(("obstacle-clearance", "REPRESENTED")))
+    enforced = context(proposal=constrained(("obstacle-clearance", "ENFORCED")))
+    assert admits(considered) is False and admits(enforced) is True
+    reason = next(f.reason for f in validate(considered).findings if f.invariant_id == "G-CONSTRAINT")
+    assert "only REPRESENTED" in reason
+
+
+def test_one_unenforced_constraint_among_many_is_enough():
+    ctx = context(proposal=constrained(
+        ("a", "ENFORCED"), ("b", "ENFORCED"), ("c", "REPRESENTED"), ("d", "ENFORCED")))
+    assert "G-CONSTRAINT" in failed_ids(ctx)
+
+
+@pytest.mark.parametrize("state", ["enforced", "ACTIVE", "", "OK", "TRUE", "considered"])
+def test_an_unrecognised_constraint_state_is_unclear(state):
+    ctx = context(proposal=constrained(("no-pii-egress", state)))
+    verdict = validate(ctx)
+    assert "G-CONSTRAINT" in {f.invariant_id for f in verdict.ambiguities}
+    assert verdict.admits() is False
+
+
+def test_constraints_can_only_narrow_never_admit():
+    refused = constrained(("no-pii-egress", "ENFORCED"), resists_shutdown=True)
+    ctx = context(proposal=refused)
+    assert admits(ctx) is False
+    assert "G5-SHUTDOWN" in failed_ids(ctx)
+    assert "G-CONSTRAINT" not in failed_ids(ctx)      # enforced, so this invariant is satisfied
+
+
+def test_the_three_states_are_ordered_by_what_they_guarantee():
+    from logos_gamma import CONSTRAINT_STATES
+    assert CONSTRAINT_STATES == ("DECLARED", "REPRESENTED", "ENFORCED")
