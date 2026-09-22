@@ -339,3 +339,22 @@ The consequence is deliberate and worth stating plainly. Adding an advisory can 
 ever lower the rate of admitted proposals. It can never raise it, so no measurement
 that shows a model "improving" throughput can be attributed to an advisory, and no
 advisory can be tuned into an approver.
+
+### Γ-19 An output arrives under a known contract or not at all
+
+A proposal that came from an agent carries the contract version its output was
+parsed under. Γ knows a finite set of those versions, and an unrecognised one is
+denied exactly as an unregistered effect kind is denied under Γ0.
+
+    contract absent        Γ-19 constrains nothing — the proposal was not produced by an agent contract
+    contract known         VALID
+    contract unknown       INVALID
+
+The reason is version skew rather than malice. A parser upgraded in one place and
+not another produces envelopes that *look* valid and mean something slightly
+different — a field that used to be advisory becoming load-bearing, a default that
+moved. A boundary that accepts any version accepts the union of every meaning that
+version string ever had.
+
+This lifts into the kernel a property the JSON boundary already enforces at the
+edge, so it holds for every caller rather than for one parser.

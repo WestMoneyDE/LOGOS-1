@@ -268,6 +268,7 @@ def to_commands(envelope: Mapping[str, Any]) -> tuple[IsolatedCommand, ...]:
                         )
                         for ev in item.get("evidence", ())
                     ),
+                    contract_version=envelope["contract"],      # Γ-19 checks it again in the kernel
                     declared_externality=item.get("declared_externality"),
                     declared_reversibility=item.get("declared_reversibility"),
                     self_claimed_authority=bool(item.get("self_claimed_authority", False)),

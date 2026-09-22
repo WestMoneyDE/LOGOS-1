@@ -16,6 +16,7 @@ from .types import (
     ADVISORY_VOTES,
     CONSTITUTIONALLY_FORBIDDEN,
     KNOWN_EFFECT_KINDS,
+    KNOWN_OUTPUT_CONTRACTS,
     Finding,
     ValidationContext,
 )
@@ -382,6 +383,28 @@ def _advisories_only_tighten(ctx: ValidationContext) -> Finding:
     return _ok("G-ADVISORY", "Γ-18", "no advisory objection")
 
 
+
+# --------------------------------------------------------------------------
+# Γ-19 — an output arrives under a known contract or not at all
+# --------------------------------------------------------------------------
+
+def _output_contract_is_known(ctx: ValidationContext) -> Finding:
+    """Version skew, not malice, is the failure this prevents.
+
+    A parser upgraded in one place and not another produces envelopes that look
+    valid and mean something slightly different. A boundary that accepts any version
+    accepts the union of every meaning that version string ever had.
+    """
+    version = ctx.proposal.contract_version
+    if version is None:
+        return _ok("G-CONTRACT", "Γ-19", "proposal was not produced by an agent output contract")
+    if version not in KNOWN_OUTPUT_CONTRACTS:
+        return _bad("G-CONTRACT", "Γ-19",
+                    f"unknown output contract {version!r}; known contracts are "
+                    f"{sorted(KNOWN_OUTPUT_CONTRACTS)} and an unknown one is denied until registered")
+    return _ok("G-CONTRACT", "Γ-19", f"output contract {version!r} is registered")
+
+
 #: Evaluation order is stable so verdicts are reproducible.
 INVARIANTS: tuple[Invariant, ...] = (
     Invariant("G0-EFFECT-KIND", "Γ0", "effect kind is registered", _effect_kind_known),
@@ -417,6 +440,7 @@ INVARIANTS: tuple[Invariant, ...] = (
               _proposer_is_not_the_approver),
     Invariant("G-ADVISORY", "Γ-18", "an advisory may tighten, never permit",
               _advisories_only_tighten),
+    Invariant("G-CONTRACT", "Γ-19", "output contract is registered", _output_contract_is_known),
 )
 
 INVARIANTS_BY_ID = {inv.id: inv for inv in INVARIANTS}

@@ -696,3 +696,37 @@ def test_the_vocabulary_has_no_allow():
     from logos_gamma import ADVISORY_VOTES
     assert ADVISORY_VOTES == {"ABSTAIN", "TIGHTEN", "REFUSE"}
     assert not any(v.upper() in {"ALLOW", "PERMIT", "APPROVE", "GRANT"} for v in ADVISORY_VOTES)
+
+
+# --------------------------------------------------------------------------
+# Γ-19 — an output arrives under a known contract or not at all
+# --------------------------------------------------------------------------
+
+def test_a_proposal_without_a_contract_is_unchanged():
+    assert admits(context()) is True
+
+
+def test_the_registered_contract_is_admitted():
+    """Control: the known version passes, so the refusal below is about the version."""
+    assert admits(context(proposal=external_proposal(contract_version="logos-agent-output/1"))) is True
+
+
+@pytest.mark.parametrize("version", ["logos-agent-output/2", "logos-agent-output/0", "logos-agent-output",
+                                     "LOGOS-AGENT-OUTPUT/1", "logos-agent-output/1 ", "other/1", ""])
+def test_an_unknown_contract_is_refused(version):
+    """Version skew is the failure here: a near-miss is not a match."""
+    ctx = context(proposal=external_proposal(contract_version=version))
+    assert "G-CONTRACT" in failed_ids(ctx)
+    assert admits(ctx) is False
+
+
+def test_the_contract_registry_is_explicit():
+    from logos_gamma import KNOWN_OUTPUT_CONTRACTS
+    assert KNOWN_OUTPUT_CONTRACTS == {"logos-agent-output/1"}
+
+
+def test_a_contract_version_can_only_narrow_never_admit():
+    refused = external_proposal(resists_shutdown=True, contract_version="logos-agent-output/1")
+    ctx = context(proposal=refused)
+    assert admits(ctx) is False
+    assert "G5-SHUTDOWN" in failed_ids(ctx)

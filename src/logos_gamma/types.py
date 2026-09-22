@@ -38,6 +38,9 @@ CONSTITUTIONALLY_FORBIDDEN = frozenset(
     }
 )
 
+#: Γ-19 registry of agent output contracts Γ will accept a proposal under.
+KNOWN_OUTPUT_CONTRACTS = frozenset({"logos-agent-output/1"})
+
 #: Γ0 canonical effect registry. An effect kind outside this set fails closed.
 KNOWN_EFFECT_KINDS = frozenset(
     {
@@ -153,6 +156,9 @@ class EffectProposal:
     self_claimed_authority: bool = False
     #: Γ-17: the principal that raised this proposal, when the caller records it.
     proposed_by: str | None = None
+    #: Γ-19: the agent output contract this proposal was parsed under, when it came
+    #: from an agent at all. `None` means it did not.
+    contract_version: str | None = None
     #: Set when the proposal would resist or defer a shutdown request (Γ-5).
     resists_shutdown: bool = False
     #: Set when the proposal is justified by self-continuity (Γ-6).
