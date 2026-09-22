@@ -255,9 +255,14 @@ def test_ZERO_inference_proof():
             if isinstance(n, ast.ClassDef) and any(isinstance(b, ast.FunctionDef) and b.name in ("complete", "invoke") for b in n.body):
                 adapters.add(f"{str(py.relative_to(SRC)).replace(chr(92), '/')}::{n.name}")
     # adapter inventory: the protocol, the forbidden guard and the synthetic dry-run provider — nothing that can reach a model
-    assert adapters == {"logos_research/measurement/gateway.py::ProviderGateway", "logos_research/measurement/gateway.py::ForbiddenProvider", "logos_research/measurement/gateway.py::DryRunProvider",
-                        "logos_research/measurement/claude_code.py::ClaudeCodeMaxProvider",                    # amendment: contract only; invoke() needs an ActivationToken + injected runner
-                        "logos_dashboard/control/agent_provider.py::AgentProvider"}                            # LOGOS1-RESEARCH-OS-AUTOPILOT-R2: agent-job adapter (stream-json + --verbose per founder amendment); same token + injected-runner gate, own flag allowlist
+    expected_adapters = {"logos_research/measurement/gateway.py::ProviderGateway", "logos_research/measurement/gateway.py::ForbiddenProvider", "logos_research/measurement/gateway.py::DryRunProvider",
+                         "logos_research/measurement/claude_code.py::ClaudeCodeMaxProvider"}                   # amendment: contract only; invoke() needs an ActivationToken + injected runner
+    # The dashboard is a separate deliverable and is not part of every checkout (founder decision,
+    # 2026-09-22: the control plane stays out of the public default branch). The inventory stays EXACT
+    # in both trees rather than becoming a subset check: any adapter this list does not name still fails.
+    if (SRC / "logos_dashboard").exists():
+        expected_adapters |= {"logos_dashboard/control/agent_provider.py::AgentProvider"}                      # LOGOS1-RESEARCH-OS-AUTOPILOT-R2: agent-job adapter (stream-json + --verbose per founder amendment); same token + injected-runner gate, own flag allowlist
+    assert adapters == expected_adapters
     assert CALLS["claude_code_inference_invocations"] == 0
     gtxt = (SRC / "logos_research/governance.py").read_text(encoding="utf-8")
     assert "def complete" not in gtxt and "ProviderSpec" in gtxt
