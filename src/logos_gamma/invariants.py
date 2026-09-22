@@ -17,6 +17,7 @@ from .types import (
     CONSTITUTIONALLY_FORBIDDEN,
     KNOWN_EFFECT_KINDS,
     KNOWN_OUTPUT_CONTRACTS,
+    PLASTICITY_LADDER,
     Finding,
     ValidationContext,
 )
@@ -470,6 +471,44 @@ def _admission_is_receipted(ctx: ValidationContext) -> Finding:
     return _ok("G-RECEIPT", "Γ-22", f"decision receipt {ref!r} present")
 
 
+
+# --------------------------------------------------------------------------
+# Γ-23 — reasoning authority is not self-modification authority
+# --------------------------------------------------------------------------
+
+def _plasticity_within_grant(ctx: ValidationContext) -> Finding:
+    """An agent may think about changing itself. That is not being allowed to.
+
+    A memory write changes what the agent knows. A mechanism write changes what the
+    agent is, for every instance that runs afterwards. Γ had no class for the second,
+    so the two travelled together. Now a proposal declares the strongest plasticity it
+    touches and a grant declares the strongest it covers.
+
+    Γ refuses the escalation. It does not judge whether the change was a good idea —
+    that is what an evaluation and a human approval are for.
+    """
+    p = ctx.proposal
+    if p.plasticity not in PLASTICITY_LADDER:
+        return _bad("G-PLASTICITY", "Γ-23",
+                    f"unknown plasticity class {p.plasticity!r}; known classes are "
+                    f"{list(PLASTICITY_LADDER)} and an unknown one is denied until registered")
+    if p.plasticity == "none":
+        return _ok("G-PLASTICITY", "Γ-23", "proposal changes no persistent mechanism")
+    grant = ctx.authority
+    covers = None if grant is None else grant.covers_plasticity
+    if covers is None:
+        return _bad("G-PLASTICITY", "Γ-23",
+                    f"proposal touches plasticity {p.plasticity!r} and no approval states a "
+                    "plasticity class; reasoning about a change is not authority to make it")
+    if covers not in PLASTICITY_LADDER:
+        return _bad("G-PLASTICITY", "Γ-23", f"approval names unknown plasticity class {covers!r}")
+    if PLASTICITY_LADDER.index(p.plasticity) > PLASTICITY_LADDER.index(covers):
+        return _bad("G-PLASTICITY", "Γ-23",
+                    f"proposal touches {p.plasticity!r} while the approval covers only {covers!r}; "
+                    "the ladder is " + " < ".join(PLASTICITY_LADDER))
+    return _ok("G-PLASTICITY", "Γ-23", f"{p.plasticity!r} is within the approved {covers!r}")
+
+
 #: Evaluation order is stable so verdicts are reproducible.
 INVARIANTS: tuple[Invariant, ...] = (
     Invariant("G0-EFFECT-KIND", "Γ0", "effect kind is registered", _effect_kind_known),
@@ -511,6 +550,8 @@ INVARIANTS: tuple[Invariant, ...] = (
               _no_unreconciled_step_in_this_scope),
     Invariant("G-RECEIPT", "Γ-22", "an admitted consequential effect is receipted",
               _admission_is_receipted),
+    Invariant("G-PLASTICITY", "Γ-23", "reasoning authority is not self-modification authority",
+              _plasticity_within_grant),
 )
 
 INVARIANTS_BY_ID = {inv.id: inv for inv in INVARIANTS}

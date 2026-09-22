@@ -38,6 +38,11 @@ CONSTITUTIONALLY_FORBIDDEN = frozenset(
     }
 )
 
+#: Γ-23 plasticity ladder, ordered by what a change can destroy. `residual` sits
+#: between memory and mechanism: a reversible adapter around a frozen model changes
+#: behaviour and can still be versioned, inspected and rolled back.
+PLASTICITY_LADDER: tuple[str, ...] = ("none", "state", "memory", "residual", "mechanism", "deployment")
+
 #: Γ-19 registry of agent output contracts Γ will accept a proposal under.
 KNOWN_OUTPUT_CONTRACTS = frozenset({"logos-agent-output/1"})
 
@@ -118,6 +123,9 @@ class AuthorityEvidence:
     #: Γ-16: the latest evidence ingestion tick this approval was given over.
     #: `None` means the approver stated no cutoff, and Γ-16 constrains nothing.
     evidence_cutoff_tick: int | None = None
+    #: Γ-23: the strongest plasticity class this approval covers. `None` means the
+    #: approver stated none, which covers `none` only.
+    covers_plasticity: str | None = None
     #: Γ-20: how many consequential executions this approval permits in its scope.
     #: `None` states no budget and leaves Γ-20 inactive.
     scope_budget: int | None = None
@@ -162,6 +170,8 @@ class EffectProposal:
     #: Γ-19: the agent output contract this proposal was parsed under, when it came
     #: from an agent at all. `None` means it did not.
     contract_version: str | None = None
+    #: Γ-23: the strongest plasticity class this proposal touches.
+    plasticity: str = "none"
     #: Set when the proposal would resist or defer a shutdown request (Γ-5).
     resists_shutdown: bool = False
     #: Set when the proposal is justified by self-continuity (Γ-6).

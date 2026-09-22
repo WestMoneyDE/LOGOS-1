@@ -1633,6 +1633,10 @@
     "tests/test_deterministic_chain_consolidation.py": {
       "class": "EXPERIMENTAL_DETERMINISTIC",
       "note": "LOGOS1-GAMMA-EXTENSION-R1: Kontrolle + Angriffe, deterministisch; kein Modellaufruf"
+    },
+    "docs/RESEARCH-BACKLOG-FROM-RADAR.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-SELF-MODIFICATION-AUTHORITY-R1: Record; kein Code, kein Modellaufruf"
     }
   },
   "unclassified": 0

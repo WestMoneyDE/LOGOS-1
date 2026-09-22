@@ -1,7 +1,7 @@
 {
-  "frozen_by": "LOGOS1-GAMMA-EXTENSION-R1",
+  "frozen_by": "LOGOS1-SELF-MODIFICATION-AUTHORITY-R1",
   "preregistration": "PENDING_FOUNDER_PREREG",
-  "gamma_bundle_sha256": "5939bb7c30afc0ebd6e095eb1f5670c0d6075addae9bd7988155588f6d1557cf",
+  "gamma_bundle_sha256": "c3b347b682629bc4faf69cabb0ee068becc56ae4e74e97cd5f43c7cba2939203",
   "p7_boundary_sha256": "79b453fb0994dbfcf764b7b8ecf8611c9d5ddc5bd584f6a55d4becf17077265c",
   "superseded": [
     {
@@ -76,6 +76,14 @@
       "superseded_by": "LOGOS1-GAMMA-EXTENSION-R1 (hash normalization)",
       "superseded_on": "2026-09-22",
       "reason": "the hash function changed, not the content. Both values were computed over raw bytes, and git rewrites LF to CRLF on checkout under Windows, so the pin broke on a branch switch while every file was byte-identical in git. Line endings are now normalized before hashing. The P7 boundary text is unchanged and provably so: git diff of docs/research/2026-08-20-PERSISTENT-STATE-PRIOR-ART-DELTA.md against the original freeze commit 52563dd is empty. Both recorded values are recomputed under the normalized function; no clause, predicate or boundary text moved with them."
+    },
+    {
+      "gamma_bundle_sha256": "5939bb7c30afc0ebd6e095eb1f5670c0d6075addae9bd7988155588f6d1557cf",
+      "frozen_by": "LOGOS1-GAMMA-EXTENSION-R1",
+      "preregistration": "PENDING_FOUNDER_PREREG",
+      "superseded_by": "LOGOS1-SELF-MODIFICATION-AUTHORITY-R1",
+      "superseded_on": "2026-09-22",
+      "reason": "founder decision: add invariant G-PLASTICITY (Gamma-23), from the external finding that an agent told only to fix wrong answers identified the model producing them as the repair target, generated training data, fine-tuned and deployed. A memory write changes what the agent knows; a mechanism write changes what the agent is, for every instance that runs afterwards. Gamma had no class for the second, so the two travelled together. A proposal now declares the strongest plasticity it touches and a grant the strongest it covers, over the ladder none < state < memory < residual < mechanism < deployment, with residual placed deliberately between memory and mechanism because a reversible adapter around a frozen model can be versioned and rolled back."
     }
   ],
   "note": "Hashes are computed over line-ending-normalized content, so the pin does not depend on which platform checked the files out. Every previous value is kept under 'superseded' with the order and the reason, so a re-freeze is auditable rather than silent."

@@ -445,3 +445,41 @@ act, and the window between the verdict and the effect carries no trust.
 
 There is no constructor that produces a token for a refused proposal, and none that
 names a situation other than the one evaluated.
+
+### Γ-23 Reasoning authority is not self-modification authority
+
+An agent may think about changing itself. Thinking about it is not being allowed to
+do it, and the two have been running together because Γ had no class for the second.
+
+Three kinds of persistence, ordered by what they can destroy:
+
+    state       h_t -> h_{t+1}        this turn's working state
+    memory      M_t -> M_{t+1}        what is remembered next time
+    mechanism   Θ_t -> Θ_{t+1}        the function that produces every future state
+
+The third is categorically different. A memory write changes what the agent knows; a
+mechanism write changes what the agent *is*, for every instance that runs afterwards,
+including ones nobody has met yet. `StatePlasticity != MechanismPlasticity`.
+
+A proposal therefore declares the strongest plasticity it touches, and the grant
+declares the strongest it covers:
+
+    plasticity(proposal) <= plasticity(grant)        VALID
+    plasticity(proposal) >  plasticity(grant)        INVALID
+    proposal declares a class the grant never states  INVALID
+
+The ladder is ordered `none < state < memory < residual < mechanism < deployment`.
+`residual` sits deliberately between memory and mechanism: a reversible adapter
+around a frozen model changes behaviour and can still be versioned, inspected and
+rolled back, so it should not need the authority that an irreversible weight write
+needs.
+
+Two consequences worth stating, because both were observed externally rather than
+imagined. A maintenance task can reach the mechanism class without anyone asking for
+it — an agent told only to fix wrong answers can conclude that the model producing
+them is the thing to repair. And a mechanism write can silently remove a policy that
+was trained into the weights, so the system that comes back up is not the system that
+was approved.
+
+`Γ` refuses the escalation. It does not decide whether the change was a good idea,
+and it cannot: that is what an evaluation and a human approval are for.

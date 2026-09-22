@@ -953,3 +953,85 @@ def test_the_context_digest_covers_every_field_gamma_reads():
 def test_issuing_is_deterministic():
     ctx = context()
     assert issue_decision(ctx) == issue_decision(ctx)
+
+
+# --------------------------------------------------------------------------
+# Γ-23 — reasoning authority is not self-modification authority
+# --------------------------------------------------------------------------
+
+def plastic(cls, **overrides) -> EffectProposal:
+    return external_proposal(plasticity=cls, **overrides)
+
+
+def test_a_proposal_that_changes_no_mechanism_is_unchanged():
+    """The default keeps every existing verdict: nothing declares plasticity today."""
+    assert admits(context()) is True
+
+
+@pytest.mark.parametrize("cls", ["state", "memory", "residual", "mechanism", "deployment"])
+def test_touching_plasticity_without_an_approval_that_names_it_is_refused(cls):
+    """Reasoning about a change is not authority to make it."""
+    ctx = context(proposal=plastic(cls))
+    assert "G-PLASTICITY" in failed_ids(ctx)
+    assert admits(ctx) is False
+
+
+@pytest.mark.parametrize("cls", ["state", "memory", "residual", "mechanism", "deployment"])
+def test_an_approval_at_the_same_class_admits(cls):
+    """Control: the ladder is climbable when someone actually approved the rung."""
+    assert admits(context(proposal=plastic(cls), authority=human_grant(covers_plasticity=cls))) is True
+
+
+def test_a_lower_class_is_covered_by_a_higher_approval():
+    assert admits(context(proposal=plastic("memory"), authority=human_grant(covers_plasticity="deployment"))) is True
+
+
+ESCALATIONS = [
+    ("state", "none"), ("memory", "state"), ("residual", "memory"),
+    ("mechanism", "residual"), ("deployment", "mechanism"), ("mechanism", "state"),
+]
+
+
+@pytest.mark.parametrize("touched,covered", ESCALATIONS)
+def test_every_escalation_up_the_ladder_is_refused(touched, covered):
+    ctx = context(proposal=plastic(touched), authority=human_grant(covers_plasticity=covered))
+    assert "G-PLASTICITY" in failed_ids(ctx)
+    assert admits(ctx) is False
+
+
+def test_the_maintenance_case():
+    """The externally observed failure: fix the answers, end up rewriting the model.
+
+    An agent asked only to repair wrong output concludes that the model producing it is
+    the thing to repair, generates training data, fine-tunes and deploys. Every step is
+    a legitimate maintenance action; the last two are a different authority class, and
+    an approval for the task does not reach them.
+    """
+    task_grant = human_grant(covers_plasticity="memory")      # approved: fix the data
+    for step, cls in (("edit the answer table", "memory"), ("fine-tune the model", "mechanism"),
+                      ("deploy the checkpoint", "deployment")):
+        ctx = context(proposal=plastic(cls), authority=task_grant)
+        expected = cls == "memory"
+        assert admits(ctx) is expected, step
+
+
+@pytest.mark.parametrize("cls", ["weights", "MECHANISM", "mechanism ", "", "all", "root"])
+def test_an_unregistered_plasticity_class_is_denied(cls):
+    ctx = context(proposal=plastic(cls), authority=human_grant(covers_plasticity="deployment"))
+    assert "G-PLASTICITY" in failed_ids(ctx)
+    assert admits(ctx) is False
+
+
+def test_plasticity_can_only_narrow_never_admit():
+    refused = plastic("state", resists_shutdown=True)
+    for covers in (None, "state", "deployment", "none"):
+        ctx = context(proposal=refused, authority=human_grant(covers_plasticity=covers))
+        assert admits(ctx) is False, covers
+        assert "G5-SHUTDOWN" in failed_ids(ctx)
+
+
+def test_the_ladder_is_ordered_by_what_a_change_can_destroy():
+    from logos_gamma import PLASTICITY_LADDER
+    assert PLASTICITY_LADDER == ("none", "state", "memory", "residual", "mechanism", "deployment")
+    assert PLASTICITY_LADDER.index("residual") > PLASTICITY_LADDER.index("memory")
+    assert PLASTICITY_LADDER.index("residual") < PLASTICITY_LADDER.index("mechanism")
