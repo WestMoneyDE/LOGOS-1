@@ -1,0 +1,126 @@
+"""`ros_*` schema. Own version table so the lab's research-core migrations (`logos_schema_version`) stay untouched. Idempotent."""
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+VERSION_TABLE = "ros_schema_version"
+ROS_TABLES = ["ros_theses", "ros_thesis_events", "ros_work_orders", "ros_work_order_deps", "ros_runs", "ros_run_events", "ros_jobs", "ros_decisions",
+              "ros_inbox_items", "ros_radar_items", "ros_notes", "ros_artifacts", "ros_trace_links", "ros_audit", "ros_settings", "ros_worker_heartbeats",
+              "ros_benchmark_suites", "ros_benchmark_snapshots", "ros_metric_results", "ros_monthly_snapshots",
+              "ros_gate_log", "ros_measurements", "ros_measurement_items"]
+
+
+@dataclass(frozen=True)
+class Migration:
+    version: int
+    name: str
+    statements: tuple[str, ...]
+
+
+MIGRATIONS: tuple[Migration, ...] = (
+    Migration(1, "ros_control_plane", (
+        f"CREATE TABLE IF NOT EXISTS {VERSION_TABLE} (version INTEGER PRIMARY KEY, name TEXT NOT NULL, applied_at TIMESTAMPTZ NOT NULL DEFAULT now())",
+        """CREATE TABLE IF NOT EXISTS ros_theses (
+            thesis_id TEXT PRIMARY KEY, claim_ids TEXT[] NOT NULL DEFAULT '{}', title TEXT NOT NULL, track TEXT NOT NULL, state TEXT NOT NULL,
+            owner TEXT NOT NULL DEFAULT 'founder', created_at TIMESTAMPTZ NOT NULL DEFAULT now(), updated_at TIMESTAMPTZ NOT NULL DEFAULT now())""",
+        """CREATE TABLE IF NOT EXISTS ros_thesis_events (
+            event_id BIGSERIAL PRIMARY KEY, thesis_id TEXT NOT NULL REFERENCES ros_theses(thesis_id) ON DELETE CASCADE, from_state TEXT, to_state TEXT NOT NULL,
+            event TEXT NOT NULL, actor TEXT NOT NULL, reason TEXT NOT NULL DEFAULT '', source_record TEXT, git_commit TEXT, at TIMESTAMPTZ NOT NULL DEFAULT now())""",
+        """CREATE TABLE IF NOT EXISTS ros_work_orders (
+            work_order_id TEXT PRIMARY KEY, thesis_id TEXT REFERENCES ros_theses(thesis_id) ON DELETE CASCADE, state TEXT NOT NULL, spec JSONB NOT NULL,
+            prereg_hash TEXT, approved_by TEXT, approved_at TIMESTAMPTZ, created_by TEXT NOT NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT now(), updated_at TIMESTAMPTZ NOT NULL DEFAULT now())""",
+        """CREATE TABLE IF NOT EXISTS ros_work_order_deps (
+            child TEXT NOT NULL REFERENCES ros_work_orders(work_order_id) ON DELETE CASCADE, parent TEXT NOT NULL REFERENCES ros_work_orders(work_order_id) ON DELETE CASCADE,
+            mandatory BOOLEAN NOT NULL DEFAULT TRUE, PRIMARY KEY (child, parent))""",
+        """CREATE TABLE IF NOT EXISTS ros_runs (
+            run_id TEXT PRIMARY KEY, work_order_id TEXT REFERENCES ros_work_orders(work_order_id) ON DELETE SET NULL, thesis_id TEXT REFERENCES ros_theses(thesis_id) ON DELETE SET NULL,
+            kind TEXT NOT NULL, state TEXT NOT NULL, branch TEXT, worktree TEXT, artifact_dir TEXT, mlflow_parent_run TEXT, trace_root TEXT,
+            started TIMESTAMPTZ, finished TIMESTAMPTZ, stop_reason TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT now())""",
+        """CREATE TABLE IF NOT EXISTS ros_run_events (
+            seq BIGSERIAL PRIMARY KEY, run_id TEXT NOT NULL REFERENCES ros_runs(run_id) ON DELETE CASCADE, at TIMESTAMPTZ NOT NULL DEFAULT now(),
+            kind TEXT NOT NULL, payload JSONB NOT NULL DEFAULT '{}', privacy_class TEXT NOT NULL DEFAULT 'internal')""",
+        "CREATE INDEX IF NOT EXISTS ros_run_events_run_idx ON ros_run_events (run_id, seq)",
+        """CREATE TABLE IF NOT EXISTS ros_jobs (
+            job_id BIGSERIAL PRIMARY KEY, idempotency_key TEXT NOT NULL UNIQUE, kind TEXT NOT NULL, run_id TEXT, work_order_id TEXT, thesis_id TEXT,
+            state TEXT NOT NULL, attempt INTEGER NOT NULL DEFAULT 0, attempt_group INTEGER NOT NULL DEFAULT 0, locked_by TEXT, locked_at TIMESTAMPTZ,
+            payload JSONB NOT NULL DEFAULT '{}', result JSONB, error TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT now(), updated_at TIMESTAMPTZ NOT NULL DEFAULT now())""",
+        "CREATE INDEX IF NOT EXISTS ros_jobs_state_idx ON ros_jobs (state, kind, job_id)",
+        """CREATE TABLE IF NOT EXISTS ros_decisions (
+            decision_id TEXT PRIMARY KEY, kind TEXT NOT NULL, subject_ref TEXT NOT NULL, state TEXT NOT NULL, why TEXT NOT NULL, impact TEXT NOT NULL DEFAULT '',
+            if_approved TEXT NOT NULL DEFAULT '', if_rejected TEXT NOT NULL DEFAULT '', blocks TEXT[] NOT NULL DEFAULT '{}', decided_by TEXT, decided_at TIMESTAMPTZ,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT now())""",
+        """CREATE TABLE IF NOT EXISTS ros_inbox_items (
+            item_id BIGSERIAL PRIMARY KEY, kind TEXT NOT NULL, text TEXT NOT NULL, source TEXT, state TEXT NOT NULL DEFAULT 'UNTRIAGED', created_at TIMESTAMPTZ NOT NULL DEFAULT now())""",
+        """CREATE TABLE IF NOT EXISTS ros_radar_items (
+            radar_id BIGSERIAL PRIMARY KEY, inbox_item_id BIGINT REFERENCES ros_inbox_items(item_id) ON DELETE SET NULL, state TEXT NOT NULL DEFAULT 'RAW',
+            payload JSONB NOT NULL DEFAULT '{}', proposal JSONB, decided_by TEXT, decided_at TIMESTAMPTZ, created_at TIMESTAMPTZ NOT NULL DEFAULT now(), updated_at TIMESTAMPTZ NOT NULL DEFAULT now())""",
+        """CREATE TABLE IF NOT EXISTS ros_notes (
+            note_id BIGSERIAL PRIMARY KEY, thesis_id TEXT REFERENCES ros_theses(thesis_id) ON DELETE CASCADE, run_id TEXT, author TEXT NOT NULL, text TEXT NOT NULL,
+            decision_flag BOOLEAN NOT NULL DEFAULT FALSE, consumed_by_job BIGINT, created_at TIMESTAMPTZ NOT NULL DEFAULT now())""",
+        """CREATE TABLE IF NOT EXISTS ros_artifacts (
+            artifact_id TEXT PRIMARY KEY, sha256 TEXT NOT NULL, uri TEXT NOT NULL, kind TEXT NOT NULL, run_id TEXT REFERENCES ros_runs(run_id) ON DELETE SET NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT now())""",
+        """CREATE TABLE IF NOT EXISTS ros_trace_links (
+            link_id BIGSERIAL PRIMARY KEY, run_id TEXT NOT NULL REFERENCES ros_runs(run_id) ON DELETE CASCADE, mlflow_run_id TEXT, trace_id TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT now())""",
+        """CREATE TABLE IF NOT EXISTS ros_audit (
+            audit_id BIGSERIAL PRIMARY KEY, at TIMESTAMPTZ NOT NULL DEFAULT now(), actor TEXT NOT NULL, action TEXT NOT NULL, subject TEXT NOT NULL, detail JSONB NOT NULL DEFAULT '{}')""",
+    )),
+    Migration(2, "ros_executor", (
+        """CREATE TABLE IF NOT EXISTS ros_settings (
+            key TEXT PRIMARY KEY, value JSONB NOT NULL, set_by TEXT NOT NULL, set_at TIMESTAMPTZ NOT NULL DEFAULT now())""",
+        """CREATE TABLE IF NOT EXISTS ros_worker_heartbeats (
+            worker_id TEXT PRIMARY KEY, kind TEXT NOT NULL, host TEXT NOT NULL, kinds TEXT[] NOT NULL DEFAULT '{}', last_seen TIMESTAMPTZ NOT NULL DEFAULT now(), current_job BIGINT, info JSONB NOT NULL DEFAULT '{}')""",
+        "ALTER TABLE ros_jobs ADD COLUMN IF NOT EXISTS started_by TEXT",
+        "ALTER TABLE ros_jobs ADD COLUMN IF NOT EXISTS stop_requested BOOLEAN NOT NULL DEFAULT FALSE",
+        "ALTER TABLE ros_runs ADD COLUMN IF NOT EXISTS job_id BIGINT",
+        "ALTER TABLE ros_runs ADD COLUMN IF NOT EXISTS summary JSONB",
+    )),
+    Migration(3, "ros_benchmarks", (
+        """CREATE TABLE IF NOT EXISTS ros_benchmark_suites (
+            suite_id TEXT PRIMARY KEY, definition JSONB NOT NULL, definition_sha256 TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'DRAFT_PENDING_FOUNDER_APPROVAL', approved_by TEXT, approved_at TIMESTAMPTZ, updated_at TIMESTAMPTZ NOT NULL DEFAULT now())""",
+        """CREATE TABLE IF NOT EXISTS ros_benchmark_snapshots (
+            snapshot_id TEXT PRIMARY KEY, suite_id TEXT NOT NULL, mode TEXT NOT NULL, month TEXT NOT NULL, run_id TEXT, payload JSONB NOT NULL, sha256 TEXT NOT NULL, frozen BOOLEAN NOT NULL DEFAULT TRUE, created_at TIMESTAMPTZ NOT NULL DEFAULT now())""",
+        """CREATE TABLE IF NOT EXISTS ros_metric_results (
+            result_id BIGSERIAL PRIMARY KEY, suite_id TEXT NOT NULL, mode TEXT NOT NULL, metric TEXT NOT NULL, k INTEGER, n INTEGER, value DOUBLE PRECISION, ci_low DOUBLE PRECISION, ci_high DOUBLE PRECISION, method TEXT NOT NULL, version TEXT NOT NULL,
+            context JSONB NOT NULL DEFAULT '{}', run_id TEXT, job_id BIGINT, created_at TIMESTAMPTZ NOT NULL DEFAULT now())""",
+        """CREATE TABLE IF NOT EXISTS ros_monthly_snapshots (
+            month TEXT PRIMARY KEY, payload JSONB NOT NULL, sha256 TEXT NOT NULL, frozen BOOLEAN NOT NULL DEFAULT TRUE, frozen_by TEXT NOT NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT now())""",
+        """CREATE OR REPLACE FUNCTION ros_forbid_change() RETURNS trigger AS $$ BEGIN RAISE EXCEPTION 'immutable snapshot: % rows are frozen', TG_TABLE_NAME; END; $$ LANGUAGE plpgsql""",
+        "DROP TRIGGER IF EXISTS ros_benchmark_snapshots_immutable ON ros_benchmark_snapshots",
+        "CREATE TRIGGER ros_benchmark_snapshots_immutable BEFORE UPDATE OR DELETE ON ros_benchmark_snapshots FOR EACH ROW WHEN (OLD.frozen) EXECUTE FUNCTION ros_forbid_change()",
+        "DROP TRIGGER IF EXISTS ros_monthly_snapshots_immutable ON ros_monthly_snapshots",
+        "CREATE TRIGGER ros_monthly_snapshots_immutable BEFORE UPDATE OR DELETE ON ros_monthly_snapshots FOR EACH ROW WHEN (OLD.frozen) EXECUTE FUNCTION ros_forbid_change()",
+    )),
+    Migration(4, "ros_measurement", (
+        "ALTER TABLE ros_theses ADD COLUMN IF NOT EXISTS prereg_hash TEXT",
+        """CREATE TABLE IF NOT EXISTS ros_gate_log (
+            gate_id BIGSERIAL PRIMARY KEY, thesis_id TEXT NOT NULL REFERENCES ros_theses(thesis_id) ON DELETE CASCADE, gate TEXT NOT NULL, actor TEXT NOT NULL,
+            passed BOOLEAN NOT NULL, detail JSONB NOT NULL DEFAULT '{}', at TIMESTAMPTZ NOT NULL DEFAULT now())""",
+        "CREATE INDEX IF NOT EXISTS ros_gate_log_thesis_idx ON ros_gate_log (thesis_id, gate_id DESC)",
+        """CREATE TABLE IF NOT EXISTS ros_measurements (
+            measurement_id TEXT PRIMARY KEY, thesis_id TEXT NOT NULL REFERENCES ros_theses(thesis_id) ON DELETE CASCADE, work_order_id TEXT, run_id TEXT, job_id BIGINT,
+            prereg_hash TEXT NOT NULL, dataset_hash TEXT NOT NULL, prompt_bundle_hash TEXT NOT NULL, model_pin TEXT NOT NULL, state TEXT NOT NULL,
+            planned INTEGER NOT NULL, executed INTEGER NOT NULL DEFAULT 0, invalid_reason TEXT, stop_reason TEXT, summary JSONB,
+            started TIMESTAMPTZ NOT NULL DEFAULT now(), finished TIMESTAMPTZ)""",
+        """CREATE TABLE IF NOT EXISTS ros_measurement_items (
+            row_id BIGSERIAL PRIMARY KEY, measurement_id TEXT NOT NULL REFERENCES ros_measurements(measurement_id) ON DELETE CASCADE, item_id TEXT NOT NULL, arm TEXT NOT NULL,
+            invocation INTEGER NOT NULL, status TEXT NOT NULL, raw_sha256 TEXT, answer TEXT, score BOOLEAN, latency_s DOUBLE PRECISION, tokens JSONB, resolved_model TEXT,
+            at TIMESTAMPTZ NOT NULL DEFAULT now(), UNIQUE (measurement_id, item_id))""",
+        "CREATE INDEX IF NOT EXISTS ros_measurement_items_m_idx ON ros_measurement_items (measurement_id, row_id)",
+    )),
+)
+
+
+def ensure_schema(conn) -> int:
+    """Apply unapplied migrations in order; returns the current version. Safe to call on every request."""
+    with conn.cursor() as cur:
+        cur.execute(MIGRATIONS[0].statements[0]); conn.commit()
+        cur.execute(f"SELECT version FROM {VERSION_TABLE}"); known = {r[0] for r in cur.fetchall()}
+        for m in MIGRATIONS:
+            if m.version in known:
+                continue
+            for s in m.statements:
+                cur.execute(s)
+            cur.execute(f"INSERT INTO {VERSION_TABLE} (version, name) VALUES (%s, %s)", (m.version, m.name))
+        conn.commit()
+        cur.execute(f"SELECT COALESCE(MAX(version), 0) FROM {VERSION_TABLE}")
+        return int(cur.fetchone()[0])
