@@ -801,11 +801,11 @@ def test_autopilot_runs_stages_until_ceiling_and_pauses_on_gate(conn, tid, repo,
 def test_repository_orders_import_idempotent_and_chained(conn):
     from logos_dashboard.control import repo_orders
     docs = repo_orders.parse_documents()
-    assert len(docs) == 44 and sum(1 for d in docs if d["kind"] == "closure") == 40 and {d["state"] for d in docs} == {"VALIDATED", "FALSIFIED", "DRAFT"}     # 45 files, 44 orders (one generated master order has its own closure) — exact for 05-WORK-ORDERS on 2026-09-22
+    assert len(docs) == 45 and sum(1 for d in docs if d["kind"] == "closure") == 41 and {d["state"] for d in docs} == {"VALIDATED", "FALSIFIED", "DRAFT"}     # 46 files, 45 orders (one generated master order has its own closure) — exact for 05-WORK-ORDERS on 2026-09-22
     falsified = sorted(d["order_id"] for d in docs if d["state"] == "FALSIFIED"); assert falsified == ["COGNITIVE-PROVENANCE-ABLATION-R1", "RISK-AWARENESS-DECOMPOSITION-R1"]
     r1 = repo_orders.import_orders(conn); r2 = repo_orders.import_orders(conn)
-    assert r1["documents"] == r2["documents"] == 44 and r2["new"] == 0 and r2["updated"] == 44 and r2["edges_added"] == 0 and r1["states"]["FALSIFIED"] == 2
-    ch = repo_orders.chain(conn); assert len(ch) == 44 and all(x["work_order_id"].startswith("REPO:") for x in ch) and all(x["origin"]["repository"] for x in ch)
+    assert r1["documents"] == r2["documents"] == 45 and r2["new"] == 0 and r2["updated"] == 45 and r2["edges_added"] == 0 and r1["states"]["FALSIFIED"] == 2
+    ch = repo_orders.chain(conn); assert len(ch) == 45 and all(x["work_order_id"].startswith("REPO:") for x in ch) and all(x["origin"]["repository"] for x in ch)
     with conn.cursor() as cur:
         cur.execute("SELECT count(*) FROM ros_work_order_deps WHERE child LIKE 'REPO:%%' AND parent LIKE 'REPO:%%'"); n_edges = cur.fetchone()[0]
         cur.execute("SELECT parent FROM ros_work_order_deps WHERE child = 'REPO:COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1'"); parents = [r[0] for r in cur.fetchall()]
@@ -829,8 +829,8 @@ def test_r2_api_autopilot_workers_repo_orders_leitstand(conn, tid, attested, aut
             queue.request_stop(conn, j["job_id"], "founder")
     wc = client.get("/api/ros/workers/control").json(); assert {"host", "docker", "autopilot"} <= set(wc) and "alive" in wc["host"]
     assert client.post("/api/ros/workers/host/start", headers={"X-Logos-Actor": "agent"}).status_code == 403 and client.post("/api/ros/workers/nope/start").status_code == 400
-    ro = client.post("/api/ros/repo-orders/import").json(); assert ro["documents"] == 44
-    lst = client.get("/api/ros/repo-orders").json(); assert len(lst["orders"]) == 44 and len(lst["documents"]) == 44
+    ro = client.post("/api/ros/repo-orders/import").json(); assert ro["documents"] == 45
+    lst = client.get("/api/ros/repo-orders").json(); assert len(lst["orders"]) == 45 and len(lst["documents"]) == 45
     ls = client.get("/api/ros/leitstand").json()
     assert {"host", "docker", "autopilot", "theses", "attention", "governor", "first_steps", "states"} <= set(ls) and ls["ceiling"] == "PREREG_DRAFT"
     mine = next(t for t in ls["theses"] if t["thesis_id"] == tid); assert mine["autopilot"]["enabled"] is True and mine["stage_index"] == 0
