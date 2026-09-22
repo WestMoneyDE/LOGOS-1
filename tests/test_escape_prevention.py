@@ -51,6 +51,8 @@ from logos_gamma import (
     ProvenanceClaim,
     ValidationContext,
     admits,
+    issue_decision,
+    redeem_decision,
     validate,
 )
 
@@ -492,3 +494,42 @@ def test_executor_refuses_to_leave_its_root(tmp_path: Path):
     with pytest.raises(Refused, match="escapes the execution root"):
         FileSystemExecutor(root).execute(decision)
     assert outside.exists()
+
+
+# --------------------------------------------------------------------------
+# The window between the verdict and the effect
+# --------------------------------------------------------------------------
+
+def test_post_approval_substitution_is_blocked(tmp_path: Path):
+    """Approve A, then execute B under A's approval.
+
+    Every invariant passed when the verdict was taken, and the verdict is genuine.
+    What changed is the situation: between the decision and the effect, the target was
+    rewritten. A boolean approval survives that; a bound one does not.
+    """
+    approved = ValidationContext(
+        proposal=proposal(), tick=TICK, state_hash=STATE_HASH,
+        scope_digest=SCOPE_DIGEST, authority=grant(),
+    )
+    token = issue_decision(approved)
+    assert token is not None and redeem_decision(token, approved) is True
+
+    substituted = ValidationContext(
+        proposal=proposal(target="../../etc/shadow", proposal_digest=PROPOSAL_DIGEST),
+        tick=TICK, state_hash=STATE_HASH, scope_digest=SCOPE_DIGEST, authority=grant(),
+    )
+    assert validate(substituted).admits() is True          # Γ still says VALID for this one
+    assert redeem_decision(token, substituted) is False     # the token does not cover it
+
+
+def test_a_verdict_does_not_outlive_the_state_it_was_taken_in():
+    approved = ValidationContext(
+        proposal=proposal(), tick=TICK, state_hash=STATE_HASH,
+        scope_digest=SCOPE_DIGEST, authority=grant(),
+    )
+    token = issue_decision(approved)
+    moved = ValidationContext(
+        proposal=proposal(), tick=TICK + 1, state_hash=STATE_HASH,
+        scope_digest=SCOPE_DIGEST, authority=grant(),
+    )
+    assert redeem_decision(token, moved) is False

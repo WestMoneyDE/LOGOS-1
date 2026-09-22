@@ -50,9 +50,9 @@ grant, and it does delete the file, because a boundary that refuses everything
 proves nothing.
 
 `tests/test_escape_prevention.py` is the same thing as an adversarial suite:
-twenty-two simulated containment breaches, each blocked by a named invariant, plus
-two controls that keep it honest — the boundary is passable, and every one of the
-fifteen Γ invariants is the decisive refusal somewhere. Neither file contains a
+thirty simulated containment breaches, each blocked by a named invariant, plus two
+controls that keep it honest — the boundary is passable, and every one of the
+twenty-three Γ invariants is the decisive refusal somewhere. Neither file contains a
 rule of its own; both call `logos_gamma.validate`, and a differential test asserts
 their verdicts equal the kernel's on the same context.
 
@@ -61,7 +61,7 @@ their verdicts equal the kernel's on the same context.
 ```bash
 python -m venv .venv && . .venv/bin/activate     # Windows: .venv\Scripts\activate
 pip install -e ".[test]"                          # pytest + hypothesis
-python -m pytest -q                               # 4381 passed, 2 skipped
+python -m pytest -q                               # 4480 passed, 2 skipped
 ```
 
 Three levels, and only the first is needed to verify the boundary:
@@ -159,7 +159,7 @@ visibly labelled — and answered "self-derived" on 12/12 controls where "unknow
 was correct. Models do not reliably report where their content came from, so
 provenance is tracked around them.
 
-### 4. Γ decides: fifteen invariants, no model, no state
+### 4. Γ decides: twenty-three invariants, no model, no state
 
 ```text
 G0-EFFECT-KIND   an unregistered effect kind is denied until classified
@@ -179,18 +179,61 @@ G6-SELF-PRESERVATION  self-continuity authorises nothing
 G0-PROVENANCE    missing evidence stays UNKNOWN, and UNKNOWN refuses
 ```
 
+Eight more were added on 2026-09-22, each closing a case every invariant above
+passes. They are opt-in by construction: a grant or a deployment that does not
+declare the new field keeps its exact previous meaning, and for each one a test
+proves no value of that field can turn a refusal into an admission.
+
+```text
+G-BOUNDS         Γ-15  the digest binds the action and the target, not the amount:
+                       an approved transfer of 50 is not an executed transfer of 50,000,000
+G-TAINT          Γ-16  a genuine approval does not stretch over what the agent read
+                       afterwards — the indirect-injection case Γ-1 and Γ-3 both pass
+G-SEPARATION     Γ-17  four-eyes as an invariant: on a self-approval the origin IS
+                       human, so Γ-1 sees nothing wrong and this refuses
+G-ADVISORY       Γ-18  classifiers and referee models speak ABSTAIN / TIGHTEN / REFUSE.
+                       There is no ALLOW, so none can be tuned into an approver
+G-CONTRACT       Γ-19  an unregistered output-contract version is denied like an
+                       unregistered effect kind; version skew, not malice
+G-BUDGET         Γ-20  the loop Γ-10 cannot see: a fresh digest each retry passes the
+                       occurrence check every time, and the scope budget does not
+G-COMPENSATION   Γ-21  an unreconciled sibling step holds the scope. Γ stops; it does
+                       not compensate, because compensation is an effect needing a grant
+G-RECEIPT        Γ-22  an admission that leaves no trace cannot be audited. Presence and
+                       shape only — authenticity belongs to the audit layer
+```
+
 Aggregation is conservative and unanimous: `INVALID > UNCLEAR > VALID`, and only an
 unambiguous `VALID` admits. An `UNCLEAR` is a refusal, not a deferral to the
 caller's judgement.
 
-### 5. The executor is a second, independent gate
+### 5. The verdict is bound to the situation it was taken in
+
+Between the verdict and the effect, the world can move. A boolean approval does not
+survive that crossing: it records that an approval happened, not what it was for.
+
+```python
+token = issue_decision(context)              # None unless Γ admitted
+...                                          # anything may happen here
+if redeem_decision(token, context_now):      # immediately before the effect
+    execute(proposal)
+```
+
+The token binds every field Γ read, plus the identity of the rule set that judged it.
+A rewritten argument, a moved state, a swapped grant, an added advisory, a changed
+invariant set: each makes redemption fail. Ten such substitutions are driven by a
+parametrised test, including the one where Γ still says `VALID` for the substituted
+proposal — because it is a genuinely valid proposal, just not the one that was
+approved.
+
+### 6. The executor is a second, independent gate
 
 It confines effects to one root and refuses a target that resolves outside it —
 **even when Γ returned VALID**, because a human really may have approved that
 target. Γ judges authority; paths are the executor's job. Both gates are needed and
 neither substitutes for the other; a test fixes exactly this case.
 
-### 6. Budgets, caps and stop-closed behaviour
+### 7. Budgets, caps and stop-closed behaviour
 
 Invocation caps and planned-call budgets are frozen in the preregistration before a
 run. An activation token is bound to the run id, the model pin, the CLI version and
@@ -198,7 +241,7 @@ the cap, is not reusable, and any mismatch is refused. Counters are reconciled
 against invocation records at closure. A usage limit means STOP — no fallback
 model, no provider switch, no retry that turns a transport failure into evidence.
 
-### 7. What this does not have
+### 8. What this does not have
 
 Stated plainly, because a security section that lists only strengths is marketing:
 no inbound prompt-injection classifier, no compensating transactions or automatic
@@ -215,16 +258,17 @@ of 0.93.
 
 The full map — built, partial, missing, refused, unavailable, each row with a file
 or record reference — is [`docs/AGENT-SECURITY-STACK.md`](docs/AGENT-SECURITY-STACK.md).
-Eight candidate invariants that would close some of the gaps are drafted in
-[`docs/GAMMA-EXTENSION-PROPOSAL-R1.md`](docs/GAMMA-EXTENSION-PROPOSAL-R1.md); Γ is
-unchanged until each is separately approved.
+The eight candidate invariants proposed in
+[`docs/GAMMA-EXTENSION-PROPOSAL-R1.md`](docs/GAMMA-EXTENSION-PROPOSAL-R1.md) were all
+approved and are all implemented; that document now records each one's clause,
+predicate and tests.
 
 ## Verifying the claims yourself
 
 ```bash
-python -m pytest tests/test_gamma_kernel.py -q          # 46 adversarial kernel tests
+python -m pytest tests/test_gamma_kernel.py -q          # 129 adversarial kernel tests
 python -m pytest tests/test_gamma_trusted_core.py -q    # 24 structural tests: no LLM, no network, no shell, no hidden state
-python -m pytest tests/test_escape_prevention.py -q     # 58 tests: 22 containment breaches + controls
+python -m pytest tests/test_escape_prevention.py -q     # 74 tests: 30 containment breaches + controls
 python -m pytest tests/test_output_contract.py -q       # 49 tests: the JSON boundary
 python -m pytest -q                                     # everything
 ```
@@ -455,7 +499,7 @@ src/logos_memory/      memory and its local scope gate — never a source of aut
 src/logos_pstate/      persistent-state adapters for the causality experiments
 src/logos_research/    experiments, measurement harness, governance records
 core/                  runnable demonstrations; owns no rule, not packaged
-tests/                 49 suites, every one with a positive control
+tests/                 50 suites, every one with a positive control
 GAMMA.md               the invariant specification the kernel implements
 00-MAIN-STATE/         canonical transported state
 05-WORK-ORDERS/        scientific + engineering work orders, each with its closure

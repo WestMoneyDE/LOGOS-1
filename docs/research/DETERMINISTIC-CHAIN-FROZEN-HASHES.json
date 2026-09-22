@@ -1,7 +1,7 @@
 {
-  "frozen_by": "LOGOS1-GAMMA-BUDGET-COMPENSATION-RECEIPT-R1",
+  "frozen_by": "LOGOS1-DECISION-BINDING-R1",
   "preregistration": "PENDING_FOUNDER_PREREG",
-  "gamma_bundle_sha256": "5d17f5d0246f3cb6e68f1abd8489c0e6dcf89c55caa2392a5d17d70509af9ce6",
+  "gamma_bundle_sha256": "dfacc92271e1e31e9ab64f7774bc5f523d8cfd72383ecaa31294157dfc90c557",
   "p7_boundary_sha256": "96e68d0fdd7306090d824f30e20ab9e0cf3c5ff3d47aaee998d77ca7015d759e",
   "superseded": [
     {
@@ -51,6 +51,22 @@
       "superseded_by": "LOGOS1-GAMMA-BUDGET-COMPENSATION-RECEIPT-R1",
       "superseded_on": "2026-09-22",
       "reason": "founder decision: add invariants G-BUDGET (Gamma-20), G-COMPENSATION (Gamma-21) and G-RECEIPT (Gamma-22), completing the eight-candidate extension. G-BUDGET catches the loop Gamma-10 cannot see: an agent retrying with a slightly different target produces a fresh digest every time and is correctly granted every time. G-COMPENSATION holds the whole scope while a sibling step is unreconciled, and deliberately does not compensate, because a compensating action is an effect that needs its own grant. G-RECEIPT makes an admission auditable; it is a declared deployment requirement, so a system that has not adopted receipting keeps its exact previous verdicts."
+    },
+    {
+      "gamma_bundle_sha256": "5d17f5d0246f3cb6e68f1abd8489c0e6dcf89c55caa2392a5d17d70509af9ce6",
+      "frozen_by": "LOGOS1-GAMMA-BUDGET-COMPENSATION-RECEIPT-R1",
+      "preregistration": "PENDING_FOUNDER_PREREG",
+      "superseded_by": "LOGOS1-DECISION-BINDING-R1",
+      "superseded_on": "2026-09-22",
+      "reason": "founder goal 'find further security mechanisms': bind a verdict to the situation that produced it. Gamma answers about one ValidationContext; between that answer and the effect the world can move, and a boolean approval records that an approval happened rather than what it was for. issue_decision returns a token only for an admitted proposal, carrying a digest over every field Gamma read plus the identity of the invariant set; redeem_decision recomputes both immediately before the effect and refuses on any difference. This closes post-approval state substitution, reported externally as Loopjacking."
+    },
+    {
+      "gamma_bundle_sha256": "e3f837d5cecec42f7c5af745084bd1764d79be162b25f6e39840be09881d0a5c",
+      "frozen_by": "LOGOS1-DECISION-BINDING-R1",
+      "preregistration": "PENDING_FOUNDER_PREREG",
+      "superseded_by": "LOGOS1-DECISION-BINDING-R1",
+      "superseded_on": "2026-09-22",
+      "reason": "founder goal 'find further security mechanisms': bind a verdict to the situation that produced it. Gamma answers about one ValidationContext; between that answer and the effect the world can move, and a boolean approval records that an approval happened rather than what it was for. issue_decision returns a token only for an admitted proposal, carrying a digest over every field Gamma read plus the identity of the invariant set; redeem_decision recomputes both immediately before the effect and refuses on any difference. The digest is derived from the dataclass rather than a hand-written field list, so a new field is bound automatically. This closes post-approval state substitution, reported externally as Loopjacking."
     }
   ],
   "note": "p7_boundary_sha256 is unchanged: this order does not touch P7. Every previous value of gamma_bundle_sha256 is kept under 'superseded' so a re-freeze is auditable rather than silent."

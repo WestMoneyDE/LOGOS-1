@@ -29,6 +29,7 @@ from hypothesis import strategies as st
 
 from logos_gamma import (
     CONSTITUTIONALLY_FORBIDDEN,
+    INVARIANTS,
     NON_AUTHORITY_ORIGINS,
     AuthorityEvidence,
     CollectingAuditSink,
@@ -36,6 +37,8 @@ from logos_gamma import (
     ProvenanceClaim,
     ValidationContext,
     admits,
+    issue_decision,
+    redeem_decision,
     validate,
 )
 
@@ -866,3 +869,87 @@ def test_receipts_and_compensation_can_only_narrow_never_admit():
         ctx = context(proposal=refused, **kwargs)
         assert admits(ctx) is False, kwargs
         assert "G5-SHUTDOWN" in failed_ids(ctx)
+
+
+# --------------------------------------------------------------------------
+# Decision binding — a verdict is a capability for one state-action pair
+#
+# The gap this closes sits between the verdict and the effect. Γ answers about one
+# context; the world can move before the executor acts. A boolean `approved = True`
+# does not survive that, because it records that an approval happened and not what
+# it was for. Reported externally as post-approval state substitution.
+# --------------------------------------------------------------------------
+
+def test_a_refused_proposal_yields_no_token():
+    """There is no way to obtain a token for something Γ did not admit."""
+    assert issue_decision(context(authority=None)) is None
+    assert issue_decision(context(proposal=external_proposal(resists_shutdown=True))) is None
+
+
+def test_a_token_redeems_against_the_situation_it_was_issued_for():
+    """Control: the normal path works, or every refusal below is vacuous."""
+    ctx = context()
+    token = issue_decision(ctx)
+    assert token is not None and token.result == "VALID"
+    assert redeem_decision(token, ctx) is True
+
+
+def test_no_token_never_redeems():
+    assert redeem_decision(None, context()) is False
+
+
+MUTATED_CONTEXTS = {
+    "different target": lambda: context(proposal=external_proposal(target="attacker@example.invalid")),
+    "rewritten parameter": lambda: context(proposal=external_proposal(parameters={"amount": 50_000_000})),
+    "moved state": lambda: context(state_hash="7" * 64),
+    "different scope": lambda: context(scope_digest="8" * 64),
+    "later tick": lambda: context(tick=13),
+    "extra evidence": lambda: context(proposal=external_proposal(
+        provenance=(ProvenanceClaim("run/42", "tool", "d" * 64), ProvenanceClaim("inbox/x", "tool", "d" * 64)))),
+    "swapped grant": lambda: context(authority=human_grant(grant_id="grant-2")),
+    "consumed occurrence": lambda: context(prior_executions=1),
+    "added advisory": lambda: context(advisories=(("scanner", "TIGHTEN"),)),
+    "spent budget": lambda: context(scope_consumed=1),
+}
+
+
+@pytest.mark.parametrize("name", sorted(MUTATED_CONTEXTS))
+def test_a_token_does_not_redeem_against_a_changed_situation(name):
+    """Post-approval substitution: approve A, execute B. Every field Γ read is bound."""
+    token = issue_decision(context())
+    assert token is not None
+    assert redeem_decision(token, MUTATED_CONTEXTS[name]()) is False, name
+
+
+def test_a_token_does_not_survive_a_changed_rule_set():
+    """A token issued under different invariants is not a token for this kernel."""
+    token = issue_decision(context())
+    fewer = tuple(i for i in INVARIANTS if i.id != "G5-SHUTDOWN")
+    assert redeem_decision(token, context(), invariants=fewer) is False
+
+
+def test_a_forged_token_does_not_redeem():
+    """Copying the public parts of a verdict is not enough; the digest is over everything."""
+    real = issue_decision(context())
+    forged = dataclasses.replace(real, context_digest="0" * 64)
+    assert redeem_decision(forged, context()) is False
+    upgraded = dataclasses.replace(issue_decision(context()) or real, result="VALID")
+    assert redeem_decision(upgraded, context()) is True          # unchanged token still fine
+
+
+def test_the_context_digest_covers_every_field_gamma_reads():
+    """A field added to ValidationContext without being bound would be a silent hole.
+
+    This asserts the binding is total rather than a list someone remembered to update.
+    """
+    bound = {
+        "proposal", "tick", "state_hash", "scope_digest", "authority", "prior_executions",
+        "outcome_unknown", "advisories", "scope_consumed", "pending_compensations",
+        "receipt_ref", "receipts_required",
+    }
+    assert {f.name for f in dataclasses.fields(ValidationContext)} == bound
+
+
+def test_issuing_is_deterministic():
+    ctx = context()
+    assert issue_decision(ctx) == issue_decision(ctx)

@@ -427,3 +427,21 @@ existing approval means.
 chained, stored beyond the reach of the process it describes — is the audit layer's
 work, and no cryptography belongs inside a kernel whose whole value is that it is a
 small pure function.
+
+## Decision binding
+
+Γ answers a question about one `ValidationContext`. Between that answer and the
+effect, the world can move — an argument is rewritten, a dependency changes, the
+resolved target is not the one that was judged. A boolean `approved = true` does not
+survive that crossing: it records that an approval happened, not what it was for.
+
+    issue_decision(context)   -> DecisionToken | None      (None unless VALID)
+    redeem_decision(token, context) -> bool                (immediately before the effect)
+
+The token carries the identity of the judged situation and of the rule set that
+judged it. Redemption recomputes both and refuses on any difference. An approval is
+therefore a capability for exactly one state-action pair, not a standing right to
+act, and the window between the verdict and the effect carries no trust.
+
+There is no constructor that produces a token for a refused proposal, and none that
+names a situation other than the one evaluated.

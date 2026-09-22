@@ -200,6 +200,29 @@ class ValidationContext:
 
 
 @dataclass(frozen=True)
+class DecisionToken:
+    """A verdict bound to the exact situation that produced it.
+
+    Γ answers a question about one `ValidationContext`. Between that answer and the
+    execution, the world can move: an argument is rewritten, a dependency changes, the
+    resolved target is not the one that was judged. A boolean `approved = True` does
+    not survive that; it says an approval happened, not what it was for.
+
+    The token carries the identity of the judged situation and of the rule set that
+    judged it. `redeem` recomputes both and refuses on any difference — so an approval
+    is a capability for exactly one state-action pair, not a standing right to act.
+    """
+
+    proposal_digest: str
+    scope_digest: str
+    state_hash: str
+    tick: int
+    context_digest: str
+    invariant_set_digest: str
+    result: Result
+
+
+@dataclass(frozen=True)
 class Finding:
     invariant_id: str
     clause: str
