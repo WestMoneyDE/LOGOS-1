@@ -294,6 +294,10 @@ BRIDGES = {
     ("logos_research/experiments/no_history_promotion.py", "_unauthorized_proposal"): "NON_CONSEQUENTIAL (fixed literal proposal; no memory input)",
     # registered by CANONICAL-AUTHORITY-PRODUCTION-BRIDGE-R1 (2026-09-17, C2): the PRODUCTION relocation of canonical_proposal
     ("logos_runtime/bridge.py", "build_proposal"): "PRODUCTION_CANONICAL_BRIDGE (logos_effects owner; claims -> declared_*)",
+    # registered by LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1 (2026-09-22): demonstration path, not packaged,
+    # not imported by any production module; both build proposals for the kernel and own no rule
+    ("core/governance.py", "_isolate"): "DEMONSTRATION (token stream -> isolated proposal; no memory input)",
+    ("core/output_contract.py", "to_commands"): "DEMONSTRATION (validated JSON envelope -> proposal; claimed origins never promoted)",
 }
 
 

@@ -17,15 +17,26 @@ CLAUDE_KINDS = ("claude",) + AGENT_KINDS + MEASUREMENT_KINDS   # prior_art needs
 KINDS = DETERMINISTIC_KINDS + CLAUDE_KINDS
 
 
-def idempotency_key(kind: str, work_order_id: str | None, run_id: str | None, attempt_group: int, thesis_id: str | None = None) -> str:
-    """(work_order_id, run_id, thesis_id, kind, attempt_group) — thesis_id added in R2 so that agent jobs of different theses never collide."""
-    return f"{work_order_id or '-'}|{run_id or '-'}|{thesis_id or '-'}|{kind}|{attempt_group}"
+def idempotency_key(kind: str, work_order_id: str | None, run_id: str | None, attempt_group: int, thesis_id: str | None = None,
+                    discriminator: str | None = None) -> str:
+    """(work_order_id, run_id, thesis_id, kind, attempt_group[, discriminator]).
+
+    `thesis_id` was added in R2 so that agent jobs of different theses never collide.
+    `discriminator` was added by LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1 for jobs whose
+    subject lives only in the payload: a `radar_process` job carries no work order,
+    no run and no thesis, so every radar item produced the same key and the second
+    item was silently handed the first item's job. The segment is appended only when
+    present, so every key issued before this change is unchanged.
+    """
+    base = f"{work_order_id or '-'}|{run_id or '-'}|{thesis_id or '-'}|{kind}|{attempt_group}"
+    return base if discriminator is None else f"{base}|{discriminator}"
 
 
-def enqueue(conn, kind: str, *, work_order_id: str | None = None, run_id: str | None = None, thesis_id: str | None = None, payload: dict | None = None, attempt_group: int = 0, actor: str = "system") -> dict:
+def enqueue(conn, kind: str, *, work_order_id: str | None = None, run_id: str | None = None, thesis_id: str | None = None, payload: dict | None = None, attempt_group: int = 0, actor: str = "system",
+            discriminator: str | None = None) -> dict:
     if kind not in KINDS:
         raise ValueError(f"unknown job kind {kind!r}; expected one of {KINDS}")
-    key = idempotency_key(kind, work_order_id, run_id, attempt_group, thesis_id)
+    key = idempotency_key(kind, work_order_id, run_id, attempt_group, thesis_id, discriminator)
     initial = "waiting_governance" if kind in CLAUDE_KINDS else "queued"
     with conn.cursor(row_factory=dict_row) as cur:
         cur.execute("SELECT * FROM ros_jobs WHERE idempotency_key = %s", (key,)); existing = cur.fetchone()

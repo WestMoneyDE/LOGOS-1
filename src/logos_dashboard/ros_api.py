@@ -644,7 +644,8 @@ def radar_ai(radar_id: int, x_logos_actor: str | None = Header(default=None)):
         if _radar.get_radar(c, radar_id) is None:
             raise HTTPException(404, str(radar_id))
         n = sum(1 for j in queue.list_jobs(c, 10000) if j["kind"] == "radar_process" and (j.get("payload") or {}).get("radar_id") == radar_id)
-        return queue.enqueue(c, "radar_process", payload={"radar_id": radar_id}, attempt_group=n, actor=_actor(x_logos_actor))
+        return queue.enqueue(c, "radar_process", payload={"radar_id": radar_id}, attempt_group=n, actor=_actor(x_logos_actor),
+                             discriminator=f"radar:{radar_id}")
 
 
 @router.delete("/radar/test-items")

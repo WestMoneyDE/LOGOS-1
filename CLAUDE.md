@@ -16,6 +16,15 @@ Never infer consciousness from generated self-report. Never let memory, a model 
 
 Prefer small causal mechanisms to architecture expansion. If a new subsystem duplicates identity, safety, evidence, memory or authority primitives, stop and justify why composition is insufficient.
 
+## Output format
+
+Emit one `logos-agent-output/1` JSON envelope; prose is rendered from it, never beside it.
+The full contract, and the reason the instruction is not the enforcement, is in `AGENTS.md`
+("Agent output contract — JSON first"). Enforcement lives in `src/core/output_contract.py`
+and Γ; the properties are fixed in `tests/test_output_contract.py`. Never put a permission,
+a role or an authority level in the envelope: there is no field for it, and inventing one
+refuses the whole output.
+
 ## DNA / design-lens / health research rules
 
 - Keep natural/source mechanisms and human-engineered mechanisms as separate evidence classes when using the design lens.

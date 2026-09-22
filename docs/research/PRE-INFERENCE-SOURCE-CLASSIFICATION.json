@@ -1673,6 +1673,70 @@
     "apps/dashboard/e2e/global-setup.ts": {
       "class": "TOOLING",
       "note": "Dashboard-UI; liest nur die lokale API; kein Modellaufruf"
+    },
+    "05-WORK-ORDERS/NEXT-SESSION-LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: Closure / Sitzungsbericht"
+    },
+    "09-SESSIONS/2026-09-22-LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1/SESSION-REPORT.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: Closure / Sitzungsbericht"
+    },
+    "README.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: Einstiegspunkt bzw. Paketausschluss fuer src/core; kein Modellaufruf"
+    },
+    "docs/PHENOMENAL_SIMULATION.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: Theorie/Spekulation, P7-sicher; kein Claim, keine Prereg, kein Registereintrag"
+    },
+    "pyproject.toml": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: Einstiegspunkt bzw. Paketausschluss fuer src/core; kein Modellaufruf"
+    },
+    "src/core/__init__.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: lauffaehige Demonstration von Capability != Authority ueber den echten Gamma-Kernel; keine eigene Regel, keine Ausnahme (Differenztest); nicht paketiert; kein Modellaufruf"
+    },
+    "src/core/governance.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: lauffaehige Demonstration von Capability != Authority ueber den echten Gamma-Kernel; keine eigene Regel, keine Ausnahme (Differenztest); nicht paketiert; kein Modellaufruf"
+    },
+    "tests/test_escape_prevention.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: 22 simulierte Ausbruchsversuche, deterministisch, kein Modellaufruf; Kontrollen: Grenze passierbar + jedes Invariant angegriffen"
+    },
+    "AGENTS.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: Ausgabekontrakt dokumentiert; ausdruecklich als Ergonomie, nicht als Durchsetzung"
+    },
+    "CLAUDE.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: Verweis auf den Ausgabekontrakt; keine Durchsetzung durch Anweisung"
+    },
+    "src/core/output_contract.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: JSON-first Ausgabekontrakt; geschlossenes Schema, Prosa verworfen, Freitext aus dem JSON abgeleitet; entscheidet nichts, Urteil kommt aus Gamma; kein Modellaufruf"
+    },
+    "tests/test_output_contract.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: deterministische Pruefung des Ausgabekontrakts (Prosa-Unabhaengigkeit, geschlossenes Schema, kein Feld erkauft eine Zulassung); kein Modellaufruf"
+    },
+    "docs/AGENT-SECURITY-STACK.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: Technik-Landkarte (gebaut / fehlend / abgelehnt); kein Claim, kein Reifegrad, kein Modellaufruf"
+    },
+    "docs/GAMMA-EXTENSION-PROPOSAL-R1.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: Entwurf von acht Kandidaten-Invarianten; Gamma UNVERAENDERT, nicht implementiert, Founder-Entscheidung offen"
+    },
+    "tests/test_memory_bridge_repair.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: Record; kein Modellaufruf"
+    },
+    "tests/test_memory_bridge_repair_validation.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: Record; kein Modellaufruf"
     }
   },
   "unclassified": 0
