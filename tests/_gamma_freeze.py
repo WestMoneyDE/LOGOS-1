@@ -18,6 +18,11 @@ unapproved edit to Γ fails immediately, whether it is committed or not.
 
 Changing Γ therefore takes two deliberate acts, not one: the code, and a re-freeze
 that records who approved it and why.
+
+Line endings are normalized before hashing. Git rewrites LF to CRLF on checkout
+under Windows, so a hash over raw bytes changes when you switch branches on one
+platform and not on another — a pin that depends on the checkout is not a pin. What
+is frozen is content.
 """
 from __future__ import annotations
 
@@ -32,6 +37,14 @@ PACKAGE_PATH = ROOT / "docs/research/DETERMINISTIC-CHAIN-CONSOLIDATION.json"
 #: Paths a predecessor guard should leave to this module rather than diffing.
 GAMMA_PATHS = (":(exclude)GAMMA.md", ":(exclude)src/logos_gamma")
 
+_CRLF = bytes([13, 10])
+_LF = bytes([10])
+
+
+def _normalized(path: Path) -> bytes:
+    """File content with line endings normalized to LF."""
+    return path.read_bytes().replace(_CRLF, _LF)
+
 
 def gamma_bundle_files() -> list[str]:
     return sorted(json.loads(PACKAGE_PATH.read_text(encoding="utf-8"))["gamma_bundle_files"])
@@ -39,12 +52,12 @@ def gamma_bundle_files() -> list[str]:
 
 def gamma_bundle_hash() -> str:
     """Hash of the Γ bundle as it is on disk, not as it was committed."""
-    return hashlib.sha256(b"".join((ROOT / p).read_bytes() for p in gamma_bundle_files())).hexdigest()
+    return hashlib.sha256(b"".join(_normalized(ROOT / p) for p in gamma_bundle_files())).hexdigest()
 
 
 def p7_boundary_hash() -> str:
     package = json.loads(PACKAGE_PATH.read_text(encoding="utf-8"))
-    text = (ROOT / package["p7_boundary_file"]).read_bytes()
+    text = _normalized(ROOT / package["p7_boundary_file"])
     return hashlib.sha256(text[text.index(b"## Consciousness / P7 boundary"):]).hexdigest()
 
 

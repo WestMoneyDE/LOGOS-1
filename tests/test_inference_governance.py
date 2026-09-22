@@ -302,8 +302,7 @@ def _battery():
     assert CALLS["provider_calls"] == 0 and CALLS["model_calls"] == 0, "M12"
     assert all(d["value"] != "PRODUCTION_BRIDGE_READY" for d in json.loads((ROOT / "docs/research/CANONICAL-EFFECT-OWNER.json").read_text(encoding="utf-8"))["governance_decisions"]), "M13"
     assert "R1-R3 remain OPEN" in " ".join(a.raw["conditions"]), "M14"
-    p7 = (ROOT / "docs/research/2026-08-20-PERSISTENT-STATE-PRIOR-ART-DELTA.md").read_bytes()
-    assert hashlib.sha256(p7[p7.index(b"## Consciousness / P7 boundary"):]).hexdigest() == P7_HASH, "M15"
+    assert _gamma_freeze.p7_boundary_hash() == P7_HASH, "M15"   # one implementation, line-ending normalized
 
 
 P7_HASH = json.loads((ROOT / "docs/research/DETERMINISTIC-CHAIN-FROZEN-HASHES.json").read_text(encoding="utf-8"))["p7_boundary_sha256"]
