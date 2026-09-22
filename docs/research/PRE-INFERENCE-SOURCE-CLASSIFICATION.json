@@ -1785,6 +1785,10 @@
     "tests/_gamma_freeze.py": {
       "class": "EXPERIMENTAL_DETERMINISTIC",
       "note": "LOGOS1-GAMMA-TAINT-R1: eine auditierbare Γ-Anbindung statt sechs stiller Commit-IDs; prueft die Bytes auf der Platte, nicht einen Diff zwischen Commits"
+    },
+    "src/logos_gamma/__init__.py": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-GAMMA-ADVISORY-R1: Gamma-Erweiterung auf Founder-Entscheidung; nur verschaerfend; Bundle neu eingefroren mit Supersede-Kette"
     }
   },
   "unclassified": 0

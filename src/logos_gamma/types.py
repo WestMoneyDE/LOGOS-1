@@ -57,6 +57,10 @@ KNOWN_EFFECT_KINDS = frozenset(
     | CONSTITUTIONALLY_FORBIDDEN
 )
 
+#: Γ-18 advisory vocabulary. Deliberately without an "ALLOW": a statistical
+#: component may refuse, may ask for caution, may say nothing — never permit.
+ADVISORY_VOTES = frozenset({"ABSTAIN", "TIGHTEN", "REFUSE"})
+
 Externality = Literal["internal", "external"]
 Reversibility = Literal["reversible", "partially-reversible", "irreversible"]
 
@@ -171,6 +175,9 @@ class ValidationContext:
     prior_executions: int = 0
     #: True when a prior execution's outcome is unresolved (Γ-11).
     outcome_unknown: bool = False
+    #: Γ-18: votes from statistical components, as `(source, vote)` pairs. Their
+    #: vocabulary has no "ALLOW"; see `ADVISORY_VOTES`.
+    advisories: tuple[tuple[str, str], ...] = ()
 
 
 @dataclass(frozen=True)

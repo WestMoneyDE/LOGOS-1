@@ -27,6 +27,7 @@ from .audit import AuditRecord, AuditSink, CollectingAuditSink, NullAuditSink, b
 from .invariants import INVARIANTS, INVARIANTS_BY_ID, Invariant
 from .kernel import GAMMA_BUDGET, admits, explain, validate
 from .types import (
+    ADVISORY_VOTES,
     AUTHORITY_BEARING_ORIGINS,
     CONSTITUTIONALLY_FORBIDDEN,
     KNOWN_EFFECT_KINDS,
@@ -42,6 +43,7 @@ from .types import (
 from .verifier import ArtifactVerdict, verify_claim, verify_manifest, verify_text_artifact
 
 __all__ = [
+    "ADVISORY_VOTES",
     "AUTHORITY_BEARING_ORIGINS",
     "CONSTITUTIONALLY_FORBIDDEN",
     "GAMMA_BUDGET",

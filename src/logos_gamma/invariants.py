@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from typing import Callable
 
 from .types import (
+    ADVISORY_VOTES,
     CONSTITUTIONALLY_FORBIDDEN,
     KNOWN_EFFECT_KINDS,
     Finding,
@@ -355,6 +356,32 @@ def _proposer_is_not_the_approver(ctx: ValidationContext) -> Finding:
     return _ok("G-SEPARATION", "Γ-17", f"{proposer!r} proposed and {grant.issued_by!r} approved")
 
 
+
+# --------------------------------------------------------------------------
+# Γ-18 — an advisory may tighten; it has no word for permission
+# --------------------------------------------------------------------------
+
+def _advisories_only_tighten(ctx: ValidationContext) -> Finding:
+    """Where every statistical component lives, and the shape of its power.
+
+    A classifier, a risk score, a reliability gate, a second model reviewing the
+    plan: each may refuse, may ask for caution, may abstain. None may permit, because
+    the vocabulary has no token for it. A component that answers outside its contract
+    has already failed, so an unknown token is itself a refusal.
+    """
+    for source, vote in ctx.advisories:
+        if vote not in ADVISORY_VOTES:
+            return _bad("G-ADVISORY", "Γ-18",
+                        f"advisory {source!r} answered {vote!r}, which is not in {sorted(ADVISORY_VOTES)}; "
+                        "an advisory has no vocabulary for permission and none for improvisation")
+        if vote == "REFUSE":
+            return _bad("G-ADVISORY", "Γ-18", f"advisory {source!r} refused")
+    tighten = tuple(source for source, vote in ctx.advisories if vote == "TIGHTEN")
+    if tighten:
+        return _ok("G-ADVISORY", "Γ-18", f"caution recorded by {sorted(tighten)}; no verdict change")
+    return _ok("G-ADVISORY", "Γ-18", "no advisory objection")
+
+
 #: Evaluation order is stable so verdicts are reproducible.
 INVARIANTS: tuple[Invariant, ...] = (
     Invariant("G0-EFFECT-KIND", "Γ0", "effect kind is registered", _effect_kind_known),
@@ -388,6 +415,8 @@ INVARIANTS: tuple[Invariant, ...] = (
               _authority_covers_the_evidence_in_time),
     Invariant("G-SEPARATION", "Γ-17", "proposer and approver are distinct principals",
               _proposer_is_not_the_approver),
+    Invariant("G-ADVISORY", "Γ-18", "an advisory may tighten, never permit",
+              _advisories_only_tighten),
 )
 
 INVARIANTS_BY_ID = {inv.id: inv for inv in INVARIANTS}

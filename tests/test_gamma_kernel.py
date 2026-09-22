@@ -635,3 +635,64 @@ def test_separation_can_only_narrow_never_admit():
         ctx = context(proposal=refused, authority=human_grant(issued_by=issuer))
         assert admits(ctx) is False, issuer
         assert "G5-SHUTDOWN" in failed_ids(ctx)
+
+
+# --------------------------------------------------------------------------
+# Γ-18 — an advisory may tighten; it has no word for permission
+# --------------------------------------------------------------------------
+
+def test_no_advisories_is_unchanged():
+    assert admits(context()) is True
+
+
+@pytest.mark.parametrize("vote", ["ABSTAIN", "TIGHTEN"])
+def test_abstain_and_tighten_do_not_change_the_verdict(vote):
+    """Control: an advisory that is not refusing leaves a valid proposal valid."""
+    assert admits(context(advisories=(("injection-classifier", vote),))) is True
+
+
+def test_a_refusal_refuses():
+    ctx = context(advisories=(("injection-classifier", "REFUSE"),))
+    assert "G-ADVISORY" in failed_ids(ctx)
+    assert admits(ctx) is False
+
+
+def test_one_refusal_among_many_is_enough():
+    ctx = context(advisories=(("a", "ABSTAIN"), ("b", "TIGHTEN"), ("c", "REFUSE"), ("d", "ABSTAIN")))
+    assert admits(ctx) is False
+
+
+@pytest.mark.parametrize("vote", ["ALLOW", "PERMIT", "OK", "SAFE", "APPROVE", "allow", "true", "", "YES"])
+def test_an_advisory_that_tries_to_permit_is_itself_a_refusal(vote):
+    """The decisive property: there is no token that makes an advisory an approver.
+
+    A component answering outside its contract has already failed, so the attempt is
+    not ignored — it refuses. This is why a compromised or prompt-injected referee
+    cannot be turned into a source of permission: the vocabulary has no word for it.
+    """
+    ctx = context(advisories=(("compromised-referee", vote),))
+    assert "G-ADVISORY" in failed_ids(ctx)
+    assert admits(ctx) is False
+
+
+def test_no_advisory_value_can_rescue_a_refused_proposal():
+    refused = external_proposal(self_preservation_motivated=True)
+    for votes in ((), (("a", "ABSTAIN"),), (("a", "TIGHTEN"),), (("a", "REFUSE"),),
+                  (("a", "ALLOW"),), (("a", "ABSTAIN"), ("b", "TIGHTEN"))):
+        ctx = context(proposal=refused, advisories=votes)
+        assert admits(ctx) is False, votes
+        assert "G6-SELF-PRESERVATION" in failed_ids(ctx)
+
+
+def test_tighten_is_recorded_not_discarded():
+    """Caution has to be visible in the record, or it is not caution, it is silence."""
+    ctx = context(advisories=(("reliability-gate", "TIGHTEN"), ("scanner", "TIGHTEN")))
+    reason = next(f.reason for f in validate(ctx).findings if f.invariant_id == "G-ADVISORY")
+    assert "reliability-gate" in reason and "scanner" in reason and "no verdict change" in reason
+
+
+def test_the_vocabulary_has_no_allow():
+    """Stated as an assertion so that adding one later fails loudly."""
+    from logos_gamma import ADVISORY_VOTES
+    assert ADVISORY_VOTES == {"ABSTAIN", "TIGHTEN", "REFUSE"}
+    assert not any(v.upper() in {"ALLOW", "PERMIT", "APPROVE", "GRANT"} for v in ADVISORY_VOTES)

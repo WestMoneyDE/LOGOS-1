@@ -1649,6 +1649,10 @@
     "tests/test_pre_inference_readiness.py": {
       "class": "EXPERIMENTAL_DETERMINISTIC",
       "note": "LOGOS1-GAMMA-TAINT-R1: Kontrolle + Angriffe; kein Modellaufruf"
+    },
+    "src/logos_gamma/__init__.py": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-GAMMA-ADVISORY-R1: Gamma-Erweiterung auf Founder-Entscheidung; nur verschaerfend; Bundle neu eingefroren mit Supersede-Kette"
     }
   },
   "unclassified": 0

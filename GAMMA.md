@@ -315,3 +315,27 @@ origin is human and whose human is the requester.
 Recording no issuer leaves the invariant inactive, which is a deliberate choice: an
 approval store that does not know who approved cannot be made to answer the
 question, and Γ will not invent the answer.
+
+### Γ-18 An advisory may tighten; it has no word for permission
+
+Statistical components are useful and they are not trustworthy in the way a proof
+is. An injection classifier, a risk score, a reliability gate, a second model
+reviewing a plan: each of them can be right often and wrong without warning.
+
+They enter Γ as advisories, and the vocabulary they may speak in is:
+
+    ABSTAIN    no opinion
+    TIGHTEN    a reason for more caution, recorded, no verdict change
+    REFUSE     this must not proceed
+
+There is no `ALLOW`. An advisory cannot vote for an action even if it wants to, and
+a compromised one cannot be made to. Any token outside the vocabulary is itself a
+refusal, because a component that answers outside its contract has already failed.
+
+This is the same construction as the closed output envelope: the dangerous option is
+absent rather than guarded. A guard can be argued with; a missing word cannot.
+
+The consequence is deliberate and worth stating plainly. Adding an advisory can only
+ever lower the rate of admitted proposals. It can never raise it, so no measurement
+that shows a model "improving" throughput can be attributed to an advisory, and no
+advisory can be tuned into an approver.
