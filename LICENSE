@@ -1,21 +1,62 @@
-MIT License
+Business Source License 1.1
 
-Copyright (c) 2026 Ömer Coskun
+Parameters
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Licensor:           Ömer Hüseyin Coskun
+Licensed Work:      The LOGOS-1 software platform, including all source code, 
+                    documentation, configurations, and assets contained in this repository.
+Additional Use Grant: 
+                    You may make production use of the Licensed Work only for 
+                    non-commercial purposes, internal research, testing, and evaluation. 
+                    Commercial production use is strictly prohibited without a separate 
+                    commercial license from the Licensor.
+Change Date:        [Specify a date, e.g., August 19, 2030 - maximum 4 years from now]
+Change License:     GNU General Public License v3.0 (or Apache License, Version 2.0)
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+Licensed Work is Copyright © 2026 WestMoneyDE. All rights reserved.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Text of the License
+
+1. Grant of Rights
+
+The Licensor hereby grants you the right to copy, modify, create derivative works 
+of, redistribute, and make non-production use of the Licensed Work. You may 
+also make production use of the Licensed Work as explicitly allowed by the 
+Additional Use Grant specified above.
+
+Any copy, modification, or derivative work of the Licensed Work that you make 
+or distribute must include a copy of this License, including the Parameters above.
+
+2. Effective Date and Change
+
+This License is effective for each version of the Licensed Work as of the date 
+of its first public distribution by the Licensor. 
+
+On the Change Date specified in the Parameters, or on such earlier date as 
+the Licensor may specify in a public notice, this License shall automatically 
+convert to the Change License specified in the Parameters for that version of 
+the Licensed Work. 
+
+From the Change Date forward, your rights and obligations with respect to that 
+version of the Licensed Work shall be governed entirely by the Change License, 
+and this License shall no longer apply.
+
+3. Intellectual Property Rights
+
+Except for the limited license rights expressly granted in this License, 
+the Licensor retains all right, title, and interest in and to the Licensed Work.
+
+4. Termination
+
+Your rights under this License terminate automatically if you fail to comply 
+with any of its terms.
+
+5. Disclaimer of Warranty
+
+THE LICENSED WORK IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR 
+IN CONNECTION WITH THE LICENSED WORK OR THE USE OR OTHER DEALINGS IN THE 
+LICENSED WORK.
