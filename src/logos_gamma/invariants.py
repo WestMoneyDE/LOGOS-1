@@ -405,6 +405,71 @@ def _output_contract_is_known(ctx: ValidationContext) -> Finding:
     return _ok("G-CONTRACT", "Γ-19", f"output contract {version!r} is registered")
 
 
+
+# --------------------------------------------------------------------------
+# Γ-20 — a scope has a finite consequential budget
+# --------------------------------------------------------------------------
+
+def _scope_budget_not_exhausted(ctx: ValidationContext) -> Finding:
+    """The loop Γ-10 cannot see.
+
+    Γ-10 refuses a replay of the same digest. An agent that retries with a slightly
+    different target each time produces a new digest each time, is correctly granted
+    each time, and passes Γ-10 every time while the damage accumulates. A budget
+    counts recorded executions in the scope — a number, not a score.
+    """
+    grant = ctx.authority
+    if grant is None or grant.scope_budget is None:
+        return _ok("G-BUDGET", "Γ-20", "approval states no scope budget")
+    if ctx.scope_consumed >= grant.scope_budget:
+        return _bad("G-BUDGET", "Γ-20",
+                    f"scope budget exhausted ({ctx.scope_consumed}/{grant.scope_budget}); "
+                    "a loop does not earn more authority than a single step")
+    return _ok("G-BUDGET", "Γ-20",
+               f"scope budget remains ({ctx.scope_consumed}/{grant.scope_budget})")
+
+
+
+# --------------------------------------------------------------------------
+# Γ-21 / Γ-22 — unreconciled siblings, and the receipt for an admission
+# --------------------------------------------------------------------------
+
+def _no_unreconciled_step_in_this_scope(ctx: ValidationContext) -> Finding:
+    """Γ-11 holds a retry of the same proposal; this holds the whole scope.
+
+    A timeout at step three of five leaves the world in a state nobody has described.
+    Rolling forward from an undescribed state is guessing. Γ stops and does not
+    compensate: a compensating action is an effect, it needs its own grant, and a
+    kernel that quietly undid things would be acting unauthorised at exactly the
+    moment its picture of the world is least reliable.
+    """
+    if ctx.pending_compensations:
+        return _bad("G-COMPENSATION", "Γ-21",
+                    f"{len(ctx.pending_compensations)} step(s) in this scope are unreconciled: "
+                    f"{sorted(ctx.pending_compensations)}; the scope is held, not rolled forward")
+    return _ok("G-COMPENSATION", "Γ-21", "no unreconciled step in this scope")
+
+
+def _admission_is_receipted(ctx: ValidationContext) -> Finding:
+    """A system whose refusals are provable and whose approvals are not has proved
+    the less interesting half.
+
+    Presence and shape only. Whether the receipt is authentic — signed, chained,
+    stored beyond the reach of the process it describes — is the audit layer's work;
+    no cryptography belongs inside a small pure function.
+    """
+    if not ctx.receipts_required:
+        return _ok("G-RECEIPT", "Γ-22", "this deployment does not require receipts")
+    if not ctx.proposal.is_consequential():
+        return _ok("G-RECEIPT", "Γ-22", "non-consequential proposal")
+    ref = ctx.receipt_ref
+    if not ref or not ref.strip():
+        return _unclear("G-RECEIPT", "Γ-22",
+                        "consequential proposal carries no decision receipt; an unrecorded admission "
+                        "cannot be audited afterwards")
+    return _ok("G-RECEIPT", "Γ-22", f"decision receipt {ref!r} present")
+
+
 #: Evaluation order is stable so verdicts are reproducible.
 INVARIANTS: tuple[Invariant, ...] = (
     Invariant("G0-EFFECT-KIND", "Γ0", "effect kind is registered", _effect_kind_known),
@@ -441,6 +506,11 @@ INVARIANTS: tuple[Invariant, ...] = (
     Invariant("G-ADVISORY", "Γ-18", "an advisory may tighten, never permit",
               _advisories_only_tighten),
     Invariant("G-CONTRACT", "Γ-19", "output contract is registered", _output_contract_is_known),
+    Invariant("G-BUDGET", "Γ-20", "scope budget is finite", _scope_budget_not_exhausted),
+    Invariant("G-COMPENSATION", "Γ-21", "an unreconciled step blocks the next one",
+              _no_unreconciled_step_in_this_scope),
+    Invariant("G-RECEIPT", "Γ-22", "an admitted consequential effect is receipted",
+              _admission_is_receipted),
 )
 
 INVARIANTS_BY_ID = {inv.id: inv for inv in INVARIANTS}

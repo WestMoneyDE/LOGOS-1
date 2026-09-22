@@ -478,7 +478,14 @@ def test_attack_authority_claims_in_infrastructure_stores_create_nothing(be, lie
     repo = be["repository"]
     identity = _identity(repo, "authority-leak")
     stack = _stack(be)
-    run = ResearchRun(stack, identity, f"INFRA-SF-authority-{abs(hash(lie)) % 10000}")
+    # The run id must be unique per execution, because these rows persist in the lab
+    # database between runs. It used to be abs(hash(lie)) % 10000, which is unique only
+    # by accident: Python salts hash() per process, so a rerun usually produced a new id
+    # and the failure looked like a flake. It was not -- it was a run id that is neither
+    # stable nor guaranteed unique. The prefix now keeps the case traceable and the
+    # suffix makes it actually unique.
+    case = hashlib.sha256(lie.encode()).hexdigest()[:12]
+    run = ResearchRun(stack, identity, f"INFRA-SF-authority-{case}-{uuid.uuid4().hex[:8]}")
     run.start()
     run.trace("authority-claim", {"text": lie})
     run.llm_generation({"model": "fake", "output": lie})

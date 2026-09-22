@@ -1653,6 +1653,14 @@
     "src/logos_gamma/__init__.py": {
       "class": "GOVERNANCE_ONLY",
       "note": "LOGOS1-GAMMA-ADVISORY-R1: Gamma-Erweiterung auf Founder-Entscheidung; nur verschaerfend; Bundle neu eingefroren mit Supersede-Kette"
+    },
+    "tests/test_infra_adapters.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-GAMMA-BUDGET-COMPENSATION-RECEIPT-R1: Kontrolle + Angriffe, deterministisch; kein Modellaufruf"
+    },
+    "tests/test_infra_self_falsification.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-GAMMA-BUDGET-COMPENSATION-RECEIPT-R1: Kontrolle + Angriffe, deterministisch; kein Modellaufruf"
     }
   },
   "unclassified": 0

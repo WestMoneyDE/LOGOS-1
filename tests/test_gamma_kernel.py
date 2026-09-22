@@ -20,6 +20,7 @@ The required adversarial set from the work order:
 from __future__ import annotations
 
 import copy
+import inspect
 import dataclasses
 
 import pytest
@@ -730,3 +731,138 @@ def test_a_contract_version_can_only_narrow_never_admit():
     ctx = context(proposal=refused)
     assert admits(ctx) is False
     assert "G5-SHUTDOWN" in failed_ids(ctx)
+
+
+# --------------------------------------------------------------------------
+# Γ-20 — a scope has a finite consequential budget
+# --------------------------------------------------------------------------
+
+def test_a_grant_without_a_budget_is_unchanged():
+    assert admits(context(scope_consumed=10**6)) is True
+
+
+def test_budget_remaining_is_admitted():
+    """Control: a budget that is not spent does not block anything."""
+    assert admits(context(authority=human_grant(scope_budget=5), scope_consumed=4)) is True
+
+
+def test_an_exhausted_budget_refuses():
+    ctx = context(authority=human_grant(scope_budget=5), scope_consumed=5)
+    assert "G-BUDGET" in failed_ids(ctx)
+    assert admits(ctx) is False
+
+
+def test_a_budget_of_zero_permits_nothing():
+    assert admits(context(authority=human_grant(scope_budget=0), scope_consumed=0)) is False
+
+
+def test_the_loop_gamma_10_cannot_see():
+    """Each attempt is a new digest with its own valid grant. Γ-10 is satisfied every time.
+
+    This is the whole reason Γ-20 exists: an agent retrying with a slightly different
+    target produces a fresh proposal digest on every attempt, so the occurrence
+    invariant never fires, while the scope budget does.
+    """
+    budget = 3
+    for attempt in range(5):
+        digest = f"{attempt:064d}"
+        ctx = ValidationContext(
+            proposal=external_proposal(target=f"ops+{attempt}@example.invalid", proposal_digest=digest),
+            tick=12, state_hash=STATE_HASH, scope_digest=SCOPE_DIGEST,
+            authority=human_grant(bound_proposal_digest=digest, scope_budget=budget),
+            scope_consumed=attempt,
+        )
+        assert "G10-OCCURRENCE" not in failed_ids(ctx), attempt      # Γ-10 never fires
+        assert admits(ctx) is (attempt < budget), attempt            # Γ-20 does
+
+
+def test_a_budget_can_only_narrow_never_admit():
+    refused = external_proposal(resists_shutdown=True)
+    for budget in (None, 0, 1, 10**9):
+        ctx = context(proposal=refused, authority=human_grant(scope_budget=budget), scope_consumed=0)
+        assert admits(ctx) is False, budget
+        assert "G5-SHUTDOWN" in failed_ids(ctx)
+
+
+# --------------------------------------------------------------------------
+# Γ-21 — an unreconciled step blocks the next one
+# --------------------------------------------------------------------------
+
+def test_a_scope_with_nothing_pending_is_unchanged():
+    assert admits(context()) is True
+
+
+def test_an_unreconciled_sibling_blocks_the_next_step():
+    """Γ-11 holds a retry of the same proposal; this holds the whole scope."""
+    ctx = context(pending_compensations=("step-3",))
+    assert "G-COMPENSATION" in failed_ids(ctx)
+    assert admits(ctx) is False
+    assert "G11-OUTCOME" not in failed_ids(ctx)      # this proposal's own outcome is fine
+
+
+def test_the_step_that_blocks_is_named():
+    ctx = context(pending_compensations=("transfer-3", "notify-4"))
+    reason = next(f.reason for f in validate(ctx).findings if f.invariant_id == "G-COMPENSATION")
+    assert "transfer-3" in reason and "notify-4" in reason and "held, not rolled forward" in reason
+
+
+def test_gamma_does_not_compensate_only_stops():
+    """The kernel has no repair path, and that absence is the design.
+
+    A compensating action is an effect and needs its own grant. A kernel that quietly
+    undid things would act unauthorised at the moment its picture of the world is
+    least reliable. The verdict is a refusal and nothing else happens.
+    """
+    import logos_gamma.invariants as inv
+    source = inspect.getsource(inv._no_unreconciled_step_in_this_scope)
+    for forbidden in ("rollback", "compensate(", "undo(", "execute", "subprocess", "open("):
+        assert forbidden not in source
+
+
+# --------------------------------------------------------------------------
+# Γ-22 — an admitted consequential effect is bound to its decision
+# --------------------------------------------------------------------------
+
+def test_a_deployment_without_receipts_is_unchanged():
+    """The default keeps every existing verdict exactly as it was."""
+    assert admits(context()) is True
+
+
+def test_a_receipted_admission_is_admitted():
+    """Control: with receipting on, a receipted proposal still passes."""
+    assert admits(context(receipts_required=True, receipt_ref="audit/2026-09-22/00412")) is True
+
+
+def test_an_unreceipted_consequential_admission_is_unclear():
+    ctx = context(receipts_required=True)
+    verdict = validate(ctx)
+    assert verdict.result == "UNCLEAR"
+    assert [f.invariant_id for f in verdict.ambiguities] == ["G-RECEIPT"]
+    assert verdict.admits() is False
+
+
+@pytest.mark.parametrize("ref", ["", "   ", "\t", None])
+def test_an_empty_receipt_is_not_a_receipt(ref):
+    assert admits(context(receipts_required=True, receipt_ref=ref)) is False
+
+
+def test_a_non_consequential_proposal_needs_no_receipt():
+    internal = external_proposal(effect_kind="read-internal", externality="internal", reversibility="reversible")
+    assert admits(context(proposal=internal, authority=None, receipts_required=True)) is True
+
+
+def test_gamma_does_not_verify_the_receipt_only_its_presence():
+    """No cryptography inside a small pure function; authenticity is the audit layer's job."""
+    import logos_gamma.invariants as inv
+    source = inspect.getsource(inv._admission_is_receipted)
+    for forbidden in ("hashlib", "hmac", "sha256", "verify", "signature", "decrypt"):
+        assert forbidden not in source
+
+
+def test_receipts_and_compensation_can_only_narrow_never_admit():
+    refused = external_proposal(resists_shutdown=True)
+    for kwargs in ({}, {"receipts_required": True}, {"receipts_required": True, "receipt_ref": "audit/1"},
+                   {"pending_compensations": ()}, {"pending_compensations": ("s3",)}):
+        ctx = context(proposal=refused, **kwargs)
+        assert admits(ctx) is False, kwargs
+        assert "G5-SHUTDOWN" in failed_ids(ctx)

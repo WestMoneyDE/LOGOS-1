@@ -1,7 +1,7 @@
 {
-  "frozen_by": "LOGOS1-GAMMA-CONTRACT-R1",
+  "frozen_by": "LOGOS1-GAMMA-BUDGET-COMPENSATION-RECEIPT-R1",
   "preregistration": "PENDING_FOUNDER_PREREG",
-  "gamma_bundle_sha256": "9d21fb6ab124b077c7ab2b1b9924c2293f1179fee7b6a90b05a343a820ade54e",
+  "gamma_bundle_sha256": "5d17f5d0246f3cb6e68f1abd8489c0e6dcf89c55caa2392a5d17d70509af9ce6",
   "p7_boundary_sha256": "96e68d0fdd7306090d824f30e20ab9e0cf3c5ff3d47aaee998d77ca7015d759e",
   "superseded": [
     {
@@ -43,6 +43,14 @@
       "superseded_by": "LOGOS1-GAMMA-CONTRACT-R1",
       "superseded_on": "2026-09-22",
       "reason": "founder decision: add invariant G-CONTRACT (Gamma-19). A proposal that came from an agent carries the contract version it was parsed under, and an unrecognised version is denied exactly as an unregistered effect kind is. The failure this prevents is version skew rather than malice: a parser upgraded in one place and not another produces envelopes that look valid and mean something slightly different, and a boundary that accepts any version accepts the union of every meaning that string ever had."
+    },
+    {
+      "gamma_bundle_sha256": "9d21fb6ab124b077c7ab2b1b9924c2293f1179fee7b6a90b05a343a820ade54e",
+      "frozen_by": "LOGOS1-GAMMA-CONTRACT-R1",
+      "preregistration": "PENDING_FOUNDER_PREREG",
+      "superseded_by": "LOGOS1-GAMMA-BUDGET-COMPENSATION-RECEIPT-R1",
+      "superseded_on": "2026-09-22",
+      "reason": "founder decision: add invariants G-BUDGET (Gamma-20), G-COMPENSATION (Gamma-21) and G-RECEIPT (Gamma-22), completing the eight-candidate extension. G-BUDGET catches the loop Gamma-10 cannot see: an agent retrying with a slightly different target produces a fresh digest every time and is correctly granted every time. G-COMPENSATION holds the whole scope while a sibling step is unreconciled, and deliberately does not compensate, because a compensating action is an effect that needs its own grant. G-RECEIPT makes an admission auditable; it is a declared deployment requirement, so a system that has not adopted receipting keeps its exact previous verdicts."
     }
   ],
   "note": "p7_boundary_sha256 is unchanged: this order does not touch P7. Every previous value of gamma_bundle_sha256 is kept under 'superseded' so a re-freeze is auditable rather than silent."

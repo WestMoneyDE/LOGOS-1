@@ -118,6 +118,9 @@ class AuthorityEvidence:
     #: Γ-16: the latest evidence ingestion tick this approval was given over.
     #: `None` means the approver stated no cutoff, and Γ-16 constrains nothing.
     evidence_cutoff_tick: int | None = None
+    #: Γ-20: how many consequential executions this approval permits in its scope.
+    #: `None` states no budget and leaves Γ-20 inactive.
+    scope_budget: int | None = None
     #: Γ-17: the principal that issued this approval, when the store records it.
     #: `None` leaves Γ-17 inactive — Γ will not invent an approver.
     issued_by: str | None = None
@@ -181,6 +184,16 @@ class ValidationContext:
     prior_executions: int = 0
     #: True when a prior execution's outcome is unresolved (Γ-11).
     outcome_unknown: bool = False
+    #: Γ-20: consequential executions already recorded in this scope.
+    scope_consumed: int = 0
+    #: Γ-21: steps in this scope whose outcome is recorded as unresolved.
+    pending_compensations: tuple[str, ...] = ()
+    #: Γ-22: reference binding this decision to its audit record.
+    receipt_ref: str | None = None
+    #: Γ-22: whether this deployment requires receipts. Default `False`, so a
+    #: deployment that has not adopted receipting keeps its exact previous verdicts;
+    #: turning it on makes an unreceipted consequential admission UNCLEAR.
+    receipts_required: bool = False
     #: Γ-18: votes from statistical components, as `(source, vote)` pairs. Their
     #: vocabulary has no "ALLOW"; see `ADVISORY_VOTES`.
     advisories: tuple[tuple[str, str], ...] = ()

@@ -358,3 +358,72 @@ version string ever had.
 
 This lifts into the kernel a property the JSON boundary already enforces at the
 edge, so it holds for every caller rather than for one parser.
+
+### Γ-20 A scope has a finite consequential budget
+
+Γ-10 stops a *replay*: the same proposal digest, presented again against a grant
+that has been consumed. It does not stop a loop that keeps producing new proposals.
+An agent retrying a failing task with a slightly different target each time, each
+attempt correctly granted, passes Γ-10 every single time while the damage
+accumulates.
+
+A grant may therefore carry a budget for the scope it belongs to, and the caller
+supplies how much of it has already been spent:
+
+    consumed <  budget     VALID
+    consumed >= budget     INVALID   a loop does not earn more authority than a single step
+    no budget stated       Γ-20 constrains nothing
+
+This is the deterministic form of a stability guard. The number counts recorded
+executions in the scope; it is not an estimate, a score or a model's opinion about
+how risky things are getting.
+
+Two things it deliberately does not do. It does not reset itself — a budget that
+refills without an approval would be a permission on a timer. And it does not
+distinguish the causes of spending, because an agent that can choose which of its
+actions count against a budget controls the budget.
+
+### Γ-21 An unreconciled step blocks the next one
+
+Γ-11 holds a *retry*: the same proposal, while its own outcome is unresolved. It
+says nothing about step four of a sequence whose step three is still unknown. That
+is the multi-step failure, and it is the common one — a timeout at step three of
+five leaves the world in a state no one has described, and rolling forward from an
+undescribed state is guessing.
+
+    no unreconciled step in the scope     VALID
+    one or more unreconciled              INVALID   the scope is held, not rolled forward
+
+What Γ does here is stop. It does not compensate, and the omission is deliberate: a
+compensating action is an effect, and an effect needs its own grant. A kernel that
+quietly undid things would be taking exactly the kind of unauthorised action it
+exists to prevent, and it would be doing so at the moment its picture of the world
+is least reliable.
+
+### Γ-22 An admitted consequential effect is bound to its decision
+
+An admission that leaves no reproducible trace cannot be audited afterwards, and a
+system whose refusals are provable but whose approvals are not has proved the less
+interesting half.
+
+A consequential proposal must therefore carry a receipt reference binding it to the
+decision that admitted it — the invariant set, the policy snapshot, the verdict.
+
+    deployment does not require receipts   Γ-22 constrains nothing
+    non-consequential                      Γ-22 constrains nothing
+    receipt reference present              VALID
+    receipt reference missing              UNCLEAR
+
+UNCLEAR rather than INVALID, deliberately: a missing receipt is a gap in the record,
+not evidence of a violation. It still refuses, because under Γ-0 an unknown is not a
+yes.
+
+Receipting is declared by the deployment rather than assumed, for the same reason as
+Γ-16 and Γ-20: a system that has not adopted receipts cannot be made to produce them
+retroactively, and turning the requirement on silently would change what every
+existing approval means.
+
+Γ checks presence and shape only. Whether the receipt is *authentic* — signed,
+chained, stored beyond the reach of the process it describes — is the audit layer's
+work, and no cryptography belongs inside a kernel whose whole value is that it is a
+small pure function.
