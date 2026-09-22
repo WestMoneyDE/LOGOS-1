@@ -1641,6 +1641,14 @@
     "tests/test_gamma_kernel.py": {
       "class": "EXPERIMENTAL_DETERMINISTIC",
       "note": "LOGOS1-GAMMA-BOUNDS-R1: Kontrolle + Angriffe fuer Γ-15; kein Modellaufruf"
+    },
+    "tests/_gamma_freeze.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-GAMMA-TAINT-R1: eine auditierbare Γ-Anbindung statt sechs stiller Commit-IDs; prueft die Bytes auf der Platte, nicht einen Diff zwischen Commits"
+    },
+    "tests/test_pre_inference_readiness.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-GAMMA-TAINT-R1: Kontrolle + Angriffe; kein Modellaufruf"
     }
   },
   "unclassified": 0

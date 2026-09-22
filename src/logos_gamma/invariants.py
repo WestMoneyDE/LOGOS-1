@@ -292,6 +292,41 @@ def _parameters_within_grant_bounds(ctx: ValidationContext) -> Finding:
     return _ok("G-BOUNDS", "Γ-15", "every bounded parameter is inside its approval")
 
 
+
+# --------------------------------------------------------------------------
+# Γ-16 — an approval cannot cover evidence that did not exist yet
+# --------------------------------------------------------------------------
+
+def _authority_covers_the_evidence_in_time(ctx: ValidationContext) -> Finding:
+    """The indirect-injection case that every other invariant passes.
+
+    The grant is human-rooted, correctly bound, live and unconsumed. The agent then
+    read something that shaped the proposal. Γ-1 sees a valid grant; Γ-3 sees a
+    matching digest. Only the *time* distinguishes the two situations.
+
+    Γ cannot infer when a document entered a context window. It can only check a
+    tick the surrounding system recorded against a cutoff the approver stated. A
+    grant without a cutoff is therefore unconstrained here — a limitation written
+    into the clause rather than hidden behind a passing test.
+    """
+    grant = ctx.authority
+    if grant is None or grant.evidence_cutoff_tick is None:
+        return _ok("G-TAINT", "Γ-16", "approval states no evidence cutoff")
+    cutoff = grant.evidence_cutoff_tick
+    unrecorded = tuple(c.ref for c in ctx.proposal.provenance if c.ingested_at_tick is None)
+    if unrecorded:
+        return _unclear("G-TAINT", "Γ-16",
+                        f"approval covers evidence up to tick {cutoff}, but these claims carry no "
+                        f"ingestion tick: {sorted(unrecorded)}; unknown provenance time is not 'in time'")
+    late = tuple(sorted((c.ingested_at_tick, c.ref) for c in ctx.proposal.provenance
+                        if c.ingested_at_tick > cutoff))
+    if late:
+        return _bad("G-TAINT", "Γ-16",
+                    f"approval covers evidence up to tick {cutoff}; these arrived afterwards: "
+                    f"{[f'{ref}@{tick}' for tick, ref in late]}; re-approval is required, not inference")
+    return _ok("G-TAINT", "Γ-16", f"all evidence was ingested at or before tick {cutoff}")
+
+
 #: Evaluation order is stable so verdicts are reproducible.
 INVARIANTS: tuple[Invariant, ...] = (
     Invariant("G0-EFFECT-KIND", "Γ0", "effect kind is registered", _effect_kind_known),
@@ -321,6 +356,8 @@ INVARIANTS: tuple[Invariant, ...] = (
     Invariant("G0-PROVENANCE", "Γ-0", "missing provenance fails closed", _provenance_present),
     Invariant("G-BOUNDS", "Γ-15", "grant binds parameters, not only the action name",
               _parameters_within_grant_bounds),
+    Invariant("G-TAINT", "Γ-16", "approval cannot cover later evidence",
+              _authority_covers_the_evidence_in_time),
 )
 
 INVARIANTS_BY_ID = {inv.id: inv for inv in INVARIANTS}

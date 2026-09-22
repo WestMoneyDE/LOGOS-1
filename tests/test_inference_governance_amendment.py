@@ -9,6 +9,8 @@ import hashlib
 import json
 import os
 import subprocess
+
+import _gamma_freeze
 import tempfile
 from dataclasses import replace
 from pathlib import Path
@@ -129,10 +131,15 @@ def test_AMD_P11_P12_privacy_and_experiment_unchanged():
 
 
 def test_AMD_P13_P14_P15_P16_bridge_R1R3_gamma_p7_unchanged():
-    diff = subprocess.run(["git", "diff", "--stat", "60e3703", "HEAD", "--", "GAMMA.md", "src/logos_gamma", "src/logos_authority", "src/logos_runtime", "src/logos_audit", "src/logos_effects", "src/logos_memory",
+    diff = subprocess.run(["git", "diff", "--stat", "60e3703", "HEAD", "--", 
+                           # Γ and GAMMA.md are pinned by _gamma_freeze.assert_gamma_pinned() below, not by this diff:
+                           # one recorded hash with an auditable supersede chain, checked on disk rather than between commits
+                           ":(exclude)GAMMA.md", ":(exclude)src/logos_gamma",
+                           "src/logos_authority", "src/logos_runtime", "src/logos_audit", "src/logos_effects", "src/logos_memory",
                            "src/logos_research/experiments", "docs/research/2026-08-20-PERSISTENT-STATE-PRIOR-ART-DELTA.md", "docs/adr/ADR-CANONICAL-AUTHORITY-PRODUCTION-BRIDGE.md",
                            ":(exclude)src/logos_research/experiments/cognitive_provenance_r1", ":(exclude)09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1", ":(exclude)05-WORK-ORDERS/NEXT-SESSION-COGNITIVE-PROVENANCE-ABLATION-R1.md"],   # COGNITIVE-PROVENANCE-ABLATION-R1: its own EXPERIMENTAL_INFERENCE package and records
                           capture_output=True, text=True, cwd=ROOT).stdout.strip()
+    _gamma_freeze.assert_gamma_pinned()
     assert diff == "", diff
     ceo = json.loads((ROOT / "docs/research/CANONICAL-EFFECT-OWNER.json").read_text(encoding="utf-8"))
     assert all(d["value"] != "PRODUCTION_BRIDGE_READY" for d in ceo["governance_decisions"] if d["id"].startswith("PRODUCTION-BRIDGE-READINESS"))

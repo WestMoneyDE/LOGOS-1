@@ -487,3 +487,91 @@ def test_bounds_never_rescue_a_missing_grant():
         scope_digest=SCOPE_DIGEST, authority=None,
     )
     assert admits(ctx) is False
+
+
+# --------------------------------------------------------------------------
+# Γ-16 — an approval cannot cover evidence that did not exist yet
+#
+# The indirect-injection case: a real, correctly bound, live, unconsumed grant, and
+# an agent that read something afterwards. Every other invariant passes.
+# --------------------------------------------------------------------------
+
+def timed_proposal(*ticks, **overrides) -> EffectProposal:
+    return external_proposal(
+        provenance=tuple(
+            ProvenanceClaim(f"doc/{i}", "tool", "f" * 64, ingested_at_tick=t)
+            for i, t in enumerate(ticks)
+        ),
+        **overrides,
+    )
+
+
+def cutoff_grant(cutoff=11, **overrides) -> AuthorityEvidence:
+    return human_grant(evidence_cutoff_tick=cutoff, **overrides)
+
+
+def test_a_grant_without_a_cutoff_is_unchanged():
+    """Every approval written before Γ-16 keeps its exact previous meaning."""
+    ctx = context(proposal=timed_proposal(999999))
+    assert admits(ctx) is True
+    assert [f.result for f in validate(ctx).findings if f.invariant_id == "G-TAINT"] == ["VALID"]
+
+
+def test_evidence_ingested_before_the_cutoff_is_admitted():
+    """Control: the boundary is passable when the approval really does cover the evidence."""
+    assert admits(context(proposal=timed_proposal(9, 10, 11), authority=cutoff_grant(11))) is True
+
+
+def test_evidence_ingested_after_the_approval_is_refused():
+    """The whole point: a genuine grant does not stretch over content it never saw."""
+    ctx = context(proposal=timed_proposal(9, 12), authority=cutoff_grant(11))
+    assert "G-TAINT" in failed_ids(ctx)
+    assert admits(ctx) is False
+    reason = next(f.reason for f in validate(ctx).findings if f.invariant_id == "G-TAINT")
+    assert "doc/1@12" in reason and "re-approval is required" in reason
+
+
+def test_one_late_claim_among_many_is_enough():
+    ctx = context(proposal=timed_proposal(1, 2, 3, 4, 5, 12), authority=cutoff_grant(11))
+    assert "G-TAINT" in failed_ids(ctx)
+
+
+def test_an_unrecorded_ingestion_time_is_unclear_not_timely():
+    """Fail-closed where the invariant is active: unknown time is not 'in time'."""
+    ctx = context(
+        proposal=external_proposal(provenance=(
+            ProvenanceClaim("doc/0", "tool", "f" * 64, ingested_at_tick=9),
+            ProvenanceClaim("doc/1", "tool", "f" * 64),      # no tick recorded
+        )),
+        authority=cutoff_grant(11),
+    )
+    verdict = validate(ctx)
+    assert verdict.result == "UNCLEAR"
+    assert [f.invariant_id for f in verdict.ambiguities] == ["G-TAINT"]
+    assert verdict.admits() is False
+
+
+def test_the_cutoff_is_inclusive():
+    assert admits(context(proposal=timed_proposal(11), authority=cutoff_grant(11))) is True
+    assert admits(context(proposal=timed_proposal(12), authority=cutoff_grant(11))) is False
+
+
+def test_a_cutoff_can_only_narrow_never_admit():
+    """No value of the cutoff turns a refusal into an admission."""
+    refused = timed_proposal(1, self_preservation_motivated=True)
+    for cutoff in (None, 0, 1, 11, 10**9, -10**9):
+        ctx = context(proposal=refused, authority=cutoff_grant(cutoff))
+        assert admits(ctx) is False, cutoff
+        assert "G6-SELF-PRESERVATION" in failed_ids(ctx)
+
+
+def test_the_limitation_is_real_and_is_tested():
+    """A deployment that records no ingestion ticks gets no protection from Γ-16.
+
+    This is not a defect to be papered over; it is the contract with the harness,
+    written into the clause. The test exists so that nobody mistakes the invariant
+    for a defence the kernel can provide on its own.
+    """
+    ctx = context(proposal=external_proposal(), authority=human_grant())   # no ticks, no cutoff
+    assert admits(ctx) is True
+    assert [f.result for f in validate(ctx).findings if f.invariant_id == "G-TAINT"] == ["VALID"]

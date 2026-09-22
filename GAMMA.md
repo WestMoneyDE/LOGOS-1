@@ -267,3 +267,29 @@ closed interval. Three outcomes, and only the first admits:
 A grant without bounds behaves exactly as before, so no existing approval changes
 meaning. Bounds may only narrow what a grant permits; there is no value of `bounds`
 that admits a proposal Γ would otherwise refuse.
+
+### Γ-16 An approval cannot cover evidence that did not exist yet
+
+Indirect prompt injection does not need to forge a grant. The agent holds a real,
+human-rooted, correctly bound, live, unconsumed approval. It then reads a file, a
+web page or a tool result containing instructions, and proposes an action shaped by
+that content. Γ-1 does not fire, because a valid grant exists. Γ-3 does not fire,
+because the digest still matches. The approval is genuine — it simply predates the
+content that actually drove the proposal.
+
+An approver may therefore state how far its knowledge reached:
+
+    evidence_cutoff_tick: the latest ingestion tick this approval was given over
+
+When a grant declares a cutoff, every provenance claim on the proposal must carry a
+recorded ingestion tick, and that tick must not be later than the cutoff:
+
+    ingested_at_tick <= cutoff        VALID
+    ingested_at_tick  > cutoff        INVALID   re-approval is required, not inference
+    ingestion tick not recorded       UNCLEAR   unknown provenance time is not "in time"
+
+**The limitation, stated rather than hidden.** A grant that declares no cutoff is
+unconstrained by Γ-16, and a deployment that never records ingestion ticks receives
+no protection from it at all. Γ cannot infer when a document entered the context; it
+can only check a time the surrounding system recorded. This invariant is a contract
+with the harness, not a defence the kernel can provide alone.

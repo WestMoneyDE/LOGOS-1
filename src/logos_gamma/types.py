@@ -71,6 +71,10 @@ class ProvenanceClaim:
     ref: str
     origin: str
     content_digest: str
+    #: Γ-16: the tick at which this content entered the agent's context, when the
+    #: surrounding system records it. `None` means "not recorded", which Γ-16 treats
+    #: as unknown rather than as timely.
+    ingested_at_tick: int | None = None
 
     def is_authority_bearing(self) -> bool:
         return self.origin in AUTHORITY_BEARING_ORIGINS
@@ -84,6 +88,7 @@ class AuthorityEvidence:
     approval bound to the canonical proposal digest.
     Γ-10: a grant authorises one defined causal occurrence.
     Γ-15: a grant may bind numeric parameters, not only the action name.
+    Γ-16: a grant may state how far in time its approval of evidence reached.
     """
 
     grant_id: str
@@ -102,6 +107,9 @@ class AuthorityEvidence:
     #: Empty means the grant carries no magnitude, and Γ-15 constrains nothing —
     #: every grant written before this field keeps its exact previous meaning.
     bounds: Mapping[str, tuple[float, float]] = field(default_factory=dict)
+    #: Γ-16: the latest evidence ingestion tick this approval was given over.
+    #: `None` means the approver stated no cutoff, and Γ-16 constrains nothing.
+    evidence_cutoff_tick: int | None = None
 
     def is_human_rooted(self) -> bool:
         return self.origin in AUTHORITY_BEARING_ORIGINS

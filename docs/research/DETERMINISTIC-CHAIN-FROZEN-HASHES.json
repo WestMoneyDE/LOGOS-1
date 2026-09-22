@@ -1,7 +1,7 @@
 {
-  "frozen_by": "LOGOS1-GAMMA-BOUNDS-R1",
+  "frozen_by": "LOGOS1-GAMMA-TAINT-R1",
   "preregistration": "PENDING_FOUNDER_PREREG",
-  "gamma_bundle_sha256": "b49ecafc7fb3b4b4fad148db621d11792639df083551bc0fcecbde9fb6d8f4c4",
+  "gamma_bundle_sha256": "763608a32fd24d0a81a465ca0230b281d622a58d86d5a9605bca9ec59142ed81",
   "p7_boundary_sha256": "96e68d0fdd7306090d824f30e20ab9e0cf3c5ff3d47aaee998d77ca7015d759e",
   "superseded": [
     {
@@ -11,6 +11,14 @@
       "superseded_by": "LOGOS1-GAMMA-BOUNDS-R1",
       "superseded_on": "2026-09-22",
       "reason": "founder decision: add invariant G-BOUNDS (Γ-15). A grant binds the action and the target through the proposal digest but not the magnitude, so an approved transfer of 50 and an executed transfer of 50,000,000 were indistinguishable. AGENTS.md recorded the gap explicitly. The extension only narrows: a grant without bounds keeps its exact previous meaning, and tests/test_gamma_kernel.py fixes that no value of bounds admits a proposal Γ would otherwise refuse."
+    },
+    {
+      "gamma_bundle_sha256": "b49ecafc7fb3b4b4fad148db621d11792639df083551bc0fcecbde9fb6d8f4c4",
+      "frozen_by": "LOGOS1-GAMMA-BOUNDS-R1",
+      "preregistration": "PENDING_FOUNDER_PREREG",
+      "superseded_by": "LOGOS1-GAMMA-TAINT-R1",
+      "superseded_on": "2026-09-22",
+      "reason": "founder decision: add invariant G-TAINT (Γ-16). A genuine, correctly bound, live grant does not stretch over content the agent read afterwards — the indirect-injection case that Γ-1 and Γ-3 both pass. A grant may state an evidence cutoff tick; where it does, later or unrecorded ingestion refuses. A grant without a cutoff keeps its exact previous meaning, and the limitation (Γ cannot infer ingestion times; the harness must record them) is written into the clause and fixed by test_the_limitation_is_real_and_is_tested."
     }
   ],
   "note": "p7_boundary_sha256 is unchanged: this order does not touch P7. Every previous value of gamma_bundle_sha256 is kept under 'superseded' so a re-freeze is auditable rather than silent."
