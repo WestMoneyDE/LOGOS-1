@@ -205,7 +205,7 @@ def test_ZERO_inference_proof_amendment():
     # The dashboard is a separate deliverable and is not part of every checkout (founder decision,
     # 2026-09-22: the control plane stays out of the public default branch). The inventory stays EXACT
     # in both trees rather than becoming a subset check: any adapter this list does not name still fails.
-    if (SRC / "logos_dashboard").exists():
+    if (SRC / "logos_dashboard/control/agent_provider.py").exists():        # the file, not the directory: stale __pycache__ leaves empty dirs behind
         expected_adapters |= {"logos_dashboard/control/agent_provider.py::AgentProvider"}     # R2 agent-job adapter; measurement path unchanged
     assert adapters == expected_adapters
     p = cc.ClaudeCodeMaxProvider()                                                  # no runner injected -> invoke refuses before any process

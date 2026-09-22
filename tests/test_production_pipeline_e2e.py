@@ -544,7 +544,14 @@ def test_SOURCE_classification_complete():
         txt = py.read_text(encoding="utf-8")
         if any(t in txt for t in toks):
             hits.add(str(py.relative_to(ROOT)).replace("\\", "/"))
-    assert hits == set(sites), (hits - set(sites), set(sites) - hits)
+    # The control plane is a separate deliverable and is absent from some checkouts
+    # (founder decision, 2026-09-22). The audit stays exact for the tree in hand, and
+    # any site that is missing must be control-plane code -- an unexplained absence
+    # anywhere else still fails.
+    present = {k for k in sites if (ROOT / k).exists()}
+    absent = set(sites) - present
+    assert all(k.startswith(("src/logos_dashboard/", "apps/dashboard/")) for k in absent), absent
+    assert hits == present, (hits - present, present - hits)
     assert all(v["class"] in CLASSIFICATION["vocabulary"] and v["class"] != "UNCLASSIFIED" for v in sites.values()) and CLASSIFICATION["unclassified"] == 0
     assert {k for k, v in sites.items() if v["class"] == "PRODUCTION_AUTHORITY_OWNER"} == {f"src/logos_authority/{f}" for f in ("__init__.py", "types.py", "store.py", "resolver.py")}
     assert {k for k, v in sites.items() if v["class"] == "PRODUCTION_MEMORY_READER"} == {"src/logos_memory/reader.py"}
