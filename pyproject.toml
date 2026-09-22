@@ -32,13 +32,10 @@ infra = [
 
 [tool.setuptools.packages.find]
 where = ["src"]
-# src/core holds runnable demonstrations, not library code. "core" is far too
-# generic a name to install into a shared environment, so it is excluded from the
-# distribution; pytest reaches it through pythonpath below, and it also runs as a
-# plain script (python src/core/governance.py).
-exclude = ["core*"]
 
 [tool.pytest.ini_options]
-pythonpath = ["src"]
+# "." makes core/ importable: the runnable demonstrations live at the repository
+# root, outside the audited library tree (see core/__init__.py).
+pythonpath = [".", "src"]
 testpaths = ["tests"]
 addopts = "-q"

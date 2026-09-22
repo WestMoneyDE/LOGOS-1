@@ -157,6 +157,6 @@ not changed   P7, Γ, any claim status, any predecessor verdict, any maturity le
 | Claims may only tighten | `src/logos_gamma/invariants.py`, `G4-CLAIM` |
 | Self-report carries no authority | `src/logos_gamma/types.py`, `NON_AUTHORITY_ORIGINS`; `G1-SELF-CLAIM` |
 | `UNKNOWN` is not `FALSE` and not `TRUE` | `src/logos_gamma/kernel.py`, aggregation rule |
-| Refusals are demonstrable, not asserted | `tests/test_escape_prevention.py`, `src/core/governance.py` |
+| Refusals are demonstrable, not asserted | `tests/test_escape_prevention.py`, `core/governance.py` |
 
 Status ≠ strength of evidence. Nothing above is a statement about phenomenal consciousness (P7).

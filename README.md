@@ -36,11 +36,11 @@ Gamma kernel is pure Python with no runtime dependencies.
 
 ```bash
 git clone https://github.com/WestMoneyDE/logos-1 && cd logos-1
-python src/core/governance.py          # a simulated agent tries to delete a file
+python core/governance.py          # a simulated agent tries to delete a file
 python -m pytest tests/test_escape_prevention.py -q
 ```
 
-`src/core/governance.py` runs six scenes. In every one the process **can** delete
+`core/governance.py` runs six scenes. In every one the process **can** delete
 the file — the demo measures that first by creating and unlinking a probe — and in
 five of them LOGOS-1 refuses anyway: a self-granted authority, no grant at all, an
 approval laundered through memory, a real approval pointed at a different file, and
