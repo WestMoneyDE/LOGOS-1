@@ -1,12 +1,41 @@
 # Γ extension proposal R1 — eight candidate invariants
 
-**Status: one implemented, seven drafted.**
+**Status: all eight implemented, 2026-09-22, on founder decision.**
 
-| Candidate | Status |
-|---|---|
-| `G-BOUNDS` | **IMPLEMENTED** as Γ-15 (founder decision, 2026-09-22). Clause in `GAMMA.md`, predicate in `src/logos_gamma/invariants.py`, 19 tests in `tests/test_gamma_kernel.py`, one breach in `tests/test_escape_prevention.py`. Γ bundle re-frozen with the previous hash kept under `superseded`. |
-| the other seven | DRAFT. Γ is unchanged for them. |
-`GAMMA.md` and `src/logos_gamma/*` are untouched by this document. Adding an invariant to Γ is a governance act; an AI may draft one and may never approve one. Each candidate below is written so that a founder decision is a yes/no on a precise predicate, not on a paragraph.
+| Candidate | Clause | State |
+|---|---|---|
+| `G-BOUNDS` | Γ-15 | implemented |
+| `G-TAINT` | Γ-16 | implemented |
+| `G-SEPARATION` | Γ-17 | implemented |
+| `G-ADVISORY` | Γ-18 | implemented |
+| `G-CONTRACT` | Γ-19 | implemented |
+| `G-BUDGET` | Γ-20 | implemented |
+| `G-COMPENSATION` | Γ-21 | implemented |
+| `G-RECEIPT` | Γ-22 | implemented |
+
+Γ went from 15 invariants to 23. The containment suite went from 22 breaches to 30,
+and every invariant is still the decisive refusal in at least one of them.
+
+**Three things were done differently from this draft, and each is an improvement:**
+
+1. **Every extension is opt-in by construction.** The draft had `G-TAINT` derive its
+   cutoff from `issued_at_tick` and `G-RECEIPT` apply to every consequential
+   proposal. Both would have changed the meaning of existing approvals silently. As
+   built, the new behaviour activates only where a grant or a deployment declares the
+   new field — `bounds`, `evidence_cutoff_tick`, `issued_by`, `scope_budget`,
+   `receipts_required` — and a test proves that a grant written before the extension
+   keeps its exact previous verdict.
+2. **Each one is proved to be tightening.** For every new field there is a test named
+   `..._can_only_narrow_never_admit`: a proposal refused for an unrelated reason stays
+   refused under every value of that field. A field that could rescue a proposal would
+   be a permission, and this registry has no mechanism that grants one.
+3. **The limitations are tested, not hidden.** Γ-16 cannot infer when a document
+   entered a context window, so a deployment that records no ingestion ticks gets no
+   protection from it; `test_the_limitation_is_real_and_is_tested` asserts exactly
+   that, so nobody mistakes the invariant for a defence the kernel provides alone.
+
+**Also built, beyond the eight:** decision binding — `issue_decision` /
+`redeem_decision` in `logos_gamma.kernel`. See `GAMMA.md`, section *Decision binding*.
 
 **Why these eight and not others.** Every candidate satisfies four conditions, and anything failing one of them is listed at the end under *rejected*:
 

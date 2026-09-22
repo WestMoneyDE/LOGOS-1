@@ -218,6 +218,7 @@ def test_GOV_P12_P13_P14_gamma_p7_predecessors_unchanged():
                                # (tooling orders; no Γ / P7 / experiment / measurement file touched)
                                ":(exclude)05-WORK-ORDERS/NEXT-SESSION-LOGOS1-RESEARCH-OS-PRIORART-EVALS-PAPER-R5.md", ":(exclude)09-SESSIONS/2026-09-19-LOGOS1-RESEARCH-OS-PRIORART-EVALS-PAPER-R5",
                                ":(exclude)05-WORK-ORDERS/NEXT-SESSION-LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1.md", ":(exclude)09-SESSIONS/2026-09-22-LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1",
+                               ":(exclude)05-WORK-ORDERS/NEXT-SESSION-LOGOS1-GAMMA-EXTENSION-R1.md", ":(exclude)09-SESSIONS/2026-09-22-LOGOS1-GAMMA-EXTENSION-R1",
                            ":(exclude)src/logos_research/measurement/result_model.py", ":(exclude)src/logos_research/measurement/claude_code.py",   # COGNITIVE-PROVENANCE-ABLATION-R1-INSTRUMENT-REPAIR-R1: resolver + repaired adapter (hash-recorded in the repair prereg/artifact)
                            ":(exclude)src/logos_research/experiments/cognitive_provenance_r1", ":(exclude)09-SESSIONS/2026-09-18-COGNITIVE-PROVENANCE-ABLATION-R1", ":(exclude)05-WORK-ORDERS/NEXT-SESSION-COGNITIVE-PROVENANCE-ABLATION-R1.md"],   # COGNITIVE-PROVENANCE-ABLATION-R1: its own EXPERIMENTAL_INFERENCE package and records
 

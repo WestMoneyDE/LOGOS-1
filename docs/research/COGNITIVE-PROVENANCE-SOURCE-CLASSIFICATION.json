@@ -1665,6 +1665,14 @@
     "src/logos_gamma/kernel.py": {
       "class": "GOVERNANCE_ONLY",
       "note": "LOGOS1-DECISION-BINDING-R1: Gamma-Erweiterung auf Founder-Entscheidung; nur verschaerfend; Bundle neu eingefroren mit Supersede-Kette"
+    },
+    "05-WORK-ORDERS/NEXT-SESSION-LOGOS1-GAMMA-EXTENSION-R1.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-GAMMA-EXTENSION-R1: Record; kein Code, kein Modellaufruf"
+    },
+    "09-SESSIONS/2026-09-22-LOGOS1-GAMMA-EXTENSION-R1/SESSION-REPORT.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-GAMMA-EXTENSION-R1: Record; kein Code, kein Modellaufruf"
     }
   },
   "unclassified": 0
