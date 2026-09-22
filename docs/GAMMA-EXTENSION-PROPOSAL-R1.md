@@ -1,6 +1,11 @@
 # Γ extension proposal R1 — eight candidate invariants
 
-**Status: DRAFT PROPOSAL. Not implemented. Γ is unchanged.**
+**Status: one implemented, seven drafted.**
+
+| Candidate | Status |
+|---|---|
+| `G-BOUNDS` | **IMPLEMENTED** as Γ-15 (founder decision, 2026-09-22). Clause in `GAMMA.md`, predicate in `src/logos_gamma/invariants.py`, 19 tests in `tests/test_gamma_kernel.py`, one breach in `tests/test_escape_prevention.py`. Γ bundle re-frozen with the previous hash kept under `superseded`. |
+| the other seven | DRAFT. Γ is unchanged for them. |
 `GAMMA.md` and `src/logos_gamma/*` are untouched by this document. Adding an invariant to Γ is a governance act; an AI may draft one and may never approve one. Each candidate below is written so that a founder decision is a yes/no on a precise predicate, not on a paragraph.
 
 **Why these eight and not others.** Every candidate satisfies four conditions, and anything failing one of them is listed at the end under *rejected*:
@@ -53,7 +58,7 @@ def _authority_predates_no_evidence(ctx):
 
 **Clause:** Γ-3 (extension) · **Verdict on failure:** INVALID
 
-**The gap, already written down.** `AGENTS.md` states plainly that parameter bounds, budgets, time validity, data classes and source versions "require a separate downstream dispatch/effect gate and are not evaluated by this package". Today a grant for `payment.transfer` to a recipient binds the *digest of action and target*. The amount is a parameter. Approving a transfer of 50 and executing 50 000 000 passes every current invariant.
+**The gap.** A grant for `payment.transfer` to a recipient binds the *digest of action and target* (`G3-BINDING`). The amount is a parameter, and `G3-BINDING` never looks at it, so approving a transfer of 50 and executing 50,000,000 passed every invariant. `AGENTS.md` records the same gap one layer down, for the local scope gate: parameter bounds, budgets, time validity and data classes "require a separate downstream dispatch/effect gate and are not evaluated by this package". That downstream gate is what Γ-15 now provides.
 
 **Predicate.**
 
@@ -71,9 +76,9 @@ def _parameters_within_grant_bounds(ctx):
     return _ok("G-BOUNDS", "Γ-3", "every bounded parameter is inside its approval")
 ```
 
-**Type change.** `AuthorityEvidence` gains `bounds: Mapping[str, tuple[float, float]] = {}` (frozen, empty by default — every existing grant is unaffected).
+**Type change.** `AuthorityEvidence` gained `bounds: Mapping[str, tuple[float, float]]`, empty by default — every existing grant is unaffected, and a test fixes that.
 
-**Must not refuse:** an unbounded grant, exactly as today. **Must refuse:** amount 50 000 000 against a grant bounded to [0, 50].
+**As implemented**, three outcomes and only the first admits: inside the closed interval VALID; outside INVALID; absent or non-numeric UNCLEAR, because an unverifiable bound is not a satisfied bound. `True` is an `int` in Python and is rejected as an amount. The decisive test is `test_bounds_can_only_narrow_never_admit`: for a proposal refused for an unrelated reason, every bound — satisfied, violated, absent, nonsensical — leaves it refused.
 
 ---
 

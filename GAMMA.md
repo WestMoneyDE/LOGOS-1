@@ -245,3 +245,25 @@ and diagnostics certified the defect as healthy.
 
 Confirmed structurally: no import path exists from BIOCODE research data into
 the safety kernel (`research/biocode/BIOCODE-GAMMA-BOUNDARY-AUDIT.md`).
+
+### Γ-15 A grant binds parameters, not only an action name
+
+An approval is bound to the canonical proposal digest, which covers the action and
+its target. It does not, by itself, cover the *magnitude* of the effect. An approved
+transfer of 50 and an executed transfer of 50,000,000 to the same recipient share a
+digest and are otherwise indistinguishable to Γ-3.
+
+A grant may therefore carry explicit numeric bounds:
+
+    bounds: name -> [low, high]
+
+and for every bounded name the proposal must carry a numeric parameter inside that
+closed interval. Three outcomes, and only the first admits:
+
+    parameter present, numeric, inside      VALID
+    parameter present, numeric, outside     INVALID   the approval did not cover this magnitude
+    parameter absent, or not a number       UNCLEAR   an unverifiable bound is not a satisfied bound
+
+A grant without bounds behaves exactly as before, so no existing approval changes
+meaning. Bounds may only narrow what a grant permits; there is no value of `bounds`
+that admits a proposal Γ would otherwise refuse.

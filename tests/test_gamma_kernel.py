@@ -378,3 +378,112 @@ def test_every_invariant_is_reported_not_just_the_first_failure():
     )
     ids = failed_ids(ctx)
     assert {"G2-FORBIDDEN", "G5-SHUTDOWN", "G6-SELF-PRESERVATION", "G1-ORIGIN"} <= ids
+
+
+# --------------------------------------------------------------------------
+# Γ-15 — a grant binds parameters, not only an action name
+#
+# Registered by LOGOS1-GAMMA-BOUNDS-R1 (founder decision, 2026-09-22). The gap it
+# closes was documented, not hypothetical: AGENTS.md states that parameter bounds
+# "require a separate downstream dispatch/effect gate and are not evaluated by this
+# package". An approved transfer of 50 and an executed transfer of 50,000,000 to the
+# same recipient share a proposal digest.
+# --------------------------------------------------------------------------
+
+def bounded_transfer(amount, **overrides) -> EffectProposal:
+    base = dict(
+        action="payment.transfer",
+        target="acct/deadbeef",
+        effect_kind="financial-transfer",
+        externality="external",
+        reversibility="irreversible",
+        proposal_digest=PROPOSAL_DIGEST,
+        parameters={"amount": amount, "currency": "EUR"},
+        provenance=(ProvenanceClaim("invoice/8812", "tool", "e" * 64),),
+    )
+    base.update(overrides)
+    return EffectProposal(**base)
+
+
+def bounded_grant(**overrides) -> AuthorityEvidence:
+    return human_grant(bounds={"amount": (0.0, 50.0)}, **overrides)
+
+
+def test_a_grant_without_bounds_is_unchanged():
+    """Every approval written before Γ-15 keeps its exact previous meaning."""
+    ctx = context(proposal=bounded_transfer(50_000_000))
+    assert admits(ctx) is True
+    assert [f.result for f in validate(ctx).findings if f.invariant_id == "G-BOUNDS"] == ["VALID"]
+
+
+def test_a_bounded_grant_admits_an_amount_inside_it():
+    """Control: the bound must be passable, or the refusals below prove nothing."""
+    assert admits(context(proposal=bounded_transfer(49.99), authority=bounded_grant())) is True
+
+
+@pytest.mark.parametrize("amount", [50.01, 500, 50_000_000, -1, -0.0001])
+def test_an_amount_outside_the_bound_is_refused(amount):
+    ctx = context(proposal=bounded_transfer(amount), authority=bounded_grant())
+    assert "G-BOUNDS" in failed_ids(ctx)
+    assert admits(ctx) is False
+
+
+@pytest.mark.parametrize("edge", [0.0, 50.0])
+def test_the_interval_is_closed_at_both_ends(edge):
+    assert admits(context(proposal=bounded_transfer(edge), authority=bounded_grant())) is True
+
+
+def test_a_bound_that_cannot_be_checked_is_unclear_not_satisfied():
+    """A missing parameter is an unverifiable limit, and an unverifiable limit refuses."""
+    ctx = context(
+        proposal=bounded_transfer(1, parameters={"currency": "EUR"}),
+        authority=bounded_grant(),
+    )
+    verdict = validate(ctx)
+    assert verdict.result == "UNCLEAR"
+    assert [f.invariant_id for f in verdict.ambiguities] == ["G-BOUNDS"]
+    assert verdict.admits() is False
+
+
+@pytest.mark.parametrize("value", ["50", None, True, False, [50], {"v": 50}])
+def test_a_non_numeric_bounded_parameter_is_unclear(value):
+    """`True` is an int in Python. It is not an amount, and it is not accepted as one."""
+    ctx = context(
+        proposal=bounded_transfer(1, parameters={"amount": value}),
+        authority=bounded_grant(),
+    )
+    assert admits(ctx) is False
+    assert "G-BOUNDS" in {f.invariant_id for f in validate(ctx).ambiguities}
+
+
+def test_every_bounded_name_is_checked_not_only_the_first():
+    grant = human_grant(bounds={"amount": (0.0, 50.0), "recipients": (1.0, 1.0)})
+    ctx = context(
+        proposal=bounded_transfer(10, parameters={"amount": 10, "recipients": 4}),
+        authority=grant,
+    )
+    assert "G-BOUNDS" in failed_ids(ctx)
+
+
+def test_bounds_can_only_narrow_never_admit():
+    """The decisive property: no value of `bounds` turns a refusal into an admission.
+
+    Γ-15 is a tightening invariant. For a proposal that is already refused for an
+    unrelated reason, every bound — satisfied, violated, absent, nonsensical — leaves
+    it refused. A bound that could rescue a proposal would be a permission, and this
+    registry has no mechanism that grants one.
+    """
+    refused = bounded_transfer(10, resists_shutdown=True)
+    for bounds in ({}, {"amount": (0.0, 50.0)}, {"amount": (0.0, 1.0)},
+                   {"amount": (-1e9, 1e9)}, {"missing": (0.0, 1.0)}):
+        ctx = context(proposal=refused, authority=human_grant(bounds=bounds))
+        assert admits(ctx) is False, bounds
+        assert "G5-SHUTDOWN" in failed_ids(ctx)
+
+
+def test_bounds_never_rescue_a_missing_grant():
+    ctx = ValidationContext(
+        proposal=bounded_transfer(10), tick=12, state_hash=STATE_HASH,
+        scope_digest=SCOPE_DIGEST, authority=None,
+    )
+    assert admits(ctx) is False

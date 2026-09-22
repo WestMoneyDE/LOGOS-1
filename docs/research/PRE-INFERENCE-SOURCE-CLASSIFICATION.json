@@ -1761,6 +1761,26 @@
     "tests/test_production_pipeline_e2e.py": {
       "class": "EXPERIMENTAL_DETERMINISTIC",
       "note": "LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1: Pruefung baumbewusst gemacht (Dateiprobe + Regel fuer erklaerte Abwesenheit); nichts abgeschwaecht"
+    },
+    "GAMMA.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-GAMMA-BOUNDS-R1: Γ-15 / G-BOUNDS auf Founder-Entscheidung ergaenzt; nur verschaerfend, Bundle neu eingefroren (alter Hash unter 'superseded')"
+    },
+    "docs/research/DETERMINISTIC-CHAIN-FROZEN-HASHES.json": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-GAMMA-BOUNDS-R1: Neueinfrierung des Γ-Bundles; P7-Hash unveraendert; Vorgaengerwert erhalten"
+    },
+    "src/logos_gamma/invariants.py": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-GAMMA-BOUNDS-R1: Γ-15 / G-BOUNDS auf Founder-Entscheidung ergaenzt; nur verschaerfend, Bundle neu eingefroren (alter Hash unter 'superseded')"
+    },
+    "src/logos_gamma/types.py": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-GAMMA-BOUNDS-R1: Γ-15 / G-BOUNDS auf Founder-Entscheidung ergaenzt; nur verschaerfend, Bundle neu eingefroren (alter Hash unter 'superseded')"
+    },
+    "tests/test_gamma_kernel.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-GAMMA-BOUNDS-R1: Kontrolle + Angriffe fuer Γ-15; kein Modellaufruf"
     }
   },
   "unclassified": 0

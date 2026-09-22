@@ -256,6 +256,42 @@ def _provenance_present(ctx: ValidationContext) -> Finding:
     return _ok("G0-PROVENANCE", "Γ-0", "provenance is present and digested")
 
 
+
+# --------------------------------------------------------------------------
+# Γ-15 — a grant binds parameters, not only an action name
+# --------------------------------------------------------------------------
+
+def _parameters_within_grant_bounds(ctx: ValidationContext) -> Finding:
+    """An approved transfer of 50 does not authorise a transfer of 50,000,000.
+
+    The proposal digest covers the action and its target, not the magnitude. A grant
+    may carry closed numeric intervals; for every bounded name the proposal must
+    carry a number inside its interval. A bound that cannot be checked is UNCLEAR,
+    never satisfied: an unverifiable limit is not a limit.
+
+    Bounds only ever narrow. There is no value of `bounds` that admits a proposal
+    this registry would otherwise refuse, and `tests/test_gamma_kernel.py` fixes it.
+    """
+    grant = ctx.authority
+    if grant is None or not grant.bounds:
+        return _ok("G-BOUNDS", "Γ-15", "grant carries no bounded parameter")
+    for name in sorted(grant.bounds):                       # sorted: the first failure is reproducible
+        low, high = grant.bounds[name]
+        if name not in ctx.proposal.parameters:
+            return _unclear("G-BOUNDS", "Γ-15",
+                            f"grant bounds {name!r} to [{low}, {high}] but the proposal does not carry it; "
+                            "an unverifiable bound is not a satisfied bound")
+        value = ctx.proposal.parameters[name]
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
+            return _unclear("G-BOUNDS", "Γ-15",
+                            f"bounded parameter {name!r} is {value!r}, which is not a number to compare")
+        if not (low <= value <= high):
+            return _bad("G-BOUNDS", "Γ-15",
+                        f"{name}={value!r} is outside the approved [{low}, {high}]; "
+                        "the grant binds the action, the target and this magnitude")
+    return _ok("G-BOUNDS", "Γ-15", "every bounded parameter is inside its approval")
+
+
 #: Evaluation order is stable so verdicts are reproducible.
 INVARIANTS: tuple[Invariant, ...] = (
     Invariant("G0-EFFECT-KIND", "Γ0", "effect kind is registered", _effect_kind_known),
@@ -283,6 +319,8 @@ INVARIANTS: tuple[Invariant, ...] = (
     Invariant("G6-SELF-PRESERVATION", "Γ-6", "no self-preservation objective",
               _no_self_preservation),
     Invariant("G0-PROVENANCE", "Γ-0", "missing provenance fails closed", _provenance_present),
+    Invariant("G-BOUNDS", "Γ-15", "grant binds parameters, not only the action name",
+              _parameters_within_grant_bounds),
 )
 
 INVARIANTS_BY_ID = {inv.id: inv for inv in INVARIANTS}

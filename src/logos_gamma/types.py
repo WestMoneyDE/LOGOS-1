@@ -83,6 +83,7 @@ class AuthorityEvidence:
     Γ-3: an external one-way effect requires an exact, expiring, human-rooted
     approval bound to the canonical proposal digest.
     Γ-10: a grant authorises one defined causal occurrence.
+    Γ-15: a grant may bind numeric parameters, not only the action name.
     """
 
     grant_id: str
@@ -97,6 +98,10 @@ class AuthorityEvidence:
     #: Chain of transformations this evidence passed through, oldest first.
     #: Any non-empty transformation chain means the evidence was re-represented.
     transformation_chain: tuple[str, ...] = ()
+    #: Γ-15: closed numeric intervals the approval covers, `name -> (low, high)`.
+    #: Empty means the grant carries no magnitude, and Γ-15 constrains nothing —
+    #: every grant written before this field keeps its exact previous meaning.
+    bounds: Mapping[str, tuple[float, float]] = field(default_factory=dict)
 
     def is_human_rooted(self) -> bool:
         return self.origin in AUTHORITY_BEARING_ORIGINS

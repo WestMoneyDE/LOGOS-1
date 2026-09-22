@@ -150,7 +150,8 @@ is deleted before the first decision.
 
 `evidence[].origin` is recorded as the model states it, except `"human"`, which is
 stored as `self-report`. The one origin that carries authority is **not reachable
-from model output**; grants enter through the authority store.
+from anything a model writes**. A valid grant never originates in generated text; it
+is read from the authority store and nowhere else.
 
 This is not caution, it is measurement. Across 144 source trials in a governed run
 the model answered "self-derived" **144/144** — including when the source was
