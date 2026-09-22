@@ -1629,6 +1629,10 @@
     "09-SESSIONS/2026-09-22-LOGOS1-GAMMA-EXTENSION-R1/SESSION-REPORT.md": {
       "class": "GOVERNANCE_ONLY",
       "note": "LOGOS1-GAMMA-EXTENSION-R1: Record; kein Code, kein Modellaufruf"
+    },
+    "tests/test_deterministic_chain_consolidation.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-GAMMA-EXTENSION-R1: Kontrolle + Angriffe, deterministisch; kein Modellaufruf"
     }
   },
   "unclassified": 0
