@@ -145,8 +145,10 @@ def test_AMD_P13_P14_P15_P16_bridge_R1R3_gamma_p7_unchanged():
     assert all(d["value"] != "PRODUCTION_BRIDGE_READY" for d in ceo["governance_decisions"] if d["id"].startswith("PRODUCTION-BRIDGE-READINESS"))
     assert "R1-R3 remain OPEN" in " ".join(REG["conditions"])
     frozen = json.loads((ROOT / "docs/research/DETERMINISTIC-CHAIN-FROZEN-HASHES.json").read_text(encoding="utf-8"))
-    p7 = (ROOT / "docs/research/2026-08-20-PERSISTENT-STATE-PRIOR-ART-DELTA.md").read_bytes()
-    assert hashlib.sha256(p7[p7.index(b"## Consciousness / P7 boundary"):]).hexdigest() == frozen["p7_boundary_sha256"]
+    # one implementation of the P7 hash, line-ending normalized: a second copy here
+    # would have to be kept in step by hand, and a pin that depends on the checkout
+    # is not a pin (git rewrites LF to CRLF on Windows).
+    assert _gamma_freeze.p7_boundary_hash() == frozen["p7_boundary_sha256"]
 
 
 def test_AMD_P17_zero_calls_and_P18_header_matches():
@@ -248,8 +250,7 @@ def _battery():
     assert g.max_total_spend == 0.0 and not gv.cost_activation(g, run_cost_cap=30.0), "M11"
     assert g.region == "NOT_ASSUMED" and "NOT ASSUMED" in g.raw["G2"]["region_guarantee"], "M12"
     assert all(d["value"] != "PRODUCTION_BRIDGE_READY" for d in json.loads((ROOT / "docs/research/CANONICAL-EFFECT-OWNER.json").read_text(encoding="utf-8"))["governance_decisions"]), "M14"
-    p7 = (ROOT / "docs/research/2026-08-20-PERSISTENT-STATE-PRIOR-ART-DELTA.md").read_bytes()
-    assert hashlib.sha256(p7[p7.index(b"## Consciousness / P7 boundary"):]).hexdigest() == P7_HASH, "M15"
+    assert _gamma_freeze.p7_boundary_hash() == P7_HASH, "M15"
     CALLS["claude_code_inference_invocations"] = 0; ms.reset_counters()
 
 

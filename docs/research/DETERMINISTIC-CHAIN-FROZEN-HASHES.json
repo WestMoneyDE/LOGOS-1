@@ -1,8 +1,8 @@
 {
-  "frozen_by": "LOGOS1-DECISION-BINDING-R1",
+  "frozen_by": "LOGOS1-GAMMA-EXTENSION-R1",
   "preregistration": "PENDING_FOUNDER_PREREG",
-  "gamma_bundle_sha256": "dfacc92271e1e31e9ab64f7774bc5f523d8cfd72383ecaa31294157dfc90c557",
-  "p7_boundary_sha256": "96e68d0fdd7306090d824f30e20ab9e0cf3c5ff3d47aaee998d77ca7015d759e",
+  "gamma_bundle_sha256": "5939bb7c30afc0ebd6e095eb1f5670c0d6075addae9bd7988155588f6d1557cf",
+  "p7_boundary_sha256": "79b453fb0994dbfcf764b7b8ecf8611c9d5ddc5bd584f6a55d4becf17077265c",
   "superseded": [
     {
       "gamma_bundle_sha256": "38f64602c179ebf1074f99878ae85d54a2838cc410e213e75570bf450061daa8",
@@ -67,7 +67,16 @@
       "superseded_by": "LOGOS1-DECISION-BINDING-R1",
       "superseded_on": "2026-09-22",
       "reason": "founder goal 'find further security mechanisms': bind a verdict to the situation that produced it. Gamma answers about one ValidationContext; between that answer and the effect the world can move, and a boolean approval records that an approval happened rather than what it was for. issue_decision returns a token only for an admitted proposal, carrying a digest over every field Gamma read plus the identity of the invariant set; redeem_decision recomputes both immediately before the effect and refuses on any difference. The digest is derived from the dataclass rather than a hand-written field list, so a new field is bound automatically. This closes post-approval state substitution, reported externally as Loopjacking."
+    },
+    {
+      "gamma_bundle_sha256": "dfacc92271e1e31e9ab64f7774bc5f523d8cfd72383ecaa31294157dfc90c557",
+      "p7_boundary_sha256": "96e68d0fdd7306090d824f30e20ab9e0cf3c5ff3d47aaee998d77ca7015d759e",
+      "frozen_by": "LOGOS1-DECISION-BINDING-R1",
+      "preregistration": "PENDING_FOUNDER_PREREG",
+      "superseded_by": "LOGOS1-GAMMA-EXTENSION-R1 (hash normalization)",
+      "superseded_on": "2026-09-22",
+      "reason": "the hash function changed, not the content. Both values were computed over raw bytes, and git rewrites LF to CRLF on checkout under Windows, so the pin broke on a branch switch while every file was byte-identical in git. Line endings are now normalized before hashing. The P7 boundary text is unchanged and provably so: git diff of docs/research/2026-08-20-PERSISTENT-STATE-PRIOR-ART-DELTA.md against the original freeze commit 52563dd is empty. Both recorded values are recomputed under the normalized function; no clause, predicate or boundary text moved with them."
     }
   ],
-  "note": "p7_boundary_sha256 is unchanged: this order does not touch P7. Every previous value of gamma_bundle_sha256 is kept under 'superseded' so a re-freeze is auditable rather than silent."
+  "note": "Hashes are computed over line-ending-normalized content, so the pin does not depend on which platform checked the files out. Every previous value is kept under 'superseded' with the order and the reason, so a re-freeze is auditable rather than silent."
 }
