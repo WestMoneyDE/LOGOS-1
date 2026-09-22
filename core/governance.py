@@ -3,9 +3,9 @@
 Run it:
 
 ```text
-python src/core/governance.py            # narrated walkthrough
-python src/core/governance.py --json     # machine-readable verdicts
-python src/core/governance.py --scene granted
+python core/governance.py            # narrated walkthrough
+python core/governance.py --json     # machine-readable verdicts
+python core/governance.py --scene granted
 ```
 
 What it shows
@@ -52,8 +52,8 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Iterable, Iterator, Mapping, Sequence
 
-if __package__ in (None, ""):  # `python src/core/governance.py`
-    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+if __package__ in (None, ""):  # `python core/governance.py`
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from logos_gamma import (  # noqa: E402  (path shim must run first)
     AuthorityEvidence,

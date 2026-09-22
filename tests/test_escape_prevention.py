@@ -22,7 +22,7 @@ test_every_invariant_is_attacked every Γ invariant is the decisive failure in a
 
 Related: `tests/test_gamma_kernel.py` attacks the kernel directly;
 `tests/test_gamma_trusted_core.py` fixes the structural properties of the core;
-`src/core/governance.py` is the runnable narration of the same boundary.
+`core/governance.py` is the runnable narration of the same boundary.
 """
 from __future__ import annotations
 

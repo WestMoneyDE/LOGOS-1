@@ -402,14 +402,6 @@
       "src/logos_research/experiments/trajectory_compromise.py": {
         "class": "EXPERIMENTAL_REFERENCE",
         "note": "RADAR-R1 Phase 5: trajectory fixture; declared effect from the fixture contract as evidence; authority via the production bridge"
-      },
-      "src/core/governance.py": {
-        "class": "NON_CONSEQUENTIAL",
-        "note": "demonstration facade over the Gamma kernel (LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1); not packaged, imported by nothing in the decision path; owns no rule; classification table is a four-row stand-in for logos_effects"
-      },
-      "src/core/output_contract.py": {
-        "class": "NON_CONSEQUENTIAL",
-        "note": "demonstration facade over the Gamma kernel (LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1); not packaged, imported by nothing in the decision path; owns no rule; maps a validated JSON envelope to typed proposals"
       }
     },
     "unclassified": 0

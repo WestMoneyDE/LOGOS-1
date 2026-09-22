@@ -15,7 +15,7 @@ The one rule that orders the whole table: **a layer may tighten a gate, never lo
 
 Constraining the decoder so that syntactically invalid JSON has probability exactly zero is the strongest possible format guarantee, and it is unreachable here: LOGOS-1 runs Claude Code under subscription-only access (`INFERENCE-GOVERNANCE-LIFT-R1`, `subscription_only = true`). There is no logit access, no grammar parameter, and obtaining one would mean an API key — which the standing inference rules forbid.
 
-What exists instead: `--output-format json` at the provider, and a parser that treats every deviation as a refusal rather than something to repair. The important half of the guarantee survives without decoder access, because **a malformed output is refused, not retried into shape** (`src/core/output_contract.py`, codes `NO_ENVELOPE`, `PARSE_FAILURE`, `MULTIPLE_ENVELOPES`).
+What exists instead: `--output-format json` at the provider, and a parser that treats every deviation as a refusal rather than something to repair. The important half of the guarantee survives without decoder access, because **a malformed output is refused, not retried into shape** (`core/output_contract.py`, codes `NO_ENVELOPE`, `PARSE_FAILURE`, `MULTIPLE_ENVELOPES`).
 
 Note the ceiling of this layer even when it *is* available: a grammar guarantees syntax, never truth. Perfectly-formed JSON can be a perfectly-formed lie.
 
@@ -23,7 +23,7 @@ Note the ceiling of this layer even when it *is* available: a grammar guarantees
 
 ## 2. Closed-schema validation at the boundary
 
-**Status: BUILT.** `src/core/output_contract.py` · `tests/test_output_contract.py` (49 tests)
+**Status: BUILT.** `core/output_contract.py` · `tests/test_output_contract.py` (49 tests)
 
 The design note proposed Pydantic validators that raise before an action leaves the system. That is exactly the mechanism; the implementation uses the standard library, and the reason is not stylistic. LOGOS-1's decision path has **zero runtime dependencies** (`pyproject.toml`: Γ's only extras are test-, torch- and infra-scoped). A package in the path that decides whether an agent may act is both an attack surface and a supply-chain dependency for a safety property. A Pydantic adapter *outside* the decision path is fine and would be a small addition; it is not needed for the guarantee.
 

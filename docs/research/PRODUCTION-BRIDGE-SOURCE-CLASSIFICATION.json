@@ -173,14 +173,6 @@
     "src/logos_dashboard/benchmarks.py": {
       "class": "NON_CONSEQUENTIAL",
       "note": "LOGOS1-RESEARCH-OPERATING-SYSTEM-DASHBOARD-R1 Phase 5: benchmark suite definitions; token hit is the fixture path string tests/test_canonical_effect_owner.py; never imports or calls the effect owner"
-    },
-    "src/core/governance.py": {
-      "class": "REFERENCE_TEST_FIXTURE",
-      "note": "demonstration facade over the Gamma kernel (LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1); not packaged, imported by nothing in the decision path; owns no rule"
-    },
-    "src/core/output_contract.py": {
-      "class": "REFERENCE_TEST_FIXTURE",
-      "note": "demonstration facade over the Gamma kernel (LOGOS1-EXECUTABLE-BOUNDARY-DEMO-R1); not packaged, imported by nothing in the decision path; owns no rule"
     }
   },
   "unclassified": 0

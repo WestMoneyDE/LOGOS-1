@@ -47,8 +47,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
-if __package__ in (None, ""):  # `python src/core/output_contract.py`
-    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+if __package__ in (None, ""):  # `python core/output_contract.py`
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from core.governance import CANONICAL_EFFECTS, UNREGISTERED, IsolatedCommand, digest  # noqa: E402
 from logos_gamma import EffectProposal, ProvenanceClaim  # noqa: E402

@@ -8,7 +8,7 @@
 ## Closure
 
 ```text
-demo        src/core/governance.py: Agent streamt Tokens -> Working State friert den Tool-Call ein ->
+demo        core/governance.py: Agent streamt Tokens -> Working State friert den Tool-Call ein ->
             Governance State ruft den echten Gamma-Kernel; 6 Szenen, 5 verweigert, 1 Positivkontrolle loescht;
             Faehigkeit vorher gemessen (Sonde anlegen/loeschen), nicht behauptet; keine eigene Regel, keine Ausnahme
 suite       tests/test_escape_prevention.py: 22 Ausbruchsversuche, je mit benanntem Invariant; 58 Tests;
@@ -19,7 +19,7 @@ doc         docs/PHENOMENAL_SIMULATION.md P7-sicher: Mechanismus vollstaendig, Q
 readme      "Run it in 60 seconds" — klonen, zwei Befehle, keine Dienste, keine Schluessel, kein Netz
 fix         test_GOV_P12_P13_P14... war bereits auf d5a06ed rot (R5-Records nicht ausgenommen); registrierend
             nachgezogen, kein Test abgeschwaecht
-contract    src/core/output_contract.py + tests/test_output_contract.py: logos-agent-output/1, geschlossenes Schema
+contract    core/output_contract.py + tests/test_output_contract.py: logos-agent-output/1, geschlossenes Schema
             (kein Feld fuer Erlaubnis), Prosa vor der Entscheidung verworfen, Freitext aus dem JSON gerendert; 49 Tests
 docs        AGENT-SECURITY-STACK.md (Landkarte gebaut/fehlend/abgelehnt) + GAMMA-EXTENSION-PROPOSAL-R1.md (8 Kandidaten,
             Gamma UNVERAENDERT, Founder-Entscheidung offen)

@@ -104,7 +104,7 @@ def _proposer_is_not_approver(ctx):
 
 **Clause:** Γ0 (extension) · **Verdict on failure:** INVALID
 
-Lifts the property `src/core/output_contract.py` already enforces at the boundary into the kernel, so it holds for every caller rather than for one parser. An unrecognised contract version is refused exactly as an unregistered effect kind is.
+Lifts the property `core/output_contract.py` already enforces at the boundary into the kernel, so it holds for every caller rather than for one parser. An unrecognised contract version is refused exactly as an unregistered effect kind is.
 
 ```python
 KNOWN_CONTRACTS = frozenset({"logos-agent-output/1"})
