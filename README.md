@@ -50,9 +50,9 @@ grant, and it does delete the file, because a boundary that refuses everything
 proves nothing.
 
 `tests/test_escape_prevention.py` is the same thing as an adversarial suite:
-thirty simulated containment breaches, each blocked by a named invariant, plus two
+thirty-two simulated containment breaches, each blocked by a named invariant, plus two
 controls that keep it honest — the boundary is passable, and every one of the
-twenty-three Γ invariants is the decisive refusal somewhere. Neither file contains a
+twenty-five Γ invariants is the decisive refusal somewhere. Neither file contains a
 rule of its own; both call `logos_gamma.validate`, and a differential test asserts
 their verdicts equal the kernel's on the same context.
 
@@ -159,7 +159,7 @@ visibly labelled — and answered "self-derived" on 12/12 controls where "unknow
 was correct. Models do not reliably report where their content came from, so
 provenance is tracked around them.
 
-### 4. Γ decides: twenty-three invariants, no model, no state
+### 4. Γ decides: twenty-five invariants, no model, no state
 
 ```text
 G0-EFFECT-KIND   an unregistered effect kind is denied until classified
@@ -179,7 +179,7 @@ G6-SELF-PRESERVATION  self-continuity authorises nothing
 G0-PROVENANCE    missing evidence stays UNKNOWN, and UNKNOWN refuses
 ```
 
-Eight more were added on 2026-09-22, each closing a case every invariant above
+Ten more were added on 2026-09-22, each closing a case every invariant above
 passes. They are opt-in by construction: a grant or a deployment that does not
 declare the new field keeps its exact previous meaning, and for each one a test
 proves no value of that field can turn a refusal into an admission.
@@ -201,6 +201,10 @@ G-COMPENSATION   Γ-21  an unreconciled sibling step holds the scope. Γ stops; 
                        not compensate, because compensation is an effect needing a grant
 G-RECEIPT        Γ-22  an admission that leaves no trace cannot be audited. Presence and
                        shape only — authenticity belongs to the audit layer
+G-PLASTICITY     Γ-23  an agent may think about changing itself; that is not being allowed
+                       to. none < state < memory < residual < mechanism < deployment
+G-CONSTRAINT     Γ-24  a constraint counts when a mechanism enforces it, not when the agent
+                       knows it: REPRESENTED is refused for the same reason DECLARED is
 ```
 
 Aggregation is conservative and unanimous: `INVALID > UNCLEAR > VALID`, and only an
@@ -263,13 +267,43 @@ The eight candidate invariants proposed in
 approved and are all implemented; that document now records each one's clause,
 predicate and tests.
 
+## The graph
+
+The same boundary, written as a topology rather than a sequence of calls.
+
+```bash
+python core/graph.py              # walk seven scenarios, print the path each takes
+python core/graph.py --mermaid    # the diagram, generated from the edges
+python -m pytest tests/test_graph_invariants.py -q
+```
+
+Sixteen nodes, nineteen edges, one effectful node, one loop. The loop passes through
+`HUMAN_GATE`, and the grant it produces is consumed on use, so the graph cannot iterate
+without a person deciding that it should. Twenty-seven tests check the topology the way
+the kernel tests check the predicates — reachability rather than verdicts:
+
+```text
+EXECUTE is reachable only through the token    every path to the effect passes
+                                               VALIDATE -> ISSUE_TOKEN -> REDEEM
+the only loop passes through a human           nothing here can spin on its own
+terminal nodes are terminal                    a refusal cannot be walked back
+an advisory can only route to a refusal        ADVISE feeds VALIDATE and nothing else
+```
+
+`core/graph.py` is the reference implementation and is dependency-free.
+[`docs/LANGGRAPH-BLUEPRINT.md`](docs/LANGGRAPH-BLUEPRINT.md) ports it to LangGraph node
+for node. LangGraph is deliberately not a dependency of this repository: a package that
+can decide whether an agent acts would be a dependency in the safety path, and that path
+has none.
+
 ## Verifying the claims yourself
 
 ```bash
-python -m pytest tests/test_gamma_kernel.py -q          # 129 adversarial kernel tests
+python -m pytest tests/test_gamma_kernel.py -q          # 188 adversarial kernel tests
 python -m pytest tests/test_gamma_trusted_core.py -q    # 24 structural tests: no LLM, no network, no shell, no hidden state
-python -m pytest tests/test_escape_prevention.py -q     # 74 tests: 30 containment breaches + controls
+python -m pytest tests/test_escape_prevention.py -q     # 80 tests: 32 containment breaches + controls
 python -m pytest tests/test_output_contract.py -q       # 49 tests: the JSON boundary
+python -m pytest tests/test_graph_invariants.py -q      # 27 tests: the topology itself
 python -m pytest -q                                     # everything
 ```
 
@@ -499,7 +533,8 @@ src/logos_memory/      memory and its local scope gate — never a source of aut
 src/logos_pstate/      persistent-state adapters for the causality experiments
 src/logos_research/    experiments, measurement harness, governance records
 core/                  runnable demonstrations; owns no rule, not packaged
-tests/                 50 suites, every one with a positive control
+core/graph.py          the same boundary as a topology; 16 nodes, 19 edges, 1 loop
+tests/                 51 suites, every one with a positive control
 GAMMA.md               the invariant specification the kernel implements
 00-MAIN-STATE/         canonical transported state
 05-WORK-ORDERS/        scientific + engineering work orders, each with its closure

@@ -1601,6 +1601,18 @@
     "docs/RESEARCH-BACKLOG-FROM-RADAR.md": {
       "class": "GOVERNANCE_ONLY",
       "note": "LOGOS1-SELF-MODIFICATION-AUTHORITY-R1: Record; kein Code, kein Modellaufruf"
+    },
+    "core/graph.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-AUTHORITY-GRAPH-R1: lauffaehige Demonstration; keine eigene Regel; kein Modellaufruf"
+    },
+    "tests/test_graph_invariants.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-AUTHORITY-GRAPH-R1: Kontrolle + Angriffe, deterministisch; kein Modellaufruf"
+    },
+    "docs/LANGGRAPH-BLUEPRINT.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-AUTHORITY-GRAPH-R1: Record; kein Code, kein Modellaufruf"
     }
   },
   "unclassified": 0
