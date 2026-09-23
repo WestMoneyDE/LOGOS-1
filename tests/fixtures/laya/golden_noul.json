@@ -1,0 +1,17 @@
+{
+  "answer": {
+    "confidence": 0.5481,
+    "p_true": 0.5481,
+    "type": "noul"
+  },
+  "latency_ms": 292,
+  "pins": {
+    "device": "cpu",
+    "hf_revision": "5e7b2b1b8ca2ecdd3f2322d94069c9b6ce7e844b",
+    "package_version": "0.3.6",
+    "route": "english"
+  },
+  "question_id": "prompt_injection",
+  "request_id": "9ff0daf773c643b9b55a4e3a1d163c9d",
+  "schema_version": "laya-classify/1"
+}

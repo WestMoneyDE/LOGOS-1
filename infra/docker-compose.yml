@@ -213,3 +213,46 @@ services:
     read_only: false
     tmpfs:
       - /tmp
+
+  # logos-laya — the local juror service, contract `laya-classify/1` (infra/laya/).
+  # Opt-in profile: `docker compose --profile laya up -d --build --no-deps laya`.
+  # CPU only; model snapshot baked into the image at a full 40-char revision, hub offline at
+  # runtime. Only `english` is loaded at startup (max_loaded=1); multilingual and
+  # typed-decisions load on demand (LRU). No restart loop: a load that OOMs stays down.
+  laya:
+    build:
+      context: ./laya
+    image: logos-laya:local
+    profiles: [laya]
+    restart: "no"
+    networks: [logos-research]
+    ports:
+      - "127.0.0.1:58110:8110"
+    environment:
+      LAYA_PRELOAD: ${LAYA_PRELOAD:-english}
+      LAYA_MAX_LOADED: ${LAYA_MAX_LOADED:-1}
+      LAYA_DEVICE: cpu
+      LAYA_QUEUE_WAIT_S: "2.0"
+      LAYA_DEADLINE_S: "20.0"
+      HF_HUB_OFFLINE: "1"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    # Measured 2026-09-24 (CPU, laya 0.3.6, rev 5e7b2b1b): english steady RSS 2.03 GiB, cold-load
+    # peak 2.79 GiB (1.3x = 3.6g). An on-demand english<->multilingual swap is limit-bound: it
+    # peaked at the limit under both 3g (3.03 GiB RSS, ~50 s) and 4g (4.06 GiB, ~30 s) with no
+    # OOM kill (both checkpoints are resident while the new one builds). 3g keeps steady state
+    # (2.03 GiB) and cold peak (2.79 GiB) inside the limit and the switch still completes; 4g
+    # plus a full jev-ultrafast-laya (~5 GiB) would exceed the 9.7 GiB WSL VM. A switch outlasts
+    # the client's 5 s timeout either way, so the caller sees ABSTAIN, never a slow pass.
+    mem_limit: 3g
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8110/readyz', timeout=2).status == 200 else 1)"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 180s

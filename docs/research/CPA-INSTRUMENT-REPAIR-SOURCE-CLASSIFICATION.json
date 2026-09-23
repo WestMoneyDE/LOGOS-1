@@ -1881,6 +1881,38 @@
     "tests/test_laya_navigator.py": {
       "class": "EXPERIMENTAL_DETERMINISTIC",
       "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: walls over all THESIS_STATES; differential test proving the shadow changes no transition (lesion-checked)"
+    },
+    "infra/laya/Dockerfile": {
+      "class": "TOOLING",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: LOGOS-owned Laya image; laya==0.3.6, HF revision 5e7b2b1b pinned, SHA256SUMS checked at build, offline at runtime, uid 10001"
+    },
+    "infra/laya/app.py": {
+      "class": "EXPERIMENTAL_INFERENCE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: laya-classify/1 service; typed union per question type, pins in every response, /livez /readyz, one inference slot, fail-closed error codes"
+    },
+    "infra/laya/requirements.txt": {
+      "class": "TOOLING",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: exact pins; torch installed separately from the CPU index"
+    },
+    "tests/test_laya_service_contract.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: one variant per question type, missing-field -> 502, probes never load, busy/timeout/bad-request codes, parsed by the real client"
+    },
+    "experiments/laya_calibration/service_probe.py": {
+      "class": "EXPERIMENTAL_INFERENCE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: records golden answers and measures latency against the running service"
+    },
+    "tests/fixtures/laya/golden_noul.json": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: real service answer, pinned revision"
+    },
+    "tests/fixtures/laya/golden_choice.json": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: real service answer, pinned revision"
+    },
+    "tests/fixtures/laya/golden_score.json": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: real service answer, pinned revision"
     }
   },
   "unclassified": 0

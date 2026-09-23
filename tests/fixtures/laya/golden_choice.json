@@ -1,0 +1,22 @@
+{
+  "answer": {
+    "choice": "billing",
+    "confidence": 0.5342,
+    "probabilities": {
+      "billing": 0.8529,
+      "shipping": 0.0498,
+      "technical": 0.0973
+    },
+    "type": "choice"
+  },
+  "latency_ms": 241,
+  "pins": {
+    "device": "cpu",
+    "hf_revision": "5e7b2b1b8ca2ecdd3f2322d94069c9b6ce7e844b",
+    "package_version": "0.3.6",
+    "route": "english"
+  },
+  "question_id": "department",
+  "request_id": "5613abec6cdd40468934fde5a74e65df",
+  "schema_version": "laya-classify/1"
+}

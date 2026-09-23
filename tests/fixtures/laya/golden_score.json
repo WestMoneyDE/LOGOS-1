@@ -1,0 +1,22 @@
+{
+  "answer": {
+    "confidence": 0.1365,
+    "level": 1.4385,
+    "probabilities": {
+      "0": 0.1416,
+      "1": 0.2782,
+      "2": 0.5801
+    },
+    "type": "score"
+  },
+  "latency_ms": 287,
+  "pins": {
+    "device": "cpu",
+    "hf_revision": "5e7b2b1b8ca2ecdd3f2322d94069c9b6ce7e844b",
+    "package_version": "0.3.6",
+    "route": "english"
+  },
+  "question_id": "urgency",
+  "request_id": "5711fd9dae3149718494a30bb5f57235",
+  "schema_version": "laya-classify/1"
+}
