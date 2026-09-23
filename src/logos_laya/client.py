@@ -74,7 +74,11 @@ def yes_probability(payload: Mapping) -> float | None:
 
 @dataclass
 class HttpLaya:
-    """The one implementation that reaches the network, and only to loopback."""
+    """The one implementation that reaches the network, and only to loopback.
+
+    Superseded: this is the chat path to the LM Studio model; new code uses
+    `classify.ClassifyClient` (`laya-classify/1`).
+    """
 
     base_url: str = DEFAULT_BASE
     model: str = DEFAULT_MODEL

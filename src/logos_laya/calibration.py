@@ -20,7 +20,12 @@ from typing import Mapping
 from .contract import PROFILES
 
 RECORD_DIR = Path(__file__).resolve().parents[2] / "docs" / "research" / "LAYA-CALIBRATION"
-PROTOCOLS = ("logprob", "json")
+PROTOCOLS = ("logprob", "json", "classify")
+
+#: The pins a `classify` record must carry, and that must equal the pins in force. The
+#: chat protocols pin the model by name and the prompt by hash; the classify protocol
+#: pins the service package, the checkpoint revision, the route and the question.
+CLASSIFY_PINS = ("question_sha256", "package_version", "hf_revision", "route")
 
 
 @dataclasses.dataclass(frozen=True)
@@ -39,6 +44,11 @@ class CalibrationRecord:
     wilson_95: Mapping[str, list[float]]
     measured_on: str
     approved_by: str
+    # `classify` protocol only; defaulted so records of the chat protocols keep loading.
+    question_sha256: str | None = None
+    package_version: str | None = None
+    hf_revision: str | None = None
+    route: str | None = None
 
 
 def prompt_hash(system: str) -> str:
@@ -68,7 +78,9 @@ def load(profile: str) -> CalibrationRecord | None:
 
 
 def admissible(record: CalibrationRecord | None, *, model_pin: str, prompt_sha256: str,
-               profile: str | None = None) -> bool:
+               profile: str | None = None, question_sha256: str | None = None,
+               package_version: str | None = None, hf_revision: str | None = None,
+               route: str | None = None) -> bool:
     """May this profile influence anything right now?
 
     Every check here is a reason a threshold would be meaningless, not a formality: no
@@ -79,6 +91,11 @@ def admissible(record: CalibrationRecord | None, *, model_pin: str, prompt_sha25
     record measured for a different job: a recall measured on injections says nothing
     about reranking, and a caller that reaches for the wrong record should get nothing
     rather than a number that looks valid.
+
+    A `classify` record additionally has to name its question hash, service package,
+    checkpoint revision and route, and each has to equal the value the caller passes. A
+    caller that passes none of them gets `False`: a threshold measured for one checkpoint
+    or one wording of the question says nothing about another.
     """
     if record is None:
         return False
@@ -88,6 +105,13 @@ def admissible(record: CalibrationRecord | None, *, model_pin: str, prompt_sha25
         return False
     if record.model_pin != model_pin or record.prompt_sha256 != prompt_sha256:
         return False
+    if record.protocol == "classify":
+        supplied = {"question_sha256": question_sha256, "package_version": package_version,
+                    "hf_revision": hf_revision, "route": route}
+        for name in CLASSIFY_PINS:
+            value = getattr(record, name)
+            if not isinstance(value, str) or not value.strip() or value != supplied[name]:
+                return False
     if not record.approved_by.strip() or not record.measured_on.strip():
         return False
     if record.n <= 0 or record.positives <= 0 or record.negatives <= 0:

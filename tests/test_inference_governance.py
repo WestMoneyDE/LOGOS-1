@@ -258,7 +258,11 @@ def test_ZERO_inference_proof():
         # LOGOS1-JEV-DECISION-LAYER-R1: the juror layer's transport is the third and last one. It is the only file in logos_laya that touches
         # the network, it reaches one host -- the loopback address of a local model server -- and the model-provider checks above still apply to
         # it. Named file, not the package: a directory-wide exemption would license the next file in it to open a socket unnoticed.
-        if "logos_research/infra" not in rel_py and "logos_dashboard/control/observe.py" not in rel_py and "logos_laya/client.py" not in rel_py:
+        # LOGOS1-LAYA-JUROR-INTEGRATION-R1: client.py is no longer the last one. classify.py is the transport to the LOGOS-owned Laya
+        # service (laya-classify/1); client.py stays as the superseded chat path. Same terms: one named file, loopback enforced in code
+        # (BASE_URL_NOT_LOOPBACK, proxies ignored, no redirects), and the provider checks above still apply.
+        if ("logos_research/infra" not in rel_py and "logos_dashboard/control/observe.py" not in rel_py
+                and "logos_laya/client.py" not in rel_py and "logos_laya/classify.py" not in rel_py):
             for tok in ("import requests", "import httpx", "import urllib.request", "import socket"):
                 assert tok not in txt, (py, tok)
         tree = ast.parse(txt)
