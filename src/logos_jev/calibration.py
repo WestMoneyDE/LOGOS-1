@@ -67,16 +67,24 @@ def load(profile: str) -> CalibrationRecord | None:
         return None
 
 
-def admissible(record: CalibrationRecord | None, *, model_pin: str, prompt_sha256: str) -> bool:
+def admissible(record: CalibrationRecord | None, *, model_pin: str, prompt_sha256: str,
+               profile: str | None = None) -> bool:
     """May this profile influence anything right now?
 
     Every check here is a reason a threshold would be meaningless, not a formality: no
     record, a record for a different model or prompt, an empty approval, an empty or
     one-sided dataset, or a rate outside the unit interval.
+
+    `profile` names the profile the caller is about to act for. Passing it refuses a
+    record measured for a different job: a recall measured on injections says nothing
+    about reranking, and a caller that reaches for the wrong record should get nothing
+    rather than a number that looks valid.
     """
     if record is None:
         return False
     if record.profile not in PROFILES or record.protocol not in PROTOCOLS:
+        return False
+    if profile is not None and record.profile != profile:
         return False
     if record.model_pin != model_pin or record.prompt_sha256 != prompt_sha256:
         return False

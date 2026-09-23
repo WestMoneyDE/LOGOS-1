@@ -887,7 +887,11 @@ def advisory_vote(answer: JevAnswer, record: CalibrationRecord | None, *,
     source = f"jev:{answer.profile}"
     if not answer.ok or answer.p is None:
         return (source, "ABSTAIN")
-    if not admissible(record, model_pin=model_pin, prompt_sha256=INJECTION.prompt_sha256):
+    profile = BY_NAME.get(answer.profile)
+    if profile is None:
+        return (source, "ABSTAIN")
+    if not admissible(record, model_pin=model_pin, prompt_sha256=profile.prompt_sha256,
+                      profile=profile.name):
         return (source, "ABSTAIN")
     if answer.answer is not True:
         return (source, "ABSTAIN")
@@ -904,6 +908,8 @@ def rerank(order: Sequence[int], n: int) -> tuple[int, ...]:
     """
     seen: list[int] = []
     for index in order:
+        if isinstance(index, bool):
+            continue
         if isinstance(index, int) and 0 <= index < n and index not in seen:
             seen.append(index)
     seen.extend(i for i in range(n) if i not in seen)
