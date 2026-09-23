@@ -382,8 +382,8 @@ def test_the_diagram_runs_left_to_right_and_shows_the_drifts():
     for lane, _ in LANES:
         assert f"subgraph {lane}[" in text
     for d in DRIFTS:
-        assert f"-.->|{d.event}|" in text
-    assert "-.->|returns|" in text
+        assert f'-.->|"{d.event}"|' in text      # labels are quoted: see the mermaid-safety test
+    assert '-.->|"returns"|' in text
 
 
 def test_the_topology_export_carries_lanes_subgraphs_and_drifts():
@@ -392,3 +392,44 @@ def test_the_topology_export_carries_lanes_subgraphs_and_drifts():
     assert set(data["subgraphs"]) == {"APPROVAL", "RECONCILIATION"}
     assert {d["event"] for d in data["drifts"]} == {"needs_human", "outcome_unknown"}
     assert all("lane" in n for n in data["nodes"])
+
+
+# --------------------------------------------------------------------------
+# The README carries the diagram, and it is generated rather than drawn
+# --------------------------------------------------------------------------
+
+def test_the_readme_diagram_is_byte_identical_to_the_code():
+    """A hand-drawn diagram in a README drifts from the code within a week.
+
+    This one is the output of `mermaid()`, pasted once. The test is what keeps it
+    that way: change an edge and this fails until the block is regenerated with
+    `python core/graph.py --mermaid`.
+    """
+    from pathlib import Path
+
+    readme = (Path(__file__).resolve().parents[1] / "README.md").read_text(encoding="utf-8")
+    assert "## Discover the Authority Graph" in readme, "the section was renamed or removed"
+    marker = "```mermaid\n"
+    assert readme.count(marker) == 1, "exactly one mermaid block is expected"
+    start = readme.index(marker) + len(marker)
+    block = readme[start:readme.index("```", start)].strip()
+    assert block == mermaid().strip(), (
+        "the README diagram no longer matches core/graph.py; regenerate it with\n"
+        "    python core/graph.py --mermaid"
+    )
+
+
+def test_the_readme_diagram_is_mermaid_safe():
+    """GitHub renders the block directly, so its labels must survive a parse.
+
+    Two hazards, both found by rendering rather than by reasoning: an unquoted edge
+    label containing punctuation, and a semicolon inside a node label — Mermaid reads
+    the semicolon as a statement separator.
+    """
+    text = mermaid()
+    for line in text.splitlines():
+        if "-->|" in line or "-.->|" in line:
+            label = line.split("|")[1]
+            assert label.startswith('"') and label.endswith('"'), line
+        if line.strip().startswith("subgraph "):
+            assert ";" not in line, line

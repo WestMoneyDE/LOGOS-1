@@ -390,7 +390,8 @@ def mermaid() -> str:
     """
     lines = ["flowchart LR"]
     for lane, meaning in LANES:
-        lines.append(f'    subgraph {lane}["{lane} — {meaning}"]')
+        safe = meaning.replace(";", ",")
+        lines.append(f'    subgraph {lane}["{lane} — {safe}"]')
         lines.append("        direction TB")
         for n in NODES:
             if LANE_OF[n] == lane:
@@ -404,10 +405,11 @@ def mermaid() -> str:
             lines.append(f'        {name}_{n}["{n}"]')
         lines.append("    end")
     for e in EDGES:
-        lines.append(f"    {e.source} -->|{e.condition.replace(chr(34), chr(39))}| {e.target}")
+        label = e.condition.replace(chr(34), chr(39))
+        lines.append(f'    {e.source} -->|"{label}"| {e.target}')
     for d in DRIFTS:
-        lines.append(f"    {d.at} -.->|{d.event}| {d.into}_{SUBGRAPHS[d.into][0]}")
-        lines.append(f"    {d.into}_{SUBGRAPHS[d.into][-1]} -.->|returns| {d.returns}")
+        lines.append(f'    {d.at} -.->|"{d.event}"| {d.into}_{SUBGRAPHS[d.into][0]}')
+        lines.append(f'    {d.into}_{SUBGRAPHS[d.into][-1]} -.->|"returns"| {d.returns}')
     lines.append("    classDef terminal fill:#2b2b2b,stroke:#888,color:#eee;")
     lines.append(f"    class {','.join(sorted(TERMINAL))} terminal;")
     lines.append("    classDef effect fill:#7a2222,stroke:#d66,color:#fff;")
