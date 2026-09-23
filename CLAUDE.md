@@ -25,6 +25,19 @@ and Γ; the properties are fixed in `tests/test_output_contract.py`. Never put a
 a role or an authority level in the envelope: there is no field for it, and inventing one
 refuses the whole output.
 
+**LLM output is always professional and clear.** This holds for every surface of LOGOS-1 —
+rendered prose, reports, commit messages, documentation, answers in a session. Professional
+means plain declarative sentences, the measurement before the interpretation, and the limit
+of a result stated where the result is stated. Clear means one claim per sentence and no
+qualifier that is not carrying weight.
+
+Do not write for warmth, personality or a human register. An earlier attempt to make the
+rendered view "sound natural" produced seven negations in nine sentences and read as a
+disclaimer block; it was removed. Padding a text with hedges is as much a failure of this
+rule as padding it with enthusiasm. Where a statement genuinely needs a boundary — a claimed
+origin, an unverified rating — state the boundary once, in the sentence that needs it, and
+not anywhere else.
+
 ## DNA / design-lens / health research rules
 
 - Keep natural/source mechanisms and human-engineered mechanisms as separate evidence classes when using the design lens.
