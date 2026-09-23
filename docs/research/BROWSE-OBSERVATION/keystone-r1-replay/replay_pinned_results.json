@@ -1,0 +1,701 @@
+{
+ "english": {
+  "n": 45,
+  "forward": [
+   9,
+   [
+    0.109,
+    0.338
+   ]
+  ],
+  "reversed": [
+   8,
+   [
+    0.093,
+    0.313
+   ]
+  ],
+  "order_averaged": [
+   7,
+   [
+    0.077,
+    0.288
+   ]
+  ],
+  "flips": 6,
+  "two_option": {
+   "n": 37,
+   "fwd": 4,
+   "rev": 3,
+   "avg": 2
+  },
+  "seconds": 82.8,
+  "per": [
+   {
+    "id": "1857140f99",
+    "n": 2,
+    "fwd": true,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "dc5791b7db",
+    "n": 2,
+    "fwd": true,
+    "rev": true,
+    "avg": true
+   },
+   {
+    "id": "73e514ef79",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "b229120a87",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "e03a419c8e",
+    "n": 7,
+    "fwd": true,
+    "rev": true,
+    "avg": true
+   },
+   {
+    "id": "e9e48ff8d7",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "38fb1b6e22",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "681b28c531",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "748a67c247",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "4767efc326",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "50546fe312",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "0cc8f163d2",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "e4eb8babba",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "3b8ee8d00d",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "6a868a4336",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "3eea4de212",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "5aa1ca0a9a",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "6c6c9d9f8f",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "a07d9095b8",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "2ef927475a",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "1398fbbb2b",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "3b50d88198",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "0d7d98f958",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "5e812b7ed5",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "77b3a055df",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "752d0c6bc4",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "b326d292b4",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "fe239bd663",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "f8889606d2",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "4b50264b18",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "f1e1c7965f",
+    "n": 2,
+    "fwd": false,
+    "rev": true,
+    "avg": false
+   },
+   {
+    "id": "4325ec9c2b",
+    "n": 2,
+    "fwd": true,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "4bd8d18ba1",
+    "n": 3,
+    "fwd": true,
+    "rev": true,
+    "avg": true
+   },
+   {
+    "id": "7f80a833a3",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "69b7366007",
+    "n": 4,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "6998aaf189",
+    "n": 3,
+    "fwd": true,
+    "rev": true,
+    "avg": true
+   },
+   {
+    "id": "7948c23055",
+    "n": 2,
+    "fwd": true,
+    "rev": true,
+    "avg": true
+   },
+   {
+    "id": "cc2fa32ba6",
+    "n": 4,
+    "fwd": true,
+    "rev": true,
+    "avg": true
+   },
+   {
+    "id": "90d9cd0603",
+    "n": 3,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "c7baaabcc1",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "ebe59c989a",
+    "n": 4,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "f4e4467131",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "022629f215",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "5c87797ffa",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "b25e62bd17",
+    "n": 4,
+    "fwd": true,
+    "rev": true,
+    "avg": true
+   }
+  ],
+  "reproduces_logged_choice": 40
+ },
+ "typed-decisions": {
+  "n": 45,
+  "forward": [
+   11,
+   [
+    0.142,
+    0.387
+   ]
+  ],
+  "reversed": [
+   9,
+   [
+    0.109,
+    0.338
+   ]
+  ],
+  "order_averaged": [
+   10,
+   [
+    0.125,
+    0.363
+   ]
+  ],
+  "flips": 5,
+  "two_option": {
+   "n": 37,
+   "fwd": 5,
+   "rev": 4,
+   "avg": 4
+  },
+  "seconds": 90.4,
+  "per": [
+   {
+    "id": "1857140f99",
+    "n": 2,
+    "fwd": true,
+    "rev": true,
+    "avg": true
+   },
+   {
+    "id": "dc5791b7db",
+    "n": 2,
+    "fwd": true,
+    "rev": true,
+    "avg": true
+   },
+   {
+    "id": "73e514ef79",
+    "n": 2,
+    "fwd": true,
+    "rev": true,
+    "avg": true
+   },
+   {
+    "id": "b229120a87",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "e03a419c8e",
+    "n": 7,
+    "fwd": true,
+    "rev": true,
+    "avg": true
+   },
+   {
+    "id": "e9e48ff8d7",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "38fb1b6e22",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "681b28c531",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "748a67c247",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "4767efc326",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "50546fe312",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "0cc8f163d2",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "e4eb8babba",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "3b8ee8d00d",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "6a868a4336",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "3eea4de212",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "5aa1ca0a9a",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "6c6c9d9f8f",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "a07d9095b8",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "2ef927475a",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "1398fbbb2b",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "3b50d88198",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "0d7d98f958",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "5e812b7ed5",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "77b3a055df",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "752d0c6bc4",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "b326d292b4",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "fe239bd663",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "f8889606d2",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "4b50264b18",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "f1e1c7965f",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "4325ec9c2b",
+    "n": 2,
+    "fwd": true,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "4bd8d18ba1",
+    "n": 3,
+    "fwd": true,
+    "rev": true,
+    "avg": true
+   },
+   {
+    "id": "7f80a833a3",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "69b7366007",
+    "n": 4,
+    "fwd": true,
+    "rev": false,
+    "avg": true
+   },
+   {
+    "id": "6998aaf189",
+    "n": 3,
+    "fwd": true,
+    "rev": true,
+    "avg": true
+   },
+   {
+    "id": "7948c23055",
+    "n": 2,
+    "fwd": true,
+    "rev": true,
+    "avg": true
+   },
+   {
+    "id": "cc2fa32ba6",
+    "n": 4,
+    "fwd": true,
+    "rev": true,
+    "avg": true
+   },
+   {
+    "id": "90d9cd0603",
+    "n": 3,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "c7baaabcc1",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "ebe59c989a",
+    "n": 4,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "f4e4467131",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "022629f215",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "5c87797ffa",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false
+   },
+   {
+    "id": "b25e62bd17",
+    "n": 4,
+    "fwd": true,
+    "rev": true,
+    "avg": true
+   }
+  ]
+ }
+}

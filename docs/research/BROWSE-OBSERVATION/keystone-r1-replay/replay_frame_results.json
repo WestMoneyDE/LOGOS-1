@@ -1,0 +1,38 @@
+{
+ "english/names_target": {
+  "correct": 31,
+  "n": 45,
+  "wilson": [
+   0.543,
+   0.805
+  ],
+  "two_option": "23/37"
+ },
+ "english/opens_target": {
+  "correct": 40,
+  "n": 45,
+  "wilson": [
+   0.765,
+   0.952
+  ],
+  "two_option": "32/37"
+ },
+ "typed-decisions/names_target": {
+  "correct": 44,
+  "n": 45,
+  "wilson": [
+   0.884,
+   0.996
+  ],
+  "two_option": "36/37"
+ },
+ "typed-decisions/opens_target": {
+  "correct": 45,
+  "n": 45,
+  "wilson": [
+   0.921,
+   1
+  ],
+  "two_option": "37/37"
+ }
+}

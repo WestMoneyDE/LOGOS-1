@@ -2021,6 +2021,38 @@
     "docs/superpowers/specs/2026-09-23-jev-abort-fix-design.md": {
       "class": "GOVERNANCE_ONLY",
       "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: Record; kein Code, kein Modellaufruf"
+    },
+    "docs/research/BROWSE-OBSERVATION/keystone-r1-replay/replay_exp.py": {
+      "class": "EXPERIMENTAL_INFERENCE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: replay of logged Laya questions inside the Laya container, offline, pinned revision; evidence for the jev abort-fix spec"
+    },
+    "docs/research/BROWSE-OBSERVATION/keystone-r1-replay/replay_pinned.py": {
+      "class": "EXPERIMENTAL_INFERENCE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: replay of logged Laya questions inside the Laya container, offline, pinned revision; evidence for the jev abort-fix spec"
+    },
+    "docs/research/BROWSE-OBSERVATION/keystone-r1-replay/replay_state.py": {
+      "class": "EXPERIMENTAL_INFERENCE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: replay of logged Laya questions inside the Laya container, offline, pinned revision; evidence for the jev abort-fix spec"
+    },
+    "docs/research/BROWSE-OBSERVATION/keystone-r1-replay/replay_frame.py": {
+      "class": "EXPERIMENTAL_INFERENCE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: replay of logged Laya questions inside the Laya container, offline, pinned revision; evidence for the jev abort-fix spec"
+    },
+    "docs/research/BROWSE-OBSERVATION/keystone-r1-replay/replay_results.json": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measured replay results; Record, kein Code"
+    },
+    "docs/research/BROWSE-OBSERVATION/keystone-r1-replay/replay_pinned_results.json": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measured replay results; Record, kein Code"
+    },
+    "docs/research/BROWSE-OBSERVATION/keystone-r1-replay/replay_state_results.json": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measured replay results; Record, kein Code"
+    },
+    "docs/research/BROWSE-OBSERVATION/keystone-r1-replay/replay_frame_results.json": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measured replay results; Record, kein Code"
     }
   },
   "unclassified": 0

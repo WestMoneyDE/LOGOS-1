@@ -1,0 +1,56 @@
+{
+ "english/full": {
+  "correct": 9,
+  "n": 45,
+  "wilson": [
+   0.109,
+   0.338
+  ],
+  "two_option": "4/37"
+ },
+ "english/goal_only": {
+  "correct": 11,
+  "n": 45,
+  "wilson": [
+   0.142,
+   0.387
+  ],
+  "two_option": "5/37"
+ },
+ "english/goal_finish": {
+  "correct": 10,
+  "n": 45,
+  "wilson": [
+   0.125,
+   0.363
+  ],
+  "two_option": "5/37"
+ },
+ "typed-decisions/full": {
+  "correct": 11,
+  "n": 45,
+  "wilson": [
+   0.142,
+   0.387
+  ],
+  "two_option": "5/37"
+ },
+ "typed-decisions/goal_only": {
+  "correct": 11,
+  "n": 45,
+  "wilson": [
+   0.142,
+   0.387
+  ],
+  "two_option": "5/37"
+ },
+ "typed-decisions/goal_finish": {
+  "correct": 11,
+  "n": 45,
+  "wilson": [
+   0.142,
+   0.387
+  ],
+  "two_option": "5/37"
+ }
+}

@@ -1,0 +1,6 @@
+outs:
+- md5: b371fbb95da744a1b04ee4a1e4a841dd.dir
+  size: 3623086
+  nfiles: 7
+  hash: md5
+  path: keystone-r1-run

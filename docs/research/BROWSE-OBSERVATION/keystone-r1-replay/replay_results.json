@@ -1,0 +1,867 @@
+{
+ "english": {
+  "n": 45,
+  "forward": [
+   9,
+   [
+    0.109,
+    0.338
+   ]
+  ],
+  "reversed": [
+   8,
+   [
+    0.093,
+    0.313
+   ]
+  ],
+  "order_averaged": [
+   7,
+   [
+    0.077,
+    0.288
+   ]
+  ],
+  "choice_flips_with_order": 6,
+  "per": [
+   {
+    "id": "1857140f99",
+    "n": 2,
+    "fwd": true,
+    "rev": false,
+    "avg": false,
+    "flip": true,
+    "top_avg": 0.514
+   },
+   {
+    "id": "dc5791b7db",
+    "n": 2,
+    "fwd": true,
+    "rev": true,
+    "avg": true,
+    "flip": false,
+    "top_avg": 0.523
+   },
+   {
+    "id": "73e514ef79",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.504
+   },
+   {
+    "id": "b229120a87",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.736
+   },
+   {
+    "id": "e03a419c8e",
+    "n": 7,
+    "fwd": true,
+    "rev": true,
+    "avg": true,
+    "flip": true,
+    "top_avg": 0.199
+   },
+   {
+    "id": "e9e48ff8d7",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.66
+   },
+   {
+    "id": "38fb1b6e22",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.645
+   },
+   {
+    "id": "681b28c531",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.617
+   },
+   {
+    "id": "748a67c247",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.693
+   },
+   {
+    "id": "4767efc326",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.577
+   },
+   {
+    "id": "50546fe312",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.608
+   },
+   {
+    "id": "0cc8f163d2",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.664
+   },
+   {
+    "id": "e4eb8babba",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.623
+   },
+   {
+    "id": "3b8ee8d00d",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.69
+   },
+   {
+    "id": "6a868a4336",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.728
+   },
+   {
+    "id": "3eea4de212",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.591
+   },
+   {
+    "id": "5aa1ca0a9a",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.72
+   },
+   {
+    "id": "6c6c9d9f8f",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.522
+   },
+   {
+    "id": "a07d9095b8",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.671
+   },
+   {
+    "id": "2ef927475a",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.697
+   },
+   {
+    "id": "1398fbbb2b",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.656
+   },
+   {
+    "id": "3b50d88198",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.582
+   },
+   {
+    "id": "0d7d98f958",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.719
+   },
+   {
+    "id": "5e812b7ed5",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.583
+   },
+   {
+    "id": "77b3a055df",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.629
+   },
+   {
+    "id": "752d0c6bc4",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.691
+   },
+   {
+    "id": "b326d292b4",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.633
+   },
+   {
+    "id": "fe239bd663",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.691
+   },
+   {
+    "id": "f8889606d2",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.674
+   },
+   {
+    "id": "4b50264b18",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.764
+   },
+   {
+    "id": "f1e1c7965f",
+    "n": 2,
+    "fwd": false,
+    "rev": true,
+    "avg": false,
+    "flip": true,
+    "top_avg": 0.555
+   },
+   {
+    "id": "4325ec9c2b",
+    "n": 2,
+    "fwd": true,
+    "rev": false,
+    "avg": false,
+    "flip": true,
+    "top_avg": 0.505
+   },
+   {
+    "id": "4bd8d18ba1",
+    "n": 3,
+    "fwd": true,
+    "rev": true,
+    "avg": true,
+    "flip": false,
+    "top_avg": 0.407
+   },
+   {
+    "id": "7f80a833a3",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.653
+   },
+   {
+    "id": "69b7366007",
+    "n": 4,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.358
+   },
+   {
+    "id": "6998aaf189",
+    "n": 3,
+    "fwd": true,
+    "rev": true,
+    "avg": true,
+    "flip": true,
+    "top_avg": 0.432
+   },
+   {
+    "id": "7948c23055",
+    "n": 2,
+    "fwd": true,
+    "rev": true,
+    "avg": true,
+    "flip": true,
+    "top_avg": 0.557
+   },
+   {
+    "id": "cc2fa32ba6",
+    "n": 4,
+    "fwd": true,
+    "rev": true,
+    "avg": true,
+    "flip": false,
+    "top_avg": 0.442
+   },
+   {
+    "id": "90d9cd0603",
+    "n": 3,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.898
+   },
+   {
+    "id": "c7baaabcc1",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.76
+   },
+   {
+    "id": "ebe59c989a",
+    "n": 4,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.613
+   },
+   {
+    "id": "f4e4467131",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.778
+   },
+   {
+    "id": "022629f215",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.763
+   },
+   {
+    "id": "5c87797ffa",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.797
+   },
+   {
+    "id": "b25e62bd17",
+    "n": 4,
+    "fwd": true,
+    "rev": true,
+    "avg": true,
+    "flip": false,
+    "top_avg": 0.487
+   }
+  ],
+  "reproduces_logged_choice": 40
+ },
+ "typed-decisions": {
+  "n": 45,
+  "forward": [
+   11,
+   [
+    0.142,
+    0.387
+   ]
+  ],
+  "reversed": [
+   9,
+   [
+    0.109,
+    0.338
+   ]
+  ],
+  "order_averaged": [
+   10,
+   [
+    0.125,
+    0.363
+   ]
+  ],
+  "choice_flips_with_order": 5,
+  "per": [
+   {
+    "id": "1857140f99",
+    "n": 2,
+    "fwd": true,
+    "rev": true,
+    "avg": true,
+    "flip": false,
+    "top_avg": 0.544
+   },
+   {
+    "id": "dc5791b7db",
+    "n": 2,
+    "fwd": true,
+    "rev": true,
+    "avg": true,
+    "flip": false,
+    "top_avg": 0.566
+   },
+   {
+    "id": "73e514ef79",
+    "n": 2,
+    "fwd": true,
+    "rev": true,
+    "avg": true,
+    "flip": false,
+    "top_avg": 0.565
+   },
+   {
+    "id": "b229120a87",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.604
+   },
+   {
+    "id": "e03a419c8e",
+    "n": 7,
+    "fwd": true,
+    "rev": true,
+    "avg": true,
+    "flip": true,
+    "top_avg": 0.169
+   },
+   {
+    "id": "e9e48ff8d7",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.606
+   },
+   {
+    "id": "38fb1b6e22",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.587
+   },
+   {
+    "id": "681b28c531",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.533
+   },
+   {
+    "id": "748a67c247",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.578
+   },
+   {
+    "id": "4767efc326",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.577
+   },
+   {
+    "id": "50546fe312",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.571
+   },
+   {
+    "id": "0cc8f163d2",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.585
+   },
+   {
+    "id": "e4eb8babba",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.582
+   },
+   {
+    "id": "3b8ee8d00d",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.621
+   },
+   {
+    "id": "6a868a4336",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.627
+   },
+   {
+    "id": "3eea4de212",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.546
+   },
+   {
+    "id": "5aa1ca0a9a",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.626
+   },
+   {
+    "id": "6c6c9d9f8f",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.511
+   },
+   {
+    "id": "a07d9095b8",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.589
+   },
+   {
+    "id": "2ef927475a",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.577
+   },
+   {
+    "id": "1398fbbb2b",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.596
+   },
+   {
+    "id": "3b50d88198",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.527
+   },
+   {
+    "id": "0d7d98f958",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.599
+   },
+   {
+    "id": "5e812b7ed5",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.534
+   },
+   {
+    "id": "77b3a055df",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.54
+   },
+   {
+    "id": "752d0c6bc4",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.598
+   },
+   {
+    "id": "b326d292b4",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.578
+   },
+   {
+    "id": "fe239bd663",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.588
+   },
+   {
+    "id": "f8889606d2",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.547
+   },
+   {
+    "id": "4b50264b18",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.644
+   },
+   {
+    "id": "f1e1c7965f",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.56
+   },
+   {
+    "id": "4325ec9c2b",
+    "n": 2,
+    "fwd": true,
+    "rev": false,
+    "avg": false,
+    "flip": true,
+    "top_avg": 0.507
+   },
+   {
+    "id": "4bd8d18ba1",
+    "n": 3,
+    "fwd": true,
+    "rev": true,
+    "avg": true,
+    "flip": false,
+    "top_avg": 0.375
+   },
+   {
+    "id": "7f80a833a3",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.58
+   },
+   {
+    "id": "69b7366007",
+    "n": 4,
+    "fwd": true,
+    "rev": false,
+    "avg": true,
+    "flip": true,
+    "top_avg": 0.26
+   },
+   {
+    "id": "6998aaf189",
+    "n": 3,
+    "fwd": true,
+    "rev": true,
+    "avg": true,
+    "flip": true,
+    "top_avg": 0.342
+   },
+   {
+    "id": "7948c23055",
+    "n": 2,
+    "fwd": true,
+    "rev": true,
+    "avg": true,
+    "flip": true,
+    "top_avg": 0.503
+   },
+   {
+    "id": "cc2fa32ba6",
+    "n": 4,
+    "fwd": true,
+    "rev": true,
+    "avg": true,
+    "flip": false,
+    "top_avg": 0.367
+   },
+   {
+    "id": "90d9cd0603",
+    "n": 3,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.51
+   },
+   {
+    "id": "c7baaabcc1",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.599
+   },
+   {
+    "id": "ebe59c989a",
+    "n": 4,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.413
+   },
+   {
+    "id": "f4e4467131",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.658
+   },
+   {
+    "id": "022629f215",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.634
+   },
+   {
+    "id": "5c87797ffa",
+    "n": 2,
+    "fwd": false,
+    "rev": false,
+    "avg": false,
+    "flip": false,
+    "top_avg": 0.647
+   },
+   {
+    "id": "b25e62bd17",
+    "n": 4,
+    "fwd": true,
+    "rev": true,
+    "avg": true,
+    "flip": false,
+    "top_avg": 0.348
+   }
+  ]
+ }
+}
