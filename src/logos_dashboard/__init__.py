@@ -4,6 +4,10 @@ LOGOS-1-RESEARCH-DASHBOARD-SCIENTIFIC-CORE-R1. Structured state lives in docs/re
 (claims, experiments, invariants, prior art, publications, replication, open questions); Markdown records are
 narrative; lab artifacts are evidence. The service never infers a scientific status from free text, never calls
 a model, and writes exactly one file: ACTIVE-THESES.json (the founder's selection of theses to work on).
+
+One opt-in exception (LOGOS1-LAYA-JUROR-INTEGRATION-R1): with LOGOS_LAYA_SHADOW=1, each committed thesis
+transition asks the local Laya service which step it would have taken and writes one `laya.shadow` audit row.
+The call happens after the transition's commit, cannot change the thesis, and is off by default.
 """
 from __future__ import annotations
 

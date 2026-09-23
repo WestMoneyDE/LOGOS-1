@@ -5,6 +5,7 @@ Actors: `founder` (the only one who may pass gates), `agent` (Claude host job), 
 from __future__ import annotations
 
 import json
+import os
 from datetime import datetime, timezone
 from typing import Any
 
@@ -56,7 +57,47 @@ def advance(conn, thesis_id: str, event: str, actor: str, reason: str = "", sour
         row["event_id"] = cur.fetchone()["event_id"]
         _audit(cur, actor, "thesis.advance", thesis_id, {"event": event, "from": th["state"], "to": nxt, "reason": reason})
     conn.commit()
+    if os.environ.get("LOGOS_LAYA_SHADOW") == "1":     # after the commit, never inside the FOR UPDATE transaction; off by default
+        _shadow_navigate(conn, thesis_id, th["state"], event, actor, reason)
     return row
+
+
+# -- Laya navigator, shadow mode (LOGOS1-LAYA-JUROR-INTEGRATION-R1, spec §5) ------
+# The navigator's proposal for the pre-transition state is written beside the real transition as ONE ros_audit row
+# (`laya.shadow`). It observes; it never changes the thesis, never raises into `advance`, and is imported lazily so a
+# shadow-off process never loads the client. Tests replace `_laya_client_factory` to inject a FakeTransport.
+
+_laya_client_factory = None   # () -> logos_laya.classify.ClassifyClient; None = the default loopback client
+
+
+def _laya_client():
+    if _laya_client_factory is not None:
+        return _laya_client_factory()
+    from logos_laya.classify import DEFAULT_BASE, ClassifyClient
+    return ClassifyClient(base_url=os.environ.get("LOGOS_LAYA_URL", DEFAULT_BASE), timeout=2.0)
+
+
+def _shadow_navigate(conn, thesis_id: str, from_state: str, event: str, actor: str, reason: str) -> None:
+    try:
+        from logos_laya.navigator import shadow_detail
+        try:
+            client = _laya_client()
+        except Exception as exc:  # noqa: BLE001
+            client = None
+            client_error = f"{type(exc).__name__}"
+        if client is not None:
+            detail = shadow_detail(client, "thesis", from_state, event, reason or "", actor)
+        else:
+            detail = {"from": from_state, "actual_event": event, "actual_actor": actor, "offered": [], "laya_move": "STAND_STILL", "laya_event": None,
+                      "laya_reason": f"CLIENT_UNAVAILABLE: {client_error}", "agreed": False, "p_top": None, "margin": None, "abstain_reason": None, "pins": {}, "latency_ms": 0}
+        with conn.cursor() as cur:
+            _audit(cur, "system", "laya.shadow", thesis_id, detail)
+        conn.commit()
+    except Exception:  # noqa: BLE001 — shadow mode must never affect advance; a failed write is rolled back and dropped
+        try:
+            conn.rollback()
+        except Exception:  # noqa: BLE001
+            pass
 
 
 def list_theses(conn) -> list[dict]:

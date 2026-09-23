@@ -1917,6 +1917,14 @@
     "docs/research/BROWSE-OBSERVATION/keystone-r1-replay/replay_frame_results.json": {
       "class": "REFERENCE_FIXTURE",
       "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measured replay results; Record, kein Code"
+    },
+    "src/logos_laya/navigator.py": {
+      "class": "EXPERIMENTAL_INFERENCE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: navigator on the thesis state machine; offers only non-gated steps below AGENT_CEILING, asks Laya with named fields, never reads confidence; shadow mode only"
+    },
+    "tests/test_laya_navigator.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: walls over all THESIS_STATES; differential test proving the shadow changes no transition (lesion-checked)"
     }
   },
   "unclassified": 0
