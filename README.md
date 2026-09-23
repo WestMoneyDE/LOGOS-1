@@ -1,6 +1,6 @@
 # LOGOS-1
 
-![LOGOS-1 — Governed Intelligence for Safe Autonomous Agents: Memory, Reasoning, Evidence and Control](assets/logos-1-hero.svg)
+![LOGOS-1 — a unified foundation for intelligence: Bio Code, Atomic Rules, Memory Fabric, Consciousness Map, Agent Passport, ARC-AGI, and the State / Action / Authority / Feedback loop](assets/logos-1-header.png)
 
 <p align="center">
   <strong>Governed Intelligence for Safe Autonomous Agents</strong><br/>
@@ -267,27 +267,90 @@ The eight candidate invariants proposed in
 approved and are all implemented; that document now records each one's clause,
 predicate and tests.
 
-## The graph
+## Discover the Authority Graph
 
-The same boundary, written as a topology rather than a sequence of calls.
+The boundary written as a topology rather than a sequence of calls. It runs left to
+right across six trust lanes, because that is the axis that carries the meaning: a run
+moves from untrusted bytes to a recorded effect and never backwards.
 
-```bash
-python core/graph.py              # walk seven scenarios, print the path each takes
-python core/graph.py --mermaid    # the diagram, generated from the edges
-python -m pytest tests/test_graph_invariants.py -q
-```
-
-It runs left to right across six trust lanes, because that is the axis that carries
-the meaning — a run moves from untrusted bytes to a recorded effect and never
-backwards:
-
-```text
-UNTRUSTED    bytes from a model; nothing here is believed
-WORKING      the proposal, frozen and typed; still no authority anywhere
-EVIDENCE     grants read from the store, advisories collected; nothing minted
-GOVERNANCE   Γ decides, and binds the decision to the situation
-EFFECT       the world is touched, once, under a redeemed token
-RECORD       what happened, or the honest statement that it is unknown
+```mermaid
+flowchart LR
+    subgraph UNTRUSTED["UNTRUSTED — bytes from a model, nothing here is believed"]
+        direction TB
+        INTAKE["INTAKE"]
+        PARSE["PARSE"]
+    end
+    subgraph WORKING["WORKING — the proposal, frozen and typed, still no authority anywhere"]
+        direction TB
+        ISOLATE["ISOLATE"]
+        CLASSIFY["CLASSIFY"]
+    end
+    subgraph EVIDENCE["EVIDENCE — grants read from the store, advisories collected, nothing minted"]
+        direction TB
+        GATHER_AUTHORITY["GATHER_AUTHORITY"]
+        ADVISE["ADVISE"]
+    end
+    subgraph GOVERNANCE["GOVERNANCE — Γ decides, and binds the decision to the situation"]
+        direction TB
+        VALIDATE["VALIDATE"]
+        HUMAN_GATE["HUMAN_GATE"]
+        ISSUE_TOKEN["ISSUE_TOKEN"]
+        REDEEM["REDEEM"]
+    end
+    subgraph EFFECT["EFFECT — the world is touched, once, under a redeemed token"]
+        direction TB
+        EXECUTE["EXECUTE"]
+    end
+    subgraph RECORD["RECORD — what happened, or the honest statement that it is unknown"]
+        direction TB
+        RECONCILE["RECONCILE"]
+        AUDIT["AUDIT"]
+        DONE(["DONE"])
+        REFUSE(["REFUSE"])
+        HOLD(["HOLD"])
+    end
+    subgraph APPROVAL["APPROVAL — a graph of its own"]
+        direction TB
+        APPROVAL_REQUEST["REQUEST"]
+        APPROVAL_PRESENT_DELTA["PRESENT_DELTA"]
+        APPROVAL_TWO_PERSON_REVIEW["TWO_PERSON_REVIEW"]
+        APPROVAL_ISSUE_GRANT["ISSUE_GRANT"]
+        APPROVAL_DECLINE["DECLINE"]
+    end
+    subgraph RECONCILIATION["RECONCILIATION — a graph of its own"]
+        direction TB
+        RECONCILIATION_HOLD_SCOPE["HOLD_SCOPE"]
+        RECONCILIATION_PROBE_WORLD["PROBE_WORLD"]
+        RECONCILIATION_RESOLVED["RESOLVED"]
+        RECONCILIATION_PROPOSE_COMPENSATION["PROPOSE_COMPENSATION"]
+    end
+    INTAKE -->|"always"| PARSE
+    PARSE -->|"parse code != OK"| REFUSE
+    PARSE -->|"one valid envelope"| ISOLATE
+    ISOLATE -->|"always"| CLASSIFY
+    CLASSIFY -->|"always"| GATHER_AUTHORITY
+    GATHER_AUTHORITY -->|"always"| ADVISE
+    ADVISE -->|"always"| VALIDATE
+    VALIDATE -->|"verdict INVALID"| REFUSE
+    VALIDATE -->|"verdict UNCLEAR, or VALID without a grant for a consequential effect"| HUMAN_GATE
+    VALIDATE -->|"verdict VALID"| ISSUE_TOKEN
+    HUMAN_GATE -->|"human declines, or the wait expires"| REFUSE
+    HUMAN_GATE -->|"human issues a grant"| VALIDATE
+    ISSUE_TOKEN -->|"always"| REDEEM
+    REDEEM -->|"the situation moved since the verdict"| REFUSE
+    REDEEM -->|"token still binds this exact situation"| EXECUTE
+    EXECUTE -->|"always"| RECONCILE
+    RECONCILE -->|"outcome unknown"| HOLD
+    RECONCILE -->|"outcome known"| AUDIT
+    AUDIT -->|"always"| DONE
+    VALIDATE -.->|"needs_human"| APPROVAL_REQUEST
+    APPROVAL_DECLINE -.->|"returns"| VALIDATE
+    RECONCILE -.->|"outcome_unknown"| RECONCILIATION_HOLD_SCOPE
+    RECONCILIATION_PROPOSE_COMPENSATION -.->|"returns"| INTAKE
+    classDef terminal fill:#2b2b2b,stroke:#888,color:#eee;
+    class DONE,HOLD,REFUSE terminal;
+    classDef effect fill:#7a2222,stroke:#d66,color:#fff;
+    class EXECUTE effect;
 ```
 
 Sixteen nodes, nineteen edges, one effectful node, one loop — and **two events that
@@ -303,8 +366,22 @@ where it left off; what comes back is a **new proposal** for a compensating acti
 because a compensating action is an effect and needs its own grant. The two graphs
 share no node, and a test asserts it.
 
-Thirty-eight tests check the topology the way the kernel tests check the predicates —
-reachability rather than verdicts:
+### Walk it yourself
+
+```bash
+python core/graph.py              # seven scenarios, and the path each one takes
+python core/graph.py --mermaid    # the diagram above, regenerated from the edges
+python core/graph.py --json       # lanes, nodes, edges, subgraphs, drifts
+python -m pytest tests/test_graph_invariants.py -q
+```
+
+The diagram above is **generated, not drawn** — `tests/test_graph_invariants.py`
+asserts the block in this README is byte-identical to what `mermaid()` emits, so it
+cannot drift from the code the way a hand-drawn diagram does within a week.
+
+### What the topology guarantees
+
+Thirty-eight tests check reachability the way the kernel tests check verdicts:
 
 ```text
 the lanes only advance                         no edge moves a run back to a
@@ -320,8 +397,8 @@ a drift is a handoff, not a branch             the two graphs share no node
 `core/graph.py` is the reference implementation and is dependency-free.
 [`docs/LANGGRAPH-BLUEPRINT.md`](docs/LANGGRAPH-BLUEPRINT.md) ports it to LangGraph node
 for node. LangGraph is deliberately not a dependency of this repository: a package that
-can decide whether an agent acts would be a dependency in the safety path, and that path
-has none.
+can decide whether an agent acts would be a dependency in the safety path, and that
+path has none.
 
 ## Verifying the claims yourself
 
