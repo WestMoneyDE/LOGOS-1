@@ -66,8 +66,10 @@ The shape
 from __future__ import annotations
 
 import argparse
+import dataclasses
 import json
 import sys
+import threading
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable, Mapping, Sequence
@@ -77,6 +79,7 @@ if __package__ in (None, ""):  # `python core/graph.py`
     sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))  # for `logos_gamma`
 
 from logos_gamma import (  # noqa: E402
+    ADVISORY_VOTES,
     ValidationContext,
     explain,
     issue_decision,
@@ -377,6 +380,50 @@ def topology() -> dict:
 # Running the graph
 # --------------------------------------------------------------------------
 
+#: The channels an untrusted text can arrive on. What the model said, and what the
+#: caller fetched as evidence; nothing else is judged at ADVISE.
+UNTRUSTED_CHANNELS: frozenset[str] = frozenset({"agent_output", "evidence"})
+
+#: Wall-clock bound on one advisor call, in seconds. An advisor that has not answered
+#: by then is recorded as ABSTAIN; its eventual answer, if any, is discarded.
+ADVISOR_TIMEOUT_S: float = 5.0
+
+
+@dataclass(frozen=True)
+class UntrustedText:
+    """One piece of text an advisor is asked to judge. Data, never an instruction.
+
+    The caller supplies it; the graph keeps it only for the length of the run.
+    """
+
+    channel: str
+    ref: str
+    text: str
+
+    def __post_init__(self) -> None:
+        if self.channel not in UNTRUSTED_CHANNELS:
+            raise ValueError(f"channel {self.channel!r} is not in {sorted(UNTRUSTED_CHANNELS)}")
+        if not isinstance(self.ref, str) or not isinstance(self.text, str):
+            raise TypeError("ref and text must be str")
+        if self.channel == "evidence" and not self.ref:
+            raise ValueError("an evidence text needs a ref: the advisory source is named after it")
+
+    @property
+    def source(self) -> str:
+        """The advisory source, named by the graph from channel and ref.
+
+        The advisor's own source string is never used: an advisor cannot put its vote
+        under another text's name.
+        """
+        if self.channel == "agent_output":
+            return "laya:injection:agent_output"
+        return f"laya:injection:evidence:{self.ref}"
+
+
+#: An advisor takes one text and answers `(source, vote)`; vote in `ADVISORY_VOTES`.
+Advisor = Callable[[UntrustedText], "tuple[str, str]"]
+
+
 @dataclass
 class RunState:
     """Everything carried between nodes. Deliberately small and explicit.
@@ -395,6 +442,46 @@ class RunState:
     path: list[str] = field(default_factory=list)
     reasons: list[str] = field(default_factory=list)
     executed: bool = False
+    untrusted: tuple[UntrustedText, ...] = ()
+    #: Injected by the caller; the graph imports no advisor.
+    advisor: Advisor | None = None
+
+
+def _ask(advisor: Advisor, item: UntrustedText) -> tuple[str, str | None]:
+    """Call the advisor once, under `ADVISOR_TIMEOUT_S`. Returns `(vote, failure)`.
+
+    The one place an advisor failure is mapped: a raise, a timeout, or an answer that
+    is not `(str, vote)` with vote in `ADVISORY_VOTES` becomes ABSTAIN with a reason.
+    It never becomes a more permissive answer and never raises out of the run.
+
+    The call runs on a daemon thread so a hung advisor cannot hold the run; a thread
+    cannot be killed, so a late answer is simply never read.
+    """
+    box: dict[str, object] = {}
+
+    def call() -> None:
+        try:
+            box["answer"] = advisor(item)
+        except BaseException as exc:  # noqa: BLE001 - every failure is an ABSTAIN
+            box["error"] = type(exc).__name__
+
+    worker = threading.Thread(target=call, name="logos-advisor", daemon=True)
+    worker.start()
+    worker.join(ADVISOR_TIMEOUT_S)
+    if worker.is_alive():
+        return "ABSTAIN", f"no answer within {ADVISOR_TIMEOUT_S}s"
+    if "error" in box:
+        return "ABSTAIN", f"advisor raised {box['error']}"
+    answer = box.get("answer")
+    if (
+        type(answer) is not tuple
+        or len(answer) != 2
+        or not isinstance(answer[0], str)
+        or not isinstance(answer[1], str)
+        or answer[1] not in ADVISORY_VOTES
+    ):
+        return "ABSTAIN", f"answer outside the contract ({type(answer).__name__})"
+    return answer[1], None
 
 
 def _choose(node: str, state: RunState) -> str | None:
@@ -404,6 +491,19 @@ def _choose(node: str, state: RunState) -> str | None:
             state.reasons.append(f"parse refused: {state.parse_code}")
             return "REFUSE"
         return "ISOLATE"
+    if node == "ADVISE":
+        # Advisories enter the context as data, once per text, before VALIDATE reads
+        # it. They are part of `context_digest`, so REDEEM re-checks them too.
+        if state.advisor is not None and state.context is not None and state.untrusted:
+            votes: list[tuple[str, str]] = []
+            for item in state.untrusted:
+                vote, failure = _ask(state.advisor, item)
+                if failure is not None:
+                    state.reasons.append(f"advisory {item.source} recorded as ABSTAIN: {failure}")
+                votes.append((item.source, vote))
+            state.context = dataclasses.replace(
+                state.context, advisories=state.context.advisories + tuple(votes))
+        return "VALIDATE"
     if node == "VALIDATE":
         assert state.context is not None, "VALIDATE reached without a context"
         verdict = validate(state.context)
@@ -422,8 +522,6 @@ def _choose(node: str, state: RunState) -> str | None:
         # A human grant is a fact the next validation reads, not a flag that skips it.
         # It is consumed on use, so the loop cannot spin: one visit, one grant, one
         # re-validation, and the second visit finds nothing left to give.
-        import dataclasses
-
         state.human_grants = False
         state.context = dataclasses.replace(state.context, receipt_ref="audit/human-gate/0001")
         state.reasons.append("human issued a grant; re-validating against the new context")
@@ -453,8 +551,6 @@ def _choose(node: str, state: RunState) -> str | None:
 
 def _moved(ctx: ValidationContext) -> ValidationContext:
     """The world after someone rewrote one argument. Used to demonstrate REDEEM."""
-    import dataclasses
-
     return dataclasses.replace(ctx, proposal=dataclasses.replace(ctx.proposal, target="attacker@example.invalid"))
 
 
