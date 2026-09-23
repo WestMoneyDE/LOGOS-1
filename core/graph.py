@@ -256,6 +256,109 @@ def successors(node: str) -> tuple[Edge, ...]:
     return tuple(e for e in EDGES if e.source == node)
 
 
+# --------------------------------------------------------------------------
+# Dominators: the global form of "nothing can be skipped"
+# --------------------------------------------------------------------------
+#
+# Checking that each individual transition is in EDGES is a *local* property. It
+# says the step taken was declared; it says nothing about the history behind it.
+# A single added edge — CLASSIFY -> ISSUE_TOKEN, say — is a perfectly legal
+# transition that bypasses GATHER_AUTHORITY, ADVISE and VALIDATE, and every
+# per-transition check stays green while it does.
+#
+# The global property is dominance. D dominates N when every path from ENTRY to N
+# passes through D. "GATHER_AUTHORITY cannot be skipped" is exactly "it dominates
+# EXECUTE", and that is a statement about the whole topology, so a bypass edge
+# anywhere in the graph removes it. Both functions below are derived from EDGES;
+# a hand-maintained list of mandatory stations would only be a second place to
+# forget the thing.
+
+def _dominators(start: str, succ: Mapping[str, frozenset[str]]) -> dict[str, frozenset[str]]:
+    """Classic iterative dominators over an arbitrary successor relation.
+
+    `dom(start) = {start}`; `dom(n) = {n} | intersection(dom(p) for p in preds(n))`.
+    Only nodes reachable from `start` get an entry, which keeps the intersection
+    honest: an unreachable predecessor would otherwise contribute nothing and
+    silently make every set smaller.
+    """
+    reachable: set[str] = set()
+    frontier = [start]
+    while frontier:
+        node = frontier.pop()
+        if node in reachable:
+            continue
+        reachable.add(node)
+        frontier.extend(succ.get(node, frozenset()))
+
+    preds: dict[str, set[str]] = {n: set() for n in reachable}
+    for node in reachable:
+        for target in succ.get(node, frozenset()):
+            if target in reachable:
+                preds[target].add(node)
+
+    dom: dict[str, frozenset[str]] = {n: frozenset(reachable) for n in reachable}
+    dom[start] = frozenset({start})
+    changed = True
+    while changed:
+        changed = False
+        for node in reachable:
+            if node == start:
+                continue
+            incoming = preds[node]
+            if not incoming:
+                new = frozenset({node})
+            else:
+                new = frozenset.intersection(*(dom[p] for p in incoming)) | {node}
+            if new != dom[node]:
+                dom[node] = new
+                changed = True
+    return dom
+
+
+def dominators() -> Mapping[str, frozenset[str]]:
+    """For each node reachable from ENTRY, the nodes on *every* path to it.
+
+    A node is in its own dominator set. `dominators()[EFFECTFUL]` is therefore the
+    complete list of stations an execution is structurally unable to skip.
+    """
+    succ = {n: frozenset(e.target for e in successors(n)) for n in NODES}
+    return _dominators(ENTRY, succ)
+
+
+def post_dominators(exit_node: str) -> Mapping[str, frozenset[str]]:
+    """For each node that can reach `exit_node`, the nodes on *every* path to it.
+
+    Dominators of the reversed graph rooted at the exit. `post_dominators("DONE")
+    [EFFECTFUL]` answers the question that matters after an effect has happened:
+    is it always reconciled, and is a receipt always written.
+    """
+    rev: dict[str, set[str]] = {n: set() for n in NODES}
+    for e in EDGES:
+        rev[e.target].add(e.source)
+    return _dominators(exit_node, {n: frozenset(p) for n, p in rev.items()})
+
+
+#: The stations an execution must have passed. This one is *declared*, not derived,
+#: and the difference is the whole point: `dominators()[EFFECTFUL]` is a description
+#: of the topology as it currently stands, so a bypass edge changes it — which is
+#: exactly what makes it useful as a proof and useless as a requirement. A runtime
+#: guard that read the dominators would be relaxed by the same edge it is meant to
+#: catch. So the requirement is stated here, and
+#: `tests/test_graph_invariants.py::test_the_declared_stations_are_exactly_the_dominators`
+#: pins it to the computed topology: the two can never drift apart in silence.
+MANDATORY_BEFORE_EFFECT: frozenset[str] = frozenset({
+    "INTAKE",
+    "PARSE",
+    "ISOLATE",
+    "CLASSIFY",
+    "GATHER_AUTHORITY",
+    "ADVISE",
+    "VALIDATE",
+    "ISSUE_TOKEN",
+    "REDEEM",
+})
+
+
 def topology() -> dict:
     return {
         "entry": ENTRY,
@@ -371,6 +474,18 @@ def run(state: RunState, *, max_steps: int = 64) -> RunState:
             raise RuntimeError(f"no outgoing edge from {node}")
         if not any(e.source == node and e.target == nxt for e in EDGES):
             raise RuntimeError(f"transition {node} -> {nxt} is not in the topology")
+        if nxt == EFFECTFUL:
+            # The per-transition check above is local: it proves the step was
+            # declared, not that the history behind it was walked. Before the one
+            # node that touches the world, check the history itself.
+            # `node` is already the last entry in state.path: it was appended at the
+            # top of this iteration.
+            missing = sorted(MANDATORY_BEFORE_EFFECT - set(state.path))
+            if missing:
+                raise RuntimeError(
+                    f"{EFFECTFUL} reached without passing {', '.join(missing)}; "
+                    f"path was {' -> '.join(state.path)}"
+                )
         node = nxt
     raise RuntimeError("the graph did not terminate; a loop was added without a bound")
 

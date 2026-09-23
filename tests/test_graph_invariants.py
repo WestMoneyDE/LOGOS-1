@@ -9,10 +9,18 @@ to promise in a design document:
 
 ```text
 test_execute_is_reachable_only_through_the_token   no edge into EXECUTE bypasses the binding
+test_every_station_dominates_the_effect            nothing before the effect can be skipped
+test_an_effect_is_always_reconciled_and_always_receipted   nothing after it can be skipped
+
 test_the_only_loop_passes_through_a_human          nothing in the graph can spin on its own
 test_terminal_nodes_are_terminal                   a refusal cannot be walked back
 test_an_advisory_can_only_route_to_a_refusal       Γ-18's shape, made structural
 ```
+
+The first is local — it names the edges into EXECUTE. The second and third are
+global: they are computed over every path in the topology, so an edge added
+anywhere that routes around a station fails them, which is what "niemals etwas
+übersprungen werden kann" actually requires.
 
 An edge added to `core.graph.EDGES` that breaks one of them fails here, which is the
 point: adding an edge changes what the system can do, exactly as adding an invariant
@@ -147,6 +155,171 @@ def test_an_unknown_outcome_ends_in_a_hold_not_a_retry():
     unknown = next(e for e in successors("RECONCILE") if "unknown" in e.condition)
     assert unknown.target == "HOLD"
     assert successors("HOLD") == ()
+
+
+# --------------------------------------------------------------------------
+# Nothing can be skipped: the global property, structural and at runtime
+# --------------------------------------------------------------------------
+#
+# The founder's requirement is "niemals etwas übersprungen werden kann" — nothing
+# may ever be skipped. `run()` checking each transition against EDGES does not say
+# that: it is a local check, and a single added edge (CLASSIFY -> ISSUE_TOKEN) is a
+# legal transition that skips GATHER_AUTHORITY, ADVISE and VALIDATE while every
+# per-transition assertion stays green. Dominance is the global form: D dominates N
+# when every path from ENTRY to N passes D, so a bypass edge anywhere destroys it.
+
+#: The stations an execution must have passed, written out here so that the test
+#: says what it checks. `core.graph.MANDATORY_BEFORE_EFFECT` declares the same set
+#: for the runtime guard; the dominator computation proves the topology enforces it.
+MANDATORY_BEFORE_EXECUTE = frozenset({
+    "INTAKE",
+    "PARSE",
+    "ISOLATE",
+    "CLASSIFY",
+    "GATHER_AUTHORITY",
+    "ADVISE",
+    "VALIDATE",
+    "ISSUE_TOKEN",
+    "REDEEM",
+})
+
+
+def test_every_station_dominates_the_effect():
+    """No path from ENTRY to EXECUTE skips a single station.
+
+    This is the property the per-transition check in `run()` cannot give. Add a
+    bypass edge anywhere — CLASSIFY -> ISSUE_TOKEN, VALIDATE -> REDEEM, ADVISE ->
+    EXECUTE — and the station it routes around stops dominating EXECUTE, and this
+    fails naming it.
+    """
+    from core.graph import dominators
+
+    dom = dominators()
+    assert EFFECTFUL in dom, "EXECUTE is unreachable, which would make this vacuous"
+    missing = sorted(MANDATORY_BEFORE_EXECUTE - dom[EFFECTFUL])
+    assert not missing, (
+        f"these no longer lie on every path to {EFFECTFUL}: {missing}. "
+        f"Something added a bypass edge. Dominators are {sorted(dom[EFFECTFUL])}"
+    )
+    assert dom[EFFECTFUL] == MANDATORY_BEFORE_EXECUTE | {EFFECTFUL}, sorted(dom[EFFECTFUL])
+
+
+def test_a_bypass_edge_is_detected_by_the_dominator_property():
+    """The test above, shown failing on an injected bypass — so it is not vacuous.
+
+    A test that has never failed is not yet a test. This adds CLASSIFY ->
+    ISSUE_TOKEN to a copy of the topology — a legal-looking edge that every
+    per-transition check accepts — and shows the dominator set losing exactly the
+    three stations it routes around.
+    """
+    import core.graph as graph
+    from core.graph import Edge, dominators
+
+    bypass = Edge("CLASSIFY", "ISSUE_TOKEN", "a plausible optimisation")
+    original = graph.EDGES
+    try:
+        graph.EDGES = original + (bypass,)
+        dom = dominators()[EFFECTFUL]
+        lost = MANDATORY_BEFORE_EXECUTE - dom
+        assert lost == {"GATHER_AUTHORITY", "ADVISE", "VALIDATE"}, sorted(lost)
+        with pytest.raises(AssertionError, match="no longer lie on every path"):
+            test_every_station_dominates_the_effect()
+    finally:
+        graph.EDGES = original
+    assert MANDATORY_BEFORE_EXECUTE <= dominators()[EFFECTFUL], "the topology was not restored"
+
+
+def test_an_effect_is_always_reconciled_and_always_receipted():
+    """RECONCILE and AUDIT post-dominate EXECUTE on every path to DONE.
+
+    The mirror of the property above, after the effect rather than before it: an
+    effect that happened is reconciled, and the receipt the admission was bound to
+    is written. An edge EXECUTE -> DONE would make both optional; it fails here.
+    """
+    from core.graph import post_dominators
+
+    post = post_dominators("DONE")
+    assert EFFECTFUL in post, "DONE is unreachable from EXECUTE, which would make this vacuous"
+    missing = sorted({"RECONCILE", "AUDIT"} - post[EFFECTFUL])
+    assert not missing, (
+        f"an effect can now reach DONE without {missing}. "
+        f"Post-dominators of {EFFECTFUL} are {sorted(post[EFFECTFUL])}"
+    )
+
+
+def test_the_declared_stations_are_exactly_the_dominators():
+    """The requirement `run()` enforces and the topology that satisfies it agree.
+
+    `run()` cannot read the dominators: a bypass edge would shrink them and so
+    relax the very guard meant to catch it. It reads a declared set instead, and
+    this is the pin that stops the two drifting apart in silence.
+    """
+    from core.graph import MANDATORY_BEFORE_EFFECT, dominators
+
+    assert MANDATORY_BEFORE_EFFECT == MANDATORY_BEFORE_EXECUTE
+    assert MANDATORY_BEFORE_EFFECT == dominators()[EFFECTFUL] - {EFFECTFUL}
+
+
+def test_dominance_is_reflexive_and_contains_the_entry():
+    """Sanity on the computation itself, so the two tests above are not vacuous."""
+    from core.graph import dominators
+
+    dom = dominators()
+    assert set(dom) == set(NODES), "every node should be reachable from ENTRY"
+    for node, doms in dom.items():
+        assert node in doms, node
+        assert ENTRY in doms, node
+    assert dom[ENTRY] == frozenset({ENTRY})
+
+
+def test_every_walk_that_executes_passed_every_station():
+    """The static property, observed on the walks the scenarios actually take."""
+    for make in scenarios().values():
+        state = run(make())
+        if state.executed:
+            assert MANDATORY_BEFORE_EXECUTE <= set(state.path), state.path
+
+
+def test_run_refuses_an_effect_on_an_illegitimate_history(monkeypatch):
+    """The runtime half: a bypass edge plus a router willing to take it.
+
+    With the topology as written this guard is unreachable, which is the point of
+    the structural half. It exists for the case the structural half is defeated —
+    someone adds the edge *and* `_choose()` routes onto it. So the test builds
+    exactly that: CLASSIFY -> REDEEM in EDGES, a router that takes it, and a walk
+    that arrives at EXECUTE having skipped GATHER_AUTHORITY, ADVISE, VALIDATE and
+    ISSUE_TOKEN. `run()` must refuse and must name all four.
+    """
+    import core.graph as graph
+    from core.graph import Edge
+
+    monkeypatch.setattr(graph, "EDGES", graph.EDGES + (Edge("CLASSIFY", "REDEEM", "injected bypass"),))
+
+    real_choose = graph._choose
+
+    def routed(node, state):
+        if node == "CLASSIFY":
+            state.token = graph.issue_decision(state.context)  # a token from nowhere
+            return "REDEEM"
+        return real_choose(node, state)
+
+    monkeypatch.setattr(graph, "_choose", routed)
+
+    with pytest.raises(RuntimeError) as excinfo:
+        graph.run(graph.RunState(context=scenarios()["granted"]().context))
+
+    message = str(excinfo.value)
+    assert "EXECUTE reached without passing" in message, message
+    for skipped in ("ADVISE", "GATHER_AUTHORITY", "ISSUE_TOKEN", "VALIDATE"):
+        assert skipped in message, message
+    assert "INTAKE -> PARSE -> ISOLATE -> CLASSIFY -> REDEEM" in message, message
+
+
+def test_the_same_walk_succeeds_once_the_bypass_is_gone():
+    """The green half of the evidence above: no bypass, no refusal, effect happens."""
+    state = run(scenarios()["granted"]())
+    assert state.executed is True
+    assert MANDATORY_BEFORE_EXECUTE <= set(state.path), state.path
 
 
 def test_the_human_gate_is_the_only_source_of_a_grant():
