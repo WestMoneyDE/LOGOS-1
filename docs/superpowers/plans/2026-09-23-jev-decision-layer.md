@@ -208,8 +208,12 @@ def validate(envelope: Mapping[str, object]) -> tuple[str, ...]:
 def parse(profile: str, raw: str) -> JevAnswer:
     body = _THINK.sub("", raw or "").strip()
     start, end = body.find("{"), body.rfind("}")
-    if start < 0 or end <= start:
+    if start < 0:
         return abstain(profile, "NO_JSON", body[:120])
+    if end <= start:
+        # An opening brace with nothing closing it is a truncated envelope, not an
+        # absence of JSON. That distinction is the realistic failure mode here.
+        return abstain(profile, "BROKEN_JSON", f"unterminated envelope: {body[:120]}")
     try:
         envelope = json.loads(body[start:end + 1])
     except json.JSONDecodeError as exc:
