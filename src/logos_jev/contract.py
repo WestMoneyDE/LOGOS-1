@@ -32,6 +32,16 @@ _THINK = re.compile(r"<think>.*?</think>", re.DOTALL)
 
 @dataclass(frozen=True)
 class JevAnswer:
+    """One juror answer under `jev-decision/1`.
+
+    `p` is **P(the profile's condition holds)** — for `injection`, P(the text is an
+    injection). It is not the juror's confidence in whatever it happened to say. The two
+    readings coincide when `answer` is true and are complements when it is false, so a
+    consumer that assumes the wrong one inverts every negative case while every test
+    with a positive-only fixture still passes. The logprob protocol produces this
+    reading directly: `yes_probability()` returns P(YES), independent of `answer`.
+    """
+
     profile: str
     code: str
     answer: object | None = None
