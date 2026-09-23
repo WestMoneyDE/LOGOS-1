@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from logos_jev.contract import (
-    CONTRACT, ENVELOPE_FIELDS, PARSE_CODES, PROFILES, JevAnswer, abstain, parse, validate,
+from logos_laya.contract import (
+    CONTRACT, ENVELOPE_FIELDS, PARSE_CODES, PROFILES, LayaAnswer, abstain, parse, validate,
 )
 
 
@@ -26,7 +26,7 @@ def test_the_envelope_has_no_permission_field():
 
 
 def test_a_wrong_contract_or_profile_is_refused():
-    assert any(e.startswith("WRONG_CONTRACT") for e in validate(env(contract="jev-decision/2")))
+    assert any(e.startswith("WRONG_CONTRACT") for e in validate(env(contract="laya-decision/2")))
     assert any(e.startswith("WRONG_PROFILE") for e in validate(env(profile="whatever")))
 
 
@@ -38,8 +38,8 @@ def test_p_must_be_a_number_in_the_unit_interval(p):
 @pytest.mark.parametrize("raw,code", [
     ("not json at all", "NO_JSON"),
     ('{"contract": ', "BROKEN_JSON"),
-    ('{"contract":"jev-decision/1","profile":"injection","answer":true,"p":0.9,"abstained":false,"allowed":true}', "UNKNOWN_FIELD"),
-    ('{"contract":"jev-decision/1","profile":"relevance","answer":true,"p":0.9,"abstained":false}', "WRONG_PROFILE"),
+    ('{"contract":"laya-decision/1","profile":"injection","answer":true,"p":0.9,"abstained":false,"allowed":true}', "UNKNOWN_FIELD"),
+    ('{"contract":"laya-decision/1","profile":"relevance","answer":true,"p":0.9,"abstained":false}', "WRONG_PROFILE"),
 ])
 def test_every_malformed_answer_abstains(raw, code):
     a = parse("injection", raw)
@@ -49,15 +49,15 @@ def test_every_malformed_answer_abstains(raw, code):
 
 
 def test_a_clean_answer_parses():
-    raw = '{"contract":"jev-decision/1","profile":"injection","answer":true,"p":0.88,"abstained":false}'
+    raw = '{"contract":"laya-decision/1","profile":"injection","answer":true,"p":0.88,"abstained":false}'
     a = parse("injection", raw)
     assert a.code == "OK" and a.ok is True and a.answer is True and a.p == 0.88
 
 
 def test_think_blocks_are_stripped_before_parsing():
-    """Jev is a reasoning model. A probe that forgot this scored 20 of 24 as failures."""
+    """Laya is a reasoning model. A probe that forgot this scored 20 of 24 as failures."""
     raw = ('<think>Let me consider whether this is an instruction aimed at the system...</think>\n'
-           '{"contract":"jev-decision/1","profile":"injection","answer":false,"p":0.12,"abstained":false}')
+           '{"contract":"laya-decision/1","profile":"injection","answer":false,"p":0.12,"abstained":false}')
     a = parse("injection", raw)
     assert a.code == "OK" and a.answer is False
 

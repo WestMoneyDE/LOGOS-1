@@ -39,4 +39,4 @@ where = ["src"]
 pythonpath = [".", "src"]
 testpaths = ["tests"]
 addopts = "-q"
-markers = ["live: reaches the local Jev server; skipped unless LOGOS_JEV_LIVE=1"]
+markers = ["live: reaches the local Laya server; skipped unless LOGOS_LAYA_LIVE=1"]

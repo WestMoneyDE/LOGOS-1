@@ -1,7 +1,7 @@
-# Jev decision layer — design
+# Laya decision layer — design
 
 **Kind:** engineering design. No claim status changes. Γ is not modified by this design.
-**Founder decisions carried in:** Γ decides the approval line and Jev may only tighten it · the layer lives in its own package beside Γ · a threshold is only admissible with a frozen calibration record (path C) · Jev is the local juror model, the text LLM stays Claude-auth and writes prose only.
+**Founder decisions carried in:** Γ decides the approval line and Laya may only tighten it · the layer lives in its own package beside Γ · a threshold is only admissible with a frozen calibration record (path C) · Laya is the local juror model, the text LLM stays Claude-auth and writes prose only.
 **Date:** 2026-09-23
 
 ---
@@ -9,27 +9,27 @@
 ## 1. What this is for
 
 LOGOS-1 has a deterministic authority gate and no way for a cheap local model to help it
-without becoming a second source of truth. The Jev layer is that help, shaped so it cannot
+without becoming a second source of truth. The Laya layer is that help, shaped so it cannot
 become that: one local juror model that classifies, ranks and routes, whose every output
 enters Γ as an advisory or as typed input, and never as a permission.
 
 Two model classes, and the separation is the design:
 
 ```text
-Jev          local juror. Decides, classifies, ranks, triages.
+Laya          local juror. Decides, classifies, ranks, triages.
              No credentials, no outbound network, not a Claude invocation.
 Text LLM     Claude under the existing subscription governance. Writes prose.
              Decides nothing.
 ```
 
-The founder's sentence — *Jev urteilt, wenn kein Approval nötig ist* — is implemented
+The founder's sentence — *Laya urteilt, wenn kein Approval nötig ist* — is implemented
 exactly, with the approval line itself staying where it is: Γ decides whether an action
-needs a human, from effect kind, consequentiality and grant state. Jev may say "this needs
+needs a human, from effect kind, consequentiality and grant state. Laya may say "this needs
 a human" and may never say "this does not".
 
 ## 2. Why a threshold needs a record before it needs a number
 
-A probe of the local Jev (`jev-style-qwen3.5-2b-decision`, 24 balanced cases, temperature 0)
+A probe of the local Laya (`jev-style-qwen3.5-2b-decision`, 24 balanced cases, temperature 0)
 produced this, and it is the reason path C exists rather than a constant in the code:
 
 ```text
@@ -62,42 +62,42 @@ Correctness` pattern this repository already recorded for a different model.
 ## 3. Architecture
 
 ```text
-src/logos_jev/
+src/logos_laya/
   client.py      the transport. One protocol, one HTTP implementation, injectable.
-  contract.py    jev-decision/1 — the closed output schema and its parse codes.
+  contract.py    laya-decision/1 — the closed output schema and its parse codes.
   profiles.py    the three task profiles and what each may do with its answer.
   calibration.py the record format, its validation, and the admissibility rule.
   __init__.py    the public surface
 
-docs/research/JEV-CALIBRATION/<profile>.json    the frozen records
-experiments/jev_calibration/                    the harness that produces them
+docs/research/LAYA-CALIBRATION/<profile>.json    the frozen records
+experiments/laya_calibration/                    the harness that produces them
 ```
 
 Γ is untouched. `src/logos_gamma` keeps its property of importing nothing and reaching
-nothing; the Jev layer sits beside it and feeds `ValidationContext.advisories`, which Γ-18
+nothing; the Laya layer sits beside it and feeds `ValidationContext.advisories`, which Γ-18
 already defines.
 
 ### Data flow
 
 ```text
-untrusted text ──► Jev(profile=injection) ──► (vote, p) ──► ValidationContext.advisories
+untrusted text ──► Laya(profile=injection) ──► (vote, p) ──► ValidationContext.advisories
                                                               │
-question + chunks ─► Jev(profile=relevance) ─► ordering ──────┼──► no authority at all
+question + chunks ─► Laya(profile=relevance) ─► ordering ──────┼──► no authority at all
                                                               │
-code output ──────► Jev(profile=state) ─────► state ──────────┴──► typed input to Γ
+code output ──────► Laya(profile=state) ─────► state ──────────┴──► typed input to Γ
                                                                      │
                                                                      ▼
                                                                 logos_gamma.validate
 ```
 
-## 4. The output contract: `jev-decision/1`
+## 4. The output contract: `laya-decision/1`
 
 A closed schema, for the same reason `logos-agent-output/1` is closed: a field that can carry
 a permission is the thing this system exists to remove.
 
 ```python
 {
-  "contract": "jev-decision/1",
+  "contract": "laya-decision/1",
   "profile": "injection" | "relevance" | "state",
   "answer": <bool | list[int] | str>,      # shape is fixed per profile
   "p": <float 0..1>,                        # read from logprobs, not written by the model
@@ -128,7 +128,7 @@ code and not a model's judgement.
 ## 6. Calibration: the admissibility rule
 
 A profile may be used in the decision path only if a record exists at
-`docs/research/JEV-CALIBRATION/<profile>.json` containing:
+`docs/research/LAYA-CALIBRATION/<profile>.json` containing:
 
 ```text
 dataset_sha256      the labelled set, hashed
@@ -152,7 +152,7 @@ Three consequences, and they are the point of the whole design:
 3. **The threshold is an artifact with evidence**, not a constant — the same mechanic as the
    preregistration freeze and the Γ bundle hash.
 
-The harness that produces a record is `experiments/jev_calibration/`. It is deterministic in
+The harness that produces a record is `experiments/laya_calibration/`. It is deterministic in
 everything except the model call: the dataset, the prompts, the ordering and the scoring are
 fixed, so two runs differ only where the model differs, and that difference is visible.
 
@@ -176,26 +176,26 @@ server must not change that, so:
 
 - **The client is a protocol.** Tests inject a fake; the HTTP implementation is exercised by
   exactly one live test, marked and skipped by default.
-- **Recorded fixtures.** Real Jev answers — including the malformed ones from the probe — are
-  recorded under `tests/fixtures/jev/` and replayed. The parse failures are the valuable
+- **Recorded fixtures.** Real Laya answers — including the malformed ones from the probe — are
+  recorded under `tests/fixtures/laya/` and replayed. The parse failures are the valuable
   fixtures, not the clean ones.
 - **The monotonicity test.** For every profile, every answer value, and every parse code: a
-  proposal that Γ refuses without the advisory is still refused with it. This is the Jev-layer
+  proposal that Γ refuses without the advisory is still refused with it. This is the Laya-layer
   form of `test_no_envelope_field_can_buy_an_admission`.
 - **The abstain-on-failure test.** Every failure code maps to `ABSTAIN`, enumerated.
 - **The admissibility test.** A profile without a valid record cannot emit anything but
   `ABSTAIN`, and a record with a mismatched prompt or model hash is treated as absent.
-- **The zero-inference test keeps its meaning.** `src/logos_jev` gets a named, reasoned entry
+- **The zero-inference test keeps its meaning.** `src/logos_laya` gets a named, reasoned entry
   in the network-import scan alongside `logos_research/infra`, never a silent exemption, and
   the provider-token checks still apply to it.
 
 ## 9. What this design does not do
 
-It does not let Jev decide the approval line. It does not put a model in the authority path.
+It does not let Laya decide the approval line. It does not put a model in the authority path.
 It does not discard chunks. It does not add a dependency to Γ. It does not activate a second
 LLM provider: `AGENTS.md` records `subscription_only = true`, and Codex auth or an API key as
 a text-LLM backend would be a change to that amendment, with its own founder record. The text
 LLM path is written so the backend is swappable, and no second backend is enabled here.
 
-And it does not claim Jev works. The probe says the injection profile is not admissible today.
+And it does not claim Laya works. The probe says the injection profile is not admissible today.
 The design's first output is therefore a calibration harness, not a feature.

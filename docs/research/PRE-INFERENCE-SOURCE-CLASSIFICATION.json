@@ -1857,6 +1857,138 @@
     "docs/superpowers/specs/2026-09-23-jev-decision-layer-design.md": {
       "class": "GOVERNANCE_ONLY",
       "note": "LOGOS1-JEV-DECISION-LAYER-R1: Record; kein Code, kein Modellaufruf"
+    },
+    "src/logos_laya/__init__.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: package marker for the juror layer; no model call; never imported by production packages"
+    },
+    "src/logos_jev/__init__.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: package marker for the juror layer; no model call; never imported by production packages"
+    },
+    "src/logos_laya/contract.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: the answer type and its strict parser; a non-conforming reply becomes ABSTAIN, never a guess"
+    },
+    "src/logos_jev/contract.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: the answer type and its strict parser; a non-conforming reply becomes ABSTAIN, never a guess"
+    },
+    "src/logos_laya/calibration.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: Wilson intervals and the admissibility rule over the recorded calibration record; arithmetic only, no model call"
+    },
+    "src/logos_jev/calibration.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: Wilson intervals and the admissibility rule over the recorded calibration record; arithmetic only, no model call"
+    },
+    "src/logos_laya/profiles.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: the three decision profiles; thresholds read from the calibration artifact, not hard-coded in the source"
+    },
+    "src/logos_jev/profiles.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: the three decision profiles; thresholds read from the calibration artifact, not hard-coded in the source"
+    },
+    "src/logos_laya/client.py": {
+      "class": "EXPERIMENTAL_INFERENCE",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: the only transport in the package; one loopback host (local model server), every transport failure ABSTAINs; named exemption in the network-import scan"
+    },
+    "src/logos_jev/client.py": {
+      "class": "EXPERIMENTAL_INFERENCE",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: the only transport in the package; one loopback host (local model server), every transport failure ABSTAINs; named exemption in the network-import scan"
+    },
+    "tests/test_laya_contract.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: parser suite; malformed, truncated and prose answers must abstain"
+    },
+    "tests/test_jev_contract.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: parser suite; malformed, truncated and prose answers must abstain"
+    },
+    "tests/test_laya_client.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: transport suite against the fake juror and a stubbed urlopen; timeouts and HTTP errors abstain, no network is touched"
+    },
+    "tests/test_jev_client.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: transport suite against the fake juror and a stubbed urlopen; timeouts and HTTP errors abstain, no network is touched"
+    },
+    "tests/test_laya_calibration.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: Wilson interval and admissibility suite over the recorded fixtures"
+    },
+    "tests/test_jev_calibration.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: Wilson interval and admissibility suite over the recorded fixtures"
+    },
+    "tests/test_laya_calibration_harness.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: harness suite; abstentions are counted, never scored as wrong"
+    },
+    "tests/test_jev_calibration_harness.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: harness suite; abstentions are counted, never scored as wrong"
+    },
+    "tests/test_laya_profiles.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: the three profiles and the monotonicity property that can actually fail"
+    },
+    "tests/test_jev_profiles.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: the three profiles and the monotonicity property that can actually fail"
+    },
+    "experiments/laya_calibration/__init__.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: Hilfsdatei; kein Modellaufruf"
+    },
+    "experiments/jev_calibration/__init__.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: Hilfsdatei; kein Modellaufruf"
+    },
+    "experiments/laya_calibration/dataset.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: labelled, balanced and hashed case set for the calibration run; kein Modellaufruf"
+    },
+    "experiments/jev_calibration/dataset.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: labelled, balanced and hashed case set for the calibration run; kein Modellaufruf"
+    },
+    "experiments/laya_calibration/run.py": {
+      "class": "EXPERIMENTAL_INFERENCE",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: calibration harness; the one entry point that drives the local model, cases and scoring fixed, abstentions reported separately"
+    },
+    "experiments/jev_calibration/run.py": {
+      "class": "EXPERIMENTAL_INFERENCE",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: calibration harness; the one entry point that drives the local model, cases and scoring fixed, abstentions reported separately"
+    },
+    "tests/fixtures/laya/README.md": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: recorded juror answers replayed by the deterministic suite, the malformed ones included; re-record, never hand-edit"
+    },
+    "tests/fixtures/jev/README.md": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: recorded juror answers replayed by the deterministic suite, the malformed ones included; re-record, never hand-edit"
+    },
+    "docs/research/LAYA-CALIBRATION/.gitkeep": {
+      "class": "TOOLING",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: Platzhalter für das Kalibrierungs-Artefakt; leere Datei, kein Modellaufruf"
+    },
+    "docs/research/JEV-CALIBRATION/.gitkeep": {
+      "class": "TOOLING",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: Platzhalter für das Kalibrierungs-Artefakt; leere Datei, kein Modellaufruf"
+    },
+    "assets/logos-1-hero.webp": {
+      "class": "TOOLING",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: README-Titelbild; Bilddatei, kein Code, kein Modellaufruf"
+    },
+    "docs/superpowers/plans/2026-09-23-laya-decision-layer.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: Record; kein Code, kein Modellaufruf"
+    },
+    "docs/superpowers/specs/2026-09-23-laya-decision-layer-design.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-JEV-DECISION-LAYER-R1: Record; kein Code, kein Modellaufruf"
     }
   },
   "unclassified": 0

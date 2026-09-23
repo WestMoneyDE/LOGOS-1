@@ -19,7 +19,7 @@ from typing import Mapping
 
 from .contract import PROFILES
 
-RECORD_DIR = Path(__file__).resolve().parents[2] / "docs" / "research" / "JEV-CALIBRATION"
+RECORD_DIR = Path(__file__).resolve().parents[2] / "docs" / "research" / "LAYA-CALIBRATION"
 PROTOCOLS = ("logprob", "json")
 
 

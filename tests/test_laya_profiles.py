@@ -3,9 +3,9 @@ from __future__ import annotations
 import pytest
 
 from logos_gamma import ADVISORY_VOTES, ValidationContext, validate as gamma_validate
-from logos_jev.calibration import CalibrationRecord
-from logos_jev.contract import JevAnswer, abstain
-from logos_jev.profiles import BY_NAME, INJECTION, advisory_vote, rerank
+from logos_laya.calibration import CalibrationRecord
+from logos_laya.contract import LayaAnswer, abstain
+from logos_laya.profiles import BY_NAME, INJECTION, advisory_vote, rerank
 
 PIN = "jev-style-qwen3.5-2b-decision"
 
@@ -20,8 +20,8 @@ def rec(**overrides) -> CalibrationRecord:
     return CalibrationRecord(**base)
 
 
-def answer(p: float, injected: bool = True) -> JevAnswer:
-    return JevAnswer(profile="injection", code="OK", answer=injected, p=p, abstained=False)
+def answer(p: float, injected: bool = True) -> LayaAnswer:
+    return LayaAnswer(profile="injection", code="OK", answer=injected, p=p, abstained=False)
 
 
 # -- the vote -------------------------------------------------------------
@@ -53,7 +53,7 @@ def test_above_the_threshold_refuses_and_below_abstains():
 
 
 def test_a_negative_answer_never_votes_refuse():
-    """Jev saying 'not an injection' is not a reason to do anything."""
+    """Laya saying 'not an injection' is not a reason to do anything."""
     assert advisory_vote(answer(0.99, injected=False), rec(), model_pin=PIN)[1] == "ABSTAIN"
 
 
@@ -112,12 +112,12 @@ def test_a_refuse_vote_actually_bites():
     """
     record = rec(threshold=0.8)
     vote = advisory_vote(answer(0.99), record, model_pin=PIN)
-    assert vote == ("jev:injection", "REFUSE")
+    assert vote == ("laya:injection", "REFUSE")
     assert gamma_validate(_admitted_context((vote,))).admits() is False
 
 
 def test_an_abstention_leaves_an_admission_standing():
-    """Jev failing is not Jev refusing. A dead juror must not close an open grant."""
+    """Laya failing is not Laya refusing. A dead juror must not close an open grant."""
     for a, record in ((answer(0.1), rec()), (answer(0.99), None),
                       (abstain("injection", "TIMEOUT"), rec())):
         vote = advisory_vote(a, record, model_pin=PIN)
@@ -128,15 +128,15 @@ def test_an_abstention_leaves_an_admission_standing():
 def test_an_invented_vote_fails_closed_rather_than_opening_anything():
     """Γ-18's vocabulary is closed, so a forged ALLOW refuses instead of permitting."""
     for forged in ("ALLOW", "allow", "PERMIT", ""):
-        ctx = _admitted_context((("jev:injection", forged),))
+        ctx = _admitted_context((("laya:injection", forged),))
         assert gamma_validate(ctx).admits() is False, forged
 
 
-def test_no_jev_answer_can_turn_a_refusal_into_an_admission():
-    """The Jev-layer form of 'no field buys an admission'.
+def test_no_laya_answer_can_turn_a_refusal_into_an_admission():
+    """The Laya-layer form of 'no field buys an admission'.
 
     Γ already refuses this proposal: it is consequential and carries no grant. Every
-    answer Jev could produce, at every probability, with or without a record, leaves it
+    answer Laya could produce, at every probability, with or without a record, leaves it
     refused.
     """
     assert gamma_validate(_refused_context()).admits() is False
@@ -177,7 +177,7 @@ def test_each_profile_is_checked_against_its_own_record():
     right direction and still the wrong behaviour, because a calibrated profile that
     silently never fires looks exactly like one that is working.
     """
-    from logos_jev.calibration import admissible
+    from logos_laya.calibration import admissible
 
     for name, profile in BY_NAME.items():
         own = rec(profile=name, prompt_sha256=profile.prompt_sha256)

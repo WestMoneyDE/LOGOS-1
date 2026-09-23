@@ -16,19 +16,22 @@ import urllib.request
 from dataclasses import dataclass, field
 from typing import Mapping, Protocol
 
-from .contract import JevAnswer, abstain, parse
+from .contract import LayaAnswer, abstain, parse
 
 DEFAULT_BASE = "http://127.0.0.1:1234/v1"
+#: The artifact name the local LM Studio server reports for the model file, not the
+#: name of this layer. The layer is Laya-NovaML; the served model id is unchanged and
+#: must stay byte-identical, or every request 404s and every profile silently ABSTAINs.
 DEFAULT_MODEL = "jev-style-qwen3.5-2b-decision"
 
 
-class Jev(Protocol):
-    def ask(self, profile: str, prompt: str, *, system: str, logprobs: bool = False) -> JevAnswer:
+class Laya(Protocol):
+    def ask(self, profile: str, prompt: str, *, system: str, logprobs: bool = False) -> LayaAnswer:
         ...
 
 
 @dataclass
-class FakeJev:
+class FakeLaya:
     """The client the deterministic suite uses. It invents nothing.
 
     An unscripted prompt abstains rather than returning a plausible answer, so a test
@@ -38,7 +41,7 @@ class FakeJev:
     scripted: Mapping[str, str]
     calls: list[tuple[str, str]] = field(default_factory=list)
 
-    def ask(self, profile: str, prompt: str, *, system: str, logprobs: bool = False) -> JevAnswer:
+    def ask(self, profile: str, prompt: str, *, system: str, logprobs: bool = False) -> LayaAnswer:
         self.calls.append((profile, prompt))
         raw = self.scripted.get(prompt)
         if raw is None:
@@ -70,7 +73,7 @@ def yes_probability(payload: Mapping) -> float | None:
 
 
 @dataclass
-class HttpJev:
+class HttpLaya:
     """The one implementation that reaches the network, and only to loopback."""
 
     base_url: str = DEFAULT_BASE
@@ -78,7 +81,7 @@ class HttpJev:
     timeout: float = 30.0
     max_tokens: int = 900
 
-    def ask(self, profile: str, prompt: str, *, system: str, logprobs: bool = False) -> JevAnswer:
+    def ask(self, profile: str, prompt: str, *, system: str, logprobs: bool = False) -> LayaAnswer:
         body = {
             "model": self.model,
             "temperature": 0,
@@ -104,6 +107,6 @@ class HttpJev:
         if logprobs and answer.ok:
             measured = yes_probability(payload)
             if measured is not None:
-                answer = JevAnswer(profile=answer.profile, code=answer.code, answer=answer.answer,
+                answer = LayaAnswer(profile=answer.profile, code=answer.code, answer=answer.answer,
                                    p=measured, abstained=answer.abstained, detail="p from logprobs")
         return answer

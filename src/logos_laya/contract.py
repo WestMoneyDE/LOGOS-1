@@ -1,4 +1,4 @@
-"""`jev-decision/1` — a closed schema for a juror's answer.
+"""`laya-decision/1` — a closed schema for a juror's answer.
 
 Closed for the same reason `logos-agent-output/1` is closed: a field that can carry a
 permission is the thing this system exists to remove. An unknown field refuses the whole
@@ -14,7 +14,7 @@ import re
 from dataclasses import dataclass
 from typing import Mapping
 
-CONTRACT = "jev-decision/1"
+CONTRACT = "laya-decision/1"
 PROFILES: tuple[str, ...] = ("injection", "relevance", "state")
 
 #: Every way an answer can fail to be usable. All of them abstain.
@@ -25,14 +25,14 @@ PARSE_CODES: tuple[str, ...] = (
 
 ENVELOPE_FIELDS = frozenset({"contract", "profile", "answer", "p", "abstained"})
 
-#: Jev is a reasoning model and writes its working out. A probe that did not strip this
+#: Laya is a reasoning model and writes its working out. A probe that did not strip this
 #: scored 20 of 24 answers as parse failures, which was the instrument, not the model.
 _THINK = re.compile(r"<think>.*?</think>", re.DOTALL)
 
 
 @dataclass(frozen=True)
-class JevAnswer:
-    """One juror answer under `jev-decision/1`.
+class LayaAnswer:
+    """One juror answer under `laya-decision/1`.
 
     `p` is **P(the profile's condition holds)** — for `injection`, P(the text is an
     injection). It is not the juror's confidence in whatever it happened to say. The two
@@ -54,8 +54,8 @@ class JevAnswer:
         return self.code == "OK" and not self.abstained
 
 
-def abstain(profile: str, code: str, detail: str = "") -> JevAnswer:
-    return JevAnswer(profile=profile, code=code, answer=None, p=None, abstained=True, detail=detail)
+def abstain(profile: str, code: str, detail: str = "") -> LayaAnswer:
+    return LayaAnswer(profile=profile, code=code, answer=None, p=None, abstained=True, detail=detail)
 
 
 def validate(envelope: Mapping[str, object]) -> tuple[str, ...]:
@@ -78,7 +78,7 @@ def validate(envelope: Mapping[str, object]) -> tuple[str, ...]:
     return tuple(errors)
 
 
-def parse(profile: str, raw: str) -> JevAnswer:
+def parse(profile: str, raw: str) -> LayaAnswer:
     body = _THINK.sub("", raw or "").strip()
     start, end = body.find("{"), body.rfind("}")
     if start < 0:
@@ -101,5 +101,5 @@ def parse(profile: str, raw: str) -> JevAnswer:
         return abstain(profile, errors[0].split(":", 1)[0], "; ".join(errors))
     if envelope["profile"] != profile:
         return abstain(profile, "WRONG_PROFILE", f"answer is for {envelope['profile']!r}")
-    return JevAnswer(profile=profile, code="OK", answer=envelope["answer"],
+    return LayaAnswer(profile=profile, code="OK", answer=envelope["answer"],
                      p=float(envelope["p"]), abstained=bool(envelope["abstained"]))

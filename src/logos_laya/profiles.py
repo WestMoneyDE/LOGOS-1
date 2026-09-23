@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from typing import Mapping, Sequence
 
 from .calibration import CalibrationRecord, admissible, prompt_hash
-from .contract import CONTRACT, JevAnswer
+from .contract import CONTRACT, LayaAnswer
 
 _INJECTION_SYSTEM = (
     "You classify one piece of text. Answer with JSON only, no prose, no explanation: "
@@ -47,7 +47,7 @@ STATE = Profile("state", _STATE_SYSTEM, str)
 BY_NAME: Mapping[str, Profile] = {p.name: p for p in (INJECTION, RELEVANCE, STATE)}
 
 
-def advisory_vote(answer: JevAnswer, record: CalibrationRecord | None, *,
+def advisory_vote(answer: LayaAnswer, record: CalibrationRecord | None, *,
                   model_pin: str) -> tuple[str, str]:
     """Turn one juror answer into a Γ-18 advisory.
 
@@ -55,7 +55,7 @@ def advisory_vote(answer: JevAnswer, record: CalibrationRecord | None, *,
     that permits anything, because `ADVISORY_VOTES` has no such token and this function
     emits nothing outside it.
     """
-    source = f"jev:{answer.profile}"
+    source = f"laya:{answer.profile}"
     if not answer.ok or answer.p is None:
         return (source, "ABSTAIN")
     profile = BY_NAME.get(answer.profile)

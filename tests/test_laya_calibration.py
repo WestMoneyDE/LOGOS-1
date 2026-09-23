@@ -5,7 +5,7 @@ import json
 
 import pytest
 
-from logos_jev.calibration import CalibrationRecord, admissible, load, prompt_hash, wilson
+from logos_laya.calibration import CalibrationRecord, admissible, load, prompt_hash, wilson
 
 
 def record(**overrides) -> CalibrationRecord:
@@ -57,14 +57,14 @@ def test_wilson_handles_the_edges():
 
 
 def test_loading_an_absent_profile_returns_none(tmp_path, monkeypatch):
-    import logos_jev.calibration as cal
+    import logos_laya.calibration as cal
 
     monkeypatch.setattr(cal, "RECORD_DIR", tmp_path)
     assert load("injection") is None
 
 
 def test_a_record_round_trips_through_disk(tmp_path, monkeypatch):
-    import logos_jev.calibration as cal
+    import logos_laya.calibration as cal
 
     monkeypatch.setattr(cal, "RECORD_DIR", tmp_path)
     r = record()

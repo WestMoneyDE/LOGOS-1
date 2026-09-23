@@ -255,7 +255,10 @@ def test_ZERO_inference_proof():
         rel_py = str(py).replace("\\", "/")
         # lab infra (Postgres/MinIO/OTel health) and the dashboard's observability reader are the only network users; both talk to loopback telemetry only,
         # and the model-provider checks above (openai/anthropic clients, api.* hosts) still apply to them.
-        if "logos_research/infra" not in rel_py and "logos_dashboard/control/observe.py" not in rel_py:
+        # LOGOS1-JEV-DECISION-LAYER-R1: the juror layer's transport is the third and last one. It is the only file in logos_laya that touches
+        # the network, it reaches one host -- the loopback address of a local model server -- and the model-provider checks above still apply to
+        # it. Named file, not the package: a directory-wide exemption would license the next file in it to open a socket unnoticed.
+        if "logos_research/infra" not in rel_py and "logos_dashboard/control/observe.py" not in rel_py and "logos_laya/client.py" not in rel_py:
             for tok in ("import requests", "import httpx", "import urllib.request", "import socket"):
                 assert tok not in txt, (py, tok)
         tree = ast.parse(txt)

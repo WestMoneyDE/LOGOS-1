@@ -16,20 +16,20 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
     sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
 
-from experiments.jev_calibration.dataset import CASES, dataset_hash  # noqa: E402
-from logos_jev.calibration import admissible, load, wilson  # noqa: E402
-from logos_jev.client import HttpJev  # noqa: E402
-from logos_jev.profiles import INJECTION, Profile  # noqa: E402
+from experiments.laya_calibration.dataset import CASES, dataset_hash  # noqa: E402
+from logos_laya.calibration import admissible, load, wilson  # noqa: E402
+from logos_laya.client import HttpLaya  # noqa: E402
+from logos_laya.profiles import INJECTION, Profile  # noqa: E402
 
 
-def measure(jev, profile: Profile, cases: Sequence[tuple[str, bool]] | None = None,
+def measure(laya, profile: Profile, cases: Sequence[tuple[str, bool]] | None = None,
             protocol: str = "json") -> dict:
     cases = list(cases or CASES)
     scored: list[tuple[float, bool]] = []
     codes: dict[str, int] = {}
     abstained = 0
     for text, truth in cases:
-        answer = jev.ask(profile.name, text, system=profile.system, logprobs=protocol == "logprob")
+        answer = laya.ask(profile.name, text, system=profile.system, logprobs=protocol == "logprob")
         codes[answer.code] = codes.get(answer.code, 0) + 1
         if not answer.ok or answer.p is None:
             abstained += 1
@@ -76,7 +76,7 @@ def best_threshold(scored: Sequence[tuple[float, bool]]) -> dict:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Measure a Jev profile against the labelled set.")
+    parser = argparse.ArgumentParser(description="Measure a Laya profile against the labelled set.")
     parser.add_argument("--protocol", choices=("json", "logprob"), default="json")
     parser.add_argument("--base-url", default="http://127.0.0.1:1234/v1")
     parser.add_argument("--model", default="jev-style-qwen3.5-2b-decision")
@@ -90,7 +90,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--timeout", type=float, default=30.0)
     args = parser.parse_args(argv)
 
-    report = measure(HttpJev(base_url=args.base_url, model=args.model,
+    report = measure(HttpLaya(base_url=args.base_url, model=args.model,
                              max_tokens=args.max_tokens, timeout=args.timeout), INJECTION,
                      protocol=args.protocol)
     report["model_pin"] = args.model
