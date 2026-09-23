@@ -1,6 +1,6 @@
 # LOGOS-1
 
-![LOGOS-1 — a unified foundation for intelligence: Bio Code, Atomic Rules, Memory Fabric, Consciousness Map, Agent Passport, ARC-AGI, and the State / Action / Authority / Feedback loop](assets/logos-1-header.png)
+![LOGOS-1 — Gamma-centered architecture connecting Bio Code, Atomic Rules, Memory Fabric and governed intelligence systems](assets/logos-1-hero.webp)
 
 <p align="center">
   <strong>Governed Intelligence for Safe Autonomous Agents</strong><br/>
