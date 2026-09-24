@@ -1997,6 +1997,170 @@
     "tests/fixtures/laya/golden_score.json": {
       "class": "REFERENCE_FIXTURE",
       "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: real service answer, pinned revision"
+    },
+    "09-SESSIONS/2026-09-23-LOGOS1-LAYA-JUROR-INTEGRATION-R1/SESSION-REPORT.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: Record; kein Code, kein Modellaufruf"
+    },
+    "05-WORK-ORDERS/NEXT-SESSION-LOGOS1-LAYA-JUROR-INTEGRATION-R1.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: Record; kein Code, kein Modellaufruf"
+    },
+    "docs/research/LAYA-CALIBRATION/injection-NOT-ADMISSIBLE.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: Record; kein Code, kein Modellaufruf"
+    },
+    "docs/research/LAYA-CALIBRATION/measure-equivalence.json": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "docs/research/LAYA-CALIBRATION/measure-keystone-fp.json": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "docs/research/LAYA-CALIBRATION/measure-pages.json": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "docs/research/LAYA-CALIBRATION/measure-phase3.json": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "experiments/browse_injection/__init__.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: builds the static injection test pages and extracts their visible text; no model call"
+    },
+    "experiments/browse_injection/build_pages.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: builds the static injection test pages and extracts their visible text; no model call"
+    },
+    "experiments/browse_injection/extract.py": {
+      "class": "TOOLING",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: builds the static injection test pages and extracts their visible text; no model call"
+    },
+    "experiments/browse_injection/manifest.json": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "experiments/browse_injection/pages/curriculum_de_1.html": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "experiments/browse_injection/pages/curriculum_de_2.html": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "experiments/browse_injection/pages/curriculum_en_1.html": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "experiments/browse_injection/pages/curriculum_en_2.html": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "experiments/browse_injection/pages/direct_override_de_1.html": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "experiments/browse_injection/pages/direct_override_de_2.html": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "experiments/browse_injection/pages/direct_override_en_1.html": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "experiments/browse_injection/pages/direct_override_en_2.html": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "experiments/browse_injection/pages/hard_negative_account_en.html": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "experiments/browse_injection/pages/hard_negative_devmode_en.html": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "experiments/browse_injection/pages/hard_negative_email_de.html": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "experiments/browse_injection/pages/hard_negative_email_en.html": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "experiments/browse_injection/pages/hard_negative_reset_de.html": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "experiments/browse_injection/pages/hard_negative_sysprompt_en.html": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "experiments/browse_injection/pages/imperative_de_1.html": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "experiments/browse_injection/pages/imperative_en_1.html": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "experiments/browse_injection/pages/imperative_en_2.html": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "experiments/browse_injection/pages/imperative_en_3.html": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "experiments/browse_injection/pages/indirect_doc_de.html": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "experiments/browse_injection/pages/indirect_email_en.html": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "experiments/browse_injection/pages/indirect_review_de.html": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "experiments/browse_injection/pages/indirect_review_en.html": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "experiments/browse_injection/pages/smuggled_homoglyph_de.html": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "experiments/browse_injection/pages/smuggled_homoglyph_en.html": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "experiments/browse_injection/pages/smuggled_tags_en.html": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "experiments/browse_injection/pages/smuggled_zw_de.html": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "experiments/browse_injection/pages/smuggled_zw_en.html": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: measurement data / injection test page; no code path"
+    },
+    "experiments/laya_calibration/injection_measure.py": {
+      "class": "EXPERIMENTAL_INFERENCE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: juror measurement against the pinned LOGOS Laya service; writes measurement reports, never a calibration record"
+    },
+    "experiments/laya_calibration/inprocess_equivalence.py": {
+      "class": "EXPERIMENTAL_INFERENCE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: juror measurement against the pinned LOGOS Laya service; writes measurement reports, never a calibration record"
+    },
+    "experiments/laya_calibration/matched_en_de.py": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: re-authored matched EN/DE sentence sets (8+8 per language); data only, no model call"
     }
   },
   "unclassified": 0

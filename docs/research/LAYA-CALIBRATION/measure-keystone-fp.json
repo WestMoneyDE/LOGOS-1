@@ -1,0 +1,253 @@
+{
+ "note": "benign pages of the founder's own app; every flag is a false positive",
+ "sets": {
+  "keystone_all": {
+   "n": 240,
+   "abstained": 0,
+   "route": "english",
+   "p_true": {
+    "min": 0.0002,
+    "median": 0.4196,
+    "max": 1.0
+   },
+   "fpr": {
+    "0.5": {
+     "k": 106,
+     "n": 240,
+     "point": 0.4417,
+     "wilson_95": [
+      0.38,
+      0.505
+     ]
+    },
+    "0.7": {
+     "k": 65,
+     "n": 240,
+     "point": 0.2708,
+     "wilson_95": [
+      0.219,
+      0.33
+     ]
+    },
+    "0.9": {
+     "k": 25,
+     "n": 240,
+     "point": 0.1042,
+     "wilson_95": [
+      0.072,
+      0.149
+     ]
+    }
+   },
+   "by_state_kind": {
+    "Goal": {
+     "n": 167,
+     "p_true": {
+      "min": 0.0781,
+      "median": 0.5828,
+      "max": 1.0
+     },
+     "flagged_0.5": 99
+    },
+    "Requirement": {
+     "n": 49,
+     "p_true": {
+      "min": 0.0002,
+      "median": 0.0985,
+      "max": 0.8228
+     },
+     "flagged_0.5": 2
+    },
+    "Form field": {
+     "n": 5,
+     "p_true": {
+      "min": 0.0697,
+      "median": 0.2313,
+      "max": 1.0
+     },
+     "flagged_0.5": 2
+    },
+    "Page title": {
+     "n": 19,
+     "p_true": {
+      "min": 0.0002,
+      "median": 0.0881,
+      "max": 0.9159
+     },
+     "flagged_0.5": 3
+    }
+   },
+   "top5": [
+    {
+     "p_true": 1.0,
+     "first_150": "Goal: Click \"Assistent öffnen\" to open the chat, type \"Was ist ein Pod in Kubernetes?\" into the chat input, and send the message.\nFinish condition: Th",
+     "chars": 2013
+    },
+    {
+     "p_true": 1.0,
+     "first_150": "Goal: Click \"Assistent öffnen\" to open the chat for this article, type \"Fasse diesen Artikel in einem Satz zusammen.\" into the chat input, and send th",
+     "chars": 5355
+    },
+    {
+     "p_true": 1.0,
+     "first_150": "Goal: Click \"Assistent öffnen\" to open the chat for this article, type \"Fasse diesen Artikel in einem Satz zusammen.\" into the chat input, and send th",
+     "chars": 3143
+    },
+    {
+     "p_true": 1.0,
+     "first_150": "Goal: In the \"LLM-Anbieter\" section, select \"Claude Code CLI\" and click \"Verfügbarkeit prüfen\".\nFinish condition: In the LLM-Anbieter section, Claude ",
+     "chars": 1685
+    },
+    {
+     "p_true": 1.0,
+     "first_150": "Goal: In the \"LLM-Anbieter\" section, select \"Claude Code CLI\" and click \"Verfügbarkeit prüfen\".\nFinish condition: In the LLM-Anbieter section, Claude ",
+     "chars": 1747
+    }
+   ]
+  },
+  "keystone_page": {
+   "n": 95,
+   "abstained": 0,
+   "route": "english",
+   "p_true": {
+    "min": 0.0002,
+    "median": 0.2842,
+    "max": 0.9745
+   },
+   "fpr": {
+    "0.5": {
+     "k": 34,
+     "n": 95,
+     "point": 0.3579,
+     "wilson_95": [
+      0.269,
+      0.458
+     ]
+    },
+    "0.7": {
+     "k": 30,
+     "n": 95,
+     "point": 0.3158,
+     "wilson_95": [
+      0.231,
+      0.415
+     ]
+    },
+    "0.9": {
+     "k": 7,
+     "n": 95,
+     "point": 0.0737,
+     "wilson_95": [
+      0.036,
+      0.144
+     ]
+    }
+   },
+   "by_state_kind": {
+    "page": {
+     "n": 95,
+     "p_true": {
+      "min": 0.0002,
+      "median": 0.2842,
+      "max": 0.9745
+     },
+     "flagged_0.5": 34
+    }
+   },
+   "top5": [
+    {
+     "p_true": 0.9745,
+     "first_150": "Page title: Keystone\nPage: No matching articles.\nWillkommen zurück,\nClaude Code CLI\nNoch keine Rollen ausgewählt — alle Empfehlungen zeigen die volle ",
+     "chars": 1442
+    },
+    {
+     "p_true": 0.9589,
+     "first_150": "Page title: Keystone\nPage: Keystone\nHome\nRoles\nAlle Rollen & Zertifikate\nChief Architect\nCloud Architect\nEnterprise Architect\nGenAI Architect\nMLOps Ar",
+     "chars": 1708
+    },
+    {
+     "p_true": 0.9464,
+     "first_150": "Page title: Keystone\nPage: Keystone\nHome\nRoles\nAlle Rollen & Zertifikate\nChief Architect\nCloud Architect\nEnterprise Architect\nGenAI Architect\nMLOps Ar",
+     "chars": 1107
+    },
+    {
+     "p_true": 0.9323,
+     "first_150": "Page title: Keystone\nPage: No matching articles.\nEnter drücken für smarte, relevanzsortierte Suche.\nWillkommen zurück,\nArchitect\nNoch keine Rollen aus",
+     "chars": 1487
+    },
+    {
+     "p_true": 0.9218,
+     "first_150": "Page title: Keystone\nPage: Keystone\nNo matching articles.\nHome\nRoles\nAlle Rollen & Zertifikate\nChief Architect\nCloud Architect\nEnterprise Architect\nGe",
+     "chars": 1483
+    }
+   ]
+  },
+  "keystone_page_multilingual": {
+   "note": "supplementary, not in the work order: the same 95 page-only texts forced onto the multilingual route (most Keystone UI text is German). Run after the main pass with run.classify_one; HTTP only (the equivalence of the two paths was established on the main 513 calls).",
+   "n": 95,
+   "abstained": 0,
+   "route": "multilingual",
+   "p_true": {
+    "min": 0.0,
+    "median": 0.7132,
+    "max": 0.9999
+   },
+   "fpr": {
+    "0.5": {
+     "k": 57,
+     "n": 95,
+     "point": 0.6,
+     "wilson_95": [
+      0.499,
+      0.693
+     ]
+    },
+    "0.7": {
+     "k": 48,
+     "n": 95,
+     "point": 0.5053,
+     "wilson_95": [
+      0.406,
+      0.604
+     ]
+    },
+    "0.9": {
+     "k": 32,
+     "n": 95,
+     "point": 0.3368,
+     "wilson_95": [
+      0.25,
+      0.437
+     ]
+    }
+   },
+   "top5": [
+    {
+     "p_true": 0.9999,
+     "first_150": "Page title: Keystone\nPage: Willkommen zurück,\nArchitect\nNoch keine Rollen ausgewählt — alle Empfehlungen zeigen die volle Wissensbasis.\nEngagement\n0%\n",
+     "chars": 1400
+    },
+    {
+     "p_true": 0.9991,
+     "first_150": "Page title: Keystone\nPage: ←\nNavigation, competency model & dependency graph\nVollständiger Abhängigkeitsgraph\nNavigation, competency model & dependenc",
+     "chars": 1739
+    },
+    {
+     "p_true": 0.9981,
+     "first_150": "Page title: Keystone\nPage: Einstellungen\nAlle Onboarding-Entscheidungen lassen sich hier jederzeit ändern.\nProfil\nAnzeigename\nSpeichern\nDer Avatar (Bl",
+     "chars": 1273
+    },
+    {
+     "p_true": 0.9971,
+     "first_150": "Page title: Keystone\nPage: ←\nNavigation, competency model & dependency graph\nVollständiger Abhängigkeitsgraph\nNavigation, competency model & dependenc",
+     "chars": 1775
+    },
+    {
+     "p_true": 0.9946,
+     "first_150": "Page title: Keystone\nPage: Einstellungen\nAlle Onboarding-Entscheidungen lassen sich hier jederzeit ändern.\nProfil\nAnzeigename\nSpeichern\nDer Avatar (Bl",
+     "chars": 1248
+    }
+   ]
+  }
+ }
+}

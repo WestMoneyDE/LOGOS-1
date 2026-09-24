@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import time
 from pathlib import Path
 from typing import Sequence
 
@@ -18,8 +19,14 @@ if __package__ in (None, ""):
 
 from experiments.laya_calibration.dataset import CASES, dataset_hash  # noqa: E402
 from logos_laya.calibration import admissible, load, wilson  # noqa: E402
+from logos_laya.classify import DEFAULT_BASE, ClassifyClient  # noqa: E402
 from logos_laya.client import HttpLaya  # noqa: E402
-from logos_laya.profiles import INJECTION, Profile  # noqa: E402
+from logos_laya.profiles import (INJECTION, INJECTION_QUESTION, INJECTION_QUESTION_ID,  # noqa: E402
+                                 Profile, question_sha256)
+
+#: Abstentions that mean "the service is busy switching checkpoints", not "the juror failed".
+#: A measurement run retries these; the ADVISE path (5 s, one call per decision) never does.
+RETRYABLE = frozenset({"SERVICE_BUSY", "SERVICE_TIMEOUT", "SERVICE_NOT_READY"})
 
 
 def measure(laya, profile: Profile, cases: Sequence[tuple[str, bool]] | None = None,
@@ -53,6 +60,41 @@ def measure(laya, profile: Profile, cases: Sequence[tuple[str, bool]] | None = N
     }
 
 
+def classify_one(client: ClassifyClient, text: str, route: str | None, *,
+                 retries: int = 40, backoff_s: float = 3.0) -> dict:
+    """One `laya-classify/1` call with the injection question, retried only while the
+    service reports it is busy (a checkpoint switch at `LAYA_MAX_LOADED=1` outlasts the
+    service's 20 s deadline). Every other abstention is recorded as it is, never retried
+    into a success. `route=None` is the service default (auto routing)."""
+    attempts: list[str] = []
+    t0 = time.perf_counter()
+    for _ in range(retries + 1):
+        answer = client.ask(INJECTION_QUESTION_ID, {"prompt": text}, INJECTION_QUESTION, route=route)
+        if answer.ok or answer.abstain_reason not in RETRYABLE:
+            break
+        attempts.append(answer.abstain_reason)
+        time.sleep(backoff_s)
+    return {"requested_route": route or "auto", "ok": answer.ok, "p_true": answer.p_true,
+            "confidence": answer.confidence, "abstain_reason": answer.abstain_reason,
+            "detail": answer.detail, "pins": dict(answer.pins), "answered_route": answer.pins.get("route"),
+            "server_latency_ms": answer.latency_ms,
+            "wall_ms": round((time.perf_counter() - t0) * 1000.0, 1), "busy_retries": attempts}
+
+
+def measure_classify(client: ClassifyClient, cases: Sequence[tuple[str, bool]],
+                     route: str | None) -> dict:
+    """The classify-protocol counterpart of `measure`: abstentions counted, never scored."""
+    rows = []
+    for text, truth in cases:
+        rows.append({"text": text, "is_injection": truth, **classify_one(client, text, route)})
+    scored = [(r["p_true"], r["is_injection"]) for r in rows if r["ok"]]
+    return {"protocol": "classify", "question_id": INJECTION_QUESTION_ID,
+            "question_sha256": question_sha256(INJECTION_QUESTION), "route": route or "auto",
+            "n": len(rows), "positives": sum(1 for _, y in cases if y),
+            "negatives": sum(1 for _, y in cases if not y),
+            "abstained": len(rows) - len(scored), "rows": rows, "scored": scored}
+
+
 def best_threshold(scored: Sequence[tuple[float, bool]]) -> dict:
     """The operating point with the best recall among those with the lowest false-positive rate.
 
@@ -77,8 +119,13 @@ def best_threshold(scored: Sequence[tuple[float, bool]]) -> dict:
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Measure a Laya profile against the labelled set.")
-    parser.add_argument("--protocol", choices=("json", "logprob"), default="json")
-    parser.add_argument("--base-url", default="http://127.0.0.1:1234/v1")
+    parser.add_argument("--protocol", choices=("json", "logprob", "classify"), default="json")
+    parser.add_argument("--base-url", default="",
+                        help="default: http://127.0.0.1:1234/v1 (chat) or the Laya service (classify)")
+    # classify only: which labelled set and which checkpoint route ("auto" = service default).
+    parser.add_argument("--set", dest="case_set", choices=("probe", "matched_en", "matched_de"),
+                        default="probe")
+    parser.add_argument("--route", choices=("auto", "english", "multilingual"), default="auto")
     parser.add_argument("--model", default="jev-style-qwen3.5-2b-decision")
     parser.add_argument("--out", default="")
     # The token budget is a measured parameter, not a hidden constant. This model writes
@@ -87,8 +134,13 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--max-tokens", type=int, default=900)
     # Likewise the timeout: a transport cut and a model failure are different findings,
     # and a run whose abstentions are mostly TIMEOUT has measured the wait, not the juror.
-    parser.add_argument("--timeout", type=float, default=30.0)
+    parser.add_argument("--timeout", type=float, default=None,
+                        help="default 30 s (chat) / 120 s (classify measurement)")
     args = parser.parse_args(argv)
+    if args.protocol == "classify":
+        return _main_classify(args)
+    args.base_url = args.base_url or "http://127.0.0.1:1234/v1"
+    args.timeout = 30.0 if args.timeout is None else args.timeout
 
     report = measure(HttpLaya(base_url=args.base_url, model=args.model,
                              max_tokens=args.max_tokens, timeout=args.timeout), INJECTION,
@@ -115,6 +167,30 @@ def main(argv: Sequence[str] | None = None) -> int:
         print("and no record should be written. That is a result, not a failure to produce one.")
     if args.out:
         Path(args.out).write_text(json.dumps(report, indent=2), encoding="utf-8")
+    return 0
+
+
+def _main_classify(args) -> int:
+    """Measure the injection question over the real HTTP path. Never writes a record."""
+    from experiments.laya_calibration import matched_en_de
+
+    cases = {"probe": CASES, "matched_en": matched_en_de.EN_CASES,
+             "matched_de": matched_en_de.DE_CASES}[args.case_set]
+    client = ClassifyClient(base_url=args.base_url or DEFAULT_BASE,
+                            timeout=120.0 if args.timeout is None else args.timeout)
+    report = measure_classify(client, cases, None if args.route == "auto" else args.route)
+    report["set"] = args.case_set
+    report["timeout_s"] = client.timeout
+    for threshold in (0.5, 0.7, 0.9):
+        pos = [p for p, y in report["scored"] if y]
+        neg = [p for p, y in report["scored"] if not y]
+        tp, fp = sum(p >= threshold for p in pos), sum(p >= threshold for p in neg)
+        print(f"t={threshold}: recall {tp}/{len(pos)} {wilson(tp, len(pos))}   "
+              f"FPR {fp}/{len(neg)} {wilson(fp, len(neg))}")
+    print(f"usable {len(report['scored'])}/{report['n']}   abstained {report['abstained']}")
+    print("No record is written by this harness; see docs/research/LAYA-CALIBRATION/.")
+    if args.out:
+        Path(args.out).write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
     return 0
 
 

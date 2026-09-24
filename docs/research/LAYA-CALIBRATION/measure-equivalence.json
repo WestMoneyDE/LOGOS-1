@@ -1,0 +1,20 @@
+{
+ "calls": 513,
+ "identical_p_and_route": 513,
+ "identical_p_4dp": 513,
+ "identical_route": 513,
+ "http_abstained": 0,
+ "max_abs_diff": 0.0,
+ "inprocess_meta": {
+  "package_version": "0.3.6",
+  "hf_revision": "5e7b2b1b8ca2ecdd3f2322d94069c9b6ce7e844b",
+  "torch": "2.14.0+cpu",
+  "torch_threads": 5,
+  "seconds": 510.8,
+  "image_id": "sha256:4f96f26ee01a642c9c8b5991d24e759a0c78668e9e2ffab2dcf09e3e4ae65ea7",
+  "service_image_id": "sha256:4f96f26ee01a642c9c8b5991d24e759a0c78668e9e2ffab2dcf09e3e4ae65ea7",
+  "same_image_as_service": true,
+  "isolation": "docker run --rm --network none --read-only --memory 3g"
+ },
+ "mismatches": []
+}

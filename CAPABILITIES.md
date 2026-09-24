@@ -67,7 +67,8 @@ Engineering implementation states, not scientific promotions:
 
 | Capability | Rating | Exact pytest evidence |
 |---|---|---|
-| Deterministic Γ invariant validation over effect proposals (15 invariants, all clause-linked) | `IMPLEMENTED` | `tests/test_gamma_kernel.py` |
+| Deterministic Γ invariant validation over effect proposals (25 invariants, all clause-linked; Γ-15 … Γ-24 added in LOGOS1-GAMMA-EXTENSION-R1, opt-in per declared field) | `IMPLEMENTED` | `tests/test_gamma_kernel.py` |
+| Decision binding: a verdict bound to one state-action pair and re-checked before the effect (`issue_decision` / `redeem_decision`) | `IMPLEMENTED` | `tests/test_gamma_kernel.py` |
 | Γ trusted-core constraints enforced structurally | `IMPLEMENTED` | `tests/test_gamma_trusted_core.py` |
 | Γ artifact verifier for manifests, claims and prose | `IMPLEMENTED` | `tests/test_gamma_verifier.py` |
 
@@ -81,6 +82,23 @@ exists in this repository.
 ValidationResult != Permission
 GammaVerdict != Grant
 ```
+
+### Laya juror / navigator R1 evidence (LOGOS1-LAYA-JUROR-INTEGRATION-R1)
+
+Engineering states, not scientific promotions. Laya (`convaiinnovations/laya`, a ModernBERT
+classifier, pinned to `laya==0.3.6` and HF revision `5e7b2b1b`) has **no admissible calibration
+record**: every juror vote is `ABSTAIN` until the founder signs one.
+
+| Capability | Rating | Exact pytest evidence |
+|---|---|---|
+| Juror client `laya-classify/1`: every failure (timeout, non-200, schema, pin mismatch, non-loopback URL) abstains in one place | `IMPLEMENTED` | `tests/test_laya_classify.py` |
+| `juror_vote`: emits only `TIGHTEN` or `ABSTAIN`, never `REFUSE`; reads `p_true`, never Laya's `confidence` | `IMPLEMENTED` | `tests/test_laya_classify.py` |
+| ADVISE classifies the agent's output and each piece of evidence separately; a failing advisor abstains; topology unchanged | `IMPLEMENTED` | `tests/test_graph_invariants.py` |
+| Navigator on the thesis state machine: never offers a founder gate or a step past `AGENT_CEILING` | `IMPLEMENTED` | `tests/test_laya_navigator.py` |
+| Navigator shadow mode (`LOGOS_LAYA_SHADOW=1`): proven by a lesion-checked differential test to change no transition | `IMPLEMENTED` | `tests/test_laya_navigator.py` |
+| LOGOS-owned Laya service (`infra/laya`, compose profile `laya`, 127.0.0.1:58110, offline, pinned) | see session report | `tests/test_laya_service_contract.py` |
+| Laya as an injection juror with an admissible threshold | `NOT_ADMISSIBLE` | `docs/research/LAYA-CALIBRATION/injection-NOT-ADMISSIBLE.md` |
+| Navigator acting (not shadow) | `NOT_BUILT` | requires a routing calibration record |
 
 ### MemoryFactory / Scope Engine R1 evidence
 
@@ -158,7 +176,11 @@ ScopeDecision != DispatchAuthorization
 - consciousness or sentience detection;
 - universal agent safety;
 - autonomous authority creation;
-- Γ-v0.3 promotion.
+- Γ-v0.3 promotion;
+- Laya as a prompt-injection defence: the vendor publishes no guard evaluation, the in-session
+  probes cannot separate a recall of 0.55 from 0.95, and a classifier is one layer that may only
+  tighten, never the control that blocks benign-phrased instructions;
+- Laya's `confidence` field as a probability (it is 1 − normalised entropy for `choice`).
 
 ## Update rule
 
