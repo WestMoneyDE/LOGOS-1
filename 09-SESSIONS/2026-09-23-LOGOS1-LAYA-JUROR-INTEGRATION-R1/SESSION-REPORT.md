@@ -116,7 +116,22 @@ die Sicherung stehen im Bericht.
 
 ## 6. Tests
 
-<!-- TESTS -->
+```text
+volle Suite nach dem letzten Commit   4957 passed / 4 skipped / 0 failed   (vorher 4776 / 3 / 0)
+neu in dieser Sitzung                 test_laya_classify, test_laya_service_contract, test_laya_navigator,
+                                      Erweiterungen in test_graph_invariants, test_laya_calibration_harness
+Live gegen den Dienst                 LOGOS_LAYA_LIVE=1 pytest -m live: 1 passed
+Γ                                     Bundle-Hash unveraendert (_gamma_freeze), src/logos_gamma + GAMMA.md
+                                      ohne Diff seit 0e22425
+Laesionen                             juror_vote liest confidence -> 3 Tests rot; Netzwerk-Scan mit
+                                      import anthropic -> rot; Schatten veraendert die These -> rot
+```
+
+Ein Lauf nach dem vorletzten Commit fand 9 Fehler, alle in den Abschlussdokumenten: `CAPABILITIES.md`
+war geändert, aber nicht registriert (die Registraturen lesen `git diff <base> HEAD` und sehen eine
+uncommittete Änderung an einer getrackten Datei nicht), und die Closure nannte einen neuen Nachfolger
+statt des Kettenkopfs. Behoben in `71ae023`; die exakten Zählungen und der Vorgänger-Wächter wurden
+registrierend erweitert, wie in den Sitzungen davor.
 
 ## 7. Negative Evidenz
 
