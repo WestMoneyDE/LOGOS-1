@@ -128,4 +128,7 @@ die Sicherung stehen im Bericht.
 
 ## 8. Offen
 
-Genau ein Folgeauftrag: `05-WORK-ORDERS/NEXT-SESSION-LOGOS1-LAYA-JUROR-INTEGRATION-R1.md`.
+Nachfolger (genau einer, nicht ausgeführt): `COGNITIVE-PROVENANCE-ATTRIBUTION-FLOOR-R1` — der
+unveränderte Kettenkopf, wie in jeder Engineering-Sitzung davor. Die Laya-Folgearbeit (Datensatz,
+Routing, Kalibrierung, Falsifikator) steht daneben als
+`05-WORK-ORDERS/QUEUED-LOGOS1-LAYA-CALIBRATION-DATASET-R1.md` und ersetzt den Kopf nicht.

@@ -2161,6 +2161,14 @@
     "experiments/laya_calibration/matched_en_de.py": {
       "class": "REFERENCE_FIXTURE",
       "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: re-authored matched EN/DE sentence sets (8+8 per language); data only, no model call"
+    },
+    "CAPABILITIES.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: capability map updated (Γ at 25 invariants; Laya capabilities with their real status and what is not claimed); Record, kein Code"
+    },
+    "05-WORK-ORDERS/QUEUED-LOGOS1-LAYA-CALIBRATION-DATASET-R1.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: queued order, does not replace the chain head; Record, kein Code"
     }
   },
   "unclassified": 0
