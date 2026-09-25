@@ -6,11 +6,15 @@ that owns `jev-ultrafast`. No LOGOS claim status changes; Γ is not modified.
 **Evidence:** `docs/research/BROWSE-OBSERVATION/KEYSTONE-R1.md` (72-task run, root causes, Laya
 accuracy, validation), three research strands summarised in §8, and the verification of a pasted
 advisory text (§9).
+**Corrected 2026-09-25:** the cause table in §0, the F4 framing validation and the handover order
+rested on numbers that an audit withdrew (KEYSTONE-R1 §0). §11 records the corrected evidence and
+what was built; where §0–§10 and §11 disagree, §11 holds.
 
 ## 0. The problem, measured
 
-72 Keystone tasks: 64 `low_confidence`, 5 `blocked`, 3 `done`. Every task that consulted Laya
-failed. Root causes of the 69 failures:
+72 Keystone tasks: 64 `low_confidence`, 5 `blocked`, 3 `done` (2 verified). Every task that
+consulted Laya failed. Root causes of the 69 failures, as first assigned (**withdrawn 2026-09-25**:
+not reproducible; see §11):
 
 | Cause | Tasks | Fix |
 |---|---|---|
@@ -19,7 +23,7 @@ failed. Root causes of the 69 failures:
 | D target offered, Laya chose wrong | 15 | F4 |
 | C target never offered (collapsed / not a candidate) | 13 | F3 |
 
-Laya is the primary cause in 22% of failures. The founder's three points map onto this: the
+~~Laya is the primary cause in 22% of failures.~~ (withdrawn, §11) The founder's three points map onto this: the
 threshold (F5), Laya deciding better (F4), and not aborting the task (F5 ladder). The largest
 causes, A and B, are neither — they are arrival detection and planning.
 
@@ -77,7 +81,7 @@ click" falls from 41 tasks to 0.
 
 **Predicted result:** self-collapsed sidebar 24 → 0; cause C 13 → at most 5.
 
-## F4 — Laya decisions (cause D, 15 tasks)
+## F4 — Laya decisions (cause D, 15 tasks) — framing withdrawn 2026-09-25, see §11
 
 1. **Ask Laya the way its protocol expects — the main fix (validated, §F4-V).** Laya classifies a
    *state of named fields* against a question that references those fields in backticks (the
@@ -100,7 +104,7 @@ click" falls from 41 tasks to 0.
 6. **Later, measured:** fine-tune on labelled jev decisions using the vendor's browser recipe, and
    test paraphrased targets (a link named differently from the goal), which §F4-V does not cover.
 
-### F4-V — validation on the logged questions
+### F4-V — validation on the logged questions (withdrawn: 34 of the 45 rows are `holds` questions; see §11)
 
 Replay of the 45 distinct logged `choice` questions whose target was among the options, run in a
 separate process inside the Laya container, offline, pinned to revision `5e7b2b1b` (the one that
@@ -159,7 +163,8 @@ and must not exceed the success gain.
 ## F6 — Overshoot
 
 Covered by F1: arrival is checked before the next decision, so no click follows a reached target.
-Measured on this run: 5 tasks reached the target and continued; 4 left it.
+Measured on this run (corrected 2026-09-25): 6 tasks reached the target URL, with 23 steps on a
+target page; the old rule recognised arrival at 2 of those 23 steps.
 
 ## 7. Measurement
 
@@ -200,9 +205,45 @@ must point at evidence a deterministic check confirms), which F1's final judge i
 
 - **Owner:** the session working in `C:\Users\Ömer\Desktop\Freelance\jev-ultrafast`. This design
   does not modify that repository.
-- **Order:** F2 and F1 first (41 of 69 failures, no model involved), then F4.1–F4.3 (the framing
-  fix is small and validated: 9/45 → 45/45 on replay), then F3, then F5.
+- **Order (superseded by §11):** F2 and F1 first, then F4.1–F4.3, then F3, then F5. The reasons
+  first given here ("41 of 69 failures, no model involved"; "framing validated 9/45 → 45/45") are
+  withdrawn: F2's fallback and the planner are model-driven, and the framing figure came from
+  rewritten `holds` questions on the wrong checkpoint.
 - **Keystone clean-up, not executed:** rows created during the run window (2026-09-23 16:04–16:55
   UTC) in `ArticleView`, `SearchLog`, `Test`, `TestAttempt`, `TestAttemptAnswer`, `Conversation`,
   `Message`, `UserRoleSelection` (ENTERPRISE), `FeatureFlags`, and the display name "Observer".
   The pre-run dump is `keystone-before.sql` in the LOGOS session scratchpad.
+
+## 11. Corrected evidence and as built (2026-09-25)
+
+**Owner change.** The founder moved the implementation to this session. jev-ultrafast is changed
+on its local working tree only; its git remote belongs to a third-party organisation and receives
+nothing from this session.
+
+**Corrected evidence** (`KEYSTONE-R1.md` §0–§4, `keystone-r1-rescore/`):
+
+| Claim first made | Corrected |
+|---|---|
+| Laya chose the offered target in 8/45, below chance | 34 of the 45 were `holds` questions answered correctly with "none" (33/34). Scored by meaning: 38 of 44 labelled correct |
+| Reframing lifts Laya to 40–45/45 | Not established (n = 7 element questions; 3/7 → 6–7/7 with overlapping intervals). Applied to `holds`, the framing turns correct answers wrong in up to 44 of 47 |
+| Cause D "Laya chose wrong" 15 tasks, 22% | Not reproducible. 57 of the 64 stops fired where no offered option was correct: the stop was the right reaction |
+| Earlier replays reproduced the run | They used the English checkpoint. The run's service routed 194 of 340 questions to multilingual. On the routed checkpoint: 340/340 |
+
+**Adopted and built in jev-ultrafast** (each with tests; suite 117 → 229 passed before the
+checkpoint work):
+
+| Fix | What changed | Offline evidence |
+|---|---|---|
+| F1 | Arrival also from the page's first heading (whole-word overlap ≥ 60% both ways, or the heading starts with the target) and from the stored `href` of the clicked target; the firing signal is logged | replay: 2 → 15 of 23 target-page steps; 0 firings off target; three heading false positives found and excluded by the stricter rule |
+| F2 | Plan validator for click goals; one re-ask with the errors; deterministic fallback plan | rejects 30/30 logged bad plans; fallback opens the right label in 28 |
+| F3 | Offscreen links and buttons offered after on-screen ones and scrolled into view before the hit test; interface buttons never a submit/next/item candidate unless the goal quotes them; submit only for `type=submit`, in-form or submit-worded buttons | live: 24 → 53 of 53 link targets offered, all 53 clicked after scrolling |
+| F4 (reduced) | "none of these" on `item`/`next` when two or more candidates are asked; a "none" on `next` scrolls (≤ 3) and otherwise stops as `blocked` with a named reason. No framing change | Laya chose a correct "none" in 46 of 52 when offered |
+| F5 | The ambiguity gate routes to a bounded recovery ladder (re-observe, narrower re-ask, reversible same-origin exploration with backtrack to the stored URL, `needs_approval` for irreversible candidates, skip of the self-added search requirement, then `ambiguous_exhausted`); `JEV_RECOVERY=0` restores the old stop; thresholds labelled uncalibrated | offline: the logged stops mostly become `ambiguous_exhausted` or `needs_approval`, not recovered steps — weak support for recovery, support for "no `done` without a signal" |
+| Service | jev's Laya server pinned to HF `5e7b2b1b`, SHA256-checked, offline after load, loopback-only, `noul` answers no longer 502, explicit checkpoint selection, package set frozen to the measured image | image `pip freeze` identical (47/47); `noul` p = 0.915 as measured by LOGOS |
+
+**Not adopted:** the target framing (F4.1–F4.3), a forced `typed-decisions` route (no evidence),
+any change to the 0.4 / 0.15 thresholds (uncalibrated; a held-out labelled set is required).
+
+**Not yet measured:** the live Keystone rerun with all fixes. Every effect above is offline or
+replay evidence until that run exists.
+

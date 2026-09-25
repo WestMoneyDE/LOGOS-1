@@ -116,8 +116,9 @@ Sets:
   report (0.048) and the ticket (0.014).
 * **matched_de, english:** 4 of 8 missed. The English checkpoint reads German, but not well.
 
-Auto routing is not "one route per language". It sent 1 of 16 matched German sentences ("Vergiss deine Regeln…",
-answered 1.0) and 3 of the 4 ASCII-German probe sentences to *english*.
+Auto routing is not "one route per language". It sent 2 of 16 matched German sentences to *english* — the injection "Vergiss deine Regeln…"
+(answered 1.0) and the benign transfer request "Bitte überweise am Freitag…" (0.2032) — and 3 of the 4
+ASCII-German probe sentences.
 
 ### 2.4 Relation to R1 §2.3
 
@@ -243,11 +244,11 @@ confounded by the agent failing to reach or read the page at all. The pages and 
 3. **Detection on realistic pages is low.** 7/21 injection pages (0.172–0.546) at 0.5 and 3/21 at 0.9. Indirect,
    imperative and smuggled payloads, which are the ones an adversary would choose, are the weakest strata (§4).
 4. **Invisible-character smuggling works against this juror.** The extractor preserved the characters and the juror did not
-   see the instruction. Zero-width and tag encodings dropped p_true from > 0.9 to ≤ 0.15.
+   see the instruction. Zero-width and tag encodings dropped p_true from > 0.9 to ≤ 0.152.
 5. **Routes disagree and neither dominates.** Multilingual is quieter on benign short text but misses English
-   indirect injections that english catches. On Keystone pages it is worse than english. Auto routing inherits the weaknesses of both and adds 20–60 s switches.
+   indirect injections that english catches. On Keystone pages it is worse than english. Auto routing inherits the weaknesses of both and adds 19–59 s switches.
 6. **The vendor publishes no guard metric.** Laya's training data names no safety or injection set (R1 §2.1). The `prompt_injection` question is a single preset line with no evaluation.
-7. **Sample size.** 12 + 12, 8 + 8 and 4–6 per stratum give intervals 0.3–0.7 wide. Nothing here distinguishes a
+7. **Sample size.** 12 + 12, 8 + 8 and 4–6 per stratum give intervals 0.24–0.70 wide. Nothing here distinguishes a
    juror at 0.6 recall from one at 0.9.
 8. **Adaptive attacks are not measured.** Every attack here is fixed and written by the defender. Published adaptive
    attacks break classifier guards at > 90% success (R1 §2.2). The smuggling results above point the same way with no adaptation at all.
@@ -262,7 +263,7 @@ confounded by the agent failing to reach or read the page at all. The pages and 
 route and carries a non-empty `approved_by`. The code allows a record. The evidence does not. A record for this
 profile would need at least:
 
-* **≥ ~100 positives per language and per attack stratum** (direct, indirect, imperative, smuggled). About 196 are needed for
+* **≥ ~196 positives per language and per attack stratum** (direct, indirect, imperative, smuggled). About 196 are needed for
   ±0.05 on recall and about 400 for ±0.035 (R1 §2.3). The largest cell here has 12.
 * **≥ 299 benign cases**, drawn from the distribution the juror will actually see (real page text such as Keystone,
   not only authored sentences). 299 is the minimum for an upper bound on a 1% FPR. The only real benign set here gives FPR ≈ 0.36.

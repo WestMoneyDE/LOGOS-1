@@ -38,18 +38,21 @@ bleibt mit seinen Tests als überholt markiert.
 die `noul`-Antworten nie haben: jede Injektionsfrage gab 502. Der LOGOS-Dienst trennt die Antworttypen
 und testet genau diese Fehlerklasse.
 
-**2c. Warum jev-ultrafast abbricht — gemessen, nicht vermutet** (`docs/research/BROWSE-OBSERVATION/KEYSTONE-R1.md`).
-72 Keystone-Aufgaben, jede mit Laya-Frage gescheitert. Ursachen der 69 Fehlschläge: 24 Planer macht aus
-„klicke X" ein Formularfeld; 17 Ziel erreicht, nicht erkannt (Titel immer „Keystone", URL-Segment passt
-nur zufällig — die zwei Treffer sind genau die zwei Erfolge); 15 Laya wählt falsch; 13 Ziel nie
-angeboten. Laya ist Hauptursache in 22 %.
+**2c. Warum jev-ultrafast abbricht — gemessen, am 2026-09-25 korrigiert**
+(`docs/research/BROWSE-OBSERVATION/KEYSTONE-R1.md` §0–§4). 72 Keystone-Aufgaben: 64 `low_confidence`,
+5 `blocked`, 3 `done` (2 verifiziert). 57 der 64 Stopps fielen auf eine Frage ohne richtige Option;
+der Stopp verhinderte dort einen falschen Klick. Die Fehler entstehen in jev: 30 von 72 Plänen machen
+aus einem Klick eine Formulareingabe; die Ankunft wurde an 2 von 23 Schritten auf einer Zielseite
+erkannt; der Snapshot bot 24 von 53 Link-Zielen an; 180 Klicks trafen Oberflächenknöpfe; 252 von 279
+bewerteten Fragen hatten keine richtige Option, 200 davon ohne „none of these“.
 
-**2d. Zwei eigene Hypothesen widerlegt, eine bestätigt.** Positionsbias: widerlegt (Umkehr der
-Reihenfolge ohne Effekt; das Muster kam von jevs Vorsortierung). Checkpoint oder kürzere Eingabe allein:
-wirkungslos. Bestätigt: die Frageform. Laya klassifiziert einen Zustand mit benannten Feldern gegen eine
-Frage, die sie in Backticks referenziert. Mit `state={"target"}` und „Which element opens \`target\`?"
-steigt die Trefferquote auf den 45 geloggten Fragen von 9/45 auf 40/45 (English) und 45/45
-(typed-decisions). Grenze: Soll-Labels aus dem Zieltext, Umschreibungen ungeprüft.
+**2d. Laya, nach Bedeutung der Frage bewertet.** „none of these“ wählt Laya korrekt in 46 von 52
+Fällen, `holds` 44 von 47, echte Absende-Knöpfe 7 von 8. Schwach ist die Wahl des Ziels unter ähnlichen
+Links: 3 von 7. Die zuerst berichteten Zahlen (8/45 unter Zufall; Frageform hebt auf 40–45/45; Laya
+Hauptursache in 22 %) sind zurückgezogen: 34 der 45 Fragen waren `holds`-Fragen mit korrekter Antwort
+„none“, der Replay lief auf dem englischen statt dem gerouteten mehrsprachigen Checkpoint, und die
+Ursachentabelle war nicht reproduzierbar. Auf dem gerouteten Checkpoint reproduziert der Replay
+340 von 340 geloggten Antworten. Positionsbias bleibt widerlegt.
 
 **2e. Das Modell änderte sich während der Sitzung.** Hugging Face veröffentlichte am 2026-09-23 die
 Revision `aa8c91ca` ohne `multilingual`-Checkpoint; ein ungepinnter Replay lud sie in den Cache des
@@ -67,13 +70,14 @@ und enthielt Code, der Erfolg unbedingt meldet. Übernommen: nur Evidence-Carryi
 Vollständig in `docs/research/LAYA-CALIBRATION/injection-NOT-ADMISSIBLE.md`; Rohdaten `measure-*.json`.
 
 **Äquivalenz.** 513 (Text, Route)-Aufrufe über HTTP und in-process auf demselben gepinnten Image:
-`p_true` identisch auf 4 Stellen, gleiche Route, max |Δ| = 0,0. Der HTTP-Pfad ist bewiesen.
+`p_true` identisch auf 4 Stellen, gleiche Route, max |Δ| = 0,0. Für diese 513 Eingaben auf diesem Image
+sind HTTP-Pfad und In-Process-Aufruf äquivalent.
 
 **Injektionsfrage, 95-%-Wilson** (Auszug):
 
 ```text
 Probe 24, Route auto/english   Schwelle 0,5  Recall 10/12 (0,55-0,95)  FPR 1/12 (0,02-0,35)
-                               Schwelle 0,9  Recall  7/12              FPR 0/12 (0-0,24)
+                               Schwelle 0,9  Recall  7/12 (auto), 6/12 (english)  FPR 0/12 (0-0,24)
 matched DE, Route english      Schwelle 0,5  Recall  4/8  (0,22-0,79)
 matched DE, Route multilingual Schwelle 0,5  Recall  5/8  (0,31-0,86)
 saubere Luecke                 in keinem Satz, auf keiner Route (AUROC 0,90-0,98)
@@ -97,8 +101,9 @@ hat; die deutschen Vergleichssätze sind neu verfasst, keine Replikation; Keysto
 ## 4. Übergabe außerhalb von LOGOS
 
 Die Korrektur für jev-ultrafast (`docs/superpowers/specs/2026-09-23-jev-abort-fix-design.md`) ist
-entworfen, validiert und an die Sitzung übergeben, die das Repo besitzt. Der Founder hat dort alle
-jev-/Laya-Arbeit pausiert; **eingebaut ist sie nicht.** Die Keystone-Datenbank wurde nicht
+entworfen und wurde am 2026-09-25 auf Anweisung des Founders in dieser Sitzung eingebaut (Spezifikation
+§11), nur im lokalen Arbeitsbaum von jev-ultrafast; dessen Remote gehört einer fremden Organisation und
+erhält nichts. Die Keystone-Datenbank wurde nicht
 zurückgespielt (10 von 18 Tabellen verändert, darunter ein Favorit aus einem Rateklick); die Liste und
 die Sicherung stehen im Bericht.
 
@@ -108,10 +113,10 @@ die Sicherung stehen im Bericht.
 |---|---|---|
 | Revision | `5e7b2b1b` statt neuester | alle Messungen darauf; `aa8c91ca` ohne multilingual |
 | GPU | verschoben | CPU 304 ms p50 reicht; GPU verlangt eigene Äquivalenzstudie |
-| Checkpoint-Wechsel (19–50 s) | weder längere Frist noch `max_loaded=2` | Client und ADVISE brechen nach 5 s ab → ABSTAIN |
+| Checkpoint-Wechsel (19–59 s) | weder längere Frist noch `max_loaded=2` | Client und ADVISE brechen nach 5 s ab → ABSTAIN |
 | `mem_limit` | 3g | Wechsel läuft unter 3g ohne OOM; 4g + voller jev-Container > VM |
 | Keystone-DB | nicht zurückgespielt | Rückspielen löscht auch Fremdänderungen, nicht umkehrbar |
-| Browse-Agent-Teil von Phase 4 | nicht ausgeführt | jev pausiert; 78 % Navigationsfehler würden die Messung verfälschen |
+| Browse-Agent-Teil von Phase 4 | nicht ausgeführt | jevs Navigationsfehler (KEYSTONE-R1 §2) hätten die Messung verfälscht |
 | Terraform | nicht eingesetzt | nur lokale Compose-Infrastruktur |
 
 ## 6. Tests

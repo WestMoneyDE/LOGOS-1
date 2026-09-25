@@ -173,7 +173,7 @@ component; its result is recorded, not repaired into a pass.
 |---|---|---|
 | host `127.0.0.1:8110` | host `127.0.0.1:58110`, container port 8110 | the lab compose file's 5xxxx host-port convention |
 | `english` + `typed-decisions` preloaded, `max_loaded=2` | `english` preloaded, `max_loaded=1`, others on demand | measured memory: 2.03 GiB steady; two resident checkpoints plus the jev container exceed the 9.7 GiB WSL VM |
-| `mem_limit` from measurement | `3g` | the checkpoint switch completes under 3g without OOM; a switch (19–50 s) outlasts the 5 s client timeout, so a caller sees ABSTAIN |
-| request carries `text` | request carries `state: {name: text}` | Laya answers questions that reference named state fields in backticks; asked without them it chose correctly in 9/45 logged questions, with them in 40–45/45 (`docs/research/BROWSE-OBSERVATION/KEYSTONE-R1.md` §4) |
+| `mem_limit` from measurement | `3g` | the checkpoint switch completes under 3g without OOM; a switch (19–59 s) outlasts the 5 s client timeout, so a caller sees ABSTAIN |
+| request carries `text` | request carries `state: {name: text}` | the vendor's questions reference named state fields in backticks (the guard question asks about \`prompt\`), and laya serialises the state dict verbatim; the service follows that convention. An earlier justification by a measured effect (9/45 → 40–45/45) was withdrawn on 2026-09-25 (`docs/research/BROWSE-OBSERVATION/KEYSTONE-R1.md` §0) |
 | GPU variant offered | not built | CPU p50 304 ms suffices for the juror; a GPU image needs its own equivalence study |
 | `advisory_vote` emits TIGHTEN | new `juror_vote` emits TIGHTEN; `advisory_vote` unchanged | extension only: no existing test changes an expected value |

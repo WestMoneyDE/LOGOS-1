@@ -142,7 +142,7 @@ build `docker/laya-server`). Package `laya` 0.3.6 in the image.
 | EN or DE matched set, FPR | 0/8 | 0.000 – 0.324 |
 
 For a reported point at ±0.05 on recall, about 196 positives per stratum are needed; ±0.035 needs
-about 400. A 1% FPR bound needs at least 299 benign cases (Neyman–Pearson umbrella bound,
+about 400 (Wald, assuming p ≈ 0.85; at p = 0.5, 385 and 784). A 1% FPR bound needs at least 299 benign cases (Neyman–Pearson umbrella bound,
 [Tong et al.](https://arxiv.org/abs/1802.02557)). Isotonic calibration needs about 1000 samples;
 below that, a single temperature per (question type, option count) is the most the data supports
 ([scikit-learn](https://scikit-learn.org/stable/modules/calibration.html),

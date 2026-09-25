@@ -2085,6 +2085,46 @@
     "05-WORK-ORDERS/QUEUED-LOGOS1-LAYA-CALIBRATION-DATASET-R1.md": {
       "class": "GOVERNANCE_ONLY",
       "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1: queued order, does not replace the chain head; Record, kein Code"
+    },
+    "docs/research/BROWSE-OBSERVATION/keystone-r1-rescore/RESCORE.md": {
+      "class": "GOVERNANCE_ONLY",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1 (2026-09-25 correction): Record of the rescoring by question semantics; kein Code, kein Modellaufruf"
+    },
+    "docs/research/BROWSE-OBSERVATION/keystone-r1-rescore/rescore.json": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1 (2026-09-25 correction): labelled rows, replays and stop attributions; Record, kein Code"
+    },
+    "docs/research/BROWSE-OBSERVATION/keystone-r1-rescore/replay_results.json": {
+      "class": "REFERENCE_FIXTURE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1 (2026-09-25 correction): measured replay results; Record, kein Code"
+    },
+    "docs/research/BROWSE-OBSERVATION/keystone-r1-rescore/labels.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1 (2026-09-25 correction): mechanical gold labels from the run logs; no model call"
+    },
+    "docs/research/BROWSE-OBSERVATION/keystone-r1-rescore/analyze.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1 (2026-09-25 correction): accuracy, stop attribution and reconciliation over the labelled rows; no model call"
+    },
+    "docs/research/BROWSE-OBSERVATION/keystone-r1-rescore/old_gold_rule.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1 (2026-09-25 correction): the superseded target-substring gold rule, kept for reconciliation; no model call"
+    },
+    "docs/research/BROWSE-OBSERVATION/keystone-r1-rescore/make_cases.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1 (2026-09-25 correction): builds the replay input from the labelled rows; no model call"
+    },
+    "docs/research/BROWSE-OBSERVATION/keystone-r1-rescore/merge_replay.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1 (2026-09-25 correction): merges replay results into rescore.json; no model call"
+    },
+    "docs/research/BROWSE-OBSERVATION/keystone-r1-rescore/tables.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1 (2026-09-25 correction): prints the report tables from rescore.json; no model call"
+    },
+    "docs/research/BROWSE-OBSERVATION/keystone-r1-rescore/replay_rescore.py": {
+      "class": "EXPERIMENTAL_INFERENCE",
+      "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1 (2026-09-25 correction): replay of logged Laya questions inside the Laya container, offline, pinned revision 5e7b2b1b"
     }
   },
   "unclassified": 0
