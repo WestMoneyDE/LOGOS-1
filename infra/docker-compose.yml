@@ -225,6 +225,10 @@ services:
     image: logos-laya:local
     profiles: [laya]
     restart: "no"
+    # Any container on the `logos-research` bridge can reach laya:8110 without
+    # authentication. The service holds no secrets and grants no authority: it returns a
+    # classification that the caller's Gamma path weighs. It is not moved to an
+    # `internal: true` network because the published host port does not work there.
     networks: [logos-research]
     ports:
       - "127.0.0.1:58110:8110"
@@ -250,6 +254,8 @@ services:
     # plus a full jev-ultrafast-laya (~5 GiB) would exceed the 9.7 GiB WSL VM. A switch outlasts
     # the client's 5 s timeout either way, so the caller sees ABSTAIN, never a slow pass.
     mem_limit: 3g
+    pids_limit: 256
+    cpus: "2.0"
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8110/readyz', timeout=2).status == 200 else 1)"]
       interval: 10s

@@ -186,6 +186,12 @@ class _Abstain(Exception):
 
 
 class ClassifyClient:
+    """The loopback client for `laya-classify/1`; every failure becomes an abstention.
+
+    `expected_pins` is checked key by key: only the keys it names are compared. A partial
+    mapping pins only those keys, and an empty mapping or `None` requests no pinning.
+    """
+
     def __init__(self, base_url: str = DEFAULT_BASE, timeout: float = 5.0,
                  transport: Transport | None = None,
                  expected_pins: Mapping[str, str] | None = None) -> None:
@@ -199,9 +205,9 @@ class ClassifyClient:
 
     def ask(self, question_id: str, state: Mapping[str, str], question: Mapping[str, Any],
             route: str | None = None) -> ClassifyAnswer:
-        qtype = question.get("type") if isinstance(question, Mapping) else None
-        qtype = qtype if isinstance(qtype, str) else ""
+        qtype = ""
         try:
+            qtype = _question_type(question)
             return self._exchange(question_id, state, question, route)
         except _Abstain as exc:
             return _abstention(question_id, qtype, exc.reason, exc.detail)
@@ -213,7 +219,12 @@ class ClassifyClient:
     def _exchange(self, question_id, state, question, route) -> ClassifyAnswer:
         if not self.loopback:
             raise _Abstain("BASE_URL_NOT_LOOPBACK", repr(self.base_url))
-        request = _request(question_id, state, question, route)
+        try:
+            request = _request(question_id, state, question, route)
+        except _Abstain:
+            raise
+        except Exception as exc:  # noqa: BLE001 — the caller's own object failed to read
+            raise _Abstain("INVALID_REQUEST", f"{type(exc).__name__} while reading the request") from exc
         status, payload = self.transport.post(f"{self.base_url.rstrip('/')}/v1/classify",
                                               request, self.timeout)
         if status != 200:
@@ -226,6 +237,18 @@ class ClassifyClient:
             if diff:
                 raise _Abstain("PIN_MISMATCH", f"differs on {diff}")
         return answer
+
+
+def _question_type(question) -> str:
+    """The question's type for the abstention record; "" when it cannot be read.
+
+    Never raises: a question whose reads fail is reported by `_request` as INVALID_REQUEST.
+    """
+    try:
+        qtype = question.get("type") if isinstance(question, Mapping) else None
+    except Exception:  # noqa: BLE001
+        return ""
+    return qtype if type(qtype) is str else ""
 
 
 def _reason_for(exc: BaseException) -> str:

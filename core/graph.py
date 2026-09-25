@@ -452,6 +452,8 @@ def _ask(advisor: Advisor, item: UntrustedText) -> tuple[str, str | None]:
 
     The one place an advisor failure is mapped: a raise, a timeout, or an answer that
     is not `(str, vote)` with vote in `ADVISORY_VOTES` becomes ABSTAIN with a reason.
+    Both elements must be exactly `str`: a subclass can compare and hash as a vote
+    while its value is another string. A thread that cannot start is an ABSTAIN too.
     It never becomes a more permissive answer and never raises out of the run.
 
     The call runs on a daemon thread so a hung advisor cannot hold the run; a thread
@@ -465,8 +467,11 @@ def _ask(advisor: Advisor, item: UntrustedText) -> tuple[str, str | None]:
         except BaseException as exc:  # noqa: BLE001 - every failure is an ABSTAIN
             box["error"] = type(exc).__name__
 
-    worker = threading.Thread(target=call, name="logos-advisor", daemon=True)
-    worker.start()
+    try:
+        worker = threading.Thread(target=call, name="logos-advisor", daemon=True)
+        worker.start()
+    except Exception as exc:  # noqa: BLE001 - e.g. thread exhaustion; still an ABSTAIN
+        return "ABSTAIN", f"advisor thread could not start ({type(exc).__name__})"
     worker.join(ADVISOR_TIMEOUT_S)
     if worker.is_alive():
         return "ABSTAIN", f"no answer within {ADVISOR_TIMEOUT_S}s"
@@ -476,8 +481,8 @@ def _ask(advisor: Advisor, item: UntrustedText) -> tuple[str, str | None]:
     if (
         type(answer) is not tuple
         or len(answer) != 2
-        or not isinstance(answer[0], str)
-        or not isinstance(answer[1], str)
+        or type(answer[0]) is not str
+        or type(answer[1]) is not str
         or answer[1] not in ADVISORY_VOTES
     ):
         return "ABSTAIN", f"answer outside the contract ({type(answer).__name__})"

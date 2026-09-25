@@ -15,7 +15,10 @@ What this service guarantees, each held by a test:
   and one warm-up happen in a background thread started by the lifespan.
 * **One inference slot.** A request waits at most `LAYA_QUEUE_WAIT_S` for it, then gets
   503 `LAYA_BUSY`; an inference that exceeds `LAYA_DEADLINE_S` gets 504 `LAYA_TIMEOUT`
-  (the slot stays held until that inference really finishes).
+  (the slot stays held until that inference really finishes). The slot is acquired and
+  released inside the same worker call, so a request whose deadline expires, or that is
+  cancelled, before its job starts cannot leave the slot taken; a job that starts after
+  its caller has gone runs no inference. The device pin is read inside that call.
 
 The backend (the laya `Router`) is injected through `create_app(backend_factory=...)`, so the
 contract tests need neither torch nor the model. Nothing here grants, approves or authorizes
@@ -329,25 +332,57 @@ def create_app(backend_factory: Optional[Callable[[Config], Any]] = None,
         started = time.monotonic()
         if not st.ready:
             return _error(503, "LAYA_NOT_READY", st.status, retry_after=5)
-        acquired = await asyncio.to_thread(st.slot.acquire, True, cfg.queue_wait_s)
-        if not acquired:
-            return _error(503, "LAYA_BUSY", "the inference slot is taken", retry_after=1)
-
         question = req.question.model_dump()
         questions = {req.question_id: question}
+        loop = asyncio.get_running_loop()
+        acquired = asyncio.Event()
+        abandoned = threading.Event()   # the caller has gone: a job that starts late runs nothing
 
-        def _run() -> dict:
+        def _signal_acquired() -> None:
             try:
-                return st.backend.predict(dict(req.state), questions, req.route)
-            finally:
-                st.slot.release()      # released when the inference really ends
+                loop.call_soon_threadsafe(acquired.set)
+            except RuntimeError:        # the loop is closed; nobody is waiting
+                pass
 
+        def _job() -> tuple:
+            # The slot is taken and released in this one worker call. A job cancelled
+            # before it starts never took the slot; a job that took it always releases
+            # it, when the inference really ends. The device is read here too, while the
+            # slot is held: it walks the router's resident agents.
+            if not st.slot.acquire(True, cfg.queue_wait_s):
+                return ("busy",)
+            try:
+                _signal_acquired()
+                if abandoned.is_set():
+                    return ("abandoned",)
+                result = st.backend.predict(dict(req.state), questions, req.route)
+                return ("ran", result, st.backend.device())
+            finally:
+                st.slot.release()
+
+        job = asyncio.ensure_future(asyncio.to_thread(_job))
         try:
-            result = await asyncio.wait_for(asyncio.to_thread(_run), timeout=cfg.deadline_s)
-        except asyncio.TimeoutError:
-            return _error(504, "LAYA_TIMEOUT", f"no answer within {cfg.deadline_s}s")
-        except Exception as exc:  # noqa: BLE001 — the model raised; nothing was answered
-            return _error(502, "LAYA_OUTPUT_INVALID", f"backend raised {type(exc).__name__}: {exc}")
+            waiter = asyncio.ensure_future(acquired.wait())
+            try:
+                await asyncio.wait({job, waiter}, return_when=asyncio.FIRST_COMPLETED)
+            finally:
+                waiter.cancel()
+            if not acquired.is_set() and job.done() and not job.cancelled() \
+                    and job.exception() is None and job.result() == ("busy",):
+                return _error(503, "LAYA_BUSY", "the inference slot is taken", retry_after=1)
+            try:
+                outcome = await asyncio.wait_for(job, timeout=cfg.deadline_s)
+            except asyncio.TimeoutError:
+                return _error(504, "LAYA_TIMEOUT", f"no answer within {cfg.deadline_s}s")
+            except Exception as exc:  # noqa: BLE001 — the model raised; nothing was answered
+                return _error(502, "LAYA_OUTPUT_INVALID", f"backend raised {type(exc).__name__}: {exc}")
+        finally:
+            abandoned.set()
+            if not job.done():
+                job.cancel()            # unstarted: never runs; running: finishes and releases
+        if outcome[0] != "ran":
+            return _error(503, "LAYA_BUSY", "the inference slot is taken", retry_after=1)
+        _, result, device = outcome
 
         try:
             if not isinstance(result, dict):
@@ -362,7 +397,7 @@ def create_app(backend_factory: Optional[Callable[[Config], Any]] = None,
                 answer=answer.model_dump(),
                 pins={"package_version": st.backend.package_version,
                       "hf_revision": st.backend.hf_revision, "route": route,
-                      "device": st.backend.device()},
+                      "device": device},
                 latency_ms=max(0, int(round((time.monotonic() - started) * 1000))))
         except (OutputInvalid, ValidationError) as exc:
             return _error(502, "LAYA_OUTPUT_INVALID", str(exc))

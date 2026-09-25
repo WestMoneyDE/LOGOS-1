@@ -419,3 +419,153 @@ def test_a_golden_answer_validates_with_the_real_client(qtype):
 def test_a_golden_answer_validates_against_the_service_schema(svc, qtype):
     recorded = json.loads((FIXTURES / f"golden_{qtype}.json").read_text(encoding="utf-8"))
     svc.ClassifyResponse.model_validate(recorded)
+
+
+# -- the slot is released by the call that took it (review 2026-09-25) ---------------
+#
+# Defect: the slot was acquired in one worker call and released in `_run`'s `finally`,
+# a second executor job. When the deadline expired (or the request was cancelled) before
+# that second job started, the job was cancelled unrun and the slot was never released:
+# every later request was 503 LAYA_BUSY while /readyz still said 200.
+
+def _async_app(svc, backend, **cfg):
+    """An app served in-process over httpx's ASGI transport (no lifespan), marked ready."""
+    app = make(svc, backend, **cfg)
+    st = app.state.laya
+    st.backend, st.ready, st.status = backend, True, "ready"
+    return app, st
+
+
+def _in_loop(coro_factory, max_workers):
+    """Run one coroutine on a fresh loop whose default executor has `max_workers` threads."""
+    import asyncio
+    import concurrent.futures
+
+    async def main():
+        loop = asyncio.get_running_loop()
+        executor = concurrent.futures.ThreadPoolExecutor(max_workers=max_workers)
+        loop.set_default_executor(executor)
+        return await coro_factory(loop, executor)
+
+    return asyncio.run(main())
+
+
+def _body(i: int) -> dict:
+    return {"request_id": f"r{i}", "question_id": QIDS["noul"], "state": dict(STATE),
+            "question": dict(QUESTIONS["noul"]), "route": "english"}
+
+
+def _slot_is_free(st) -> bool:
+    if st.slot.acquire(blocking=False):
+        st.slot.release()
+        return True
+    return False
+
+
+def test_a_deadline_that_expires_before_the_run_starts_does_not_leak_the_slot(svc):
+    """Deterministic reproduction: the one executor worker is taken right after the slot is.
+
+    Before the fix, the run job queued behind the blocker, the deadline expired, the job
+    was cancelled unrun, and the slot stayed taken for good.
+    """
+    import asyncio
+
+    httpx = pytest.importorskip("httpx")
+    backend = FakeBackend()
+    app, st = _async_app(svc, backend, deadline_s=0.05, queue_wait_s=0.5)
+    blocker_done = threading.Event()
+
+    async def scenario(loop, executor):
+        class HookedSlot(threading.Semaphore):
+            hooked = False
+
+            def acquire(self, blocking=True, timeout=None):
+                got = super().acquire(blocking, timeout)
+                if got and not self.hooked:
+                    self.hooked = True
+                    # Occupy the only worker, so any *second* executor job waits past
+                    # the deadline. Submitted from the worker, before it returns.
+                    executor.submit(lambda: (time.sleep(0.3), blocker_done.set()))
+                return got
+
+        st.slot = HookedSlot(1)
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://t") as c:
+            first = await c.post("/v1/classify", json=_body(0))
+            await asyncio.sleep(0)
+            while not blocker_done.is_set():
+                await asyncio.sleep(0.01)
+            await asyncio.sleep(0.05)
+            leaked = not _slot_is_free(st)
+            second = await c.post("/v1/classify", json=_body(1))
+            return first, leaked, second
+
+    first, leaked, second = _in_loop(scenario, max_workers=1)
+    assert first.status_code in (200, 504), first.status_code
+    assert leaked is False, "the slot is still held after every job has finished"
+    assert second.status_code == 200, second.json()
+
+
+def test_a_burst_past_the_deadline_leaves_the_service_usable(svc):
+    """The review's slot_leak.py scenario: 8 requests, 2 workers, deadline < queue wait."""
+    import asyncio
+
+    httpx = pytest.importorskip("httpx")
+    backend = FakeBackend()
+    app, st = _async_app(svc, backend, deadline_s=0.3, queue_wait_s=1.0)
+
+    async def scenario(loop, executor):
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://t") as c:
+            burst = await asyncio.gather(*(c.post("/v1/classify", json=_body(i)) for i in range(8)))
+            await asyncio.sleep(2.5)  # every queued job has drained by now
+            after = await c.post("/v1/classify", json=_body(99))
+            return [r.status_code for r in burst], after
+
+    codes, after = _in_loop(scenario, max_workers=2)
+    assert set(codes) <= {200, 503, 504}, codes
+    assert _slot_is_free(st), "the slot leaked"
+    assert after.status_code == 200, (codes, after.json())
+
+
+def test_a_cancelled_request_runs_no_inference_and_leaves_the_slot_free(svc):
+    """A caller that has gone before its job started gets no inference, and the slot is free."""
+    import asyncio
+
+    pytest.importorskip("httpx")
+    backend = FakeBackend()
+    app, st = _async_app(svc, backend, deadline_s=1.0, queue_wait_s=1.0)
+    release = threading.Event()
+
+    async def scenario(loop, executor):
+        import httpx
+
+        executor.submit(release.wait, 5)  # the only worker is busy
+        async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://t") as c:
+            task = asyncio.ensure_future(c.post("/v1/classify", json=_body(0)))
+            await asyncio.sleep(0.05)
+            task.cancel()
+            with pytest.raises(asyncio.CancelledError):
+                await task
+            release.set()
+            await asyncio.sleep(0.2)
+            return [p for p in backend.predicts if "warmup" not in p[1]]
+
+    predicts = _in_loop(scenario, max_workers=1)
+    assert predicts == [], "an abandoned request reached the model"
+    assert _slot_is_free(st)
+
+
+def test_the_device_pin_is_read_while_the_slot_is_held(served):
+    """`device()` walks the router's agents; it must run inside the slot, with the inference."""
+    backend = FakeBackend()
+    tc, app, _ = served(backend)
+    st = wait_ready(app)
+    seen: list = []
+
+    def device():
+        seen.append(_slot_is_free(st))
+        return "cpu"
+
+    backend.device = device
+    r = tc.post("/v1/classify", json=request())
+    assert r.status_code == 200 and r.json()["pins"]["device"] == "cpu"
+    assert seen == [False], "device() ran after the slot was released"

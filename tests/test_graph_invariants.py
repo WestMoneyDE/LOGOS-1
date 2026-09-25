@@ -772,3 +772,48 @@ def test_an_untrusted_text_has_a_closed_set_of_channels():
         UntrustedText("evidence", "", "t")
     assert UntrustedText("evidence", "r1", "t").source == "laya:injection:evidence:r1"
     assert UntrustedText("agent_output", "anything", "t").source == "laya:injection:agent_output"
+
+
+# -- review 2026-09-25: a vote is a plain str, and a thread that cannot start abstains --
+
+class _PassesAsTighten(str):
+    """A str subclass that compares and hashes as TIGHTEN; its value is something else."""
+
+    def __eq__(self, other):
+        return other == "TIGHTEN" or str.__eq__(self, other)
+
+    def __hash__(self):
+        return hash("TIGHTEN")
+
+
+@pytest.mark.parametrize("answer", [
+    ("x", _PassesAsTighten("ALLOW")),
+    (_PassesAsTighten("x"), "TIGHTEN"),
+])
+def test_a_str_subclass_vote_is_an_abstain_and_never_reaches_the_context(answer):
+    """Lesion: `in ADVISORY_VOTES` is not a type check; the value 'ALLOW' must not ride in."""
+    baseline = _baseline()
+    for name, make in scenarios().items():
+        state = run(_with_advisor(make, lambda _item, a=answer: a))
+        assert (state.path[-1], state.executed) == baseline[name], (name, state.path)
+        if "VALIDATE" in state.path:
+            assert all(type(v) is str for _, v in state.context.advisories), name
+            assert [str.__str__(v) for _, v in state.context.advisories] == ["ABSTAIN", "ABSTAIN"], name
+            assert sum("answer outside the contract" in r for r in state.reasons) == 2, state.reasons
+
+
+def test_an_advisor_thread_that_cannot_start_is_an_abstain_and_never_raises_out_of_run(monkeypatch):
+    """Thread exhaustion (`RuntimeError: can't start new thread`) is one more advisor failure."""
+    import threading
+
+    def cannot_start(self):
+        raise RuntimeError("can't start new thread")
+
+    baseline = _baseline()
+    monkeypatch.setattr(threading.Thread, "start", cannot_start)
+    for name, make in scenarios().items():
+        state = run(_with_advisor(make, lambda _item: ("x", "TIGHTEN")))  # must not raise
+        assert (state.path[-1], state.executed) == baseline[name], (name, state.path)
+        if "VALIDATE" in state.path:
+            assert {v for _, v in state.context.advisories} == {"ABSTAIN"}
+            assert sum("could not start" in r for r in state.reasons) == 2, state.reasons

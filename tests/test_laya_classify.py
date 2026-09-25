@@ -369,3 +369,57 @@ def test_the_live_service_answers_under_the_contract():
     assert a.type == "noul" and 0.0 <= a.p_true <= 1.0 and 0.0 <= a.confidence <= 1.0
     assert set(a.pins) == {"package_version", "hf_revision", "route", "device"}
     assert len(a.pins["hf_revision"]) == 40 and isinstance(a.latency_ms, int)
+
+
+# -- review 2026-09-25: request validation sits inside the one failure mapping ----------
+
+from collections.abc import Mapping as _Mapping
+
+
+class _RaisingMapping(_Mapping):
+    """A `Mapping` whose every read raises: the caller's object, not the network, fails."""
+
+    def __init__(self, fail_on=("get", "getitem")):
+        self.fail_on = fail_on
+
+    def get(self, key, default=None):
+        if "get" in self.fail_on:
+            raise RuntimeError("get exploded")
+        return {"type": "noul", "instructions": "Is it?"}.get(key, default)
+
+    def __getitem__(self, key):
+        if "getitem" in self.fail_on:
+            raise RuntimeError("getitem exploded")
+        return {"type": "noul", "instructions": "Is it?"}[key]
+
+    def __iter__(self):
+        return iter(("type", "instructions"))
+
+    def __len__(self):
+        return 2
+
+
+def _raising_question(**kw):
+    return _RaisingMapping(**kw)
+
+
+@pytest.mark.parametrize("fail_on", [("get", "getitem"), ("getitem",)])
+def test_a_question_whose_reads_raise_abstains_as_an_invalid_request(fail_on):
+    c, t = client((200, body()))
+    a = c.ask(INJECTION_QUESTION_ID, STATE, _raising_question(fail_on=fail_on), route="english")
+    assert a.ok is False and a.abstain_reason == "INVALID_REQUEST", a
+    assert t.calls == []
+
+
+def test_a_state_whose_reads_raise_abstains_as_an_invalid_request():
+    from collections.abc import Mapping
+
+    class RaisingState(dict):
+        def items(self):
+            raise RuntimeError("items exploded")
+
+    assert isinstance(RaisingState(), Mapping)
+    c, t = client((200, body()))
+    a = c.ask(INJECTION_QUESTION_ID, RaisingState(prompt="x"), INJECTION_QUESTION, route="english")
+    assert a.ok is False and a.abstain_reason == "INVALID_REQUEST", a
+    assert t.calls == []
