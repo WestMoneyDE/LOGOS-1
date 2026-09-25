@@ -5,9 +5,11 @@
 from __future__ import annotations
 
 import json
+import os
 
 from psycopg.rows import dict_row
 
+from .service import _audit
 from .state_machines import IllegalTransition, JOB_STATES, transition
 
 DETERMINISTIC_KINDS = ("tests", "dataset", "dry_run", "rescore", "playwright_qa", "snapshot", "benchmark")
@@ -15,6 +17,9 @@ AGENT_KINDS = ("thesis_advance", "prior_art", "radar_process")          # R3: ag
 MEASUREMENT_KINDS = ("measurement",)
 CLAUDE_KINDS = ("claude",) + AGENT_KINDS + MEASUREMENT_KINDS   # prior_art needs the deep-research skill (Claude + web tools) -> host job, not Docker (recorded deviation from spec §5)
 KINDS = DETERMINISTIC_KINDS + CLAUDE_KINDS
+LEASE_ENV = "ROS_JOB_LEASE_S"      # job lease: a running job whose locked_at is older than this is treated as lost (see sweep_lost)
+DEFAULT_LEASE_S = 900
+WORKER_LOST = "WORKER_LOST"
 
 
 def idempotency_key(kind: str, work_order_id: str | None, run_id: str | None, attempt_group: int, thesis_id: str | None = None,
@@ -118,6 +123,66 @@ def start(conn, job_id: int, actor: str, gate: dict) -> dict:
         cur.execute("INSERT INTO ros_audit (actor, action, subject, detail) VALUES (%s, 'job.start', %s, %s)", (actor, str(job_id), json.dumps({"gate": gate})))
     conn.commit()
     return row
+
+
+def lease_seconds(env: dict | None = None) -> int:
+    """The job lease from `ROS_JOB_LEASE_S`; a missing, non-integer or non-positive value falls back to DEFAULT_LEASE_S."""
+    raw = (os.environ if env is None else env).get(LEASE_ENV, "")
+    try:
+        value = int(raw)
+    except ValueError:
+        return DEFAULT_LEASE_S
+    return value if value > 0 else DEFAULT_LEASE_S
+
+
+def renew_lease(conn, job_id: int, worker_id: str) -> bool:
+    """Refresh `locked_at` of a job this worker still holds. False = the lease is gone (swept, stopped or re-locked): the caller must stop working on it."""
+    with conn.cursor() as cur:
+        cur.execute("UPDATE ros_jobs SET locked_at = now() WHERE job_id = %s AND locked_by = %s AND state = 'running'", (job_id, worker_id)); held = cur.rowcount == 1
+    conn.commit()
+    return held
+
+
+def _close_open_runs(cur, job_id: int, reason: str) -> list[str]:
+    """Runs of `job_id` still marked running -> failed with `reason`, plus one `error` event each. Same transaction as the caller."""
+    cur.execute("UPDATE ros_runs SET state = 'failed', finished = now(), stop_reason = %s WHERE job_id = %s AND state = 'running' RETURNING run_id", (reason, job_id))
+    run_ids = [r["run_id"] if isinstance(r, dict) else r[0] for r in cur.fetchall()]
+    for run_id in run_ids:
+        cur.execute("INSERT INTO ros_run_events (run_id, kind, payload, privacy_class) VALUES (%s, 'error', %s, 'internal')", (run_id, json.dumps({"reason": reason})))
+    return run_ids
+
+
+def close_open_runs(conn, job_id: int, reason: str) -> list[str]:
+    with conn.cursor() as cur:
+        run_ids = _close_open_runs(cur, job_id, reason)
+    conn.commit()
+    return run_ids
+
+
+def sweep_lost(conn, kinds: tuple[str, ...] | list[str], lease_s: int, *, actor: str = "system", only_job_ids: list[int] | None = None) -> list[dict]:
+    """Move running jobs of `kinds` whose lease expired (`locked_at` older than `lease_s`) to `failed` with error WORKER_LOST.
+
+    Each move goes through the job state machine (`running --fail--> failed`) and writes one `job.transition` audit row; the job's
+    open runs are closed in the same transaction. A job with a fresh lock or a NULL lock is not touched; a terminal job is never
+    selected, so a second sweep changes nothing. Nothing is requeued: recovery is the explicit founder `retry`.
+    `only_job_ids` restricts the sweep (test isolation and targeted repair).
+    """
+    sql = "SELECT * FROM ros_jobs WHERE state = 'running' AND kind = ANY(%s) AND locked_at < now() - make_interval(secs => %s)"
+    args: list = [list(kinds), float(lease_s)]
+    if only_job_ids is not None:
+        sql += " AND job_id = ANY(%s)"; args.append(list(only_job_ids))
+    swept = []
+    with conn.cursor(row_factory=dict_row) as cur:
+        cur.execute(sql + " ORDER BY job_id FOR UPDATE SKIP LOCKED", args)
+        for job in cur.fetchall():
+            nxt = transition("job", job["state"], "fail", actor)
+            cur.execute("UPDATE ros_jobs SET state = %s, error = %s, locked_by = NULL, updated_at = now() WHERE job_id = %s RETURNING *", (nxt, WORKER_LOST, job["job_id"])); row = cur.fetchone()
+            run_ids = _close_open_runs(cur, job["job_id"], WORKER_LOST)
+            _audit(cur, actor, "job.transition", str(job["job_id"]), {"event": "fail", "from": job["state"], "to": nxt, "reason": WORKER_LOST, "locked_by": job["locked_by"],
+                                                                       "locked_at": job["locked_at"], "lease_s": lease_s, "runs_closed": run_ids})
+            swept.append(row)
+    conn.commit()
+    return swept
 
 
 def stats(conn) -> dict:

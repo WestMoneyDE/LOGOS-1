@@ -99,6 +99,14 @@ record**: every juror vote is `ABSTAIN` until the founder signs one.
 | LOGOS-owned Laya service (`infra/laya`, compose profile `laya`, 127.0.0.1:58110, offline, pinned) | see session report | `tests/test_laya_service_contract.py` |
 | Laya as an injection juror with an admissible threshold | `NOT_ADMISSIBLE` | `docs/research/LAYA-CALIBRATION/injection-NOT-ADMISSIBLE.md` |
 | Navigator acting (not shadow) | `NOT_BUILT` | requires a routing calibration record |
+| Laya measurement scripts resume after a crash: one fsynced journal line per answer, torn last line preserved in `<journal>.torn`, resumed answers flagged and kept out of latency statistics | `IMPLEMENTED` | `tests/test_laya_journal.py` |
+
+### Research OS worker recovery
+
+| Capability | Rating | Exact pytest evidence |
+|---|---|---|
+| ros-worker lost-lease sweep: an expired deterministic job lease moves `running -> failed` / `WORKER_LOST` through the job state machine with an audit row; idempotent; no automatic requeue | `IMPLEMENTED` | `tests/test_ros_worker_lease.py` |
+| Same recovery for Claude-kind jobs of the host executor | `NOT_BUILT` | the host executor renews no lease |
 
 ### MemoryFactory / Scope Engine R1 evidence
 

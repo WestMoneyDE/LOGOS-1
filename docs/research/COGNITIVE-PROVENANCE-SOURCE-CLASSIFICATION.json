@@ -2169,6 +2169,18 @@
     "docs/research/BROWSE-OBSERVATION/keystone-r1-rescore/replay_rescore.py": {
       "class": "EXPERIMENTAL_INFERENCE",
       "note": "LOGOS1-LAYA-JUROR-INTEGRATION-R1 (2026-09-25 correction): replay of logged Laya questions inside the Laya container, offline, pinned revision 5e7b2b1b"
+    },
+    "experiments/laya_calibration/journal.py": {
+      "class": "TOOLING",
+      "note": "LAYA-WORKER-RESUME: append-only result journal (fsync per line, torn-line preservation, atomic final write) for the Laya measurement scripts; file I/O only, no model call, no network"
+    },
+    "tests/test_laya_journal.py": {
+      "class": "EXPERIMENTAL_DETERMINISTIC",
+      "note": "LAYA-WORKER-RESUME: crash/resume suite for run.py, injection_measure.py http/inprocess and the journal; fake client and transport, no model, no network"
+    },
+    "tests/test_ros_worker_lease.py": {
+      "class": "TOOLING",
+      "note": "LAYA-WORKER-RESUME: ros-worker job lease and lost-lease sweep (running -> failed/WORKER_LOST via the job state machine, audit row, idempotent); no model call"
     }
   },
   "unclassified": 0

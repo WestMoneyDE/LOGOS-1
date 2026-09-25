@@ -12,6 +12,12 @@
 ordered by the checkpoint that answers so each is loaded once. `analyze` compares the
 two and writes `docs/research/LAYA-CALIBRATION/measure-*.json`.
 
+Crash safety: `inprocess` and `http` journal every answer as it completes (`inproc.journal.jsonl`,
+`http.journal.jsonl` in the work directory, see `journal.py`). A rerun with `--resume` asks only
+the calls the journal does not hold; without `--resume` a non-empty journal is refused. Answers
+produced after a resume carry `resumed: true`, and `analyze` keeps their latency out of the
+first-session statistics and reports it separately.
+
 This harness never writes a calibration record (`<profile>.json`): it has no code path
 that could, and `analyze` refuses an output name that `calibration.load` would read.
 """
@@ -25,7 +31,9 @@ import os
 import statistics
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
+from typing import Iterable
 
 ROOT = Path(__file__).resolve().parents[2]
 if __package__ in (None, ""):
@@ -36,6 +44,7 @@ from experiments.browse_injection.extract import extract_file, invisible_counts 
 from experiments.laya_calibration import matched_en_de  # noqa: E402
 from experiments.laya_calibration.dataset import CASES  # noqa: E402
 from experiments.laya_calibration.dataset import dataset_hash as probe_hash  # noqa: E402
+from experiments.laya_calibration.journal import Journal, JournalError, open_journal, write_atomic  # noqa: E402
 from experiments.laya_calibration.run import classify_one  # noqa: E402
 from logos_laya.calibration import RECORD_DIR, wilson  # noqa: E402
 from logos_laya.classify import DEFAULT_BASE, ClassifyClient  # noqa: E402
@@ -114,9 +123,32 @@ def cmd_items(work: Path) -> int:
     return 0
 
 
-def cmd_inprocess(work: Path) -> int:
+ITEM_MARK = "===ITEM==="
+RESULT_MARK = "===RESULT==="
+
+
+def ingest_inprocess(lines: Iterable[str], journal: Journal) -> dict | None:
+    """Append every `===ITEM===` line of the container's stdout to the journal as it arrives.
+    Returns the `===RESULT===` document, or None when the stream ended without one (the container died)."""
+    lines = iter(lines)
+    for line in lines:
+        line = line.rstrip("\r\n")
+        if line.startswith(ITEM_MARK):
+            item = json.loads(line[len(ITEM_MARK):])
+            journal.append(item["key"], item["result"])
+        elif line == RESULT_MARK:
+            return json.loads("".join(lines))
+    return None
+
+
+def inprocess_answers(items: dict, journal: Journal) -> dict:
+    return {k: {**journal.result(k), "resumed": journal.was_resumed(k)} for k in items["calls"] if k in journal}
+
+
+def cmd_inprocess(work: Path, resume: bool = False) -> int:
     items = json.loads((work / "items.json").read_text(encoding="utf-8"))
-    payload = [{"key": k, "text": v["text"], "route": v["route"]} for k, v in items["calls"].items()]
+    journal = open_journal(work / "inproc.journal.jsonl", resume)
+    payload = [{"key": k, "text": v["text"], "route": v["route"]} for k, v in items["calls"].items() if k not in journal]
     blob = base64.b64encode(json.dumps(payload, ensure_ascii=False).encode("utf-8")).decode("ascii")
     script = (Path(__file__).with_name("inprocess_equivalence.py").read_text(encoding="utf-8")
               .replace('if __name__ == "__main__":', f'ITEMS_B64 = "{blob}"\n\nif __name__ == "__main__":'))
@@ -127,33 +159,50 @@ def cmd_inprocess(work: Path) -> int:
     cmd = ["docker", "run", "--rm", "-i", "--network", "none", "--memory", "3g", "--read-only",
            "--tmpfs", "/tmp:size=64m", "--user", "10001", "--entrypoint", "python", IMAGE, "-"]
     env = {**os.environ, "MSYS_NO_PATHCONV": "1"}
-    proc = subprocess.run(cmd, input=script.encode("utf-8"), capture_output=True, env=env)
-    out = proc.stdout.decode("utf-8", "replace")
-    if proc.returncode != 0 or "===RESULT===" not in out:
-        sys.stderr.write(proc.stderr.decode("utf-8", "replace")[-3000:])
+    # The container is read-only; it prints one line per answer and this side journals each line as it arrives.
+    with tempfile.TemporaryFile() as err:
+        proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=err, env=env)
+        proc.stdin.write(script.encode("utf-8"))
+        proc.stdin.close()
+        result = ingest_inprocess((raw.decode("utf-8", "replace") for raw in proc.stdout), journal)
+        proc.wait()
+        err.seek(0)
+        stderr = err.read().decode("utf-8", "replace")
+    if proc.returncode != 0 or result is None:
+        sys.stderr.write(stderr[-3000:])
+        sys.stderr.write(f"\n{len(journal)}/{len(items['calls'])} answers journalled; rerun with --resume\n")
         return 1
-    result = json.loads(out.split("===RESULT===", 1)[1])
+    answers = inprocess_answers(items, journal)
+    if len(answers) != len(items["calls"]):
+        sys.stderr.write(f"{len(items['calls']) - len(answers)} calls missing after the run\n")
+        return 1
+    result = {"meta": result["meta"], "answers": answers}
     result["meta"].update({"image_id": image_id, "service_image_id": service_image,
                            "same_image_as_service": image_id == service_image,
-                           "isolation": "docker run --rm --network none --read-only --memory 3g"})
-    (work / "inproc.json").write_text(json.dumps(result, indent=1), encoding="utf-8")
+                           "isolation": "docker run --rm --network none --read-only --memory 3g",
+                           "resumed_answers": sum(a["resumed"] for a in answers.values()),
+                           "seconds_scope": "last session only" if journal.resumed else "whole run"})
+    write_atomic(work / "inproc.json", json.dumps(result, indent=1))
     print(result["meta"])
     return 0
 
 
-def cmd_http(work: Path) -> int:
+def cmd_http(work: Path, resume: bool = False) -> int:
     items = json.loads((work / "items.json").read_text(encoding="utf-8"))
     inproc = json.loads((work / "inproc.json").read_text(encoding="utf-8"))["answers"]
     order = {"english": 0, "multilingual": 1}
     keys = sorted(items["calls"], key=lambda k: (order.get(inproc.get(k, {}).get("answered_route"), 9)))
+    journal = open_journal(work / "http.journal.jsonl", resume)
     client = ClassifyClient(base_url=DEFAULT_BASE, timeout=120.0)
-    out = {}
     for n, key in enumerate(keys):
+        if key in journal:
+            continue
         call = items["calls"][key]
-        out[key] = classify_one(client, call["text"], call["route"])
+        row = journal.append(key, classify_one(client, call["text"], call["route"]))["result"]
         if n % 25 == 0:
-            print(n, len(keys), out[key]["answered_route"], out[key]["p_true"], flush=True)
-    (work / "http.json").write_text(json.dumps(out, indent=1), encoding="utf-8")
+            print(n, len(keys), row["answered_route"], row["p_true"], flush=True)
+    out = {key: {**journal.result(key), "resumed": journal.was_resumed(key)} for key in keys}
+    write_atomic(work / "http.json", json.dumps(out, indent=1))
     return 0
 
 
@@ -188,6 +237,21 @@ def metrics(rows: list[dict]) -> dict:
         out["at"][str(t)] = {"recall": rate(sum(p >= t for p in pos), len(pos)) if pos else None,
                              "fpr": rate(sum(q >= t for q in neg), len(neg)) if neg else None}
     return out
+
+
+def latency_groups(http: dict) -> tuple[dict[str, list[float]], dict[str, list[float]]]:
+    """Server latency of answered calls without a checkpoint switch, by answered route: (first session, resumed sessions)."""
+    first: dict[str, list[float]] = {}
+    resumed: dict[str, list[float]] = {}
+    for h in http.values():
+        if h["ok"] and not h["busy_retries"]:
+            (resumed if h.get("resumed") else first).setdefault(h["answered_route"], []).append(h["server_latency_ms"])
+    return first, resumed
+
+
+def latency_summary(groups: dict[str, list[float]]) -> dict:
+    return {k: {"n": len(v), "median": statistics.median(v), "p95": sorted(v)[int(0.95 * (len(v) - 1))], "max": max(v)}
+            for k, v in groups.items()}
 
 
 def cmd_analyze(work: Path) -> int:
@@ -235,18 +299,18 @@ def cmd_analyze(work: Path) -> int:
                 {"idx": r["idx"], "language": r["language"], "is_injection": r["is_injection"], "text": r["text"],
                  "p_true": r["http"]["p_true"], "answered_route": r["http"]["answered_route"],
                  "server_latency_ms": r["http"]["server_latency_ms"], "wall_ms": r["http"]["wall_ms"],
+                 "resumed": r["http"].get("resumed", False),
                  "busy_retries": len(r["http"]["busy_retries"]), "abstain_reason": r["http"]["abstain_reason"]}
                 for r in sub]}
     both = joined("matched_en") + joined("matched_de")
     phase3["sets"]["matched_en_plus_de"] = {route: {"metrics": metrics([r for r in both if (r["route"] or "auto") == route])}
                                             for route in ("auto", "english", "multilingual")}
-    lat = {}
-    for key, h in http.items():
-        if h["ok"] and not h["busy_retries"]:
-            lat.setdefault(h["answered_route"], []).append(h["server_latency_ms"])
-    phase3["latency_ms_no_switch"] = {k: {"n": len(v), "median": statistics.median(v),
-                                          "p95": sorted(v)[int(0.95 * (len(v) - 1))], "max": max(v)}
-                                      for k, v in lat.items()}
+    # Answers produced after a resume ran in another process, possibly after a model reload: their
+    # latency is reported separately and never mixed into the first-session statistics.
+    lat, lat_resumed = latency_groups(http)
+    phase3["latency_ms_no_switch"] = latency_summary(lat)
+    if lat_resumed:
+        phase3["latency_ms_no_switch_resumed_not_comparable"] = latency_summary(lat_resumed)
     phase3["switch_affected_calls"] = sum(1 for h in http.values() if h["busy_retries"])
 
     keystone = {"note": "benign pages of the founder's own app; every flag is a false positive", "sets": {}}
@@ -297,9 +361,16 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("cmd", choices=("items", "inprocess", "http", "analyze"))
     ap.add_argument("--work", type=Path, required=True)
+    ap.add_argument("--resume", action="store_true", help="inprocess/http: continue the journal in --work")
     args = ap.parse_args(argv)
     args.work.mkdir(parents=True, exist_ok=True)
-    return {"items": cmd_items, "inprocess": cmd_inprocess, "http": cmd_http, "analyze": cmd_analyze}[args.cmd](args.work)
+    try:
+        if args.cmd in ("inprocess", "http"):
+            return {"inprocess": cmd_inprocess, "http": cmd_http}[args.cmd](args.work, args.resume)
+        return {"items": cmd_items, "analyze": cmd_analyze}[args.cmd](args.work)
+    except JournalError as exc:
+        sys.stderr.write(f"{exc}\n")
+        return 2
 
 
 if __name__ == "__main__":

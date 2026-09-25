@@ -6,8 +6,10 @@ entries, `max_loaded=1`, CPU, and one `noul` question per call with `criteria: N
 (the service's `model_dump()` of the question). No HTTP, no FastAPI, no pydantic.
 
 Input: a JSON list of items `{"key", "text", "route"}` (route None = auto), appended to
-this file as `ITEMS_B64` by `injection_measure.py inprocess`. Output: one JSON object on
-stdout after the marker line `===RESULT===`.
+this file as `ITEMS_B64` by `injection_measure.py inprocess`. Output: one line
+`===ITEM===<json>` per answer as it completes (the container is read-only, so the host side
+journals these lines; a crash loses at most the answer in flight), then the marker line
+`===RESULT===` and one JSON object with the run metadata and this session's answers.
 
 It is run in a throwaway `docker run --rm --network none --read-only` container of the
 same image rather than by `docker exec` into the running service: the service already
@@ -55,6 +57,7 @@ def main(items):
                             "answered_route": routing.get("model") or item["route"],
                             "routing_reason": routing.get("reason"),
                             "ms": round((time.perf_counter() - t0) * 1000.0, 1)}
+        print("===ITEM===" + json.dumps({"key": item["key"], "result": out[item["key"]]}), flush=True)
         if n % 25 == 0:
             print(f"{n}/{len(items)} {time.time() - t_start:.0f}s", file=sys.stderr, flush=True)
     meta = {"package_version": str(laya.__version__), "hf_revision": revision,

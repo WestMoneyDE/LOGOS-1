@@ -18,6 +18,7 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
 
 from experiments.laya_calibration.dataset import CASES, dataset_hash  # noqa: E402
+from experiments.laya_calibration.journal import Journal, item_key, open_journal, write_atomic  # noqa: E402
 from logos_laya.calibration import admissible, load, wilson  # noqa: E402
 from logos_laya.classify import DEFAULT_BASE, ClassifyClient  # noqa: E402
 from logos_laya.client import HttpLaya  # noqa: E402
@@ -30,23 +31,31 @@ RETRYABLE = frozenset({"SERVICE_BUSY", "SERVICE_TIMEOUT", "SERVICE_NOT_READY"})
 
 
 def measure(laya, profile: Profile, cases: Sequence[tuple[str, bool]] | None = None,
-            protocol: str = "json") -> dict:
+            protocol: str = "json", journal: Journal | None = None) -> dict:
+    """`journal`: every answer is appended as it arrives, and a key already in the journal is not asked again."""
     cases = list(cases or CASES)
     scored: list[tuple[float, bool]] = []
     codes: dict[str, int] = {}
     abstained = 0
-    for text, truth in cases:
-        answer = laya.ask(profile.name, text, system=profile.system, logprobs=protocol == "logprob")
-        codes[answer.code] = codes.get(answer.code, 0) + 1
-        if not answer.ok or answer.p is None:
+    for idx, (text, truth) in enumerate(cases):
+        key = item_key(f"{profile.name}:{protocol}", idx, text)
+        if journal is not None and key in journal:
+            answer = journal.result(key)
+        else:
+            got = laya.ask(profile.name, text, system=profile.system, logprobs=protocol == "logprob")
+            answer = {"code": got.code, "ok": got.ok, "p": got.p}
+            if journal is not None:
+                journal.append(key, answer)
+        codes[answer["code"]] = codes.get(answer["code"], 0) + 1
+        if not answer["ok"] or answer["p"] is None:
             abstained += 1
             continue
         # `p` is P(the condition holds), not the juror's confidence in what it said, so
         # it is used as given. An earlier version flipped it for a negative `answer`,
         # which turned a juror that separated the classes perfectly into one whose
         # false-positive rate measured 1.0.
-        scored.append((answer.p, truth))
-    return {
+        scored.append((answer["p"], truth))
+    report = {
         "profile": profile.name,
         "protocol": protocol,
         "dataset_sha256": dataset_hash(),
@@ -58,6 +67,9 @@ def measure(laya, profile: Profile, cases: Sequence[tuple[str, bool]] | None = N
         "parse_codes": codes,
         "scored": scored,
     }
+    if journal is not None:
+        report["resumed_items"] = sum(journal.was_resumed(item_key(f"{profile.name}:{protocol}", i, t)) for i, (t, _) in enumerate(cases))
+    return report
 
 
 def classify_one(client: ClassifyClient, text: str, route: str | None, *,
@@ -82,11 +94,22 @@ def classify_one(client: ClassifyClient, text: str, route: str | None, *,
 
 
 def measure_classify(client: ClassifyClient, cases: Sequence[tuple[str, bool]],
-                     route: str | None) -> dict:
-    """The classify-protocol counterpart of `measure`: abstentions counted, never scored."""
+                     route: str | None, journal: Journal | None = None) -> dict:
+    """The classify-protocol counterpart of `measure`: abstentions counted, never scored.
+
+    `journal`: as in `measure`. A row carries `resumed: true` when it was answered by a session that resumed the
+    journal; its `server_latency_ms`/`wall_ms` are not comparable with the first session's."""
     rows = []
-    for text, truth in cases:
-        rows.append({"text": text, "is_injection": truth, **classify_one(client, text, route)})
+    for idx, (text, truth) in enumerate(cases):
+        key = item_key(f"classify:{route or 'auto'}", idx, text)
+        if journal is not None and key in journal:
+            answer = journal.result(key)
+        else:
+            answer = classify_one(client, text, route)
+            if journal is not None:
+                journal.append(key, answer)
+        resumed = journal is not None and journal.was_resumed(key)
+        rows.append({"text": text, "is_injection": truth, **answer, "resumed": resumed})
     scored = [(r["p_true"], r["is_injection"]) for r in rows if r["ok"]]
     return {"protocol": "classify", "question_id": INJECTION_QUESTION_ID,
             "question_sha256": question_sha256(INJECTION_QUESTION), "route": route or "auto",
@@ -136,6 +159,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     # and a run whose abstentions are mostly TIMEOUT has measured the wait, not the juror.
     parser.add_argument("--timeout", type=float, default=None,
                         help="default 30 s (chat) / 120 s (classify measurement)")
+    # Crash safety: with --out, every answer is journalled to <out>.journal.jsonl as it arrives.
+    # --resume JOURNAL continues that journal and asks only the items it does not hold.
+    parser.add_argument("--resume", default="", metavar="JOURNAL")
     args = parser.parse_args(argv)
     if args.protocol == "classify":
         return _main_classify(args)
@@ -144,7 +170,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     report = measure(HttpLaya(base_url=args.base_url, model=args.model,
                              max_tokens=args.max_tokens, timeout=args.timeout), INJECTION,
-                     protocol=args.protocol)
+                     protocol=args.protocol, journal=_journal(args))
     report["model_pin"] = args.model
     report["max_tokens"] = args.max_tokens
     report["timeout_s"] = args.timeout
@@ -166,8 +192,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         print("\nNo admissible operating point on this set. The profile stays pinned to ABSTAIN,")
         print("and no record should be written. That is a result, not a failure to produce one.")
     if args.out:
-        Path(args.out).write_text(json.dumps(report, indent=2), encoding="utf-8")
+        write_atomic(args.out, json.dumps(report, indent=2))
     return 0
+
+
+def _journal(args) -> Journal | None:
+    if args.resume:
+        return open_journal(args.resume, resume=True)
+    return open_journal(f"{args.out}.journal.jsonl", resume=False) if args.out else None
 
 
 def _main_classify(args) -> int:
@@ -178,7 +210,7 @@ def _main_classify(args) -> int:
              "matched_de": matched_en_de.DE_CASES}[args.case_set]
     client = ClassifyClient(base_url=args.base_url or DEFAULT_BASE,
                             timeout=120.0 if args.timeout is None else args.timeout)
-    report = measure_classify(client, cases, None if args.route == "auto" else args.route)
+    report = measure_classify(client, cases, None if args.route == "auto" else args.route, journal=_journal(args))
     report["set"] = args.case_set
     report["timeout_s"] = client.timeout
     for threshold in (0.5, 0.7, 0.9):
@@ -190,7 +222,7 @@ def _main_classify(args) -> int:
     print(f"usable {len(report['scored'])}/{report['n']}   abstained {report['abstained']}")
     print("No record is written by this harness; see docs/research/LAYA-CALIBRATION/.")
     if args.out:
-        Path(args.out).write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
+        write_atomic(args.out, json.dumps(report, indent=2, ensure_ascii=False))
     return 0
 
 

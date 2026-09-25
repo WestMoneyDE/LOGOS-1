@@ -18,5 +18,8 @@ All services are local. Nothing here bypasses governance: Claude runs only throu
 4. Console `/runs/<run_id>`: SSE event stream, Pause/Stop, founder notes (injected into the next packet).
 5. `USAGE_LIMIT_REACHED` → job `waiting_quota`, all Claude jobs blocked until the founder resets on `/system/quotas`.
 
+## Deterministic job lease (worker crash or container restart)
+A deterministic job holds a lease: `dequeue` sets `locked_at`, and the worker renews it every lease/3 seconds while its pytest subprocess runs (`ROS_JOB_LEASE_S`, default 900 s). At startup and on every tick the worker moves each deterministic job whose lease expired from `running` to `failed` with error `WORKER_LOST`. The move uses the job state machine (`running --fail--> failed`), writes one `job.transition` audit row and closes the job's open runs. A worker whose lease was swept terminates its subprocess. Nothing is requeued automatically; the founder `retry` is the recovery path. Claude-kind jobs are not swept by this worker (`queue.sweep_lost`, `tests/test_ros_worker_lease.py`).
+
 ## What is not built yet
 MLflow/OTel run hierarchy + trace explorer (Phase 4), benchmark lab/statistics/snapshots (Phase 5), inbox/radar pipeline (Phase 6), monthly report/evidence debt/paper readiness (Phase 7). `dataset`, `dry_run`, `rescore`, `playwright_qa` jobs fail closed with `NOT_IMPLEMENTED`.
